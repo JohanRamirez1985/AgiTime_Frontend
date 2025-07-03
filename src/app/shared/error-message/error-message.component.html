@@ -1,0 +1,12 @@
+<div class="modal-backdrop" *ngIf="show">
+  <div class="modal classic">
+    <div class="modal-header">
+      <span class="icon">❌</span>
+      <h3>Error</h3>
+    </div>
+    <div class="modal-body">{{ message }}</div>
+    <div class="modal-footer">
+      <button (click)="onClose()">Aceptar</button>
+    </div>
+  </div>
+</div>
