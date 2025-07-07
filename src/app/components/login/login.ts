@@ -28,7 +28,7 @@ export class Login {
     this.loading = true;
     this.apiErrorMessage = '';
 
-    this.authService.login({ email: this.email, password: this.password })
+    this.authService.login({ Login: this.email, Password: this.password })
       .subscribe({
         next: res => {
           console.log('Login exitoso', res);
