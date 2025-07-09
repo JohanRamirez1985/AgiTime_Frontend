@@ -1,61 +1,72 @@
+/* Fondo general */
 .login-wrapper {
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(to right, #4e54c8, #8f94fb);
-  font-family: Arial, sans-serif;
+  background-color: #f4f6f9; /* más empresarial */
+  font-family: 'Inter', sans-serif;
 }
 
+/* Tarjeta centrada */
 .login-card {
   background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  width: 320px;
-}
-
-.login-card h2 {
-  margin-bottom: 1.5rem;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 380px;
   text-align: center;
-  color: #333;
 }
 
+/* Título */
+.login-card h2 {
+  margin-bottom: 2rem;
+  color: #1f3c88;
+  font-weight: 600;
+  font-size: 1.6rem;
+}
+
+/* Campos */
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
+  text-align: left;
 }
 
 label {
   display: block;
-  margin-bottom: 0.3rem;
-  font-weight: bold;
-  color: #555;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+  color: #2c3e50;
 }
 
 input {
   width: 100%;
-  padding: 0.6rem;
+  padding: 0.65rem;
   border: 1px solid #ccc;
   border-radius: 6px;
+  font-size: 1rem;
   box-sizing: border-box;
-  transition: border-color 0.3s;
+  transition: border-color 0.3s ease;
 }
 
 input:focus {
-  border-color: #4e54c8;
+  border-color: #1f3c88;
   outline: none;
 }
 
+/* Botones */
 button {
   width: 100%;
-  padding: 0.7rem;
+  padding: 0.75rem;
   border: none;
-  background-color: #4e54c8;
+  background-color: #1f3c88;
   color: #fff;
   border-radius: 6px;
-  font-weight: bold;
+  font-weight: 500;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease;
 }
 
 button:disabled {
@@ -64,15 +75,10 @@ button:disabled {
 }
 
 button:hover:not(:disabled) {
-  background-color: #3c41a1;
+  background-color: #172c6c;
 }
 
-button {
-  position: relative;
-  padding: 0.5rem 1.5rem;
-  font-size: 1rem;
-}
-
+/* Spinner */
 .spinner {
   width: 20px;
   height: 20px;
@@ -89,15 +95,16 @@ button {
   100% { transform: rotate(360deg); }
 }
 
+/* Enlace de registro */
 .no-account {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   font-size: 0.9rem;
   text-align: center;
   color: #555;
 }
 
 .no-account a {
-  color: #007bff;
+  color: #1f3c88;
   text-decoration: none;
   margin-left: 4px;
   font-weight: 500;
@@ -106,4 +113,3 @@ button {
 .no-account a:hover {
   text-decoration: underline;
 }
-

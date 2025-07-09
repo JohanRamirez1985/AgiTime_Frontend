@@ -4,19 +4,23 @@ import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private baseUrl = `${environment.apiBaseUrl}/Usuarios`;
+  private baseUrlUsuario = `${environment.apiBaseUrl}/Usuarios`;
+  private baseUrlCliente = `${environment.apiBaseUrl}/Cliente`;
   
   constructor(private http: HttpClient) {}
 
-  login(credentials: { Login: string; Password: string }) {
-    return this.http.post(`${this.baseUrl}/Login`, credentials);
+  login(credentials: { Login: string; Password: string ; empresa: string}, Cliente: boolean) {
+    if(Cliente)
+      return this.http.post(`${this.baseUrlCliente}/Login`, credentials);
+    else
+      return this.http.post(`${this.baseUrlUsuario}/Login`, credentials);
   }
 
   register(user: { name: string; email: string; password: string }) {
-    return this.http.post(`${this.baseUrl}/register`, user);
+    return this.http.post(`${this.baseUrlCliente}/register`, user);
   }
 
-  ping() {
-    return this.http.get(`${this.baseUrl}/ping`);
-  }
+  // ping() {
+  //   return this.http.get(`${this.baseUrl}/ping`);
+  // }
 }

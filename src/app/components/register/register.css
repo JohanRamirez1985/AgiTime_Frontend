@@ -1,76 +1,123 @@
+/* Fondo general */
 .register-wrapper {
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(to right, #4e54c8, #8f94fb);
-  font-family: Arial, sans-serif;
+  background-color: #f4f6f9;
+  font-family: 'Inter', sans-serif;
 }
 
+/* Tarjeta */
 .register-card {
   background-color: #ffffff;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  width: 360px;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
 }
 
+/* Título */
 .register-card h2 {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   text-align: center;
-  color: #333;
+  color: #1f3c88;
+  font-weight: 600;
+  font-size: 1.6rem;
 }
 
+/* Campos */
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
+  text-align: left;
 }
 
 label {
   display: block;
-  margin-bottom: 0.3rem;
-  font-weight: bold;
-  color: #555;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+  color: #2c3e50;
 }
 
-input {
+input,
+select {
   width: 100%;
-  padding: 0.6rem;
+  padding: 0.65rem;
   border: 1px solid #ccc;
   border-radius: 6px;
+  font-size: 1rem;
   box-sizing: border-box;
-  transition: border-color 0.3s;
+  transition: border-color 0.3s ease;
+  background-color: #fff;
+  color: #333;
+  font-family: inherit;
 }
 
-input:focus {
-  border-color: #4e54c8;
+input:focus,
+select:focus {
+  border-color: #1f3c88;
   outline: none;
 }
 
-button {
-  width: 100%;
-  padding: 0.7rem;
+/* Select flecha */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='7' viewBox='0 0 12 7' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231f3c88' stroke-width='2' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 12px 7px;
+}
+
+/* Botones de acción */
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.form-buttons button {
+  flex: 1;
+  padding: 0.75rem;
   border: none;
-  background-color: #4e54c8;
-  color: #fff;
   border-radius: 6px;
-  font-weight: bold;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #3c41a1;
+/* Botón Registrar */
+.form-buttons button:first-child {
+  background-color: #1f3c88;
+  color: white;
 }
 
+.form-buttons button:first-child:hover {
+  background-color: #172c6c;
+}
+
+/* Botón Cancelar */
+.form-buttons button:last-child {
+  background-color: #dfe6e9;
+  color: #2c3e50;
+}
+
+.form-buttons button:last-child:hover {
+  background-color: #c8d6e5;
+}
+
+/* Enlace para iniciar sesión */
 .already-account {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   font-size: 0.9rem;
   text-align: center;
   color: #555;
 }
 
 .already-account a {
-  color: #007bff;
+  color: #1f3c88;
   text-decoration: none;
   margin-left: 4px;
   font-weight: 500;

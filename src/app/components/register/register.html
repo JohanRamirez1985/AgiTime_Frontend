@@ -1,64 +1,190 @@
-<div class="register-wrapper">
-  <div class="register-card">
-    <h2>Crear cuenta</h2>
-    <form (ngSubmit)="registrar()" #registerForm="ngForm">
-      <div class="form-group">
-        <label for="name">Nombre completo</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          [(ngModel)]="nombre"
-          required
-          minlength="3"
-          #nameInput="ngModel"
-        />
-        <div *ngIf="nameInput.invalid && nameInput.touched">
-          <small *ngIf="nameInput.errors?.['required']">El nombre es obligatorio.</small>
-          <small *ngIf="nameInput.errors?.['minlength']">Debe tener al menos 3 caracteres.</small>
+<div *ngIf="tipo === 'cl'; else accesoDenegado">
+  <div class="register-wrapper">
+    <div class="register-card">
+      <h2>Crear cuenta</h2>
+      <form (ngSubmit)="registrar()" #registerForm="ngForm">
+        <div class="form-group">
+          <label for="name">Nombre completo</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            [(ngModel)]="nombre"
+            required
+            minlength="3"
+            #nameInput="ngModel"
+          />
+          <div *ngIf="nameInput.invalid && nameInput.touched">
+            <small *ngIf="nameInput.errors?.['required']">El nombre es obligatorio.</small>
+            <small *ngIf="nameInput.errors?.['minlength']">Debe tener al menos 3 caracteres.</small>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label for="email">Correo electrónico</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          [(ngModel)]="email"
-          required
-          email
-          #emailInput="ngModel"
-        />
-        <div *ngIf="emailInput.invalid && emailInput.touched">
-          <small *ngIf="emailInput.errors?.['required']">El correo es obligatorio.</small>
-          <small *ngIf="emailInput.errors?.['email']">Debe ser un correo válido.</small>
+        <div class="form-group">
+          <label for="tipoDocumento">Tipo de documento</label>
+          <select
+            id="tipoDocumento"
+            name="tipoDocumento"
+            [(ngModel)]="tipoDocumento"
+            required
+            #tipoDocumentoInput="ngModel"
+          >
+            <option value="" disabled selected>Seleccione una opción</option>
+            <option *ngFor="let tipo of tipoDocumentos" [value]="tipo.id">
+              {{ tipo.nombre }}
+            </option>
+          </select>
+
+          <div *ngIf="tipoDocumentoInput.invalid && tipoDocumentoInput.touched">
+            <small *ngIf="tipoDocumentoInput.errors?.['required']">Debe seleccionar un tipo de documento.</small>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label for="password">Contraseña</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          [(ngModel)]="password"
-          required
-          minlength="6"
-          #passwordInput="ngModel"
-        />
-        <div *ngIf="passwordInput.invalid && passwordInput.touched">
-          <small *ngIf="passwordInput.errors?.['required']">La contraseña es obligatoria.</small>
-          <small *ngIf="passwordInput.errors?.['minlength']">Debe tener al menos 6 caracteres.</small>
+
+        <div class="form-group">
+          <label for="idDocumento">No. Documento</label>
+          <input
+            type="text"
+            id="idDocumento"
+            name="idDocumento"
+            [(ngModel)]="idDocumento"
+            required
+            minlength="5"
+            #idDocumentoInput="ngModel"
+          />
+          <div *ngIf="idDocumentoInput.invalid && idDocumentoInput.touched">
+            <small *ngIf="idDocumentoInput.errors?.['required']">El numero de documento es obligatorio.</small>
+            <small *ngIf="idDocumentoInput.errors?.['minlength']">Debe tener al menos 5 caracteres.</small>
+          </div>
         </div>
-      </div>
 
-      <button type="submit" [disabled]="registerForm.invalid">Registrar</button>
-    </form>
+        <div class="form-group">
+          <label for="tipoGenero">Género</label>
+          <select
+            id="tipoGenero"
+            name="tipoGenero"
+            [(ngModel)]="genero"
+            required
+            #tipoGeneroInput="ngModel"
+          >
+            <option value="" disabled selected>Seleccione una opción</option>
+            <option *ngFor="let tipo of listaGeneros" [value]="tipo.id">
+              {{ tipo.nombre }}
+            </option>
+          </select>
 
-    <div class="already-account">
-      ¿Ya tienes cuenta?
-      <a routerLink="/login">Inicia sesión</a>
+          <div *ngIf="tipoGeneroInput.invalid && tipoGeneroInput.touched">
+            <small *ngIf="tipoGeneroInput.errors?.['required']">
+              Debe seleccionar un género.
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="fechaNacimiento">Fecha de nacimiento</label>
+          <input
+            type="date"
+            id="fechaNacimiento"
+            name="fechaNacimiento"
+            [(ngModel)]="fechaNacimiento"
+            required
+            #fechaNacimientoInput="ngModel"
+          />
+          <div *ngIf="fechaNacimientoInput.invalid && fechaNacimientoInput.touched">
+            <small *ngIf="fechaNacimientoInput.errors?.['required']">La fecha de nacimiento es obligatoria.</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="cell">Telefono</label>
+          <input
+            type="text"
+            id="cell"
+            name="cell"
+            [(ngModel)]="cellphone"
+            required
+            minlength="3"
+            #cellInput="ngModel"
+          />
+          <div *ngIf="cellInput.invalid && cellInput.touched">
+            <small *ngIf="cellInput.errors?.['required']">El nombre es obligatorio.</small>
+            <small *ngIf="cellInput.errors?.['minlength']">Debe tener al menos 3 caracteres.</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Correo electrónico</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="email"
+            required
+            email
+            #emailInput="ngModel"
+          />
+          <div *ngIf="emailInput.invalid && emailInput.touched">
+            <small *ngIf="emailInput.errors?.['required']">El correo es obligatorio.</small>
+            <small *ngIf="emailInput.errors?.['email']">Debe ser un correo válido.</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            [(ngModel)]="password"
+            required
+            minlength="6"
+            #passwordInput="ngModel"
+          />
+          <div *ngIf="passwordInput.invalid && passwordInput.touched">
+            <small *ngIf="passwordInput.errors?.['required']">La contraseña es obligatoria.</small>
+            <small *ngIf="passwordInput.errors?.['minlength']">Debe tener al menos 6 caracteres.</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="rePassword">Confirmar Contraseña</label>
+          <input
+            type="password"
+            id="rePassword"
+            name="rePassword"
+            [(ngModel)]="confirmPassword"
+            required
+            minlength="6"
+            #rePasswordInput="ngModel"
+          />
+          <div *ngIf="rePasswordInput.invalid && rePasswordInput.touched">
+            <small *ngIf="rePasswordInput.errors?.['required']">El campo es obligatorio.</small>
+            <small *ngIf="rePasswordInput.errors?.['minlength']">Debe tener al menos 6 caracteres.</small>
+          </div>
+        </div>        
+
+        <div class="form-buttons">
+          <button type="submit" [disabled]="registerForm.invalid">Registrar</button>
+
+          <button
+            type="button"
+            [routerLink]="['/login']"
+            [queryParams]="{ em: idEmpresa, tipo: 'cl' }"
+          >
+            Cancelar
+          </button>
+        </div>
+
+      </form>
+
+      <!-- <div class="already-account">
+        ¿Ya tienes cuenta?
+        <a routerLink="/login">Inicia sesión</a>
+      </div> -->
     </div>
   </div>
 </div>
+
+<ng-template #accesoDenegado>
+  <p>No tienes acceso a esta sección.</p>
+</ng-template>

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ErrorMessageComponent } from '../../shared/error-message/error-message.component';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -20,15 +20,23 @@ export class Login {
   apiErrorMessage: string = '';
   showModal = false;
   loading = false;
+  idEmpresa: string | null = null;
+  tipo: string = ''
 
 
-  constructor(private authService: AuthService) {}
+
+  constructor(private authService: AuthService,
+    private route: ActivatedRoute
+  ) {
+      this.idEmpresa = this.route.snapshot.queryParamMap.get('em');
+      this.tipo = this.route.snapshot.queryParamMap.get('tipo') || '';
+  }
   
-  login() {
+  public login():void {
     this.loading = true;
     this.apiErrorMessage = '';
 
-    this.authService.login({ Login: this.email, Password: this.password })
+    this.authService.login({ Login: this.email, Password: this.password, empresa: this.idEmpresa || '' }, this.tipo.toLowerCase() === 'cl')
       .subscribe({
         next: res => {
           console.log('Login exitoso', res);
