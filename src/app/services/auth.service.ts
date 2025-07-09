@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
+import { LoginResponse } from '../interfaces/register.interface';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -11,9 +12,9 @@ export class AuthService {
 
   login(credentials: { Login: string; Password: string ; empresa: string}, Cliente: boolean) {
     if(Cliente)
-      return this.http.post(`${this.baseUrlCliente}/Login`, credentials);
+      return this.http.post<LoginResponse>(`${this.baseUrlCliente}/Login`, credentials);
     else
-      return this.http.post(`${this.baseUrlUsuario}/Login`, credentials);
+      return this.http.post<LoginResponse>(`${this.baseUrlUsuario}/Login`, credentials);
   }
 
   register(user: { name: string; email: string; password: string }) {

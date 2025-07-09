@@ -56,7 +56,7 @@ export class SeleccionTipoUsuario {
     );
   }
 
-  public irALogin(item: Empresa):void {
+  public irALogin(item: any):void {
     const tipo = this.tipoSeleccionado === 'empresa' ? 'em' : 'cl';
     const id = item.id;
 

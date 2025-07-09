@@ -27,3 +27,14 @@ export interface EmpresasResponse {
   exito: boolean;
   datos: Empresa[]
 }
+
+export interface LoginResponse {
+  exito: boolean;
+  mensaje: string | null;
+  token: string;
+  datos: {
+    usuario: any;
+    empresa: any;
+    funcionalidad: string;
+  };
+}
