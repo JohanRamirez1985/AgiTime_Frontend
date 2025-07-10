@@ -22,10 +22,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/seleccion-tipo-usuario/seleccion-tipo-usuario').then(m => m.SeleccionTipoUsuario)
   },
-//   {
-//     path: 'dashboard',
-//     canActivate: [AuthGuard],
-//     loadComponent: () =>
-//       import('./components/dashboard/dashboard').then(m => m.DashboardComponent)
-//   }
+  {
+    path: 'admin',
+    loadChildren: () =>
+      import('./components/dashboard/dashboard.routes').then(m => m.dashboardRoutes)
+  },
+  {
+    path: '**',
+    redirectTo: 'login'
+  }
 ];

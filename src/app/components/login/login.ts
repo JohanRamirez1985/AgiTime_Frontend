@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ErrorMessageComponent } from '../../shared/error-message/error-message.component';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { LoginResponse } from '../../interfaces/register.interface';
 
 @Component({
@@ -27,7 +27,8 @@ export class Login {
 
 
   constructor(private authService: AuthService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
       this.idEmpresa = this.route.snapshot.queryParamMap.get('em');
       this.tipo = this.route.snapshot.queryParamMap.get('tipo') || '';
@@ -49,6 +50,8 @@ export class Login {
         localStorage.setItem('usuario', JSON.stringify(res.datos.usuario));
         localStorage.setItem('empresa', JSON.stringify(res.datos.empresa));
         localStorage.setItem('token', res.token);
+
+        this.router.navigate(['/admin/dashboard']);
 
       },
       error: err => {
