@@ -38,3 +38,28 @@ export interface LoginResponse {
     funcionalidad: string;
   };
 }
+
+export interface UserResponse {
+  exito: boolean;
+  datos: Usuario[];
+}
+
+
+export interface Usuario {
+  id: number;
+  nombre: string;
+  tipoDocumento: number;
+  documento: string;
+  correo: string;
+  login: string;
+  password: string;
+  telefono: string;
+  genero: number;
+  fechaNacimiento: string;
+  estado: string;
+  fechaCreacion: string;
+  sede: number;
+  rol: string;
+  // agrega más campos si los necesitas
+}
+

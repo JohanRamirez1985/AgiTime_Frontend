@@ -3,6 +3,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-toolbar',
@@ -15,8 +16,10 @@ export class Toolbar {
   
   @Output() toggleSidebar = new EventEmitter<void>();
 
+  constructor(private router: Router) {}
+
   cerrarSesion() {
     localStorage.clear();
-    location.reload(); // o redirige a login
+    this.router.navigate(['/']); // o redirige a login
   }
 }

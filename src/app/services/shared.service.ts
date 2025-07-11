@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Injectable } from "@angular/core";
-import { EmpresasResponse, GeneroResponse, TipoDocumentoResponse } from "../interfaces/register.interface";
+import { EmpresasResponse, GeneroResponse, TipoDocumentoResponse, UserResponse } from "../interfaces/shared.interface";
 
 
 @Injectable({ providedIn: 'root' })
@@ -25,6 +25,12 @@ export class SharedService {
 
     obtenerEmpresasApp() {
         return this.http.get<EmpresasResponse>(`${this.baseUrlUsuario}/empresas`)
+    }
+
+    obtenerUsuarios(emp: number) {
+        return this.http.get<UserResponse>(`${this.baseUrlUsuario}/usuarios`, {
+        params: { emp: emp.toString() }
+        });  
     }
 
 }

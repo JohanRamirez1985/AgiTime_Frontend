@@ -1,0 +1,74 @@
+<mat-card>
+
+  <!-- Encabezado: botón crear -->
+  <div class="encabezado-card">
+    <h2>Gestión de usuarios</h2>
+    <button mat-raised-button color="accent" [routerLink]="['/admin/usuarios/crear']">
+      <mat-icon>person_add</mat-icon> Crear usuario
+    </button>
+  </div>
+
+  <!-- Formulario de filtros -->
+  <form class="filtros" (ngSubmit)="consultarUsuarios()">
+    <mat-form-field appearance="outline">
+      <mat-label>Buscar</mat-label>
+      <input matInput [(ngModel)]="filtro" name="filtro" placeholder="Nombre o correo" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Rol</mat-label>
+      <mat-select [(ngModel)]="rolSeleccionado" name="rolSeleccionado">
+        <mat-option value="">Todos</mat-option>
+        <mat-option value="Administrador">Administrador</mat-option>
+        <mat-option value="Cliente">Cliente</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Desde</mat-label>
+      <input matInput [matDatepicker]="picker1" [(ngModel)]="fechaInicio" name="fechaInicio" />
+      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+      <mat-datepicker #picker1></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Hasta</mat-label>
+      <input matInput [matDatepicker]="picker2" [(ngModel)]="fechaFin" name="fechaFin" />
+      <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+      <mat-datepicker #picker2></mat-datepicker>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit">
+      <mat-icon>search</mat-icon> Consultar
+    </button>
+  </form>
+
+  <!-- Loading spinner -->
+  <div class="spinner-container" *ngIf="loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Tabla de resultados -->
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z2" *ngIf="!loading">
+
+    <ng-container matColumnDef="nombre">
+      <th mat-header-cell *matHeaderCellDef> Nombre </th>
+      <td mat-cell *matCellDef="let user"> {{ user.nombre }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="correo">
+      <th mat-header-cell *matHeaderCellDef> Correo </th>
+      <td mat-cell *matCellDef="let user"> {{ user.correo }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="rol">
+      <th mat-header-cell *matHeaderCellDef> Rol </th>
+      <td mat-cell *matCellDef="let user"> {{ user.rol || 'Sin rol' }} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['nombre', 'correo', 'rol']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['nombre', 'correo', 'rol']"></tr>
+  </table>
+
+  <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" (page)="onPageChange($event)"></mat-paginator>
+</mat-card>

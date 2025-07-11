@@ -5,7 +5,7 @@ import { importProvidersFrom } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 
 import { App } from './app/app';
-import { routes } from './app/routes';
+import { routes } from './app/app.routes';
 
 bootstrapApplication(App, {
   providers: [

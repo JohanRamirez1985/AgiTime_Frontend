@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ErrorMessageComponent } from '../../shared/error-message/error-message.component';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { LoginResponse } from '../../interfaces/register.interface';
+import { LoginResponse } from '../../interfaces/shared.interface';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -64,6 +64,11 @@ export class Login {
           localStorage.setItem('usuario', JSON.stringify(res.datos.usuario));
           localStorage.setItem('empresa', JSON.stringify(res.datos.empresa));
           localStorage.setItem('token', res.token);
+          localStorage.setItem('infoEmp', JSON.stringify({
+                                                          idEmpresa: this.idEmpresa,
+                                                          tipo: this.tipo
+                                                        }));
+
           this.router.navigate(['/admin/dashboard']);
         }else {
           this.apiErrorMessage = res.mensaje || '';

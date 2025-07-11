@@ -1,0 +1,89 @@
+<mat-card class="form-container">
+  <h2><mat-icon>person_add</mat-icon> Registro de Usuario</h2>
+
+  <form (ngSubmit)="registrarUsuario()" class="form-grid">
+
+    <!-- Nombre -->
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre completo</mat-label>
+      <input matInput [(ngModel)]="usuario.nombre" name="nombre" required>
+    </mat-form-field>
+
+    <!-- Correo -->
+    <mat-form-field appearance="outline">
+      <mat-label>Correo</mat-label>
+      <input matInput type="email" [(ngModel)]="usuario.correo" name="correo" required>
+    </mat-form-field>
+
+    <!-- Login -->
+    <mat-form-field appearance="outline">
+      <mat-label>Login</mat-label>
+      <input matInput [(ngModel)]="usuario.login" name="login" required>
+    </mat-form-field>
+
+    <!-- Contraseña -->
+    <mat-form-field appearance="outline">
+      <mat-label>Contraseña</mat-label>
+      <input matInput type="password" [(ngModel)]="usuario.password" name="password" required>
+    </mat-form-field>
+
+    <!-- Teléfono -->
+    <mat-form-field appearance="outline">
+      <mat-label>Teléfono</mat-label>
+      <input matInput type="tel" [(ngModel)]="usuario.telefono" name="telefono">
+    </mat-form-field>
+
+    <!-- Documento -->
+    <mat-form-field appearance="outline">
+      <mat-label>Número de documento</mat-label>
+      <input matInput [(ngModel)]="usuario.documento" name="documento">
+    </mat-form-field>
+
+    <!-- Tipo de Documento -->
+    <mat-form-field appearance="outline">
+      <mat-label>Tipo de documento</mat-label>
+      <mat-select [(ngModel)]="usuario.tipoDocumento" name="tipoDocumento">
+        <mat-option *ngFor="let tipo of tiposDocumento" [value]="tipo">{{ tipo }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Fecha Nacimiento -->
+    <mat-form-field appearance="outline">
+      <mat-label>Fecha de nacimiento</mat-label>
+      <input matInput [matDatepicker]="picker" [(ngModel)]="usuario.fechaNacimiento" name="fechaNacimiento">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- Género -->
+    <mat-form-field appearance="outline">
+      <mat-label>Género</mat-label>
+      <mat-select [(ngModel)]="usuario.genero" name="genero">
+        <mat-option *ngFor="let genero of generos" [value]="genero">{{ genero }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Sede -->
+    <mat-form-field appearance="outline">
+      <mat-label>Sede</mat-label>
+      <mat-select [(ngModel)]="usuario.sede" name="sede">
+        <mat-option *ngFor="let sede of sedes" [value]="sede">{{ sede }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Rol -->
+    <mat-form-field appearance="outline">
+      <mat-label>Rol</mat-label>
+      <mat-select [(ngModel)]="usuario.rol" name="rol">
+        <mat-option *ngFor="let rol of roles" [value]="rol">{{ rol }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Botón -->
+    <div class="boton-container">
+      <button mat-raised-button color="primary" type="submit">
+        <mat-icon>save</mat-icon> Guardar
+      </button>
+    </div>
+  </form>
+</mat-card>

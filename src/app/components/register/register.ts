@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { SharedService } from '../../services/shared.service';
-import { TipoDocumento } from '../../interfaces/register.interface'
+import { TipoDocumento } from '../../interfaces/shared.interface'
 
 @Component({
   selector: 'app-register',
