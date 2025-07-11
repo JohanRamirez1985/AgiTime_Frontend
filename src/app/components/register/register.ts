@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { SharedService } from '../../services/shared.service';
 import { TipoDocumento } from '../../interfaces/shared.interface'
+import { obtenerTiposDocumentos } from '../../shared/libs/request-generales';
 
 @Component({
   selector: 'app-register',
@@ -44,33 +45,8 @@ export class Register {
     if (this.tipo !== 'cl') {
       this.router.navigate(['/']); // redirige al inicio
     }
-
-    this.obtenerTipos();
-    this.obtenerGeneros();
-  }
-
-  private obtenerTipos():void {
-    this.sharedService.obtenerTiposDocumentos(Number(this.idEmpresa))
-    .subscribe({
-      next: res => {
-       this.tipoDocumentos = res.datos;
-      },
-      error: err => {
-        
-      }
-    })
-  }
-
-  private obtenerGeneros():void {
-    this.sharedService.obtenerGenerosUsuarios(Number(this.idEmpresa))
-    .subscribe({
-      next: res => {
-        this.listaGeneros = res.datos;
-      },
-      error: err => {
-
-      }
-    })
+    // obtenerTiposDocumentos(this);
+    // obtenerGeneros(this);
   }
 
   public registrar():void {

@@ -9,42 +9,18 @@
       <input matInput [(ngModel)]="usuario.nombre" name="nombre" required>
     </mat-form-field>
 
-    <!-- Correo -->
+    <!-- Tipo de Documento -->
     <mat-form-field appearance="outline">
-      <mat-label>Correo</mat-label>
-      <input matInput type="email" [(ngModel)]="usuario.correo" name="correo" required>
-    </mat-form-field>
-
-    <!-- Login -->
-    <mat-form-field appearance="outline">
-      <mat-label>Login</mat-label>
-      <input matInput [(ngModel)]="usuario.login" name="login" required>
-    </mat-form-field>
-
-    <!-- Contraseña -->
-    <mat-form-field appearance="outline">
-      <mat-label>Contraseña</mat-label>
-      <input matInput type="password" [(ngModel)]="usuario.password" name="password" required>
-    </mat-form-field>
-
-    <!-- Teléfono -->
-    <mat-form-field appearance="outline">
-      <mat-label>Teléfono</mat-label>
-      <input matInput type="tel" [(ngModel)]="usuario.telefono" name="telefono">
+      <mat-label>Tipo de documento</mat-label>
+      <mat-select [(ngModel)]="usuario.tipoDocumento" name="tipoDocumento">
+        <mat-option *ngFor="let tipo of tipoDocumentos" [value]="tipo.id">{{ tipo.nombre }}</mat-option>
+      </mat-select>
     </mat-form-field>
 
     <!-- Documento -->
     <mat-form-field appearance="outline">
       <mat-label>Número de documento</mat-label>
       <input matInput [(ngModel)]="usuario.documento" name="documento">
-    </mat-form-field>
-
-    <!-- Tipo de Documento -->
-    <mat-form-field appearance="outline">
-      <mat-label>Tipo de documento</mat-label>
-      <mat-select [(ngModel)]="usuario.tipoDocumento" name="tipoDocumento">
-        <mat-option *ngFor="let tipo of tiposDocumento" [value]="tipo">{{ tipo }}</mat-option>
-      </mat-select>
     </mat-form-field>
 
     <!-- Fecha Nacimiento -->
@@ -55,19 +31,37 @@
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
+    <!-- Teléfono -->
+    <mat-form-field appearance="outline">
+      <mat-label>Teléfono</mat-label>
+      <input matInput type="tel" [(ngModel)]="usuario.telefono" name="telefono">
+    </mat-form-field>
+    
     <!-- Género -->
     <mat-form-field appearance="outline">
       <mat-label>Género</mat-label>
       <mat-select [(ngModel)]="usuario.genero" name="genero">
-        <mat-option *ngFor="let genero of generos" [value]="genero">{{ genero }}</mat-option>
+        <mat-option *ngFor="let genero of listaGeneros" [value]="genero.id">{{ genero.nombre }}</mat-option>
       </mat-select>
     </mat-form-field>
+
+    <!-- Correo -->
+    <mat-form-field appearance="outline">
+      <mat-label>Correo</mat-label>
+      <input matInput type="email" [(ngModel)]="usuario.correo" name="correo" autocomplete="off" required>
+    </mat-form-field>
+
+    <!-- Contraseña -->
+    <mat-form-field appearance="outline">
+      <mat-label>Contraseña</mat-label>
+      <input matInput type="password" [(ngModel)]="usuario.password" name="password" autocomplete="off" required>
+    </mat-form-field> 
 
     <!-- Sede -->
     <mat-form-field appearance="outline">
       <mat-label>Sede</mat-label>
       <mat-select [(ngModel)]="usuario.sede" name="sede">
-        <mat-option *ngFor="let sede of sedes" [value]="sede">{{ sede }}</mat-option>
+        <mat-option *ngFor="let sede of listaSedes" [value]="sede.id">{{ sede.nombre }}</mat-option>
       </mat-select>
     </mat-form-field>
 
@@ -75,7 +69,7 @@
     <mat-form-field appearance="outline">
       <mat-label>Rol</mat-label>
       <mat-select [(ngModel)]="usuario.rol" name="rol">
-        <mat-option *ngFor="let rol of roles" [value]="rol">{{ rol }}</mat-option>
+        <mat-option *ngFor="let rol of listaRoles" [value]="rol.id">{{ rol.nombre }}</mat-option>
       </mat-select>
     </mat-form-field>
 
@@ -83,6 +77,9 @@
     <div class="boton-container">
       <button mat-raised-button color="primary" type="submit">
         <mat-icon>save</mat-icon> Guardar
+      </button>
+      <button mat-raised-button color="warn" type="button" (click)="cancelar()">
+        <mat-icon>cancel</mat-icon> Cancelar
       </button>
     </div>
   </form>

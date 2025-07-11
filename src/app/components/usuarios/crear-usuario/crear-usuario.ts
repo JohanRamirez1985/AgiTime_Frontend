@@ -9,7 +9,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { Router, RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
+import { SharedService } from '../../../services/shared.service';
+import { obtenerGeneros, obtenerRoles, obtenerSedes, obtenerTiposDocumentos } from '../../../shared/libs/request-generales';
+import { TipoDocumento, UsuarioRegistro } from '../../../interfaces/shared.interface';
+import { UserService } from '../../../services/user.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-crear-usuario',
@@ -34,7 +39,6 @@ export class CrearUsuario {
   usuario = {
     nombre: '',
     correo: '',
-    login: '',
     password: '',
     telefono: '',
     fechaNacimiento: '',
@@ -47,15 +51,93 @@ export class CrearUsuario {
     rol: ''
   };
 
-  generos = ['Masculino', 'Femenino', 'Otro'];
-  tiposDocumento = ['CC', 'TI', 'CE'];
+  tipoDocumentos: TipoDocumento[] = [];
+  listaGeneros: TipoDocumento[] = [];
+  listaRoles: TipoDocumento[] = [];
+  listaSedes: TipoDocumento[] = [];
+  idEmpresa: string | null = null;
+
   sedes = ['Bogotá', 'Medellín', 'Cali'];
   roles = ['Administrador', 'Cliente'];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router,
+    private sharedServices : SharedService,
+    private userService : UserService,
+    private snackBar: MatSnackBar
+  ) {
+    
+  }
+
+  ngOnInit() {
+    const info = JSON.parse(localStorage.getItem('infoEmp') || '{}');
+    const id = info?.idEmpresa;
+    this.idEmpresa = id;
+    if (this.idEmpresa) {
+      obtenerTiposDocumentos(this.sharedServices, this.idEmpresa, datos => {
+        this.tipoDocumentos = datos;
+      });
+      obtenerGeneros(this.sharedServices, this.idEmpresa, datos => {
+        this.listaGeneros = datos;
+      });
+      obtenerRoles(this.sharedServices, this.idEmpresa, datos => {
+        this.listaRoles = datos;
+      });
+      obtenerSedes(this.sharedServices, this.idEmpresa, datos => {
+        this.listaSedes = datos;
+      });
+    }
+  }
+
+  public cancelar():void {
+    this.router.navigate(['/admin/usuarios']);
+  }
 
   registrarUsuario() {
-    console.log(this.usuario);
-    // Aquí puedes llamar al servicio que envía el JSON al backend
+    const request = this.createJson();
+    this.userService.crearUsuario(request).subscribe({
+      next: res => {
+        if (res.exito) {
+          this.snackBar.open(res.mensaje || 'Usuario creado exitosamente', 'Cerrar', {
+            duration: 3000,
+            panelClass: ['snackbar-success']
+          });
+
+          setTimeout(() => {
+            this.router.navigate(['/admin/usuarios']);
+          }, 3000);
+        } else {
+          this.snackBar.open(res.mensaje || 'Ocurrió un error al crear el usuario', 'Cerrar', {
+            duration: 4000,
+            panelClass: ['snackbar-error']
+          });
+        }
+      },
+      error: err => {
+        this.snackBar.open('Error de conexión con el servidor', 'Cerrar', {
+          duration: 4000,
+          panelClass: ['snackbar-error']
+        });
+        console.error(err);
+      }
+    });
+  }
+
+  createJson():UsuarioRegistro {
+    
+    const json: UsuarioRegistro = {
+      nombre: this.usuario.nombre,
+      correo: this.usuario.correo,
+      password: this.usuario.password,
+      telefono: this.usuario.telefono,
+      fechaNacimiento: this.usuario.fechaNacimiento,
+      genero: Number(this.usuario.genero),
+      tipoDocumento: Number(this.usuario.tipoDocumento),
+      sede: Number(this.usuario.sede),
+      documento: this.usuario.documento,
+      empresa: Number(this.idEmpresa),
+      rol: Number(this.usuario.rol)
+    };
+
+    return json
   }
 }

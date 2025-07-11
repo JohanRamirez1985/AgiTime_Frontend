@@ -11,13 +11,13 @@ export class SharedService {
 
     constructor(private http: HttpClient) {}
 
-    obtenerTiposDocumentos(emp: number) {
+    obtenerTiposDocumentos(emp: string) {
         return this.http.get<TipoDocumentoResponse>(`${this.baseUrlUsuario}/tipodocumento`, {
         params: { emp: emp.toString() }
         });
     }
 
-    obtenerGenerosUsuarios(emp: number) {
+    obtenerGenerosUsuarios(emp: string) {
         return this.http.get<GeneroResponse>(`${this.baseUrlUsuario}/genero`, {
         params: { emp: emp.toString() }
         });
@@ -31,6 +31,18 @@ export class SharedService {
         return this.http.get<UserResponse>(`${this.baseUrlUsuario}/usuarios`, {
         params: { emp: emp.toString() }
         });  
+    }
+        
+    obtenerRolesUsuarios(emp: string) {
+        return this.http.get<GeneroResponse>(`${this.baseUrlUsuario}/rol`, {
+        params: { emp: emp.toString() }
+        });
+    }
+        
+    obtenerSedesUsuarios(emp: string) {
+        return this.http.get<GeneroResponse>(`${this.baseUrlUsuario}/sede`, {
+        params: { emp: emp.toString() }
+        });
     }
 
 }
