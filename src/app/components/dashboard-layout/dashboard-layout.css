@@ -1,0 +1,21 @@
+.dashboard-container {
+  height: 100vh;
+  background-color: #f4f6f9;
+}
+
+.dashboard-sidenav {
+  width: 240px;
+  background-color: #ffffff;
+}
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.page-container {
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+}

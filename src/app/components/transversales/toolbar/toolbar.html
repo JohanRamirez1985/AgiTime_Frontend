@@ -1,0 +1,14 @@
+<mat-toolbar color="primary" class="toolbar">
+  <button mat-icon-button (click)="toggleSidebar.emit()" class="menu-button">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <span class="toolbar-title">AgiTime</span>
+
+  <span class="spacer"></span>
+
+  <button mat-button color="accent" (click)="cerrarSesion()">
+    <mat-icon>logout</mat-icon>
+    Cerrar sesión
+  </button>
+</mat-toolbar>

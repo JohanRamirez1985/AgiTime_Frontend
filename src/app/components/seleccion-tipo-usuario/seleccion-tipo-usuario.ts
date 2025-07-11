@@ -4,11 +4,24 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SharedService } from '../../services/shared.service';
 import { Empresa } from '../../interfaces/register.interface';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatListModule } from '@angular/material/list';
 
 @Component({
   selector: 'app-seleccion-tipo-usuario',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+    imports: [
+    CommonModule,
+    FormsModule,
+    MatCardModule,
+    MatButtonModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatListModule
+  ],
   templateUrl: './seleccion-tipo-usuario.html',
   styleUrls: ['./seleccion-tipo-usuario.css']
 })

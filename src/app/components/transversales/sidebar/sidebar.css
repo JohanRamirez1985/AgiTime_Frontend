@@ -1,0 +1,36 @@
+.sidenav-container {
+  height: 100vh;
+}
+
+.sidenav {
+  width: 240px;
+  background-color: #fff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.toolbar-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+}
+
+mat-nav-list a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #333;
+  font-weight: 500;
+  padding: 12px 16px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+}
+
+mat-nav-list a:hover,
+mat-nav-list a.active {
+  background-color: #e3eafc;
+}
+
+mat-icon {
+  font-size: 20px;
+}

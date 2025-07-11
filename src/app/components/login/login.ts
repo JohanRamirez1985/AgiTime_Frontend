@@ -5,11 +5,26 @@ import { AuthService } from '../../services/auth.service';
 import { ErrorMessageComponent } from '../../shared/error-message/error-message.component';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { LoginResponse } from '../../interfaces/register.interface';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, ErrorMessageComponent, RouterModule],
+   imports: [
+    CommonModule,
+    FormsModule,
+    ErrorMessageComponent,
+    RouterModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatCardModule,
+    MatProgressSpinnerModule
+  ],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
@@ -45,13 +60,15 @@ export class Login {
       next: (res: LoginResponse) => {
         this.loading = false;
         this.btnLogin = true;
-
-        // ✅ Guardar datos correctamente
-        localStorage.setItem('usuario', JSON.stringify(res.datos.usuario));
-        localStorage.setItem('empresa', JSON.stringify(res.datos.empresa));
-        localStorage.setItem('token', res.token);
-
-        this.router.navigate(['/admin/dashboard']);
+        if(res.exito){
+          localStorage.setItem('usuario', JSON.stringify(res.datos.usuario));
+          localStorage.setItem('empresa', JSON.stringify(res.datos.empresa));
+          localStorage.setItem('token', res.token);
+          this.router.navigate(['/admin/dashboard']);
+        }else {
+          this.apiErrorMessage = res.mensaje || '';
+          this.showModal = true;
+        } 
 
       },
       error: err => {

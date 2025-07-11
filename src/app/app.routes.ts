@@ -22,11 +22,27 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/seleccion-tipo-usuario/seleccion-tipo-usuario').then(m => m.SeleccionTipoUsuario)
   },
+
+  // ✅ Ruta protegida solo para administradores
   {
     path: 'admin',
-    loadChildren: () =>
-      import('./components/dashboard/dashboard.routes').then(m => m.dashboardRoutes)
+    loadComponent: () =>
+      import('./components/dashboard-layout/dashboard-layout').then(m => m.DashboardLayout),
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./components/dashboard/dashboard').then(m => m.Dashboard)
+      }
+    ]
   },
+
   {
     path: '**',
     redirectTo: 'login'

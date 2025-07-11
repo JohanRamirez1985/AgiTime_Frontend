@@ -1,11 +1,16 @@
 <div class="login-wrapper">
-  <div class="login-card">
+  <mat-card class="login-card">
+
     <!-- Paso 1: Selección de tipo -->
     <ng-container *ngIf="!tipoSeleccionado">
       <h2>Selecciona tu tipo de usuario</h2>
       <div class="button-group">
-        <button (click)="seleccionarTipo('empresa')">Soy una Empresa</button>
-        <button (click)="seleccionarTipo('cliente')">Soy un Cliente</button>
+        <button mat-raised-button color="primary" (click)="seleccionarTipo('empresa')">
+          Soy una Empresa
+        </button>
+        <button mat-raised-button color="accent" (click)="seleccionarTipo('cliente')">
+          Soy un Cliente
+        </button>
       </div>
     </ng-container>
 
@@ -13,21 +18,22 @@
     <ng-container *ngIf="tipoSeleccionado">
       <h2>Selecciona {{ tipoSeleccionado === 'empresa' ? 'una empresa' : 'un cliente' }}</h2>
 
-      <input
-        type="text"
-        [(ngModel)]="filtro"
-        placeholder="Buscar por nombre..."
-        class="buscador"
-      />
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Buscar por nombre...</mat-label>
+        <input matInput [(ngModel)]="filtro" />
+      </mat-form-field>
 
-      <ul class="listado">
-        <li *ngFor="let item of listadoFiltrado()" (click)="irALogin(item)">
+      <mat-list class="listado">
+        <mat-list-item *ngFor="let item of listadoFiltrado()" (click)="irALogin(item)">
           {{ item.nombre }}
-        </li>
-        <li *ngIf="listadoFiltrado().length === 0">No se encontraron resultados.</li>
-      </ul>
+        </mat-list-item>
+        <mat-list-item *ngIf="listadoFiltrado().length === 0">
+          No se encontraron resultados.
+        </mat-list-item>
+      </mat-list>
 
-      <button class="btn-volver" (click)="cancelar()">Volver</button>
+      <button mat-stroked-button color="warn" (click)="cancelar()">Volver</button>
     </ng-container>
-  </div>
+
+  </mat-card>
 </div>
