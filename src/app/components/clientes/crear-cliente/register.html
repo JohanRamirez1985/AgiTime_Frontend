@@ -1,0 +1,118 @@
+<ng-container *ngIf="tipo === 'cl'; else accesoDenegado">
+  <mat-card class="form-container">
+    <h2><mat-icon>person_add</mat-icon> Crear cuenta</h2>
+
+    <form (ngSubmit)="registrar()" class="form-grid" #registerForm="ngForm">
+
+      <!-- Nombre -->
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre completo</mat-label>
+        <input matInput [(ngModel)]="nombre" name="name" required minlength="3" #nameInput="ngModel">
+        <mat-error *ngIf="nameInput.invalid && nameInput.touched">
+          <span *ngIf="nameInput.errors?.['required']">El nombre es obligatorio.</span>
+          <span *ngIf="nameInput.errors?.['minlength']">Debe tener al menos 3 caracteres.</span>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Tipo de Documento -->
+      <mat-form-field appearance="outline">
+        <mat-label>Tipo de documento</mat-label>
+        <mat-select [(ngModel)]="tipoDocumento" name="tipoDocumento" required #tipoDocumentoInput="ngModel">
+          <mat-option value="" disabled>Seleccione una opción</mat-option>
+          <mat-option *ngFor="let tipo of tipoDocumentos" [value]="tipo.id">{{ tipo.nombre }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="tipoDocumentoInput.invalid && tipoDocumentoInput.touched">
+          Debe seleccionar un tipo de documento.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Documento -->
+      <mat-form-field appearance="outline">
+        <mat-label>No. Documento</mat-label>
+        <input matInput [(ngModel)]="idDocumento" name="idDocumento" required minlength="5" #idDocumentoInput="ngModel">
+        <mat-error *ngIf="idDocumentoInput.invalid && idDocumentoInput.touched">
+          <span *ngIf="idDocumentoInput.errors?.['required']">El número de documento es obligatorio.</span>
+          <span *ngIf="idDocumentoInput.errors?.['minlength']">Debe tener al menos 5 caracteres.</span>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Género -->
+      <mat-form-field appearance="outline">
+        <mat-label>Género</mat-label>
+        <mat-select [(ngModel)]="genero" name="tipoGenero" required #tipoGeneroInput="ngModel">
+          <mat-option value="" disabled>Seleccione una opción</mat-option>
+          <mat-option *ngFor="let tipo of listaGeneros" [value]="tipo.id">{{ tipo.nombre }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="tipoGeneroInput.invalid && tipoGeneroInput.touched">
+          Debe seleccionar un género.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Fecha de nacimiento -->
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha de nacimiento</mat-label>
+        <input matInput [matDatepicker]="picker" [(ngModel)]="fechaNacimiento" name="fechaNacimiento" required #fechaNacimientoInput="ngModel">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="fechaNacimientoInput.invalid && fechaNacimientoInput.touched">
+          La fecha de nacimiento es obligatoria.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Teléfono -->
+      <mat-form-field appearance="outline">
+        <mat-label>Teléfono</mat-label>
+        <input matInput type="tel" [(ngModel)]="cellphone" name="cell" required minlength="3" #cellInput="ngModel">
+        <mat-error *ngIf="cellInput.invalid && cellInput.touched">
+          <span *ngIf="cellInput.errors?.['required']">El teléfono es obligatorio.</span>
+          <span *ngIf="cellInput.errors?.['minlength']">Debe tener al menos 3 caracteres.</span>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Correo -->
+      <mat-form-field appearance="outline">
+        <mat-label>Correo electrónico</mat-label>
+        <input matInput type="email" [(ngModel)]="email" name="email" required email #emailInput="ngModel">
+        <mat-error *ngIf="emailInput.invalid && emailInput.touched">
+          <span *ngIf="emailInput.errors?.['required']">El correo es obligatorio.</span>
+          <span *ngIf="emailInput.errors?.['email']">Debe ser un correo válido.</span>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Contraseña -->
+      <mat-form-field appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" [(ngModel)]="password" name="password" required minlength="6" #passwordInput="ngModel">
+        <mat-error *ngIf="passwordInput.invalid && passwordInput.touched">
+          <span *ngIf="passwordInput.errors?.['required']">La contraseña es obligatoria.</span>
+          <span *ngIf="passwordInput.errors?.['minlength']">Debe tener al menos 6 caracteres.</span>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Confirmar Contraseña -->
+      <mat-form-field appearance="outline">
+        <mat-label>Confirmar contraseña</mat-label>
+        <input matInput type="password" [(ngModel)]="confirmPassword" name="rePassword" required minlength="6" #rePasswordInput="ngModel">
+        <mat-error *ngIf="rePasswordInput.invalid && rePasswordInput.touched">
+          <span *ngIf="rePasswordInput.errors?.['required']">El campo es obligatorio.</span>
+          <span *ngIf="rePasswordInput.errors?.['minlength']">Debe tener al menos 6 caracteres.</span>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Botones -->
+      <div class="boton-container">
+        <button mat-raised-button color="primary" type="submit" [disabled]="registerForm.invalid">
+          <mat-icon>person_add</mat-icon> Registrar
+        </button>
+        <button mat-raised-button color="warn" type="button" [routerLink]="['/login']" [queryParams]="{ em: idEmpresa, tipo: 'cl' }">
+          <mat-icon>cancel</mat-icon> Cancelar
+        </button>
+      </div>
+
+    </form>
+  </mat-card>
+</ng-container>
+
+<ng-template #accesoDenegado>
+  <p>No tienes acceso a esta sección.</p>
+</ng-template>

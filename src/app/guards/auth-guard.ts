@@ -1,14 +1,18 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 
-export const AuthGuard: CanActivateFn = () => {
-  const router = inject(Router);
-  const token = localStorage.getItem('token');
-  const rol = JSON.parse(localStorage.getItem('usuario') || '{}').nombreRol;
+export function AuthGuard(rolRequerido: string): CanActivateFn {
+  return () => {
+    const router = inject(Router);
+    const token = localStorage.getItem('token');
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const rol = usuario.nombreRol;
 
+    if (token && rol === rolRequerido) {
+      return true;
+    }
 
-  if (token && rol === 'admin') return true;
-
-  router.navigate(['/']);
-  return false;
-};
+    router.navigate(['/']);
+    return false;
+  };
+}

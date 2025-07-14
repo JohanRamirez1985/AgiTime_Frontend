@@ -15,6 +15,7 @@ import { obtenerGeneros, obtenerRoles, obtenerSedes, obtenerTiposDocumentos } fr
 import { TipoDocumento, UsuarioRegistro } from '../../../interfaces/shared.interface';
 import { UserService } from '../../../services/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-crear-usuario',
@@ -97,27 +98,29 @@ export class CrearUsuario {
     this.userService.crearUsuario(request).subscribe({
       next: res => {
         if (res.exito) {
-          this.snackBar.open(res.mensaje || 'Usuario creado exitosamente', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['snackbar-success']
-          });
-
-          setTimeout(() => {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Usuario creado!',
+            text: res.mensaje || 'Usuario creado exitosamente',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Ir al listado'
+          }).then(() => {
             this.router.navigate(['/admin/usuarios']);
-          }, 3000);
+          });
         } else {
-          this.snackBar.open(res.mensaje || 'Ocurrió un error al crear el usuario', 'Cerrar', {
-            duration: 4000,
-            panelClass: ['snackbar-error']
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: res.mensaje || 'Error al crear el usuario',
           });
         }
       },
       error: err => {
-        this.snackBar.open('Error de conexión con el servidor', 'Cerrar', {
-          duration: 4000,
-          panelClass: ['snackbar-error']
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de servidor',
+          text: 'No se pudo conectar con el backend',
         });
-        console.error(err);
       }
     });
   }

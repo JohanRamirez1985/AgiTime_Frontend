@@ -4,7 +4,7 @@ import { AuthGuard } from './guards/auth-guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'seleccionar',
     pathMatch: 'full'
   },
   {
@@ -15,7 +15,7 @@ export const routes: Routes = [
   {
     path: 'register',
     loadComponent: () =>
-      import('./components/register/register').then(m => m.Register)
+      import('./components/clientes/crear-cliente/register').then(m => m.Register)
   },
   {
     path: 'seleccionar',
@@ -28,7 +28,7 @@ export const routes: Routes = [
     path: 'admin',
     loadComponent: () =>
       import('./components/dashboard-layout/dashboard-layout').then(m => m.DashboardLayout),
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard('admin')],
     children: [
       {
         path: '',
@@ -43,7 +43,7 @@ export const routes: Routes = [
       {
         path: 'usuarios',
         loadComponent: () =>
-          import('./components/usuarios/usuarios').then(m => m.Usuarios)
+          import('./components/usuarios/gestionar-usuario/usuarios').then(m => m.Usuarios)
       },
       {
       path: 'usuarios/crear',
@@ -54,7 +54,15 @@ export const routes: Routes = [
   },
 
   {
+    path: 'cliente',
+    // canActivate: [AuthGuard('cliente')],
+    loadChildren: () =>
+      import('./components/clientes/cliente-routing').then(m => m.routes)
+  },
+
+
+  {
     path: '**',
-    redirectTo: 'login'
+    redirectTo: 'seleccionar'
   }
 ];

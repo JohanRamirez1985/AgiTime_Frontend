@@ -1,0 +1,33 @@
+<div class="dashboard-wrapper">
+  <mat-card class="dashboard-card mat-elevation-z8">
+    <h2>👋 Bienvenido, {{ clienteNombre }}</h2>
+
+    <mat-divider></mat-divider>
+
+    <section class="empresa-info">
+      <h3>🏢 {{ empresa.nombre }}</h3>
+      <p>📍 {{ empresa.direccion }}</p>
+      <p>📞 {{ empresa.telefono }}</p>
+    </section>
+
+    <img src="assets/images/imagen-barberia.jpg" alt="Imagen barbería" class="imagen-banner" />
+
+
+    <div class="acciones">
+      <button mat-raised-button color="primary" (click)="irAReservar()" class="full-width">
+        Reservar turno
+      </button>
+
+      <button mat-stroked-button color="accent" (click)="irAHistorial()" class="full-width">
+        Ver historial
+      </button>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="promo-section">
+      <h4>🎁 Promoción del día</h4>
+      <p>¡10% de descuento si reservas esta semana!</p>
+    </div>
+  </mat-card>
+</div>

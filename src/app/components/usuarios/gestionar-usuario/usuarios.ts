@@ -13,8 +13,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
 
-import { SharedService } from '../../services/shared.service';
-import { Usuario } from '../../interfaces/shared.interface';
+import { SharedService } from '../../../services/shared.service';
+import { Usuario } from '../../../interfaces/shared.interface';
 import { RouterModule } from '@angular/router';
 
 @Component({
