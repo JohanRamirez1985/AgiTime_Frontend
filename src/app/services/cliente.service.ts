@@ -9,11 +9,11 @@ import { environment } from "../../environments/environment";
 
 export class ClienteService {
 
-    private baseUrlUsuario = `${environment.apiBaseUrl}/Usuarios`;
+    private baseUrlUsuario = `${environment.apiBaseUrl}/Clientes`;
 
     constructor(private http: HttpClient) {}
 
     crearCliente(request: ClienteRegistro) {
-        return this.http.post<ClienteRegistroResponse>(`${this.baseUrlUsuario}/registrarUsuario`, request);
+        return this.http.post<ClienteRegistroResponse>(`${this.baseUrlUsuario}/registrarCliente`, request);
     }
 }

@@ -133,9 +133,10 @@ export class Register {
       password: this.password,
       tipoDocumento: parseInt(this.tipoDocumento),
       documento: this.idDocumento,
-      genero: parseInt(this.tipoGenero),
+      genero: parseInt(this.genero),
       fechaNacimiento: this.fechaNacimiento,
-      telefono: this.cellphone
+      telefono: this.cellphone,
+      empresa: Number(this.idEmpresa),
     };
 
     return json

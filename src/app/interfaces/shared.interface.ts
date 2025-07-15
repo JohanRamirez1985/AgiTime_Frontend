@@ -92,10 +92,8 @@ export interface ClienteRegistro {
   fechaNacimiento: string; // ISO string, e.g. "1998-07-11T14:56:23.637Z"
   genero: number;
   tipoDocumento: number;
-  // sede: number;
   documento: string;
-  // empresa: number;
-  // rol: number;
+  empresa: number;
 }
 
 
