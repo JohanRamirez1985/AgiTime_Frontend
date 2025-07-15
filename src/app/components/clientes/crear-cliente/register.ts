@@ -51,6 +51,7 @@ export class Register {
   tipo: string | null = null;
   tipoDocumentos: TipoDocumento[] = [];
   listaGeneros: TipoDocumento[] = [];
+  uniqueId = Math.floor(Math.random() * 100000);
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -105,7 +106,9 @@ export class Register {
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'Ir al login'
           }).then(() => {
-            this.router.navigate(['/login']);
+            this.router.navigate(['/login'], {
+              queryParams: { em: this.idEmpresa, tipo: this.tipo }
+            });
           });
         } else {
           Swal.fire({

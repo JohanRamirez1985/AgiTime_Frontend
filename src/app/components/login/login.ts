@@ -38,6 +38,8 @@ export class Login {
   loading = false;
   idEmpresa: string | null = null;
   tipo: string = ''
+  uniqueId = Math.floor(Math.random() * 100000);
+
 
 
 
@@ -68,8 +70,7 @@ export class Login {
                                                           idEmpresa: this.idEmpresa,
                                                           tipo: this.tipo
                                                         }));
-
-          this.router.navigate(['/admin/dashboard']);
+          this.redireccion();
         }else {
           this.apiErrorMessage = res.mensaje || '';
           this.showModal = true;
@@ -89,6 +90,14 @@ export class Login {
         this.showModal = true;
       }
     });
+  }
+
+  private redireccion(): void {
+    if(this.tipo === 'cl') {
+      this.router.navigate(['/cliente']);
+    }else {
+
+    }
   }
 
 

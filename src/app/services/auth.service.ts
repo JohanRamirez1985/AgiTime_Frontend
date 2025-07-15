@@ -6,7 +6,7 @@ import { LoginResponse } from '../interfaces/shared.interface';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private baseUrlUsuario = `${environment.apiBaseUrl}/Usuarios`;
-  private baseUrlCliente = `${environment.apiBaseUrl}/Cliente`;
+  private baseUrlCliente = `${environment.apiBaseUrl}/Clientes`;
   
   constructor(private http: HttpClient) {}
 
