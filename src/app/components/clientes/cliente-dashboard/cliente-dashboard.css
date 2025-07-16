@@ -8,6 +8,21 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 1rem;
   box-sizing: border-box;
+  position: relative; /* 👈 necesario para posicionar logout arriba a la derecha */
+}
+
+/* Botón cerrar sesión */
+.logout-top-right {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+}
+
+.logout-top-right button {
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 /* Tarjeta principal */
@@ -74,6 +89,15 @@
   color: #d35400;
 }
 
+/* Imagen */
+.imagen-banner {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  object-fit: cover;
+}
+
 /* Responsivo */
 @media (max-width: 600px) {
   .dashboard-card {
@@ -93,12 +117,5 @@
   .promo-section {
     font-size: 0.95rem;
   }
-}
 
-.imagen-banner {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  object-fit: cover;
 }

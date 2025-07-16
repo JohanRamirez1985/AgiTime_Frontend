@@ -1,0 +1,30 @@
+<!-- cliente-agendar.html -->
+<div class="agendar-wrapper">
+  <h2>📅 Agendar cita</h2>
+
+  <mat-form-field class="full-width" appearance="fill">
+    <mat-select placeholder="Selecciona un recurso" [(ngModel)]="recursoSeleccionado" (selectionChange)="onSeleccionRecurso()">
+      <mat-option *ngFor="let r of recursos" [value]="r.id">{{ r.nombre }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="full-width" appearance="fill" *ngIf="serviciosDisponibles.length > 0">
+    <mat-select placeholder="Selecciona un servicio" [(ngModel)]="servicioSeleccionado">
+      <mat-option *ngFor="let s of serviciosDisponibles" [value]="s.id">{{ s.nombre }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" (click)="cargarDisponibilidad()" class="full-width">
+    Ver disponibilidad
+  </button>
+
+  <div class="calendario-contenedor">
+    <mwl-calendar-month-view
+      [viewDate]="viewDate"
+      [events]="events"
+      (dayClicked)="onDayClick($event)">
+    </mwl-calendar-month-view>
+
+
+  </div>
+</div>

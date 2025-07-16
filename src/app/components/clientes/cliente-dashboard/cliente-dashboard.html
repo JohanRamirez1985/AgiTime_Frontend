@@ -1,5 +1,11 @@
 <div class="dashboard-wrapper">
   <mat-card class="dashboard-card mat-elevation-z8">
+      <!-- Botón cerrar sesión en la esquina superior derecha -->
+    <div class="logout-top-right">
+      <button mat-icon-button color="warn" (click)="cerrarSesion()" matTooltip="Cerrar sesión">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
     <h2>👋 Bienvenido, {{ clienteNombre }}</h2>
 
     <mat-divider></mat-divider>
@@ -10,8 +16,7 @@
       <p>📞 {{ empresa.telefono }}</p>
     </section>
 
-    <img src="assets/images/imagen-barberia.jpg" alt="Imagen barbería" class="imagen-banner" />
-
+    <img [src]="img" alt="Imagen barbería" class="imagen-banner" />
 
     <div class="acciones">
       <button mat-raised-button color="primary" (click)="irAReservar()" class="full-width">

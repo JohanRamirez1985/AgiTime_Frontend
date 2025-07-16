@@ -3,16 +3,20 @@ import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-cliente-dashboard',
   standalone: true,
   imports: [  CommonModule,
-  RouterModule,
-  MatCardModule,
-  MatButtonModule,
-  MatDividerModule],
+    MatTooltipModule,
+    MatIconModule ,
+    RouterModule,
+    MatCardModule,
+    MatButtonModule,
+    MatDividerModule],
   templateUrl: './cliente-dashboard.html',
   styleUrl: './cliente-dashboard.css'
 })
@@ -23,16 +27,32 @@ export class ClienteDashboard {
     direccion: 'Calle falsa 123',
     telefono : '12365841'
   };
-  clienteNombre: string = 'Julian David Garcia Paz';
+  clienteNombre: string = '';
+  img: string = '';
 
   constructor(private router: Router) {}
+  
 
   ngOnInit(): void {
     const empresaData = localStorage.getItem('empresa');
-    const clienteData = localStorage.getItem('cliente');
+    const clienteData = localStorage.getItem('cliente');   
+    const usuarioData = localStorage.getItem('usuario'); 
 
-    if (empresaData) this.empresa = JSON.parse(empresaData);
-    if (clienteData) this.clienteNombre = JSON.parse(clienteData).nombre;
+    if (usuarioData) this.clienteNombre = JSON.parse(usuarioData).nombre;
+
+    if (empresaData) {
+      this.empresa = JSON.parse(empresaData);
+      this.img = 'assets/img/' + this.empresa.logo;
+      this.empresa = {
+        nombre : this.empresa.nombre,
+        direccion: 'Calle falsa 123',
+        telefono : '12365841'
+      }
+    }
+
+    if (clienteData) {
+      this.clienteNombre = JSON.parse(clienteData).nombre;
+    }
   }
 
   irAReservar() {
@@ -42,5 +62,11 @@ export class ClienteDashboard {
   irAHistorial() {
     this.router.navigate(['/cliente/historial']);
   }
+
+  cerrarSesion() {
+    localStorage.clear();
+    this.router.navigate(['/seleccionar']);
+  }
+
 
 }

@@ -6,11 +6,11 @@ export const routes: Routes = [
     path: '',
     component: ClienteDashboard
   },
-//   {
-//     path: 'reservar',
-//     loadComponent: () =>
-//       import('./cliente-reservar/cliente-reservar').then(m => m.ClienteReservar)
-//   },
+  {
+    path: 'reservar',
+    loadComponent: () =>
+      import('./cliente-agendar/cliente-agendar').then(m => m.ClienteAgendar)
+  },
 //   {
 //     path: 'historial',
 //     loadComponent: () =>
