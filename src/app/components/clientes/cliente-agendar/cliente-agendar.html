@@ -1,30 +1,60 @@
-<!-- cliente-agendar.html -->
 <div class="agendar-wrapper">
   <h2>📅 Agendar cita</h2>
 
+  <!-- Selector de recurso -->
   <mat-form-field class="full-width" appearance="fill">
-    <mat-select placeholder="Selecciona un recurso" [(ngModel)]="recursoSeleccionado" (selectionChange)="onSeleccionRecurso()">
-      <mat-option *ngFor="let r of recursos" [value]="r.id">{{ r.nombre }}</mat-option>
+    <mat-label>Selecciona un recurso</mat-label>
+    <mat-select
+      [(ngModel)]="recursoSeleccionado"
+      (openedChange)="abrirSelect($event)"
+      panelClass="select-panel-con-buscador"
+    >
+      <!-- Campo de búsqueda -->
+      <ng-template matSelectHeader>
+        <mat-form-field appearance="outline" class="search-input-wrapper">
+          <mat-label>Buscar...</mat-label>
+          <input
+            matInput
+            [(ngModel)]="filtroRecurso"
+            (ngModelChange)="filtrarRecursos()"
+            (click)="$event.stopPropagation()"
+            (keydown)="$event.stopPropagation()"
+            autocomplete="off"
+          />
+        </mat-form-field>
+      </ng-template>
+
+      <!-- Opciones filtradas -->
+      <mat-option
+        *ngFor="let r of recursosFiltrados"
+        [value]="r.id"
+      >
+        {{ r.nombre }}
+      </mat-option>
     </mat-select>
   </mat-form-field>
 
+  <!-- Selector de servicio -->
   <mat-form-field class="full-width" appearance="fill" *ngIf="serviciosDisponibles.length > 0">
-    <mat-select placeholder="Selecciona un servicio" [(ngModel)]="servicioSeleccionado">
-      <mat-option *ngFor="let s of serviciosDisponibles" [value]="s.id">{{ s.nombre }}</mat-option>
+    <mat-label>Selecciona un servicio</mat-label>
+    <mat-select [(ngModel)]="servicioSeleccionado">
+      <mat-option *ngFor="let s of serviciosDisponibles" [value]="s.id">
+        {{ s.nombre }}
+      </mat-option>
     </mat-select>
   </mat-form-field>
 
-  <button mat-raised-button color="primary" (click)="cargarDisponibilidad()" class="full-width">
+  <button mat-raised-button color="primary" class="full-width" (click)="cargarDisponibilidad()">
     Ver disponibilidad
   </button>
 
+  <!-- Calendario -->
   <div class="calendario-contenedor">
     <mwl-calendar-month-view
       [viewDate]="viewDate"
       [events]="events"
-      (dayClicked)="onDayClick($event)">
+      (dayClicked)="onDayClick($event)"
+    >
     </mwl-calendar-month-view>
-
-
   </div>
 </div>

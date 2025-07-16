@@ -24,10 +24,17 @@
   margin-bottom: 1.5rem;
 }
 
+button.full-width {
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+}
+
 /* --- Ajuste para mat-form-field --- */
 mat-form-field {
   background-color: #f9f9f9;
   border-radius: 6px;
+  width: 100%;
 }
 
 /* --- Estilos del calendario --- */
@@ -35,6 +42,8 @@ mwl-calendar-month-view {
   border: 1px solid #e0e0e0;
   border-radius: 10px;
   overflow: hidden;
+  width: 100% !important;
+  overflow-x: auto;
 }
 
 /* Celdas de día */
@@ -53,6 +62,14 @@ mwl-calendar-month-view {
   font-weight: bold;
   font-size: 0.9rem;
   color: #1f3c88;
+}
+
+/* Encabezados de días */
+::ng-deep .cal-header .cal-cell {
+  font-size: 0.7rem !important;
+  padding: 4px !important;
+  min-width: 32px;
+  text-align: center;
 }
 
 /* Eventos */
@@ -89,8 +106,21 @@ mwl-calendar-month-view {
   .agendar-wrapper h2 {
     font-size: 1.5rem;
   }
-}
 
+  mat-form-field {
+    font-size: 0.9rem;
+  }
+
+  button.mat-raised-button {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem;
+  }
+
+  ::ng-deep .cal-header .cal-cell {
+    font-size: 0.6rem !important;
+    padding: 2px !important;
+  }
+}
 
 .calendario-contenedor {
   margin-top: 2rem;
@@ -98,4 +128,9 @@ mwl-calendar-month-view {
   border-radius: 8px;
   padding: 1rem;
   background-color: #fafafa;
+}
+
+.search-option {
+  height: auto !important;
+  cursor: default !important;
 }

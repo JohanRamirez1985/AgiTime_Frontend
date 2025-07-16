@@ -11,6 +11,10 @@ import { registerLocaleData } from '@angular/common';
 import { AngularCalendarModule } from '../../../shared/angular-calendar/angular-calendar-module';
 import { MatDialog } from '@angular/material/dialog';
 import { HoraDialogComponent } from '../../../shared/angular-calendar/hora-dialog.component';
+import { SharedService } from '../../../services/shared.service';
+import { ActivatedRoute } from '@angular/router';
+import { UserResponse, Usuario } from '../../../interfaces/shared.interface';
+import { MatInputModule } from '@angular/material/input';
 
 registerLocaleData(localeEs);
 
@@ -23,6 +27,7 @@ registerLocaleData(localeEs);
     MatFormFieldModule,
     MatSelectModule,
     MatButtonModule,
+    MatInputModule,
     AngularCalendarModule
   ],
   providers: [
@@ -34,63 +39,59 @@ registerLocaleData(localeEs);
 
 export class ClienteAgendar {
 
-  recursos = [
-    { id: 'peluquero1', nombre: 'Camilo Rojas' },
-    { id: 'peluquero2', nombre: 'María Fernanda' }
-  ];
-
-  serviciosPorRecurso: Record<string, { id: string; nombre: string }[]> = {
-    peluquero1: [
-      { id: 'corte', nombre: 'Corte de cabello' },
-      { id: 'barba', nombre: 'Perfilado de barba' }
-    ],
-    peluquero2: [
-      { id: 'corte', nombre: 'Corte de cabello' },
-      { id: 'color', nombre: 'Tinte' }
-    ]
-  };
-
+   recursos: Usuario[] = [];
+  filtroRecurso: string = '';
   recursoSeleccionado: string = '';
   servicioSeleccionado: string = '';
   serviciosDisponibles: { id: string; nombre: string }[] = [];
-
   view: CalendarView = CalendarView.Month;
   CalendarView = CalendarView;
   viewDate: Date = new Date();
   events: CalendarEvent[] = [];
   locale = es;
+  idEmpresa: number = 0;
+  recursosFiltrados: Usuario[] = [];
 
-  constructor(private dialog: MatDialog) {}
-
+  constructor(
+    private dialog: MatDialog,
+    private sharedServices: SharedService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
-     console.log();
-    // this.onSeleccionRecurso()
+    const infoEmpresa = localStorage.getItem('empresa');
+    if (infoEmpresa) {
+      const empresa = JSON.parse(infoEmpresa);
+      this.idEmpresa = empresa.id;
+      this.obtenerUsuarios();
+    }
   }
 
-  onSeleccionRecurso() {
-    this.servicioSeleccionado = '';
-    this.events = [];
-    this.serviciosDisponibles = this.serviciosPorRecurso[this.recursoSeleccionado] || [];
+  private obtenerUsuarios(): void {
+    this.sharedServices.obtenerUsuarios(this.idEmpresa).subscribe({
+      next: (rest: UserResponse) => {
+        this.recursos = rest.datos;
+        this.recursosFiltrados = [...this.recursos];
+      }
+    });
+  }
+
+  filtrarRecursos(): void {
+    const filtro = this.filtroRecurso?.toLowerCase() || '';
+    this.recursosFiltrados = this.recursos.filter(r =>
+      r.nombre.toLowerCase().includes(filtro)
+    );
+  }
+
+  abrirSelect(abierto: boolean) {
+    if (abierto) {
+      this.recursosFiltrados = [...this.recursos]; // restaurar listado
+      this.filtroRecurso = ''; // limpiar input
+    }
   }
 
   cargarDisponibilidad() {
-    if (!this.recursoSeleccionado || !this.servicioSeleccionado) return;
-
-    this.events = [
-      {
-        start: new Date('2025-07-16'),
-        title: 'Disponible',
-        color: { primary: '#28a745', secondary: '#d4edda' },
-        allDay: true
-      },
-      {
-        start: new Date('2025-07-17'),
-        title: 'Ocupado',
-        color: { primary: '#dc3545', secondary: '#f8d7da' },
-        allDay: true
-      }
-    ];
+    this.events = [];
   }
 
   onDayClick(event: { day: CalendarMonthViewDay }): void {
@@ -115,23 +116,14 @@ export class ClienteAgendar {
       data: { fecha, horas }
     }).afterClosed().subscribe(horaSeleccionada => {
       if (horaSeleccionada) {
-        console.log('⏰ Hora seleccionada:', horaSeleccionada);
-        console.log('📅 Fecha seleccionada:', fecha);
-
-        // ✅ Continúa con tu lógica de agendamiento
         this.procesarAgendamiento(fecha, horaSeleccionada);
       }
     });
   }
 
   procesarAgendamiento(fecha: Date, hora: string): void {
-    // Aquí puedes mostrar una confirmación, redirigir, guardar en backend, etc.
     alert(`Vas a agendar una cita para el ${fecha.toLocaleDateString('es-CO')} a las ${hora}`);
-
-    // Ejemplo de lógica adicional:
-    // this.citaService.agendar({ fecha, hora, recurso, servicio }).subscribe(...)
   }
-
 
 
 
