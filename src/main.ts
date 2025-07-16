@@ -10,6 +10,7 @@ import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 
 import { App } from './app/app';
 import { routes } from './app/app.routes';
+import { MatDialogModule } from '@angular/material/dialog';
 
 bootstrapApplication(App, {
   providers: [
@@ -17,7 +18,8 @@ bootstrapApplication(App, {
     importProvidersFrom(
       HttpClientModule,
       BrowserAnimationsModule,
-      CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory })
+      CalendarModule.forRoot({ provide: DateAdapter, useFactory: adapterFactory }),
+      MatDialogModule 
     )
   ]
 }).catch(err => console.error(err));

@@ -8,7 +8,9 @@ import { es } from 'date-fns/locale';
 import { CalendarEvent, CalendarModule, CalendarMonthModule, CalendarMonthViewDay, CalendarView, DateAdapter } from 'angular-calendar';
 import localeEs from '@angular/common/locales/es';
 import { registerLocaleData } from '@angular/common';
-import { CalendarConfigModule } from './calendar-config.module';
+import { AngularCalendarModule } from '../../../shared/angular-calendar/angular-calendar-module';
+import { MatDialog } from '@angular/material/dialog';
+import { HoraDialogComponent } from '../../../shared/angular-calendar/hora-dialog.component';
 
 registerLocaleData(localeEs);
 
@@ -21,7 +23,7 @@ registerLocaleData(localeEs);
     MatFormFieldModule,
     MatSelectModule,
     MatButtonModule,
-    CalendarConfigModule
+    AngularCalendarModule
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'es' }
@@ -29,6 +31,7 @@ registerLocaleData(localeEs);
   templateUrl: './cliente-agendar.html',
   styleUrl: './cliente-agendar.css'
 })
+
 export class ClienteAgendar {
 
   recursos = [
@@ -57,10 +60,8 @@ export class ClienteAgendar {
   events: CalendarEvent[] = [];
   locale = es;
 
-  constructor() {
-   
-    
-  }
+  constructor(private dialog: MatDialog) {}
+
 
   ngOnInit() {
      console.log();
@@ -93,9 +94,46 @@ export class ClienteAgendar {
   }
 
   onDayClick(event: { day: CalendarMonthViewDay }): void {
-    const fechaSeleccionada = event.day.date;
-    alert(`Elegiste el ${fechaSeleccionada.toLocaleDateString()}`);
+    const fecha = event.day.date;
+
+    const horas = [
+      { hora: '08:00 AM', disponible: true },
+      { hora: '09:00 AM', disponible: false },
+      { hora: '10:00 AM', disponible: true },
+      { hora: '11:00 AM', disponible: true },
+      { hora: '12:00 PM', disponible: false },
+      { hora: '01:00 PM', disponible: false },
+      { hora: '02:00 PM', disponible: false },
+      { hora: '03:00 PM', disponible: false },
+      { hora: '04:00 PM', disponible: false },
+      { hora: '05:00 PM', disponible: false },
+      { hora: '06:00 PM', disponible: false }
+    ];
+
+    this.dialog.open(HoraDialogComponent, {
+      width: '500px',
+      data: { fecha, horas }
+    }).afterClosed().subscribe(horaSeleccionada => {
+      if (horaSeleccionada) {
+        console.log('⏰ Hora seleccionada:', horaSeleccionada);
+        console.log('📅 Fecha seleccionada:', fecha);
+
+        // ✅ Continúa con tu lógica de agendamiento
+        this.procesarAgendamiento(fecha, horaSeleccionada);
+      }
+    });
   }
+
+  procesarAgendamiento(fecha: Date, hora: string): void {
+    // Aquí puedes mostrar una confirmación, redirigir, guardar en backend, etc.
+    alert(`Vas a agendar una cita para el ${fecha.toLocaleDateString('es-CO')} a las ${hora}`);
+
+    // Ejemplo de lógica adicional:
+    // this.citaService.agendar({ fecha, hora, recurso, servicio }).subscribe(...)
+  }
+
+
+
 
 
 }
