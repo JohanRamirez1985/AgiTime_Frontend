@@ -1,14 +1,17 @@
-/* Estructura general */
-.dashboard-wrapper {
-  height: 100vh;
-  display: flex;
+.sedes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  padding: 16px;
   justify-content: center;
-  align-items: center;
-  background-color: #f4f6f9;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  padding: 1rem;
-  box-sizing: border-box;
-  position: relative; /* 👈 necesario para posicionar logout arriba a la derecha */
+}
+
+.sede-card {
+  background-color: #f5f5f5;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
 }
 
 /* Botón cerrar sesión */
@@ -22,17 +25,7 @@
 .logout-top-right button {
   background-color: white;
   border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-/* Tarjeta principal */
-.dashboard-card {
-  width: 100%;
-  max-width: 500px;
-  padding: 2rem;
-  border-radius: 12px;
-  background-color: white;
-  box-sizing: border-box;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* Título */
@@ -44,9 +37,9 @@
   text-align: center;
 }
 
-/* Información empresa */
+/* Información de la empresa */
 .empresa-info {
-  margin: 1rem 0;
+  margin: 1rem 0 20px;
   text-align: center;
 }
 
@@ -54,6 +47,7 @@
   color: #333;
   font-weight: 600;
   margin-bottom: 0.3rem;
+  font-size: 1.2rem;
 }
 
 .empresa-info p {
@@ -61,6 +55,20 @@
   color: #666;
   font-size: 0.95rem;
 }
+
+* Información por sede */
+.sede-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 0.75rem 0;
+  text-align: left;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
 
 /* Botones */
 .acciones {
@@ -82,6 +90,7 @@
   border: 1px dashed #f0ad4e;
   border-radius: 8px;
   text-align: center;
+  font-size: 0.95rem;
 }
 
 .promo-section h4 {
@@ -109,13 +118,38 @@
   .dashboard-card h2 {
     font-size: 1.5rem;
   }
+}
 
-  .empresa-info h3 {
-    font-size: 1.2rem;
-  }
 
-  .promo-section {
-    font-size: 0.95rem;
-  }
+.sedes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 1rem;
+}
 
+/* Tarjetas de sede individuales */
+.sede-card {
+  background-color: #f5f5f5;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.sede-card:hover {
+  transform: scale(1.02);
+}
+
+.dashboard-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.dashboard-card {
+  width: 100%;
+  max-width: 1000px; /* puedes ajustar este valor a tu gusto */
+  padding: 2rem;
+  box-sizing: border-box;
 }

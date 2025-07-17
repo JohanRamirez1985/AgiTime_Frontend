@@ -16,6 +16,7 @@ import { Router, RouterModule } from '@angular/router';
     RouterModule,
     MatCardModule,
     MatButtonModule,
+    MatIconModule,
     MatDividerModule],
   templateUrl: './cliente-dashboard.html',
   styleUrl: './cliente-dashboard.css'
@@ -23,12 +24,14 @@ import { Router, RouterModule } from '@angular/router';
 
 export class ClienteDashboard {
   empresa: any = {
-    nombre : 'Barberia 5ta',
-    direccion: 'Calle falsa 123',
-    telefono : '12365841'
+    nombre : '',
+    direccion: '',
+    telefono : '',
+    sedes: []
   };
   clienteNombre: string = '';
   img: string = '';
+  sedesAgrupadas: any[][] = [];
 
   constructor(private router: Router) {}
   
@@ -43,16 +46,13 @@ export class ClienteDashboard {
     if (empresaData) {
       this.empresa = JSON.parse(empresaData);
       this.img = 'assets/img/' + this.empresa.logo;
-      this.empresa = {
-        nombre : this.empresa.nombre,
-        direccion: 'Calle falsa 123',
-        telefono : '12365841'
-      }
     }
 
     if (clienteData) {
       this.clienteNombre = JSON.parse(clienteData).nombre;
     }
+
+     this.sedesAgrupadas = this.groupInThrees(this.empresa.sedes);
   }
 
   irAReservar() {
@@ -66,6 +66,14 @@ export class ClienteDashboard {
   cerrarSesion() {
     localStorage.clear();
     this.router.navigate(['/seleccionar']);
+  }
+
+  groupInThrees(array: any[]): any[][] {
+    const grouped = [];
+    for (let i = 0; i < array.length; i += 3) {
+      grouped.push(array.slice(i, i + 3));
+    }
+    return grouped;
   }
 
 
