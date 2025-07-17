@@ -120,21 +120,24 @@
   }
 }
 
-
 .sedes-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  display: flex;
   gap: 16px;
-  margin-top: 1rem;
+  overflow-x: auto;
+  padding: 8px 0;
+  scroll-snap-type: x mandatory;
 }
 
 /* Tarjetas de sede individuales */
 .sede-card {
-  background-color: #f5f5f5;
-  padding: 1rem;
+  min-width: 250px; /* o el ancho deseado */
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  border: 1px solid #ddd;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
+  padding: 16px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .sede-card:hover {
