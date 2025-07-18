@@ -29,7 +29,7 @@ import { MatListModule } from '@angular/material/list';
 export class SeleccionTipoUsuario {
   tipoSeleccionado: 'empresa' | 'cliente' | null = null;
   filtro: string = '';
-
+  mostrarListado: boolean = false;
   listado: { id: number, nombre:string}[] = [];
 
   constructor(private router: Router,
@@ -56,6 +56,11 @@ export class SeleccionTipoUsuario {
         this.listado = res.datos
       }
     })
+  }
+
+  public buscarNombre(): void {
+    if(this.filtro.length >= 4) this.mostrarListado = true;
+    else this.mostrarListado = false;    
   }
 
   public seleccionarTipo(tipo: 'empresa' | 'cliente'): void {

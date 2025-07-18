@@ -2,7 +2,7 @@
   <mat-card class="form-container">
     <h2><mat-icon>person_add</mat-icon> Crear cuenta</h2>
 
-    <form (ngSubmit)="registrar()" class="form-grid" #registerForm="ngForm">
+    <form (ngSubmit)="registrar()" class="form-grid" #registerForm="ngForm" autocomplete="off">
 
       <!-- Nombre -->
       <mat-form-field appearance="outline">
@@ -72,7 +72,16 @@
       <!-- Correo -->
       <mat-form-field appearance="outline">
         <mat-label>Correo electrónico</mat-label>
-        <input matInput type="email" [(ngModel)]="email" name="user_email_{{ uniqueId }}" required email #emailInput="ngModel">
+          <input      
+            matInput
+            type="email"
+            name="user_email_{{ uniqueId }}"
+            [(ngModel)]="email"
+            required
+            minlength="4"
+            #emailInput="ngModel"
+            autocomplete="off" 
+          />
         <mat-error *ngIf="emailInput.invalid && emailInput.touched">
           <span *ngIf="emailInput.errors?.['required']">El correo es obligatorio.</span>
           <span *ngIf="emailInput.errors?.['email']">Debe ser un correo válido.</span>
@@ -82,7 +91,16 @@
       <!-- Contraseña -->
       <mat-form-field appearance="outline">
         <mat-label>Contraseña</mat-label>
-        <input matInput type="password" [(ngModel)]="password" name="user_pass_{{ uniqueId }}" required minlength="6" #passwordInput="ngModel">
+          <input 
+            matInput
+            type="password"
+            name="user_pass_{{ uniqueId }}"
+            [(ngModel)]="password"
+            required
+            minlength="6"
+            #passwordInput="ngModel"
+            autocomplete="new-password"
+            />
         <mat-error *ngIf="passwordInput.invalid && passwordInput.touched">
           <span *ngIf="passwordInput.errors?.['required']">La contraseña es obligatoria.</span>
           <span *ngIf="passwordInput.errors?.['minlength']">Debe tener al menos 6 caracteres.</span>

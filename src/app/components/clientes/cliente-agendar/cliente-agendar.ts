@@ -15,6 +15,8 @@ import { SharedService } from '../../../services/shared.service';
 import { ActivatedRoute } from '@angular/router';
 import { UserResponse, Usuario } from '../../../interfaces/shared.interface';
 import { MatInputModule } from '@angular/material/input';
+import { startOfDay as startOfDayFn, addDays } from 'date-fns';
+
 
 registerLocaleData(localeEs);
 
@@ -51,6 +53,7 @@ export class ClienteAgendar {
   locale = es;
   idEmpresa: number = 0;
   recursosFiltrados: Usuario[] = [];
+  mostrarCalendar: boolean = false;
 
   constructor(
     private dialog: MatDialog,
@@ -83,15 +86,59 @@ export class ClienteAgendar {
     );
   }
 
-  abrirSelect(abierto: boolean) {
-    if (abierto) {
-      this.recursosFiltrados = [...this.recursos]; // restaurar listado
-      this.filtroRecurso = ''; // limpiar input
+  consultarServicios() {
+    if(this.recursoSeleccionado !== '') {
+      this.serviciosDisponibles = [
+        {
+          id: '0',
+          nombre: 'corte cabello'
+        },
+        {
+          id: '1',
+          nombre: 'corte barba'
+        },
+               {
+          id: '2',
+          nombre: 'cejas'
+        }
+      ]
     }
   }
 
   cargarDisponibilidad() {
-    this.events = [];
+    this.events =  [
+    {
+      start: startOfDayFn(new Date()),
+      title: 'Reserva de ejemplo',
+      color: { primary: '#1e90ff', secondary: '#D1E8FF' },
+    },
+        {
+      start: startOfDayFn(new Date()),
+      title: 'Reserva de ejemplo',
+      color: { primary: '#1e90ff', secondary: '#D1E8FF' },
+    },
+        {
+      start: startOfDayFn(new Date()),
+      title: 'Reserva de ejemplo',
+      color: { primary: '#1e90ff', secondary: '#D1E8FF' },
+    },
+        {
+      start: startOfDayFn(new Date()),
+      title: 'Reserva de ejemplo',
+      color: { primary: '#1e90ff', secondary: '#D1E8FF' },
+    },
+        {
+      start: startOfDayFn(new Date()),
+      title: 'Reserva de ejemplo',
+      color: { primary: '#1e90ff', secondary: '#D1E8FF' },
+    },
+    {
+      start: addDays(new Date(), 2),
+      title: 'Corte de cabello',
+      color: { primary: '#e3bc08', secondary: '#FDF1BA' },
+    }
+  ];;
+    this.mostrarCalendar = true;
   }
 
   onDayClick(event: { day: CalendarMonthViewDay }): void {
@@ -129,3 +176,7 @@ export class ClienteAgendar {
 
 
 }
+function startOfDay(arg0: Date): Date {
+  throw new Error('Function not implemented.');
+}
+

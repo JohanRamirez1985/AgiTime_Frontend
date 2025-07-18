@@ -6,28 +6,13 @@
     <mat-label>Selecciona un recurso</mat-label>
     <mat-select
       [(ngModel)]="recursoSeleccionado"
-      (openedChange)="abrirSelect($event)"
+      (openedChange)="consultarServicios()"
       panelClass="select-panel-con-buscador"
     >
-      <!-- Campo de búsqueda -->
-      <ng-template matSelectHeader>
-        <mat-form-field appearance="outline" class="search-input-wrapper">
-          <mat-label>Buscar...</mat-label>
-          <input
-            matInput
-            [(ngModel)]="filtroRecurso"
-            (ngModelChange)="filtrarRecursos()"
-            (click)="$event.stopPropagation()"
-            (keydown)="$event.stopPropagation()"
-            autocomplete="off"
-          />
-        </mat-form-field>
-      </ng-template>
-
       <!-- Opciones filtradas -->
       <mat-option
         *ngFor="let r of recursosFiltrados"
-        [value]="r.id"
+        [value]="r.nombre"
       >
         {{ r.nombre }}
       </mat-option>
@@ -49,7 +34,7 @@
   </button>
 
   <!-- Calendario -->
-  <div class="calendario-contenedor">
+  <div class="calendario-contenedor" *ngIf="mostrarCalendar">
     <mwl-calendar-month-view
       [viewDate]="viewDate"
       [events]="events"
