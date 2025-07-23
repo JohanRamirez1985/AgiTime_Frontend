@@ -1,20 +1,27 @@
 {
-    "/api/Parametros": {
-    "target": "http://localhost:8080",
+  "/api/Parametros": {
+    "target": "http://localhost:82",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
 
   "/api/Usuarios": {
-    "target": "http://localhost:8081",
+    "target": "http://localhost:80",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
 
   "/api/Clientes": {
-    "target": "http://localhost:8082",
+    "target": "http://localhost:81",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+
+  "/api/Agendamiento": {
+    "target": "http://localhost:83",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
