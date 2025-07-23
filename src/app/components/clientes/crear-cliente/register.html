@@ -4,8 +4,7 @@
 
     <form (ngSubmit)="registrar()" class="form-grid" #registerForm="ngForm" autocomplete="off">
 
-      <!-- Nombre -->
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" style="grid-column: span 2">
         <mat-label>Nombre completo</mat-label>
         <input matInput [(ngModel)]="nombre" name="name" required minlength="3" #nameInput="ngModel">
         <mat-error *ngIf="nameInput.invalid && nameInput.touched">
@@ -13,6 +12,7 @@
           <span *ngIf="nameInput.errors?.['minlength']">Debe tener al menos 3 caracteres.</span>
         </mat-error>
       </mat-form-field>
+
 
       <!-- Tipo de Documento -->
       <mat-form-field appearance="outline">
@@ -119,7 +119,7 @@
 
       <!-- Botones -->
       <div class="boton-container">
-        <button mat-raised-button color="primary" type="submit" [disabled]="registerForm.invalid">
+        <button mat-raised-button color="primary" type="submit" [disabled]="registerForm.invalid || btnRegistrar">
           <mat-icon>person_add</mat-icon> Registrar
         </button>
         <button mat-raised-button color="warn" type="button" [routerLink]="['/login']" [queryParams]="{ em: idEmpresa, tipo: 'cl' }">

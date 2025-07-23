@@ -19,7 +19,12 @@ export class Toolbar {
   constructor(private router: Router) {}
 
   cerrarSesion() {
+    const infoEmpStr = localStorage.getItem('infoEmp');
     localStorage.clear();
-    this.router.navigate(['/']); // o redirige a login
+    const idEmpresa = infoEmpStr ? JSON.parse(infoEmpStr).idEmpresa : null;
+    const currentUrl = this.router.url === 'cliente' ? 'cl' : 'em';
+    this.router.navigate(['/login'], {
+      queryParams: { em: idEmpresa, tipo: currentUrl }
+    });
   }
 }

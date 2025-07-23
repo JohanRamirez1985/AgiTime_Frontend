@@ -52,6 +52,7 @@ export class Register {
   tipoDocumentos: TipoDocumento[] = [];
   listaGeneros: TipoDocumento[] = [];
   uniqueId = Math.floor(Math.random() * 100000);
+  btnRegistrar: boolean = false;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -82,6 +83,7 @@ export class Register {
   public registrar():void {
     this.errorMessage = '';
     this.successMessage = '';
+    this.btnRegistrar = true;
 
     if (!this.nombre || !this.email || !this.password || !this.confirmPassword) {
       this.errorMessage = 'Todos los campos son obligatorios';
@@ -117,8 +119,10 @@ export class Register {
             text: rest.mensaje || 'Error al crear el cliente',
           });
         }
+        this.btnRegistrar = false;
       },
       error: err => {
+        this.btnRegistrar = false;
         Swal.fire({
           icon: 'error',
           title: 'Error de servidor',

@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SharedService } from '../../services/shared.service';
-import { Empresa } from '../../interfaces/shared.interface';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -31,15 +30,21 @@ export class SeleccionTipoUsuario {
   filtro: string = '';
   mostrarListado: boolean = false;
   listado: { id: number, nombre:string}[] = [];
+  idEmpresaSeleccionada: number | null = null;
 
   constructor(private router: Router,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private route : ActivatedRoute
   ) {
     
   }
 
   ngOnInit() {
     this.obtenerEmpresas();
+    this.route.queryParamMap.subscribe(params => {
+      const id = params.get('em');
+      this.idEmpresaSeleccionada = id ? +id : null;
+    }); 
   }
 
   private obtenerEmpresas():void {
@@ -66,6 +71,12 @@ export class SeleccionTipoUsuario {
   public seleccionarTipo(tipo: 'empresa' | 'cliente'): void {
     this.tipoSeleccionado = tipo;
     this.filtro = '';
+    const tipo2 = this.tipoSeleccionado === 'empresa' ? 'em' : 'cl';
+
+
+    this.router.navigate(['/login'], {
+      queryParams: { em: this.idEmpresaSeleccionada, tipo: tipo2 }
+    });
   }
 
   public listadoFiltrado() {
@@ -74,14 +85,9 @@ export class SeleccionTipoUsuario {
     );
   }
 
-  public irALogin(item: any):void {
-    const tipo = this.tipoSeleccionado === 'empresa' ? 'em' : 'cl';
-    const id = item.id;
-
-
-    this.router.navigate(['/login'], {
-      queryParams: { em: id, tipo: tipo }
-    });
+  public seleccionarEmpresa(item: any):void {
+    this.idEmpresaSeleccionada = item.id;
+    this.router.navigate(['/seleccionar'], { queryParams: { em: this.idEmpresaSeleccionada } });
   }
 
   public cancelar(): void {

@@ -64,8 +64,13 @@ export class ClienteDashboard {
   }
 
   cerrarSesion() {
+    const infoEmpStr = localStorage.getItem('infoEmp');
     localStorage.clear();
-    this.router.navigate(['/seleccionar']);
+    const idEmpresa = infoEmpStr ? JSON.parse(infoEmpStr).idEmpresa : null;
+    const currentUrl = infoEmpStr ? JSON.parse(infoEmpStr).tipo : null;
+    this.router.navigate(['/login'], {
+      queryParams: { em: idEmpresa, tipo: currentUrl }
+    });
   }
 
   groupInThrees(array: any[]): any[][] {
