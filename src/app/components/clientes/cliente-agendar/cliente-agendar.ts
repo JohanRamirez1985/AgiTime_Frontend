@@ -20,6 +20,22 @@ import { startOfDay as startOfDayFn, addDays } from 'date-fns';
 
 registerLocaleData(localeEs);
 
+interface Recurso {
+  id: string;
+  nombre: string;
+}
+
+interface Servicio {
+  id: string;
+  nombre: string;
+  duracionMinutos: number;
+}
+
+interface Disponibilidad {
+  fecha: string;
+  horasDisponibles: string[];
+}
+
 @Component({
   selector: 'app-cliente-agendar',
   standalone: true,
@@ -41,7 +57,7 @@ registerLocaleData(localeEs);
 
 export class ClienteAgendar {
 
-   recursos: Usuario[] = [];
+  recursos: Usuario[] = [];
   filtroRecurso: string = '';
   recursoSeleccionado: string = '';
   servicioSeleccionado: string = '';
@@ -52,8 +68,8 @@ export class ClienteAgendar {
   events: CalendarEvent[] = [];
   locale = es;
   idEmpresa: number = 0;
-  recursosFiltrados: Usuario[] = [];
-  mostrarCalendar: boolean = false;
+  recursosFiltrados: any[] = [];
+  mostrarCalendar: boolean = true;
 
   constructor(
     private dialog: MatDialog,
@@ -71,19 +87,25 @@ export class ClienteAgendar {
   }
 
   private obtenerUsuarios(): void {
-    this.sharedServices.obtenerUsuarios(this.idEmpresa).subscribe({
-      next: (rest: UserResponse) => {
-        this.recursos = rest.datos;
-        this.recursosFiltrados = [...this.recursos];
-      }
-    });
-  }
+    // this.sharedServices.obtenerUsuarios(this.idEmpresa).subscribe({
+    //   next: (rest: UserResponse) => {
+    //     this.recursos = rest.datos;
+    //     this.recursosFiltrados = [...this.recursos];
+    //   }
+    // });
+    this.recursosFiltrados = [
+        // Peluquería
+        { id: 1, nombre: 'Carlos Barbero', tipoNegocio: 'peluqueria' },
+        { id: 2, nombre: 'Luis Barbero', tipoNegocio: 'peluqueria' },
 
-  filtrarRecursos(): void {
-    const filtro = this.filtroRecurso?.toLowerCase() || '';
-    this.recursosFiltrados = this.recursos.filter(r =>
-      r.nombre.toLowerCase().includes(filtro)
-    );
+        // Restaurante
+        { id: 3, nombre: 'Mesa 1', tipoNegocio: 'restaurante' },
+        { id: 4, nombre: 'Mesa 2', tipoNegocio: 'restaurante' },
+
+        // Canchas
+        { id: 5, nombre: 'Cancha A', tipoNegocio: 'canchas' },
+        { id: 6, nombre: 'Cancha B', tipoNegocio: 'canchas' },
+    ]
   }
 
   consultarServicios() {
@@ -138,7 +160,7 @@ export class ClienteAgendar {
       color: { primary: '#e3bc08', secondary: '#FDF1BA' },
     }
   ];;
-    this.mostrarCalendar = true;
+    // this.mostrarCalendar = true;
   }
 
   onDayClick(event: { day: CalendarMonthViewDay }): void {
@@ -171,9 +193,6 @@ export class ClienteAgendar {
   procesarAgendamiento(fecha: Date, hora: string): void {
     alert(`Vas a agendar una cita para el ${fecha.toLocaleDateString('es-CO')} a las ${hora}`);
   }
-
-
-
 
 }
 
