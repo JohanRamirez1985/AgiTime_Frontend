@@ -16,6 +16,7 @@ import { TipoDocumento, UsuarioRegistro } from '../../../interfaces/shared.inter
 import { UserService } from '../../../services/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import Swal from 'sweetalert2';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-crear-usuario',
@@ -29,8 +30,9 @@ import Swal from 'sweetalert2';
     MatDatepickerModule,
     MatNativeDateModule,
     MatButtonModule,
-    MatCardModule,     // ✅ Asegúrate que esté incluido
-    MatIconModule
+    MatCardModule,
+    MatIconModule,
+    MatSlideToggleModule
   ],
   templateUrl: './crear-usuario.html',
   styleUrl: './crear-usuario.css'
@@ -49,7 +51,8 @@ export class CrearUsuario {
     documento: '',
     estado: 'Activo',
     empresa: '',
-    rol: ''
+    rol: '',
+    recurso: false
   };
 
   tipoDocumentos: TipoDocumento[] = [];
@@ -175,7 +178,8 @@ export class CrearUsuario {
       sede: Number(this.usuario.sede),
       documento: this.usuario.documento,
       empresa: Number(this.idEmpresa),
-      rol: Number(this.usuario.rol)
+      rol: Number(this.usuario.rol),
+      recurso: this.usuario.recurso
     };
 
     return json

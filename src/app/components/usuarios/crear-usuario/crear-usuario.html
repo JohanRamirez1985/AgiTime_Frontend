@@ -99,6 +99,18 @@
       </mat-select>
     </mat-form-field>
 
+    <div style="display: flex; align-items: center; gap: 12px; margin-top: 12px;">
+      <label style="font-weight: 500;">¿Tiene acceso al recurso?</label>
+      <mat-slide-toggle 
+        [(ngModel)]="usuario.recurso" 
+        name="recurso" 
+        color="primary">
+      </mat-slide-toggle>
+    </div>
+
+
+
+
     <!-- Botón -->
     <div class="boton-container">
       <button mat-raised-button color="primary" type="submit" [disabled]="!esFormularioValido() || btnGuardar">

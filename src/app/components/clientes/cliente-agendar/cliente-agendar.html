@@ -2,12 +2,31 @@
   <h2>📅 Agendar cita</h2>
 
   <!-- Selector de recurso -->
+  <mat-form-field class="full-width" appearance="fill" *ngIf="mostrarSede">
+    <mat-label>Selecciona una sede</mat-label>
+    <mat-select
+      [(ngModel)]="sedeSeleccionada"
+      (selectionChange)="consultarRecursosSede(sedeSeleccionada)"
+      panelClass="select-panel-con-buscador"
+    >
+      <!-- Opciones filtradas -->
+      <mat-option
+        *ngFor="let r of sedesFiltrados"
+        [value]="r"
+      >
+        {{ r.nombre }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+
   <mat-form-field class="full-width" appearance="fill">
     <mat-label>Selecciona un recurso</mat-label>
     <mat-select
       [(ngModel)]="recursoSeleccionado"
-      (openedChange)="consultarServicios()"
+      (selectionChange)="selectServicio = true"
       panelClass="select-panel-con-buscador"
+      [disabled]="selectRecurso"
     >
       <!-- Opciones filtradas -->
       <mat-option
@@ -20,18 +39,18 @@
   </mat-form-field>
 
   <!-- Selector de servicio -->
-  <mat-form-field class="full-width" appearance="fill" *ngIf="serviciosDisponibles.length > 0">
+  <mat-form-field class="full-width" appearance="fill" *ngIf="selectServicio">
     <mat-label>Selecciona un servicio</mat-label>
     <mat-select [(ngModel)]="servicioSeleccionado">
-      <mat-option *ngFor="let s of serviciosDisponibles" [value]="s.id">
-        {{ s.nombre }}
+      <mat-option *ngFor="let s of serviciosDisponibles" [value]="s">
+         {{ s.nombre }} - ${{s.valor | number:'1.0-0'}}
       </mat-option>
     </mat-select>
   </mat-form-field>
 
-  <button mat-raised-button color="primary" class="full-width" (click)="cargarDisponibilidad()">
+  <!-- <button mat-raised-button color="primary" class="full-width" (click)="cargarDisponibilidad()">
     Ver disponibilidad
-  </button>
+  </button> -->
 
   <!-- Calendario -->
   <div class="calendario-contenedor" *ngIf="mostrarCalendar">

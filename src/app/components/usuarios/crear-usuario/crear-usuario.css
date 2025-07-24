@@ -23,8 +23,29 @@ h2 {
 
 .boton-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 1rem;
+  grid-column: span 2;
   margin-top: 1rem;
+  text-align-last: center
 }
+
+.toggle-label {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 4px;
+}
+
+::ng-deep mat-slide-toggle {
+  font-size: 14px;
+}
+
+::ng-deep mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
+  background-color: #1E88E5; /* azul más fuerte */
+}
+
+::ng-deep mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
+  background-color: #90CAF9;
+}
+
 

@@ -16,6 +16,7 @@ import { ActivatedRoute } from '@angular/router';
 import { UserResponse, Usuario } from '../../../interfaces/shared.interface';
 import { MatInputModule } from '@angular/material/input';
 import { startOfDay as startOfDayFn, addDays } from 'date-fns';
+import Swal from 'sweetalert2';
 
 
 registerLocaleData(localeEs);
@@ -60,8 +61,9 @@ export class ClienteAgendar {
   recursos: Usuario[] = [];
   filtroRecurso: string = '';
   recursoSeleccionado: string = '';
+  sedeSeleccionada: string = '';
   servicioSeleccionado: string = '';
-  serviciosDisponibles: { id: string; nombre: string }[] = [];
+  serviciosDisponibles: { id: string; nombre: string; valor: number }[] = [];
   view: CalendarView = CalendarView.Month;
   CalendarView = CalendarView;
   viewDate: Date = new Date();
@@ -69,7 +71,11 @@ export class ClienteAgendar {
   locale = es;
   idEmpresa: number = 0;
   recursosFiltrados: any[] = [];
+  sedesFiltrados: any[] = [];
   mostrarCalendar: boolean = true;
+  mostrarSede: boolean = false;
+  selectRecurso: boolean = true;
+  selectServicio: boolean = false;
 
   constructor(
     private dialog: MatDialog,
@@ -82,49 +88,80 @@ export class ClienteAgendar {
     if (infoEmpresa) {
       const empresa = JSON.parse(infoEmpresa);
       this.idEmpresa = empresa.id;
-      this.obtenerUsuarios();
+      this.sedesFiltrados = empresa.sedes;
+      this.obtenerRecursos(this.idEmpresa);
+      this.obtenerHorarios();
+      this.obtenerServicios(this.idEmpresa);
+    }  
+  }
+  
+  public obtenerHorarios():void {
+    const fecha = new Date();
+    this.sharedServices.obtenerAgenda(this.idEmpresa)
+    .subscribe({
+      next: rest => {
+        console.log();   
+          this.dialog.open(HoraDialogComponent, {
+          width: '500px',
+          data: { fecha, rest }
+        }).afterClosed().subscribe(horaSeleccionada => {
+          if (horaSeleccionada) {
+            this.procesarAgendamiento(fecha, horaSeleccionada);
+          }
+        });       
+      }
+    })
+  }
+
+  ordernarHorarios() {
+    const horas = [
+      { hora: '08:00 AM', disponible: true },
+      { hora: '09:00 AM', disponible: false },
+      { hora: '10:00 AM', disponible: true },
+      { hora: '11:00 AM', disponible: true },
+      { hora: '12:00 PM', disponible: false },
+      { hora: '01:00 PM', disponible: false },
+      { hora: '02:00 PM', disponible: false },
+      { hora: '03:00 PM', disponible: false },
+      { hora: '04:00 PM', disponible: false },
+      { hora: '05:00 PM', disponible: false },
+      { hora: '06:00 PM', disponible: false }
+    ];
+  }
+
+  public consultarRecursosSede(event:any): void {    
+    let recursosLS = localStorage.getItem('recursos');
+    if (recursosLS) {
+      const recursosArray = JSON.parse(recursosLS);
+      this.recursosFiltrados = recursosArray.filter((sede: any) => sede.sede === event.id);
+      this.selectRecurso = false;
     }
   }
 
-  private obtenerUsuarios(): void {
-    // this.sharedServices.obtenerUsuarios(this.idEmpresa).subscribe({
-    //   next: (rest: UserResponse) => {
-    //     this.recursos = rest.datos;
-    //     this.recursosFiltrados = [...this.recursos];
-    //   }
-    // });
-    this.recursosFiltrados = [
-        // Peluquería
-        { id: 1, nombre: 'Carlos Barbero', tipoNegocio: 'peluqueria' },
-        { id: 2, nombre: 'Luis Barbero', tipoNegocio: 'peluqueria' },
+  private obtenerServicios(emp: number): void {
+    this.sharedServices.obtenerServicios(emp)
+    .subscribe({
+      next: rest => {
+        this.serviciosDisponibles = [...rest.datos];        
+      }
+    })
+  }
 
-        // Restaurante
-        { id: 3, nombre: 'Mesa 1', tipoNegocio: 'restaurante' },
-        { id: 4, nombre: 'Mesa 2', tipoNegocio: 'restaurante' },
-
-        // Canchas
-        { id: 5, nombre: 'Cancha A', tipoNegocio: 'canchas' },
-        { id: 6, nombre: 'Cancha B', tipoNegocio: 'canchas' },
-    ]
+  private obtenerRecursos(emp: number): void {
+    this.sharedServices.obtenerRecursosAgenda(emp)
+    .subscribe({
+      next: rest => {
+        this.mostrarSede = true;
+        // this.mostrarSede = rest.datos.mostarSede;
+        this.selectRecurso = this.mostrarSede;
+        this.recursosFiltrados = [...rest.datos.usuario]
+        localStorage.setItem('recursos', JSON.stringify(this.recursosFiltrados))
+      }
+    })
   }
 
   consultarServicios() {
-    if(this.recursoSeleccionado !== '') {
-      this.serviciosDisponibles = [
-        {
-          id: '0',
-          nombre: 'corte cabello'
-        },
-        {
-          id: '1',
-          nombre: 'corte barba'
-        },
-               {
-          id: '2',
-          nombre: 'cejas'
-        }
-      ]
-    }
+    
   }
 
   cargarDisponibilidad() {
@@ -164,30 +201,39 @@ export class ClienteAgendar {
   }
 
   onDayClick(event: { day: CalendarMonthViewDay }): void {
-    const fecha = event.day.date;
+    if(this.recursoSeleccionado === '') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Debes seleccionar un recurso',
+      });
+    }else {
 
-    const horas = [
-      { hora: '08:00 AM', disponible: true },
-      { hora: '09:00 AM', disponible: false },
-      { hora: '10:00 AM', disponible: true },
-      { hora: '11:00 AM', disponible: true },
-      { hora: '12:00 PM', disponible: false },
-      { hora: '01:00 PM', disponible: false },
-      { hora: '02:00 PM', disponible: false },
-      { hora: '03:00 PM', disponible: false },
-      { hora: '04:00 PM', disponible: false },
-      { hora: '05:00 PM', disponible: false },
-      { hora: '06:00 PM', disponible: false }
-    ];
+    }
+    // const fecha = event.day.date;
 
-    this.dialog.open(HoraDialogComponent, {
-      width: '500px',
-      data: { fecha, horas }
-    }).afterClosed().subscribe(horaSeleccionada => {
-      if (horaSeleccionada) {
-        this.procesarAgendamiento(fecha, horaSeleccionada);
-      }
-    });
+    // const horas = [
+    //   { hora: '08:00 AM', disponible: true },
+    //   { hora: '09:00 AM', disponible: false },
+    //   { hora: '10:00 AM', disponible: true },
+    //   { hora: '11:00 AM', disponible: true },
+    //   { hora: '12:00 PM', disponible: false },
+    //   { hora: '01:00 PM', disponible: false },
+    //   { hora: '02:00 PM', disponible: false },
+    //   { hora: '03:00 PM', disponible: false },
+    //   { hora: '04:00 PM', disponible: false },
+    //   { hora: '05:00 PM', disponible: false },
+    //   { hora: '06:00 PM', disponible: false }
+    // ];
+
+    // this.dialog.open(HoraDialogComponent, {
+    //   width: '500px',
+    //   data: { fecha, horas }
+    // }).afterClosed().subscribe(horaSeleccionada => {
+    //   if (horaSeleccionada) {
+    //     this.procesarAgendamiento(fecha, horaSeleccionada);
+    //   }
+    // });
   }
 
   procesarAgendamiento(fecha: Date, hora: string): void {

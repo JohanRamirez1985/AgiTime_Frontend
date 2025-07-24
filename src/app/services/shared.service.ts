@@ -45,4 +45,22 @@ export class SharedService {
         });
     }
 
+    obtenerRecursosAgenda(emp: number) {
+        return this.http.get<any>(`${this.baseUrlUsuario}/recursosAgenda`, {
+        params: { emp: emp.toString() }
+        });    
+    }
+
+    obtenerServicios(emp: number) {
+        return this.http.get<any>(`${this.baseUrlUsuario}/servicios`, {
+        params: { emp: emp.toString() }
+        });    
+    }
+
+    obtenerAgenda(emp: number) {
+        return this.http.get<any>(`${this.baseUrlUsuario}/agenda`, {
+        params: { emp: emp.toString() }
+        }); 
+    }
+
 }
