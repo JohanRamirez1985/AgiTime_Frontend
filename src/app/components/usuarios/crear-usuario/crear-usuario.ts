@@ -57,9 +57,10 @@ export class CrearUsuario {
   listaRoles: TipoDocumento[] = [];
   listaSedes: TipoDocumento[] = [];
   idEmpresa: string | null = null;
-
-  sedes = ['Bogotá', 'Medellín', 'Cali'];
-  roles = ['Administrador', 'Cliente'];
+  sedes = [];
+  roles = [];
+  uniqueId = Math.floor(Math.random() * 100000);
+  btnGuardar: boolean = false;
 
   constructor(private router: Router,
     private sharedServices : SharedService,
@@ -73,27 +74,61 @@ export class CrearUsuario {
     const info = JSON.parse(localStorage.getItem('infoEmp') || '{}');
     const id = info?.idEmpresa;
     this.idEmpresa = id;
-    if (this.idEmpresa) {
-      obtenerTiposDocumentos(this.sharedServices, this.idEmpresa, datos => {
-        this.tipoDocumentos = datos;
-      });
-      obtenerGeneros(this.sharedServices, this.idEmpresa, datos => {
-        this.listaGeneros = datos;
-      });
-      obtenerRoles(this.sharedServices, this.idEmpresa, datos => {
-        this.listaRoles = datos;
-      });
-      obtenerSedes(this.sharedServices, this.idEmpresa, datos => {
-        this.listaSedes = datos;
-      });
-    }
+    this.obtenerDataLocalStorage();
+  }
+
+  private obtenerDataLocalStorage(): void {
+    const config = [
+      {
+        key: 'tiposDoc',
+        fetch: obtenerTiposDocumentos,
+        set: (datos: any) => { this.tipoDocumentos = datos; }
+      },
+      {
+        key: 'generos',
+        fetch: obtenerGeneros,
+        set: (datos: any) => { this.listaGeneros = datos; }
+      },
+      {
+        key: 'roles',
+        fetch: obtenerRoles,
+        set: (datos: any) => { this.listaRoles = datos; }
+      },
+      {
+        key: 'sedes',
+        fetch: obtenerSedes,
+        set: (datos: any) => { this.listaSedes = datos; }
+      }
+    ];
+
+    config.forEach(c => {
+      const almacenado = localStorage.getItem(c.key);
+
+      if (almacenado) {
+        c.set(JSON.parse(almacenado));
+      } else {
+        c.fetch(this.sharedServices, this.idEmpresa!, datos => {
+          c.set(datos);
+          localStorage.setItem(c.key, JSON.stringify(datos));
+        });
+      }
+    });
   }
 
   public cancelar():void {
     this.router.navigate(['/admin/usuarios']);
   }
 
+  public esFormularioValido(): boolean {
+    return !!this.usuario.sede && !!this.usuario.rol 
+      && !!this.usuario.correo && !!this.usuario.nombre 
+      && !!this.usuario.telefono && !!this.usuario.tipoDocumento
+      && !!this.usuario.documento && !!this.usuario.fechaNacimiento
+      && !!this.usuario.password && !!this.usuario.genero;
+  }
+
   registrarUsuario() {
+    this.btnGuardar = true;
     const request = this.createJson();
     this.userService.crearUsuario(request).subscribe({
       next: res => {
@@ -114,8 +149,10 @@ export class CrearUsuario {
             text: res.mensaje || 'Error al crear el usuario',
           });
         }
+        this.btnGuardar = false;
       },
       error: err => {
+        this.btnGuardar = false;
         Swal.fire({
           icon: 'error',
           title: 'Error de servidor',

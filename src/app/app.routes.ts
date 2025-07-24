@@ -28,7 +28,7 @@ export const routes: Routes = [
     path: 'admin',
     loadComponent: () =>
       import('./components/dashboard-layout/dashboard-layout').then(m => m.DashboardLayout),
-    canActivate: [AuthGuard('admin')],
+    canActivate: [AuthGuard(['Administador', 'SuperAdmin'])],
     children: [
       {
         path: '',
@@ -55,7 +55,7 @@ export const routes: Routes = [
 
   {
     path: 'cliente',
-    canActivate: [AuthGuard('Cliente')],
+    canActivate: [AuthGuard(['Cliente'])],
     loadChildren: () =>
       import('./components/clientes/cliente-routing').then(m => m.routes)
   },

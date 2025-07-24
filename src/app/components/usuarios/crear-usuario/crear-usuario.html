@@ -1,10 +1,10 @@
 <mat-card class="form-container">
   <h2><mat-icon>person_add</mat-icon> Registro de Usuario</h2>
 
-  <form (ngSubmit)="registrarUsuario()" class="form-grid">
+  <form (ngSubmit)="registrarUsuario()" class="form-grid" autocomplete="off">
 
     <!-- Nombre -->
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" style="grid-column: span 2">
       <mat-label>Nombre completo</mat-label>
       <input matInput [(ngModel)]="usuario.nombre" name="nombre" required>
     </mat-form-field>
@@ -46,16 +46,42 @@
     </mat-form-field>
 
     <!-- Correo -->
-    <mat-form-field appearance="outline">
-      <mat-label>Correo</mat-label>
-      <input matInput type="email" [(ngModel)]="usuario.correo" name="correo" autocomplete="off" required>
-    </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Correo electrónico</mat-label>
+          <input      
+            matInput
+            type="email"
+            name="user_email_{{ uniqueId }}"
+            [(ngModel)]="usuario.correo"
+            required
+            minlength="4"
+            #emailInput="ngModel"
+            autocomplete="off" 
+          />
+        <mat-error *ngIf="emailInput.invalid && emailInput.touched">
+          <span *ngIf="emailInput.errors?.['required']">El correo es obligatorio.</span>
+          <span *ngIf="emailInput.errors?.['usuario.correo']">Debe ser un correo válido.</span>
+        </mat-error>
+      </mat-form-field>
 
-    <!-- Contraseña -->
-    <mat-form-field appearance="outline">
-      <mat-label>Contraseña</mat-label>
-      <input matInput type="password" [(ngModel)]="usuario.password" name="password" autocomplete="off" required>
-    </mat-form-field> 
+      <!-- Contraseña -->
+      <mat-form-field appearance="outline">
+        <mat-label>Contraseña</mat-label>
+          <input 
+            matInput
+            type="password"
+            name="user_pass_{{ uniqueId }}"
+            [(ngModel)]="usuario.password"
+            required
+            minlength="6"
+            #passwordInput="ngModel"
+            autocomplete="new-password"
+            />
+        <mat-error *ngIf="passwordInput.invalid && passwordInput.touched">
+          <span *ngIf="passwordInput.errors?.['required']">La contraseña es obligatoria.</span>
+          <span *ngIf="passwordInput.errors?.['minlength']">Debe tener al menos 6 caracteres.</span>
+        </mat-error>
+      </mat-form-field>
 
     <!-- Sede -->
     <mat-form-field appearance="outline">
@@ -75,7 +101,7 @@
 
     <!-- Botón -->
     <div class="boton-container">
-      <button mat-raised-button color="primary" type="submit">
+      <button mat-raised-button color="primary" type="submit" [disabled]="!esFormularioValido() || btnGuardar">
         <mat-icon>save</mat-icon> Guardar
       </button>
       <button mat-raised-button color="warn" type="button" (click)="cancelar()">

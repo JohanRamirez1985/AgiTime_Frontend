@@ -176,6 +176,7 @@ export class ClienteAgendar {
 
 
 }
+
 function startOfDay(arg0: Date): Date {
   throw new Error('Function not implemented.');
 }

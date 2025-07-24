@@ -95,8 +95,8 @@ export class Login {
   private redireccion(): void {
     if(this.tipo === 'cl') {
       this.router.navigate(['/cliente']);
-    }else {
-
+    }else { 
+      this.router.navigate(['/admin/dashboard'])
     }
   }
 
