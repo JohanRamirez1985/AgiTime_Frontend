@@ -220,14 +220,11 @@ export class ClienteAgendar {
         usuario: this.idUser
       };
       this.agendaService.consultarAgendamientos(request)
-      .subscribe({
-        next: rest => {
-          console.log();
-          
-        }
-      })
-
-        this.openModal(fecha, horas);
+        .subscribe({
+          next: rest => {
+            this.openModal(fecha, horas);
+          }
+        })
       }
   }
 

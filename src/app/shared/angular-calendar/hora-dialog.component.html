@@ -1,44 +1,68 @@
-<h2 class="titulo">
-  Disponibilidad para el {{ data.fecha | date: 'fullDate':'':'es' }}
-</h2>
+<div *ngIf="!seleccionHora">
+    <h2 class="titulo">
+    Disponibilidad para el {{ data.fecha | date: 'fullDate':'':'es' }}
+    </h2>
 
-<mat-accordion multi class="acordeon">
-  <!-- Sección Mañana -->
-  <mat-expansion-panel [expanded]="true">
-    <mat-expansion-panel-header>
-      <mat-panel-title>🕗 Mañana (AM)</mat-panel-title>
-    </mat-expansion-panel-header>
-    <div class="hora-wrapper">
-      <button mat-stroked-button
-              *ngFor="let hora of horasAM"
-              [ngClass]="hora.disponible ? 'btn-verde' : 'btn-rojo'"
-              [disabled]="!hora.disponible"
-              (click)="seleccionarHora(hora.hora)">
-        {{ hora.hora }}
-      </button>
+    <mat-accordion multi class="acordeon">
+    <!-- Sección Mañana -->
+    <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+        <mat-panel-title>🕗 Mañana (AM)</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="hora-wrapper">
+        <button mat-stroked-button
+                *ngFor="let hora of horasAM"
+                [ngClass]="hora.disponible ? 'btn-verde' : 'btn-rojo'"
+                
+                (click)="seleccionarHora(hora.hora)">
+            {{ hora.hora }}
+        </button>
+        </div>
+    </mat-expansion-panel>
+
+    <!-- Sección Tarde -->
+    <mat-expansion-panel>
+        <mat-expansion-panel-header>
+        <mat-panel-title>🕓 Tarde (PM)</mat-panel-title>
+        </mat-expansion-panel-header>
+        <div class="hora-wrapper">
+        <button mat-stroked-button
+                *ngFor="let hora of horasPM"
+                [ngClass]="hora.disponible ? 'btn-verde' : 'btn-rojo'"
+                
+                (click)="seleccionarHora(hora.hora)">
+            {{ hora.hora }}
+        </button>
+        </div>
+    </mat-expansion-panel>
+    </mat-accordion>
+    <!-- Footer del diálogo con botón Cerrar -->
+    <div class="dialog-footer">
+        <button mat-raised-button color="primary" (click)="cerrar()">
+            <mat-icon>close</mat-icon> Cerrar
+        </button>
     </div>
-  </mat-expansion-panel>
+</div>
 
-  <!-- Sección Tarde -->
-  <mat-expansion-panel>
-    <mat-expansion-panel-header>
-      <mat-panel-title>🕓 Tarde (PM)</mat-panel-title>
-    </mat-expansion-panel-header>
-    <div class="hora-wrapper">
-      <button mat-stroked-button
-              *ngFor="let hora of horasPM"
-              [ngClass]="hora.disponible ? 'btn-verde' : 'btn-rojo'"
-              [disabled]="!hora.disponible"
-              (click)="seleccionarHora(hora.hora)">
-        {{ hora.hora }}
-      </button>
+<div class="dialog-content" *ngIf="seleccionHora">
+  <h3 class="padding">⏳ Asignación de Turno</h3>
+  <p class="padding">Has seleccionado la hora <strong>{{ horaSeleccionada }}</strong> del {{ data.fecha | date: 'fullDate':'':'es' }}. Por favor, indica cuánto tiempo requieres el servicio.</p>
+
+    <div class="contenedor-tiempo">
+        <mat-form-field appearance="fill" class="tiempo-form">
+            <mat-label>Duración estimada</mat-label>
+            <mat-select [(value)]="duracion">
+            <mat-option *ngFor="let d of duraciones" [value]="d">{{ d }}</mat-option>
+            </mat-select>
+        </mat-form-field>
     </div>
-  </mat-expansion-panel>
-</mat-accordion>
 
-<!-- Footer del diálogo con botón Cerrar -->
-<div class="dialog-footer">
-  <button mat-raised-button color="primary" (click)="cerrar()">
-    <mat-icon>close</mat-icon> Cerrar
-  </button>
+    <div class="botones-accion">
+    <button mat-raised-button color="primary" (click)="confirmar()" [disabled]="!duracion">
+        Confirmar Turno
+    </button>
+    <button mat-stroked-button color="warn" (click)="cerrar()">
+        Cerrar
+    </button>
+    </div>
 </div>

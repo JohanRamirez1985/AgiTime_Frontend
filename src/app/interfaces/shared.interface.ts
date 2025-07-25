@@ -104,3 +104,7 @@ export interface ClienteRegistroResponse {
   clienteId: number
 }
 
+export interface requestRegistroCita {
+  
+}
+

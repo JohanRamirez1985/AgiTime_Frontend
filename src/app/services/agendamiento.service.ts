@@ -17,4 +17,8 @@ export class AgendamientoService {
         return this.http.get<any>(`${this.baseUrl}/consultarAgendaRecurso`, { params });
     }
 
+    registrarCita(request: any) {
+        return this.http.post<any>(`${this.baseUrl}/registrarCita`, request)
+    }
+
 }
