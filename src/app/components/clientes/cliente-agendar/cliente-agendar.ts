@@ -162,39 +162,41 @@ export class ClienteAgendar {
     
   }
 
-  cargarDisponibilidad() {
-    this.events =  [
-    {
-      start: startOfDayFn(new Date()),
-      title: 'Reserva de ejemplo',
-      color: { primary: '#1e90ff', secondary: '#D1E8FF' },
-    },
-        {
-      start: startOfDayFn(new Date()),
-      title: 'Reserva de ejemplo',
-      color: { primary: '#1e90ff', secondary: '#D1E8FF' },
-    },
-        {
-      start: startOfDayFn(new Date()),
-      title: 'Reserva de ejemplo',
-      color: { primary: '#1e90ff', secondary: '#D1E8FF' },
-    },
-        {
-      start: startOfDayFn(new Date()),
-      title: 'Reserva de ejemplo',
-      color: { primary: '#1e90ff', secondary: '#D1E8FF' },
-    },
-        {
-      start: startOfDayFn(new Date()),
-      title: 'Reserva de ejemplo',
-      color: { primary: '#1e90ff', secondary: '#D1E8FF' },
-    },
-    {
-      start: addDays(new Date(), 2),
-      title: 'Corte de cabello',
-      color: { primary: '#e3bc08', secondary: '#FDF1BA' },
-    }
-  ];;
+  cargarDisponibilidad(data: any) {
+    console.log();
+    
+  //   this.events =  [
+  //   {
+  //     start: startOfDayFn(new Date()),
+  //     title: 'Reserva de ejemplo',
+  //     color: { primary: '#1e90ff', secondary: '#D1E8FF' },
+  //   },
+  //       {
+  //     start: startOfDayFn(new Date()),
+  //     title: 'Reserva de ejemplo',
+  //     color: { primary: '#1e90ff', secondary: '#D1E8FF' },
+  //   },
+  //       {
+  //     start: startOfDayFn(new Date()),
+  //     title: 'Reserva de ejemplo',
+  //     color: { primary: '#1e90ff', secondary: '#D1E8FF' },
+  //   },
+  //       {
+  //     start: startOfDayFn(new Date()),
+  //     title: 'Reserva de ejemplo',
+  //     color: { primary: '#1e90ff', secondary: '#D1E8FF' },
+  //   },
+  //       {
+  //     start: startOfDayFn(new Date()),
+  //     title: 'Reserva de ejemplo',
+  //     color: { primary: '#1e90ff', secondary: '#D1E8FF' },
+  //   },
+  //   {
+  //     start: addDays(new Date(), 2),
+  //     title: 'Corte de cabello',
+  //     color: { primary: '#e3bc08', secondary: '#FDF1BA' },
+  //   }
+  // ];;
     // this.mostrarCalendar = true;
   }
 
@@ -217,12 +219,13 @@ export class ClienteAgendar {
         empresa: this.idEmpresa,
         FechaIni : this.formatearFechaLocal(fecha, '00:00:00'),
         fechaFin : this.formatearFechaLocal(fecha, '23:59:59'),
-        usuario: this.idUser
+        recurso: this.recursoSeleccionado
       };
       this.agendaService.consultarAgendamientos(request)
         .subscribe({
           next: rest => {
-            this.openModal(fecha, horas);
+            this.cargarDisponibilidad(rest.datos);
+            // this.openModal(fecha, horas, this.recursoSeleccionado, this.servicioSeleccionado);
           }
         })
       }
@@ -235,10 +238,10 @@ export class ClienteAgendar {
     return `${anio}-${mes}-${dia}T${hora}`;
   }
 
-  private openModal(fecha:any, horas: any) {
+  private openModal(fecha:any, horas: any , recurso: string, servicio: string) {
     this.dialog.open(HoraDialogComponent, {
       width: '500px',
-      data: { fecha, horas }
+      data: { fecha, horas, recurso, servicio}
     }).afterClosed().subscribe(horaSeleccionada => {
       if (horaSeleccionada) {
         this.procesarAgendamiento(fecha, horaSeleccionada);
@@ -246,25 +249,8 @@ export class ClienteAgendar {
     });
   }
 
-  modificarDia = (day: CalendarMonthViewDay): void => {
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-
-    const fechaDia = new Date(day.date);
-    fechaDia.setHours(0, 0, 0, 0);
-
-    if (fechaDia < hoy) {
-      day.cssClass = 'disabled-day'; // clase CSS personalizada
-    }
-  };
-
   procesarAgendamiento(fecha: Date, hora: string): void {
     alert(`Vas a agendar una cita para el ${fecha.toLocaleDateString('es-CO')} a las ${hora}`);
   }
 
 }
-
-function startOfDay(arg0: Date): Date {
-  throw new Error('Function not implemented.');
-}
-

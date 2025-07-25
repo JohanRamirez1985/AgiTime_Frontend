@@ -52,7 +52,7 @@
         <mat-form-field appearance="fill" class="tiempo-form">
             <mat-label>Duración estimada</mat-label>
             <mat-select [(value)]="duracion">
-            <mat-option *ngFor="let d of duraciones" [value]="d">{{ d }}</mat-option>
+            <mat-option *ngFor="let d of duraciones" [value]="d">{{ d.label }}</mat-option>
             </mat-select>
         </mat-form-field>
     </div>

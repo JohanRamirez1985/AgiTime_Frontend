@@ -23,17 +23,38 @@ export class HoraDialogComponent {
   horasPM: { hora: string; disponible: boolean }[] = [];
   seleccionHora: boolean = false;
   horaSeleccionada: string = '';
-  duracion: string = '';
-  duraciones: string[] = ['15 minutos', '30 minutos', '45 minutos', '1 hora', '1 hora 30 minutos', '2 horas'];
+  duracion: any = '';
+  duraciones: { label: string, value: string}[] =  [
+    { label: '1 hora', value: '1' },
+    { label: '2 horas', value: '2' },
+    { label: '3 horas', value: '3' },
+    { label: '4 horas', value: '4' },
+    { label: '5 horas', value: '5' },
+    { label: '6 horas', value: '6' }
+  ];
+  recurso: string = '';
+  servicio: any = '';
+  cliente: number | null = 0;
+  fecha : Date;
+  idEmpresa: number = 0;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<HoraDialogComponent>,
     private agendamientoService : AgendamientoService,
-    private router: Router
   ) {
     this.horasAM = data.horas.filter((h: { hora: string }) => h.hora.includes('AM'));
     this.horasPM = data.horas.filter((h: { hora: string }) => h.hora.includes('PM'));
+    const usuario = localStorage.getItem('usuario');
+    const infoempresa = localStorage.getItem('empresa');
+    if (infoempresa) {
+      const empresa = JSON.parse(infoempresa);
+      this.idEmpresa = empresa.id;
+    }    
+    this.cliente = usuario ? JSON.parse(usuario).id : null;
+    this.fecha = data.fecha;
+    this.servicio = data.servicio;
+    this.recurso = data.recurso;
   }
 
   seleccionarHora(hora: string) {
@@ -50,12 +71,12 @@ export class HoraDialogComponent {
         console.log();
         Swal.fire({
           icon: 'success',
-          title: '¡Cira creada!',
-          text: rest.mensaje || 'La cifa fue creado exitosamente',
+          title: '¡Cita creada!',
+          text: rest.mensaje || 'La cita fue creado exitosamente',
           confirmButtonColor: '#3085d6',
           confirmButtonText: 'Ok'
         }).then(() => {
-          this.router.navigate(['/cliente/reservar']);
+          this.dialogRef.close();
         });        
       },
       error: err => {
@@ -66,23 +87,46 @@ export class HoraDialogComponent {
         });
       }
     })
-    // Aquí podrías cerrar el diálogo y pasar la info al componente padre si quieres
-    // this.dialogRef.close({
-    //   hora: this.horaSeleccionada,
-    //   duracion: this.duracion
-    // });
   }
 
   private createJson() {
-    const json = {
-        hora: this.horaSeleccionada,
-      };
-  
-    return
+    const fecha = new Date(this.fecha);
+    const fechaBase = fecha.toISOString().split('T')[0]; // "YYYY-MM-DD"
+
+    // Extraer la hora y el periodo (AM o PM)
+    const match = this.horaSeleccionada.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (match) {
+      let horas = parseInt(match[1], 10);
+      const minutos = match[2];
+      const periodo = match[3].toUpperCase();
+
+      // Convertir a formato 24 horas
+      if (periodo === 'PM' && horas < 12) {
+        horas += 12;
+      } else if (periodo === 'AM' && horas === 12) {
+        horas = 0;
+      }
+
+      // Asegurar formato 2 dígitos
+      const horasStr = horas.toString().padStart(2, '0');
+      const fechaFinal = `${fechaBase}T${horasStr}:${minutos}:00`;
+
+      const json = {
+          Hora: this.duracion.value,
+          FechaIni: fechaFinal,
+          recurso: this.recurso,
+          Cliente: this.cliente,
+          Servicio: this.servicio.id,
+          UsuarioCreacion: 'Cliente',
+          empresa: this.idEmpresa
+        };
+    
+      return json
+      } 
+      else {
+        return
+      }
   }
-
-
-
 
   cerrar(): void {
     this.dialogRef.close();
