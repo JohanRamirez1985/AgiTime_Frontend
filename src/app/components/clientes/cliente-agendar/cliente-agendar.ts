@@ -17,6 +17,7 @@ import { UserResponse, Usuario } from '../../../interfaces/shared.interface';
 import { MatInputModule } from '@angular/material/input';
 import { startOfDay as startOfDayFn, addDays } from 'date-fns';
 import Swal from 'sweetalert2';
+import { AgendamientoService } from '../../../services/agendamiento.service';
 
 
 registerLocaleData(localeEs);
@@ -76,15 +77,19 @@ export class ClienteAgendar {
   mostrarSede: boolean = false;
   selectRecurso: boolean = true;
   selectServicio: boolean = false;
+  horas: {hora: string, disponigle: boolean}[] = []
+  idUser: number | null = null;
 
   constructor(
     private dialog: MatDialog,
     private sharedServices: SharedService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private agendaService: AgendamientoService
   ) {}
 
   ngOnInit() {
     const infoEmpresa = localStorage.getItem('empresa');
+    this.idUser = JSON.parse(localStorage.getItem('usuario') || '{}')?.id ?? null;
     if (infoEmpresa) {
       const empresa = JSON.parse(infoEmpresa);
       this.idEmpresa = empresa.id;
@@ -97,36 +102,29 @@ export class ClienteAgendar {
   
   public obtenerHorarios():void {
     const fecha = new Date();
+
     this.sharedServices.obtenerAgenda(this.idEmpresa)
     .subscribe({
       next: rest => {
-        console.log();   
-          this.dialog.open(HoraDialogComponent, {
-          width: '500px',
-          data: { fecha, rest }
-        }).afterClosed().subscribe(horaSeleccionada => {
-          if (horaSeleccionada) {
-            this.procesarAgendamiento(fecha, horaSeleccionada);
-          }
-        });       
+        const respuesta = rest.datos;
+        this.horas = respuesta.map((h: { valor: string; estado: boolean }) => {
+          const [hour, minute] = h.valor.split(':');
+          const date = new Date();
+          date.setHours(Number(hour), Number(minute));
+
+          const horaFormateada = date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+          });
+
+          return {
+            hora: horaFormateada,
+            disponible: h.estado
+          };
+        });    
       }
     })
-  }
-
-  ordernarHorarios() {
-    const horas = [
-      { hora: '08:00 AM', disponible: true },
-      { hora: '09:00 AM', disponible: false },
-      { hora: '10:00 AM', disponible: true },
-      { hora: '11:00 AM', disponible: true },
-      { hora: '12:00 PM', disponible: false },
-      { hora: '01:00 PM', disponible: false },
-      { hora: '02:00 PM', disponible: false },
-      { hora: '03:00 PM', disponible: false },
-      { hora: '04:00 PM', disponible: false },
-      { hora: '05:00 PM', disponible: false },
-      { hora: '06:00 PM', disponible: false }
-    ];
   }
 
   public consultarRecursosSede(event:any): void {    
@@ -201,6 +199,13 @@ export class ClienteAgendar {
   }
 
   onDayClick(event: { day: CalendarMonthViewDay }): void {
+    const fecha = event.day.date;
+    const horas = this.horas;
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    fecha.setHours(0, 0, 0, 0);
+
+    if (fecha < hoy) return;
     if(this.recursoSeleccionado === '') {
       Swal.fire({
         icon: 'error',
@@ -208,33 +213,53 @@ export class ClienteAgendar {
         text: 'Debes seleccionar un recurso',
       });
     }else {
+      const request = {
+        empresa: this.idEmpresa,
+        FechaIni : this.formatearFechaLocal(fecha, '00:00:00'),
+        fechaFin : this.formatearFechaLocal(fecha, '23:59:59'),
+        usuario: this.idUser
+      };
+      this.agendaService.consultarAgendamientos(request)
+      .subscribe({
+        next: rest => {
+          console.log();
+          
+        }
+      })
 
-    }
-    // const fecha = event.day.date;
-
-    // const horas = [
-    //   { hora: '08:00 AM', disponible: true },
-    //   { hora: '09:00 AM', disponible: false },
-    //   { hora: '10:00 AM', disponible: true },
-    //   { hora: '11:00 AM', disponible: true },
-    //   { hora: '12:00 PM', disponible: false },
-    //   { hora: '01:00 PM', disponible: false },
-    //   { hora: '02:00 PM', disponible: false },
-    //   { hora: '03:00 PM', disponible: false },
-    //   { hora: '04:00 PM', disponible: false },
-    //   { hora: '05:00 PM', disponible: false },
-    //   { hora: '06:00 PM', disponible: false }
-    // ];
-
-    // this.dialog.open(HoraDialogComponent, {
-    //   width: '500px',
-    //   data: { fecha, horas }
-    // }).afterClosed().subscribe(horaSeleccionada => {
-    //   if (horaSeleccionada) {
-    //     this.procesarAgendamiento(fecha, horaSeleccionada);
-    //   }
-    // });
+        this.openModal(fecha, horas);
+      }
   }
+
+  formatearFechaLocal(fecha: Date, hora: string): string {
+    const anio = fecha.getFullYear();
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    const dia = fecha.getDate().toString().padStart(2, '0');
+    return `${anio}-${mes}-${dia}T${hora}`;
+  }
+
+  private openModal(fecha:any, horas: any) {
+    this.dialog.open(HoraDialogComponent, {
+      width: '500px',
+      data: { fecha, horas }
+    }).afterClosed().subscribe(horaSeleccionada => {
+      if (horaSeleccionada) {
+        this.procesarAgendamiento(fecha, horaSeleccionada);
+      }
+    });
+  }
+
+  modificarDia = (day: CalendarMonthViewDay): void => {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const fechaDia = new Date(day.date);
+    fechaDia.setHours(0, 0, 0, 0);
+
+    if (fechaDia < hoy) {
+      day.cssClass = 'disabled-day'; // clase CSS personalizada
+    }
+  };
 
   procesarAgendamiento(fecha: Date, hora: string): void {
     alert(`Vas a agendar una cita para el ${fecha.toLocaleDateString('es-CO')} a las ${hora}`);

@@ -134,3 +134,10 @@ mwl-calendar-month-view {
   height: auto !important;
   cursor: default !important;
 }
+
+.disabled-day {
+  pointer-events: none;
+  opacity: 0.4;
+  background-color: #f8f8f8;
+  cursor: not-allowed;
+}
