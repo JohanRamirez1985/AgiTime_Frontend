@@ -60,7 +60,6 @@ export class HoraDialogComponent {
   seleccionarHora(hora: string) {
     this.seleccionHora = true;
     this.horaSeleccionada = hora;
-    // this.dialogRef.close(hora);
   }
 
   confirmar() {

@@ -13,7 +13,7 @@
         <button mat-stroked-button
                 *ngFor="let hora of horasAM"
                 [ngClass]="hora.disponible ? 'btn-verde' : 'btn-rojo'"
-                
+                [disabled]="!hora.disponible"
                 (click)="seleccionarHora(hora.hora)">
             {{ hora.hora }}
         </button>
@@ -29,7 +29,7 @@
         <button mat-stroked-button
                 *ngFor="let hora of horasPM"
                 [ngClass]="hora.disponible ? 'btn-verde' : 'btn-rojo'"
-                
+                [disabled]="!hora.disponible"
                 (click)="seleccionarHora(hora.hora)">
             {{ hora.hora }}
         </button>

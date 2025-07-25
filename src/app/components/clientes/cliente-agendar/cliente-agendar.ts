@@ -149,8 +149,7 @@ export class ClienteAgendar {
     this.sharedServices.obtenerRecursosAgenda(emp)
     .subscribe({
       next: rest => {
-        this.mostrarSede = true;
-        // this.mostrarSede = rest.datos.mostarSede;
+        this.mostrarSede = rest.datos.mostarSede;
         this.selectRecurso = this.mostrarSede;
         this.recursosFiltrados = [...rest.datos.usuario]
         localStorage.setItem('recursos', JSON.stringify(this.recursosFiltrados))
@@ -158,51 +157,8 @@ export class ClienteAgendar {
     })
   }
 
-  consultarServicios() {
-    
-  }
-
-  cargarDisponibilidad(data: any) {
-    console.log();
-    
-  //   this.events =  [
-  //   {
-  //     start: startOfDayFn(new Date()),
-  //     title: 'Reserva de ejemplo',
-  //     color: { primary: '#1e90ff', secondary: '#D1E8FF' },
-  //   },
-  //       {
-  //     start: startOfDayFn(new Date()),
-  //     title: 'Reserva de ejemplo',
-  //     color: { primary: '#1e90ff', secondary: '#D1E8FF' },
-  //   },
-  //       {
-  //     start: startOfDayFn(new Date()),
-  //     title: 'Reserva de ejemplo',
-  //     color: { primary: '#1e90ff', secondary: '#D1E8FF' },
-  //   },
-  //       {
-  //     start: startOfDayFn(new Date()),
-  //     title: 'Reserva de ejemplo',
-  //     color: { primary: '#1e90ff', secondary: '#D1E8FF' },
-  //   },
-  //       {
-  //     start: startOfDayFn(new Date()),
-  //     title: 'Reserva de ejemplo',
-  //     color: { primary: '#1e90ff', secondary: '#D1E8FF' },
-  //   },
-  //   {
-  //     start: addDays(new Date(), 2),
-  //     title: 'Corte de cabello',
-  //     color: { primary: '#e3bc08', secondary: '#FDF1BA' },
-  //   }
-  // ];;
-    // this.mostrarCalendar = true;
-  }
-
   onDayClick(event: { day: CalendarMonthViewDay }): void {
     const fecha = event.day.date;
-    const horas = this.horas;
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
     fecha.setHours(0, 0, 0, 0);
@@ -224,8 +180,13 @@ export class ClienteAgendar {
       this.agendaService.consultarAgendamientos(request)
         .subscribe({
           next: rest => {
-            this.cargarDisponibilidad(rest.datos);
-            // this.openModal(fecha, horas, this.recursoSeleccionado, this.servicioSeleccionado);
+            if(rest.exito) {
+              this.horas = this.horas.map(h => ({
+                ...h,
+                disponible: !rest.datos.includes(h.hora)
+              }));
+            }
+            this.openModal(fecha, this.horas, this.recursoSeleccionado, this.servicioSeleccionado);
           }
         })
       }
