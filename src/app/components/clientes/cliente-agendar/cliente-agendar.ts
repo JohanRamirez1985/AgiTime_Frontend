@@ -1,24 +1,21 @@
 import { CommonModule, registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
-import { Component, LOCALE_ID } from '@angular/core';
+import { ChangeDetectorRef, Component, LOCALE_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
-import { CalendarEvent, CalendarMonthViewDay, CalendarView, DateAdapter } from 'angular-calendar';
+import { CalendarEvent, CalendarView } from 'angular-calendar';
 import { AngularCalendarModule } from '../../../shared/angular-calendar/angular-calendar-module';
 import { Subject } from 'rxjs';
-import { addDays, subDays, addWeeks, subWeeks, setHours, setMinutes, startOfDay } from 'date-fns';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog } from '@angular/material/dialog';
 import { SharedService } from '../../../services/shared.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 import { AgendamientoService } from '../../../services/agendamiento.service';
-import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import Swal from 'sweetalert2';
-import { HoraDialogComponent } from '../../../shared/angular-calendar/hora-dialog.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 
@@ -66,106 +63,143 @@ export class ClienteAgendar {
     nombre: '',
     sede: ''
   };
-  seleccionHora: boolean = false;
   horasAM: { hora: string; disponible: boolean }[] = [];
   horasPM: { hora: string; disponible: boolean }[] = [];
-  data: any;
-  horaSeleccionada: string = '';
-  duracion: any = '';
-    duraciones: { label: string, value: string}[] =  [
-    { label: '1 hora', value: '1' },
-    { label: '2 horas', value: '2' },
-    { label: '3 horas', value: '3' },
-    { label: '4 horas', value: '4' },
-    { label: '5 horas', value: '5' },
-    { label: '6 horas', value: '6' }
-  ];
-  recurso: string = '';
-  servicio: any = '';
-  cliente: number | null = 0;
-  fecha : Date = new Date();
+  cargandoCalendario: boolean = true;
+  mostrarDisponibilidad: boolean = false;
+  costo: number = 0;
 
-
-
-  // mostrarSede: boolean = false;
-  // idUser: number | null = null;
-  // idEmpresa: number = 0;
-  // sedesFiltrados: any[] = [];
-  // recursosFiltrados: any[] = [];
-  // filtroRecurso: string = '';
-  // sedeSeleccionada: string = '';
-  // servicioSeleccionado: string = '';
-  // serviciosDisponibles: { id: string; nombre: string; valor: number }[] = [];
-  // selectRecurso: boolean = true;
-  // selectServicio: boolean = false;
-
-  // cargandoCalendario: boolean = true;
 
   events: CalendarEvent[] = [];
 
     constructor(
     private dialog: MatDialog,
     private sharedServices: SharedService,
-    private route: ActivatedRoute,
-    private agendaService: AgendamientoService
+    private agendaService: AgendamientoService,
+    private cdr: ChangeDetectorRef,
+    private router: Router
+   
   ) {}
 
    ngOnInit() {
-    const fecha = new Date();
     this.recursoInfo = JSON.parse(localStorage.getItem('recurso') || '{"emp":0,"id":0,"nombre":"","sede":""}');
     this.nombreDelRecurso = this.recursoInfo.nombre;
     this.idEmpresa = this.recursoInfo.emp;
     this.obtenerServicios(this.idEmpresa);
     this.obtenerHorarios();
-    this.seleccionarRecurso(fecha);
-    // const infoEmpresa = localStorage.getItem('empresa');
-    // this.idUser = JSON.parse(localStorage.getItem('usuario') || '{}')?.id ?? null;
-    // if (infoEmpresa) {
-    //   const empresa = JSON.parse(infoEmpresa);
-    //   this.idEmpresa = empresa.id;
-    //   this.sedesFiltrados = empresa.sedes;
-    //   this.obtenerRecursos(this.idEmpresa);
-    //   
-    //   this.obtenerServicios(this.idEmpresa);
-    // }  
   }
 
-  cerrar(): void {
-    // this.dialogRef.close();
-  }
+  public seleccionarHora(hora: any): void {
+    // Validar si la hora ya pasó
+    if (!this.estaDisponible(hora.hora)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Hora inválida',
+        text: 'No puedes agendar en horarios pasados',
+      });
+      return;
+    }
 
-  confirmar() {
-    const request = this.createJson();
-    this.agendaService.registrarCita(request)
-    .subscribe({
-      next: rest => {
-        console.log();
-        Swal.fire({
-          icon: 'success',
-          title: '¡Cita creada!',
-          text: rest.mensaje || 'La cita fue creado exitosamente',
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'Ok'
-        }).then(() => {
-          // this.dialogRef.close();
-        });        
-      },
-      error: err => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error de servidor',
-          text: err.mensaje || 'Error de servidor',
-        });
+    const fechaFormateada = this.viewDate.toLocaleDateString('es-CO', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    this.costo = this.serviciosSeleccionados.reduce((a, b) => a + b, 0);
+    const costoFormateado = new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0
+    }).format(this.costo);
+
+
+    Swal.fire({
+      title: 'Confirmar reserva',
+      html: `
+        <p><strong>Fecha:</strong> ${fechaFormateada}</p>
+        <p><strong>Hora:</strong> ${hora.hora}</p>
+        <p><strong>Costo:</strong> ${costoFormateado}</p>
+        <input type="text" id="celular" class="swal2-input" placeholder="Celular">
+        <input type="text" id="nombre" class="swal2-input" placeholder="Nombres">
+      `,
+      confirmButtonText: 'Reservar',
+      showCancelButton: true,
+      preConfirm: () => {
+        const celular = (document.getElementById('celular') as HTMLInputElement).value;
+        const nombre = (document.getElementById('nombre') as HTMLInputElement).value;
+        if (!celular || !/^\d{7,}$/.test(celular)) {
+          Swal.showValidationMessage('Ingresa un número de celular válido');
+          return false;
+        }
+
+        return { celular, nombre, fecha: this.viewDate, hora: hora.hora };
       }
-    })
+    }).then(result => {
+      if (result.isConfirmed) {
+        const datosReserva = result.value;
+        console.log('Datos de reserva:', datosReserva);
+
+        this.reservarCita(datosReserva, hora.hora);
+      }
+    });
+    
   }
 
-  private createJson() {
-    const fecha = new Date(this.fecha);
-    const fechaBase = fecha.toISOString().split('T')[0]; // "YYYY-MM-DD"
+  volver(): void {
+    this.router.navigate(['/cliente'], {
+      queryParams: { em: this.idEmpresa } 
+    }); // o la ruta a la que quieras volver
+  }
+
+  private reservarCita(datos: { celular: string, fecha: string, hora: string }, hora: string) {
+    const request = this.createJson(hora);
+    // this.agendaService.registrarCita(request)
+    // .subscribe({
+    //   next: rest => {
+    //     Swal.fire({
+    //       icon: 'success',
+    //       title: '¡Cita creada!',
+    //       text: rest.mensaje || 'La cita fue creado exitosamente',
+    //       confirmButtonColor: '#3085d6',
+    //       confirmButtonText: 'Ok'
+    //     }).then(() => {
+    //       // this.dialogRef.close();
+    //     });        
+    //   },
+    //   error: err => {
+    //     Swal.fire({
+    //       icon: 'error',
+    //       title: 'Error de servidor',
+    //       text: err.mensaje || 'Error de servidor',
+    //     });
+    //   }
+    // })
+    
+  }
+
+  private estaDisponible(hora: string): boolean {
+    const hoy = new Date();
+
+    const [time, period] = hora.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+
+    if (period === 'PM' && hours < 12) hours += 12;
+    if (period === 'AM' && hours === 12) hours = 0;
+
+    const horaCita = new Date(hoy);
+    horaCita.setHours(hours, minutes, 0, 0);
+
+    return horaCita > hoy;
+  }
+
+
+  private createJson(hora : string) {
+    const fechaBase = this.viewDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
 
     // Extraer la hora y el periodo (AM o PM)
-    const match = this.horaSeleccionada.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    const match = hora.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
     if (match) {
       let horas = parseInt(match[1], 10);
       const minutos = match[2];
@@ -173,56 +207,53 @@ export class ClienteAgendar {
 
       // Convertir a formato 24 horas
       if (periodo === 'PM' && horas < 12) {
-        horas += 12;
-      } else if (periodo === 'AM' && horas === 12) {
-        horas = 0;
-      }
+          horas += 12;
+        } else if (periodo === 'AM' && horas === 12) {
+          horas = 0;
+        }
 
       // Asegurar formato 2 dígitos
-      const horasStr = horas.toString().padStart(2, '0');
-      const fechaFinal = `${fechaBase}T${horasStr}:${minutos}:00`;
+        const horasStr = horas.toString().padStart(2, '0');
+        const fechaFinal = `${fechaBase}T${horasStr}:${minutos}:00`;
 
-      const json = {
-          Hora: this.duracion.value,
-          FechaIni: fechaFinal,
-          recurso: this.recurso,
-          Cliente: this.cliente,
-          Servicio: this.servicio.id,
-          UsuarioCreacion: 'Cliente',
-          empresa: this.idEmpresa
-        };
-    
-      return json
-      } 
-      else {
-        return
-      }
+        const json = {
+            // Hora: this.duracion.value,
+            // FechaIni: fechaFinal,
+            // recurso: this.recurso,
+            // Cliente: this.cliente,
+            // Servicio: this.servicio.id,
+            // UsuarioCreacion: 'Cliente',
+            // empresa: this.idEmpresa
+          };
+      
+        return json
+    } 
+    else {
+      return
+    }
   }
 
-  seleccionarHora(hora: string) {
-    this.seleccionHora = true;
-    this.horaSeleccionada = hora;
+  // seleccionarHora(hora: string) {
+  //   this.seleccionHora = true;
+  //   this.horaSeleccionada = hora;
+  // }
+
+  public nextPeriod(): void {
+    this.viewDate = new Date(this.viewDate);
+    this.viewDate.setDate(this.viewDate.getDate() + 1);
+    this.cargandoCalendario = true;
+    this.horas.forEach(hora => hora.disponible = true);
+    this.seleccionarRecurso(this.viewDate);
   }
 
-  // previousPeriod(): void {
-  //   this.viewDate = this.view === CalendarView.Day
-  //     ? subDays(this.viewDate, 1)
-  //     : subWeeks(this.viewDate, 1);
-  // }
-
-  // nextPeriod(): void {
-  //   this.viewDate = this.view === CalendarView.Day
-  //     ? addDays(this.viewDate, 1)
-  //     : addWeeks(this.viewDate, 1);
-  // }
-
-  // today(): Date {
-  //   return new Date();
-  // }
+  public today(): void {
+    this.viewDate = new Date();
+    this.cargandoCalendario = true;
+    this.horas.forEach(hora => hora.disponible = true);
+    this.seleccionarRecurso(this.viewDate);
+  }
 
   public seleccionarRecurso(fecha: Date): void {
-    // this.selectServicio = true;
-    // this.cargandoCalendario = true;
     const request = {
       empresa: this.idEmpresa,
       FechaIni : this.formatearFechaLocal(fecha, '00:00:00'),
@@ -234,51 +265,19 @@ export class ClienteAgendar {
       .subscribe({
         next: rest => {
           if(rest.exito) {
-            this.horas = this.horas.map(h => ({
-              ...h,
-              disponible: !rest.datos.includes(h.hora)
-            }));
-            // if(select) this.inicial(fecha);
-            // this.cargandoCalendario = false;
-          }else {
-            // this.cargandoCalendario = false;
+            for (let i = 0; i < this.horas.length; i++) {
+              let disponible = true;
+              disponible = rest.datos.find((h : any) => h === this.horas[i].hora);
+              if(disponible) {
+                this.horas[i].disponible = false;
+              }
+            }
           }
+          this.cargandoCalendario = false;
+          this.cdr.detectChanges();
         }
       })
   }
-
-  private inicial(fecha: any) {
-    this.events = this.horas
-    .filter(h => !h.disponible)
-    .map(h => {
-      const [horaStr, ampm] = h.hora.split(' ');
-      let [hour, minute] = horaStr.split(':').map(Number);
-
-      if (ampm === 'PM' && hour !== 12) hour += 12;
-      if (ampm === 'AM' && hour === 12) hour = 0;
-
-      const start = setHours(setMinutes(startOfDay(fecha), minute), hour);
-
-      return {
-        start,
-        title: 'No disponible',
-        color: {
-          primary: '#b53f4f',
-          secondary: '#e3f2fd'
-        }
-      } as CalendarEvent;
-    });
-  }
-
-  // handleEvent(event: CalendarEvent): void {
-  //   console.log('Evento clickeado:', event);
-  // }
-
-  // seleccionarRecursoConFecha() {
-  //   const fecha = new Date();
-  //   this.seleccionarRecurso(true, fecha);
-  // }
-
 
   horaClickeada(event: any): void {
     const fecha = event.date;
@@ -310,18 +309,6 @@ export class ClienteAgendar {
       }
     })
   }
-
-  // private obtenerRecursos(emp: number): void {
-  //   this.sharedServices.obtenerRecursosAgenda(emp)
-  //   .subscribe({
-  //     next: rest => {
-  //       this.mostrarSede = rest.datos.mostarSede;
-  //       this.selectRecurso = this.mostrarSede;
-  //       this.recursosFiltrados = [...rest.datos.usuario]
-  //       localStorage.setItem('recursos', JSON.stringify(this.recursosFiltrados))
-  //     }
-  //   })
-  // }
 
   // onDayClick(event: { day: CalendarMonthViewDay }): void {
   //   const fecha = event.day.date;
@@ -392,12 +379,10 @@ export class ClienteAgendar {
 
   public obtenerHorarios():void {
     const fecha = new Date();
-    // this.cargandoCalendario = true;
     this.sharedServices.obtenerAgenda(this.idEmpresa)
     .subscribe({
       next: rest => {
         const respuesta = rest.datos;
-        this.ordenarDataCalendario(respuesta);
         this.horas = respuesta.map((h: { valor: string; estado: boolean }) => {
           const [hour, minute] = h.valor.split(':');
           const date = new Date();
@@ -414,19 +399,11 @@ export class ClienteAgendar {
             disponible: h.estado
           };
         });    
-        // this.cargandoCalendario = false;
+        this.horasAM = this.horas.filter(h => h.hora.includes('AM'));
+        this.horasPM = this.horas.filter(h => h.hora.includes('PM'));
+        this.seleccionarRecurso(fecha);
       }
     })
   }
-
-  private ordenarDataCalendario(respuesta:any): void {
-    const primerHorario = respuesta[0];
-    const ultimoHorario = respuesta[respuesta.length - 1];
-
-    this.horaInicioServicios = parseInt(primerHorario.valor.split(':')[0], 10);
-    this.horaFinServicios = parseInt(ultimoHorario.valor.split(':')[0], 10) + 1; // sumamos 1 para que incluya esa última hora en el calendario
-  }
-
-
 
 }
