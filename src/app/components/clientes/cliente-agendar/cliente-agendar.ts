@@ -147,8 +147,7 @@ export class ClienteAgendar {
     }).then(result => {
       if (result.isConfirmed) {
         const datosReserva = result.value;
-        console.log('Datos de reserva:', datosReserva);
-
+        this.cargandoCalendario = true;
         this.reservarCita(datosReserva, hora.hora);
       }
     });
@@ -166,6 +165,7 @@ export class ClienteAgendar {
     this.agendaService.registrarCita(request)
     .subscribe({
       next: rest => {
+        this.cargandoCalendario = false;
         Swal.fire({
           icon: 'success',
           title: '¡Cita creada!',
@@ -173,10 +173,11 @@ export class ClienteAgendar {
           confirmButtonColor: '#3085d6',
           confirmButtonText: 'Ok'
         }).then(() => {
-          // this.dialogRef.close();
+          this.volver();
         });        
       },
       error: err => {
+        this.cargandoCalendario = false;
         Swal.fire({
           icon: 'error',
           title: 'Error de servidor',
