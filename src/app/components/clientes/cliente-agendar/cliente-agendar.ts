@@ -118,6 +118,9 @@ export class ClienteAgendar {
       `,
       confirmButtonText: 'Reservar',
       showCancelButton: true,
+      customClass: {
+        popup: 'swal-reserva-responsive'
+      },
       preConfirm: () => {
         const celular = (document.getElementById('celular') as HTMLInputElement).value;
         const nombre = (document.getElementById('nombre') as HTMLInputElement).value;
