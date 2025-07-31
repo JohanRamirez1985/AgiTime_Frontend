@@ -14,7 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import Swal from 'sweetalert2';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 registerLocaleData(localeEs);
 
@@ -31,7 +31,6 @@ registerLocaleData(localeEs);
     MatIconModule,
     MatButtonToggleModule,
     MatProgressSpinnerModule,
-    MatAccordion,
     MatExpansionModule
   ],
   providers: [
