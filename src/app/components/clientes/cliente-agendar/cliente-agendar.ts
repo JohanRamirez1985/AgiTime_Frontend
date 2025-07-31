@@ -251,15 +251,13 @@ export class ClienteAgendar {
     this.viewDate = new Date(this.viewDate);
     this.viewDate.setDate(this.viewDate.getDate() + 1);
     this.cargandoCalendario = true;
-    this.horas.forEach(hora => hora.disponible = true);
-    this.seleccionarRecurso(this.viewDate);
+    this.obtenerHorarios();
   }
 
   public today(): void {
     this.viewDate = new Date();
     this.cargandoCalendario = true;
-    this.horas.forEach(hora => hora.disponible = true);
-    this.seleccionarRecurso(this.viewDate);
+    this.obtenerHorarios();
   }
 
   public seleccionarRecurso(fecha: Date): void {
@@ -282,9 +280,9 @@ export class ClienteAgendar {
               }
             }
             this.horas = this.horas.filter(h => h.disponible);
-            this.horasAM = this.horas.filter(h => h.hora.includes('AM'));
-            this.horasPM = this.horas.filter(h => h.hora.includes('PM'));
           }
+          this.horasAM = this.horas.filter(h => h.hora.includes('AM'));
+          this.horasPM = this.horas.filter(h => h.hora.includes('PM'));
           this.cargandoCalendario = false;
           this.cdr.detectChanges();
         }
@@ -309,7 +307,6 @@ export class ClienteAgendar {
 
 
   public obtenerHorarios():void {
-    const fecha = new Date();
     this.sharedServices.obtenerAgenda(this.idEmpresa)
     .subscribe({
       next: rest => {
@@ -332,7 +329,7 @@ export class ClienteAgendar {
         });    
         this.horasAM = this.horas.filter(h => h.hora.includes('AM'));
         this.horasPM = this.horas.filter(h => h.hora.includes('PM'));
-        this.seleccionarRecurso(fecha);
+        this.seleccionarRecurso(this.viewDate);
       }
     })
   }
