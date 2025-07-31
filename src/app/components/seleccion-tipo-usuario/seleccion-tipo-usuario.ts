@@ -79,6 +79,12 @@ export class SeleccionTipoUsuario {
     });
   }
 
+  public irCliente(): void {
+    this.router.navigate(['/cliente'], {
+      queryParams: { em: this.idEmpresaSeleccionada }
+    });
+  }
+
   public listadoFiltrado() {
     return this.listado.filter(item =>
       item.nombre.toLowerCase().includes(this.filtro.toLowerCase())

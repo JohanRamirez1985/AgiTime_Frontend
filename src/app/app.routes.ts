@@ -55,7 +55,7 @@ export const routes: Routes = [
 
   {
     path: 'cliente',
-    canActivate: [AuthGuard(['Cliente'])],
+    // canActivate: [AuthGuard(['Cliente'])],
     loadChildren: () =>
       import('./components/clientes/cliente-routing').then(m => m.routes)
   },

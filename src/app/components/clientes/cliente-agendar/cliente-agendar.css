@@ -1,143 +1,107 @@
-/* --- Estructura general --- */
 .agendar-wrapper {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: #ffffff;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: #fefefe;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+  font-family: 'Segoe UI', sans-serif;
 }
 
-/* --- Título --- */
 .agendar-wrapper h2 {
   text-align: center;
-  margin-bottom: 2rem;
-  color: #1f3c88;
-  font-size: 1.8rem;
+  color: #002d72;
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.form-field {
+  width: 100%;
+  margin-bottom: 1.2rem;
+}
+
+.recurso-texto {
+  font-weight: 600;
+  color: #2d2d2d;
+}
+
+.barra-fecha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid #e2e2e2;
+  margin-bottom: 1rem;
+}
+
+.fecha-actual {
+  font-weight: 600;
+  color: #333;
+}
+
+.navegacion-botones button {
+  font-size: 0.85rem;
+}
+
+.horario-seccion {
+  margin-top: 1.5rem;
+}
+
+.seccion-titulo {
+  font-weight: 600;
+  color: #002d72;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.horas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
+}
+
+button.hora-disponible {
+  background: #e8f5e9;
+  color: #2e7d32 !important;
+  border: 1px solid #a5d6a7;
   font-weight: 600;
 }
 
-/* --- Campos de selección y botón --- */
-.full-width {
-  width: 100%;
-  margin-bottom: 1.5rem;
+button.hora-no-disponible {
+  background: #fbe9e7;
+  color: #d32f2f !important;
+  border: 1px solid #ef9a9a;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
-button.full-width {
-  border-radius: 12px;
-  padding: 0.6rem 1rem;
+.loading-container {
+  text-align: center;
+  padding: 40px 0;
+  color: #555;
+}
+
+.loading-text {
+  margin-top: 1rem;
   font-size: 1rem;
 }
 
-/* --- Ajuste para mat-form-field --- */
-mat-form-field {
-  background-color: #f9f9f9;
-  border-radius: 6px;
-  width: 100%;
+.header-container {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  gap: 0.5rem;
 }
 
-/* --- Estilos del calendario --- */
-mwl-calendar-month-view {
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  overflow: hidden;
-  width: 100% !important;
-  overflow-x: auto;
-}
-
-/* Celdas de día */
-.cal-cell {
-  padding: 8px;
-  transition: background-color 0.2s;
-}
-
-.cal-cell:hover {
-  background-color: #f0f8ff;
-  cursor: pointer;
-}
-
-/* Título del día */
-.cal-day-number {
-  font-weight: bold;
-  font-size: 0.9rem;
-  color: #1f3c88;
-}
-
-/* Encabezados de días */
-::ng-deep .cal-header .cal-cell {
-  font-size: 0.7rem !important;
-  padding: 4px !important;
-  min-width: 32px;
-  text-align: center;
-}
-
-/* Eventos */
-.cal-event {
-  padding: 4px 6px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  margin-top: 4px;
+.header-title {
+  font-size: 1.2rem;
   font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Eventos disponibles */
-.cal-event.primary {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-/* Eventos ocupados */
-.cal-event.danger {
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
-/* --- Responsivo --- */
-@media (max-width: 768px) {
-  .agendar-wrapper {
-    padding: 1.5rem;
-    margin: 1rem;
-  }
-
-  .agendar-wrapper h2 {
-    font-size: 1.5rem;
-  }
-
-  mat-form-field {
-    font-size: 0.9rem;
-  }
-
-  button.mat-raised-button {
-    padding: 0.5rem 1rem !important;
-    font-size: 0.9rem;
-  }
-
-  ::ng-deep .cal-header .cal-cell {
-    font-size: 0.6rem !important;
-    padding: 2px !important;
-  }
-}
-
-.calendario-contenedor {
-  margin-top: 2rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 1rem;
-  background-color: #fafafa;
-}
-
-.search-option {
-  height: auto !important;
-  cursor: default !important;
-}
-
-.disabled-day {
-  pointer-events: none;
-  opacity: 0.4;
-  background-color: #f8f8f8;
-  cursor: not-allowed;
+  color: #333;
 }

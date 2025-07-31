@@ -1,63 +1,93 @@
 <div class="agendar-wrapper">
-  <h2>📅 Agendar cita</h2>
+  <div class="header-container">
+    <button mat-icon-button color="primary" (click)="volver()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="header-title">Inicio</span>
+  </div>
+  <h2><mat-icon>event</mat-icon> Agendar cita</h2>
 
-  <!-- Selector de recurso -->
-  <mat-form-field class="full-width" appearance="fill" *ngIf="mostrarSede">
-    <mat-label>Selecciona una sede</mat-label>
-    <mat-select
-      [(ngModel)]="sedeSeleccionada"
-      (selectionChange)="consultarRecursosSede(sedeSeleccionada)"
-      panelClass="select-panel-con-buscador"
-    >
-      <!-- Opciones filtradas -->
-      <mat-option
-        *ngFor="let r of sedesFiltrados"
-        [value]="r"
-      >
-        {{ r.nombre }}
+  <!-- Recurso -->
+  <mat-form-field class="form-field recurso-display" appearance="outline">
+    <mat-label>Recurso seleccionado</mat-label>
+    <input matInput [value]="nombreDelRecurso" disabled class="recurso-texto" />
+    <mat-icon matSuffix color="primary">check_circle</mat-icon>
+  </mat-form-field>
+
+  <!-- Servicios -->
+  <mat-form-field class="form-field servicio-multiple" appearance="outline">
+    <mat-label>Servicios disponibles</mat-label>
+    <mat-select [(ngModel)]="serviciosSeleccionados" multiple [disabled]="serviciosFiltrados.length === 0">
+      <mat-option *ngFor="let servicio of serviciosFiltrados" [value]="servicio.valor" (click)="mostrarDisponibilidad = true">
+        {{ servicio.nombre }} - ${{ servicio.valor | number: '1.0-0':'es-CO' }}
       </mat-option>
     </mat-select>
   </mat-form-field>
 
+  <!-- Navegación de fechas -->
+  <div *ngIf="mostrarDisponibilidad">
+    <div class="barra-fecha">
+      <span class="fecha-actual">
+        <mat-icon>calendar_today</mat-icon> {{ viewDate | date: 'fullDate' }}
+      </span>
+      <div class="navegacion-botones">
+        <button mat-stroked-button color="primary" (click)="today()">Hoy</button>
+        <button mat-icon-button (click)="nextPeriod()" aria-label="Día siguiente">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
 
-  <mat-form-field class="full-width" appearance="fill">
-    <mat-label>Selecciona un recurso</mat-label>
-    <mat-select
-      [(ngModel)]="recursoSeleccionado"
-      (selectionChange)="selectServicio = true"
-      panelClass="select-panel-con-buscador"
-      [disabled]="selectRecurso"
-    >
-      <!-- Opciones filtradas -->
-      <mat-option
-        *ngFor="let r of recursosFiltrados"
-        [value]="r.id"
-      >
-        {{ r.nombre }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+    <!-- Loader -->
+    <div *ngIf="cargandoCalendario" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p class="loading-text">Cargando disponibilidad...</p>
+    </div>
 
-  <!-- Selector de servicio -->
-  <mat-form-field class="full-width" appearance="fill" *ngIf="selectServicio">
-    <mat-label>Selecciona un servicio</mat-label>
-    <mat-select [(ngModel)]="servicioSeleccionado">
-      <mat-option *ngFor="let s of serviciosDisponibles" [value]="s">
-         {{ s.nombre }} - ${{s.valor | number:'1.0-0'}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+    <!-- Horarios -->
+    <div class="horarios-container" *ngIf="!cargandoCalendario">
 
-  <!-- <button mat-raised-button color="primary" class="full-width" (click)="cargarDisponibilidad()">
-    Ver disponibilidad
-  </button> -->
+      <!-- Mañana -->
+      <div class="horario-seccion">
+        <div class="seccion-titulo">
+          <mat-icon>light_mode</mat-icon> Mañana (AM)
+        </div>
+        <div class="horas-grid">
+          <button
+            mat-flat-button
+            *ngFor="let hora of horasAM"
+            [disabled]="!hora.disponible"
+            [ngClass]="{
+              'hora-disponible': hora.disponible,
+              'hora-no-disponible': !hora.disponible
+            }"
+            (click)="seleccionarHora(hora)"
+          >
+            {{ hora.hora }}
+          </button>
+        </div>
+      </div>
 
-  <!-- Calendario -->
-  <div class="calendario-contenedor" *ngIf="mostrarCalendar">
-    <mwl-calendar-month-view
-      [viewDate]="viewDate"
-      [events]="events"
-      (dayClicked)="onDayClick($event)">
-    </mwl-calendar-month-view>
+      <!-- Tarde -->
+      <div class="horario-seccion">
+        <div class="seccion-titulo">
+          <mat-icon>nights_stay</mat-icon> Tarde (PM)
+        </div>
+        <div class="horas-grid">
+          <button
+            mat-flat-button
+            *ngFor="let hora of horasPM"
+            [disabled]="!hora.disponible"
+            [ngClass]="{
+              'hora-disponible': hora.disponible,
+              'hora-no-disponible': !hora.disponible
+            }"
+            (click)="seleccionarHora(hora)"
+          >
+            {{ hora.hora }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

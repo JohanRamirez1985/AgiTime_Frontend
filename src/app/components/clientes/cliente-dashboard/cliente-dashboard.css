@@ -1,148 +1,3 @@
-.sedes-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-  padding: 16px;
-  justify-content: center;
-}
-
-.sede-card {
-  background-color: #f5f5f5;
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  text-align: left;
-}
-
-/* Botón cerrar sesión */
-.logout-top-right {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  z-index: 1000;
-}
-
-.logout-top-right button {
-  background-color: white;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-/* Título */
-.dashboard-card h2 {
-  margin-bottom: 1rem;
-  color: #1f3c88;
-  font-size: 1.8rem;
-  font-weight: 600;
-  text-align: center;
-}
-
-/* Información de la empresa */
-.empresa-info {
-  margin: 1rem 0 20px;
-  text-align: center;
-}
-
-.empresa-info h3 {
-  color: #333;
-  font-weight: 600;
-  margin-bottom: 0.3rem;
-  font-size: 1.2rem;
-}
-
-.empresa-info p {
-  margin: 0;
-  color: #666;
-  font-size: 0.95rem;
-}
-
-.sede-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  background-color: #f9f9f9;
-  padding: 1rem;
-  border-radius: 8px;
-  margin: 0.75rem 0;
-  text-align: left;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-
-
-/* Botones */
-.acciones {
-  margin-top: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.full-width {
-  width: 100%;
-}
-
-/* Promoción */
-.promo-section {
-  margin-top: 2rem;
-  padding: 1rem;
-  background-color: #fff4d6;
-  border: 1px dashed #f0ad4e;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 0.95rem;
-}
-
-.promo-section h4 {
-  margin: 0 0 0.5rem;
-  color: #d35400;
-}
-
-/* Imagen */
-.imagen-banner {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  object-fit: cover;
-}
-
-/* Responsivo */
-@media (max-width: 600px) {
-  .dashboard-card {
-    max-width: 100%;
-    margin: 0 1rem;
-    padding: 1.5rem;
-  }
-
-  .dashboard-card h2 {
-    font-size: 1.5rem;
-  }
-}
-
-.sedes-container {
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  padding: 8px 0;
-  scroll-snap-type: x mandatory;
-}
-
-/* Tarjetas de sede individuales */
-.sede-card {
-  min-width: 250px; /* o el ancho deseado */
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 16px;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.sede-card:hover {
-  transform: scale(1.02);
-}
-
 .dashboard-wrapper {
   display: flex;
   justify-content: center;
@@ -151,7 +6,87 @@
 
 .dashboard-card {
   width: 100%;
-  max-width: 1000px; /* puedes ajustar este valor a tu gusto */
-  padding: 2rem;
-  box-sizing: border-box;
+  max-width: 600px;
+  padding: 1.5rem;
+  position: relative;
+}
+
+.logout-top-right {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.recurso-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.recurso-card {
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: box-shadow 0.3s, transform 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    transform: scale(1.01);
+  }
+}
+
+.recurso-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.recurso-info {
+  flex: 1;
+}
+
+.recurso-info h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.recurso-info p {
+  display: flex;
+  align-items: center;
+  margin: 0.2rem 0;
+  font-size: 0.9rem;
+}
+
+.recurso-info mat-icon {
+  margin-right: 0.4rem;
+  font-size: 18px;
+}
+
+.recurso-imagen img {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.imagen-banner {
+  width: 200px;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  object-fit: cover;
+  align-self: center;
+  margin-top: 5px;
 }
