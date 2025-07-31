@@ -18,7 +18,7 @@
   <mat-form-field class="form-field servicio-multiple" appearance="outline">
     <mat-label>Servicios disponibles</mat-label>
     <mat-select [(ngModel)]="serviciosSeleccionados" multiple [disabled]="serviciosFiltrados.length === 0">
-      <mat-option *ngFor="let servicio of serviciosFiltrados" [value]="servicio.valor" (click)="mostrarDisponibilidad = true">
+      <mat-option *ngFor="let servicio of serviciosFiltrados" [value]="{ valor: servicio.valor, tiempo: servicio.tiempo, id: servicio.id }" (click)="mostrarDisponibilidad = true">
         {{ servicio.nombre }} - ${{ servicio.valor | number: '1.0-0':'es-CO' }}
       </mat-option>
     </mat-select>

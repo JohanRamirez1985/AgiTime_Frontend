@@ -5,13 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
-import { CalendarEvent, CalendarView } from 'angular-calendar';
-import { AngularCalendarModule } from '../../../shared/angular-calendar/angular-calendar-module';
 import { Subject } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDialog } from '@angular/material/dialog';
 import { SharedService } from '../../../services/shared.service';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { AgendamientoService } from '../../../services/agendamiento.service';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
@@ -31,7 +28,6 @@ registerLocaleData(localeEs);
     MatSelectModule,
     MatButtonModule,
     MatInputModule,
-    AngularCalendarModule,
     MatIconModule,
     MatButtonToggleModule,
     MatProgressSpinnerModule,
@@ -45,11 +41,7 @@ registerLocaleData(localeEs);
   styleUrl: './cliente-agendar.css'
 })
 export class ClienteAgendar {
-  CalendarView = CalendarView;
-  view: CalendarView = CalendarView.Week;
   viewDate: Date = new Date();
-  refresh = new Subject<void>();
-
   nombreDelRecurso: string = '';
   serviciosFiltrados: any[] = [];
   serviciosSeleccionados: any[] = [];
@@ -68,12 +60,9 @@ export class ClienteAgendar {
   cargandoCalendario: boolean = true;
   mostrarDisponibilidad: boolean = false;
   costo: number = 0;
-
-
-  events: CalendarEvent[] = [];
+  idRecurso: number = 0;
 
     constructor(
-    private dialog: MatDialog,
     private sharedServices: SharedService,
     private agendaService: AgendamientoService,
     private cdr: ChangeDetectorRef,
@@ -83,6 +72,7 @@ export class ClienteAgendar {
 
    ngOnInit() {
     this.recursoInfo = JSON.parse(localStorage.getItem('recurso') || '{"emp":0,"id":0,"nombre":"","sede":""}');
+    this.idRecurso = this.recursoInfo.id;
     this.nombreDelRecurso = this.recursoInfo.nombre;
     this.idEmpresa = this.recursoInfo.emp;
     this.obtenerServicios(this.idEmpresa);
@@ -90,7 +80,7 @@ export class ClienteAgendar {
   }
 
   public seleccionarHora(hora: any): void {
-    // Validar si la hora ya pasó
+
     if (!this.estaDisponible(hora.hora)) {
       Swal.fire({
         icon: 'warning',
@@ -107,7 +97,9 @@ export class ClienteAgendar {
       day: 'numeric'
     });
 
-    this.costo = this.serviciosSeleccionados.reduce((a, b) => a + b, 0);
+    const valor = this.serviciosSeleccionados.map(s => s.valor);
+  
+    this.costo = valor.reduce((a, b) => a + b, 0);
     const costoFormateado = new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
@@ -123,18 +115,34 @@ export class ClienteAgendar {
         <p><strong>Costo:</strong> ${costoFormateado}</p>
         <input type="text" id="celular" class="swal2-input" placeholder="Celular">
         <input type="text" id="nombre" class="swal2-input" placeholder="Nombres">
+        <input type="text" id="correo" class="swal2-input" placeholder="Correo">
       `,
       confirmButtonText: 'Reservar',
       showCancelButton: true,
       preConfirm: () => {
         const celular = (document.getElementById('celular') as HTMLInputElement).value;
         const nombre = (document.getElementById('nombre') as HTMLInputElement).value;
+        const correo = (document.getElementById('correo') as HTMLInputElement).value;
+
+        // Validar celular: mínimo 7 dígitos, solo números
         if (!celular || !/^\d{7,}$/.test(celular)) {
-          Swal.showValidationMessage('Ingresa un número de celular válido');
+          Swal.showValidationMessage('Ingresa un número de celular válido (mínimo 7 dígitos)');
           return false;
         }
 
-        return { celular, nombre, fecha: this.viewDate, hora: hora.hora };
+        // Validar nombre: no vacío, solo letras y espacios (opcionalmente tildes)
+        if (!nombre || !/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(nombre)) {
+          Swal.showValidationMessage('Ingresa un nombre válido (solo letras y espacios)');
+          return false;
+        }
+
+        // Validar correo: formato estándar de email
+        if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+          Swal.showValidationMessage('Ingresa un correo electrónico válido');
+          return false;
+        }
+
+        return { celular, nombre, fecha: this.viewDate, hora: hora.hora, correo };
       }
     }).then(result => {
       if (result.isConfirmed) {
@@ -150,33 +158,32 @@ export class ClienteAgendar {
   volver(): void {
     this.router.navigate(['/cliente'], {
       queryParams: { em: this.idEmpresa } 
-    }); // o la ruta a la que quieras volver
+    });
   }
 
-  private reservarCita(datos: { celular: string, fecha: string, hora: string }, hora: string) {
-    const request = this.createJson(hora);
-    // this.agendaService.registrarCita(request)
-    // .subscribe({
-    //   next: rest => {
-    //     Swal.fire({
-    //       icon: 'success',
-    //       title: '¡Cita creada!',
-    //       text: rest.mensaje || 'La cita fue creado exitosamente',
-    //       confirmButtonColor: '#3085d6',
-    //       confirmButtonText: 'Ok'
-    //     }).then(() => {
-    //       // this.dialogRef.close();
-    //     });        
-    //   },
-    //   error: err => {
-    //     Swal.fire({
-    //       icon: 'error',
-    //       title: 'Error de servidor',
-    //       text: err.mensaje || 'Error de servidor',
-    //     });
-    //   }
-    // })
-    
+  private reservarCita(datos: { celular: string, nombre: string ,fecha: string, hora: string, correo: string }, hora: string) {
+    const request = this.createJson(hora, datos);
+    this.agendaService.registrarCita(request)
+    .subscribe({
+      next: rest => {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Cita creada!',
+          text: rest.mensaje || 'La cita fue creado exitosamente',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Ok'
+        }).then(() => {
+          // this.dialogRef.close();
+        });        
+      },
+      error: err => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de servidor',
+          text: err.mensaje || 'Error de servidor',
+        });
+      }
+    })    
   }
 
   private estaDisponible(hora: string): boolean {
@@ -195,8 +202,10 @@ export class ClienteAgendar {
   }
 
 
-  private createJson(hora : string) {
-    const fechaBase = this.viewDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
+  private createJson(hora : string, datos: { celular: string, nombre: string, fecha: string, hora: string, correo: string }) {
+    const fechaBase = this.viewDate.toISOString().split('T')[0];
+    const tiempoTotalServicio = this.serviciosSeleccionados.map(s => s.tiempo).reduce((a, b) => a + b, 0);
+    const serviciosSeleccionados = this.serviciosSeleccionados.map(s => ({ servicio: s.id }));
 
     // Extraer la hora y el periodo (AM o PM)
     const match = hora.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
@@ -217,13 +226,18 @@ export class ClienteAgendar {
         const fechaFinal = `${fechaBase}T${horasStr}:${minutos}:00`;
 
         const json = {
-            // Hora: this.duracion.value,
-            // FechaIni: fechaFinal,
-            // recurso: this.recurso,
-            // Cliente: this.cliente,
-            // Servicio: this.servicio.id,
-            // UsuarioCreacion: 'Cliente',
-            // empresa: this.idEmpresa
+                "FechaIni": fechaFinal,
+                "recurso": this.idRecurso,
+                "Valor": this.costo,
+                "UsuarioCreacion": "Cliente",
+                "Hora": tiempoTotalServicio,
+                "empresa": this.idEmpresa,
+                "servicios": serviciosSeleccionados,
+                "clienteInfo": {
+                  "Nombre": datos.nombre,
+                  "Telefono": datos.celular,
+                  "Correo": datos.correo
+                }
           };
       
         return json
@@ -232,11 +246,6 @@ export class ClienteAgendar {
       return
     }
   }
-
-  // seleccionarHora(hora: string) {
-  //   this.seleccionHora = true;
-  //   this.horaSeleccionada = hora;
-  // }
 
   public nextPeriod(): void {
     this.viewDate = new Date(this.viewDate);
@@ -272,34 +281,15 @@ export class ClienteAgendar {
                 this.horas[i].disponible = false;
               }
             }
+            this.horas = this.horas.filter(h => h.disponible);
+            this.horasAM = this.horas.filter(h => h.hora.includes('AM'));
+            this.horasPM = this.horas.filter(h => h.hora.includes('PM'));
           }
           this.cargandoCalendario = false;
           this.cdr.detectChanges();
         }
       })
   }
-
-  horaClickeada(event: any): void {
-    const fecha = event.date;
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-    fecha.setHours(0, 0, 0, 0);
-
-    if (fecha < hoy) return;
-    if(this.nombreDelRecurso === '') {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Debes seleccionar un recurso',
-      });
-    }else {
-      // this.seleccionarRecurso(false, fecha);
-      // this.openModal(fecha, this.horas, this.recursoSeleccionado, this.servicioSeleccionado);
-
-    }
-  }
-
-
 
   private obtenerServicios(emp: number): void {
     this.sharedServices.obtenerServicios(emp)
@@ -310,57 +300,6 @@ export class ClienteAgendar {
     })
   }
 
-  // onDayClick(event: { day: CalendarMonthViewDay }): void {
-  //   const fecha = event.day.date;
-  //   const hoy = new Date();
-  //   hoy.setHours(0, 0, 0, 0);
-  //   fecha.setHours(0, 0, 0, 0);
-
-  //   if (fecha < hoy) return;
-  //   if(this.recursoSeleccionado === '') {
-  //     Swal.fire({
-  //       icon: 'error',
-  //       title: 'Oops...',
-  //       text: 'Debes seleccionar un recurso',
-  //     });
-  //   }else {
-  //     const request = {
-  //       empresa: this.idEmpresa,
-  //       FechaIni : this.formatearFechaLocal(fecha, '00:00:00'),
-  //       fechaFin : this.formatearFechaLocal(fecha, '23:59:59'),
-  //       recurso: this.recursoSeleccionado
-  //     };
-  //     this.agendaService.consultarAgendamientos(request)
-  //       .subscribe({
-  //         next: rest => {
-  //           if(rest.exito) {
-  //             this.horas = this.horas.map(h => ({
-  //               ...h,
-  //               disponible: !rest.datos.includes(h.hora)
-  //             }));
-  //           }
-  //           this.openModal(fecha, this.horas, this.recursoSeleccionado, this.servicioSeleccionado);
-  //         }
-  //       })
-  //     }
-  // }
-
-  // private openModal(fecha:any, horas: any , recurso: string, servicio: string) {
-  //   this.dialog.open(HoraDialogComponent, {
-  //     width: '500px',
-  //     data: { fecha, horas, recurso, servicio}
-  //   }).afterClosed().subscribe(horaSeleccionada => {
-  //     if (horaSeleccionada) {
-  //       this.procesarAgendamiento(fecha, horaSeleccionada);
-  //     }
-  //   });
-  // }
-
-  
-  // procesarAgendamiento(fecha: Date, hora: string): void {
-  //   alert(`Vas a agendar una cita para el ${fecha.toLocaleDateString('es-CO')} a las ${hora}`);
-  // }
-
   formatearFechaLocal(fecha: Date, hora: string): string {
     const anio = fecha.getFullYear();
     const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
@@ -368,14 +307,6 @@ export class ClienteAgendar {
     return `${anio}-${mes}-${dia}T${hora}`;
   }
 
-  // public consultarRecursosSede(event:any): void {    
-  //   let recursosLS = localStorage.getItem('recursos');
-  //   if (recursosLS) {
-  //     const recursosArray = JSON.parse(recursosLS);
-  //     this.recursosFiltrados = recursosArray.filter((sede: any) => sede.sede === event.id);
-  //     this.selectRecurso = false;
-  //   }
-  // }
 
   public obtenerHorarios():void {
     const fecha = new Date();
