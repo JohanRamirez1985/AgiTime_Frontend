@@ -8,21 +8,79 @@
   <h2><mat-icon>event</mat-icon> Agendar cita</h2>
 
   <!-- Recurso -->
-  <mat-form-field class="form-field recurso-display" appearance="outline">
-    <mat-label>Recurso seleccionado</mat-label>
-    <input matInput [value]="nombreDelRecurso" disabled class="recurso-texto" />
-    <mat-icon matSuffix color="primary">check_circle</mat-icon>
-  </mat-form-field>
+  <!-- <mat-card class="card-recurso mat-elevation-z4">
+    <mat-card-content class="contenido-recurso">
+      <img [src]="fotoRecuerso" alt="Recurso" class="imagen-recurso" />
+      <div class="info-recurso">
+        <div class="recurso-nombre">
+          <mat-icon color="primary">check_circle</mat-icon>
+          <span class="texto-recurso">{{ nombreDelRecurso }}</span>
+        </div>
+          <small class="subtexto-recurso">Recurso asignado para tu cita</small>
+      </div>
+    </mat-card-content>
+  </mat-card> -->
 
-  <!-- Servicios -->
-  <mat-form-field class="form-field servicio-multiple" appearance="outline">
-    <mat-label>Servicios disponibles</mat-label>
-    <mat-select [(ngModel)]="serviciosSeleccionados" multiple [disabled]="serviciosFiltrados.length === 0">
-      <mat-option *ngFor="let servicio of serviciosFiltrados" [value]="{ valor: servicio.valor, tiempo: servicio.tiempo, id: servicio.id }" (click)="mostrarDisponibilidad = true">
-        {{ servicio.nombre }} - ${{ servicio.valor | number: '1.0-0':'es-CO' }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+  <mat-card class="card-recurso mat-elevation-z4">
+    <mat-card-content class="contenido-recurso">
+      <img [src]="fotoRecuerso" alt="Recurso" class="imagen-recurso" />
+      <div class="info-recurso">
+        <div class="recurso-nombre">
+          <mat-icon color="primary">check_circle</mat-icon>
+          <span class="texto-recurso">{{ nombreDelRecurso }}</span>
+        </div>
+        
+        <ul class="subtexto-recurso-lista" *ngIf="mostrarDetalle">
+          <li *ngFor="let detalle of detallesRecurso">{{ detalle }}</li>
+        </ul>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="loading-text">Cargando disponibilidad...</p>
+  </div>
+
+  <div class="servicios-wrapper" *ngIf="mostrarServicios">
+    <h2 class="titulo">Servicios</h2>
+
+    <div class="servicios-container">
+      <mat-card
+        class="servicio-card"
+        *ngFor="let servicio of serviciosFiltrados"
+        [class.selected]="estaSeleccionado(servicio)"
+      >
+        <div class="contenido-servicio">
+          <div class="servicio-info">
+            <div class="servicio-nombre">{{ servicio.nombre }}</div>
+            <div class="servicio-precio">${{ servicio.valor | number: '1.0-0':'es-CO' }}</div>
+          </div>
+          <button
+            mat-mini-fab
+            color="primary"
+            class="boton-add"
+            (click)="toggleSeleccionServicio(servicio)"
+          >
+            <mat-icon>{{ estaSeleccionado(servicio) ? 'check' : 'add' }}</mat-icon>
+          </button>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Botón flotante visible solo si hay servicios seleccionados -->
+    <div *ngIf="serviciosSeleccionados.length > 0" class="boton-flotante-wrapper">
+      <button
+        mat-flat-button
+        color="primary"
+        class="boton-flotante-mejorado"
+        (click)="reservarServicios()"
+      >
+        Reservar ({{ serviciosSeleccionados.length }})
+      </button>
+    </div>
+  </div>
 
   <!-- Navegación de fechas -->
   <div *ngIf="mostrarDisponibilidad">
@@ -38,14 +96,8 @@
       </div>
     </div>
 
-    <!-- Loader -->
-    <div *ngIf="cargandoCalendario" class="loading-container">
-      <mat-spinner diameter="50"></mat-spinner>
-      <p class="loading-text">Cargando disponibilidad...</p>
-    </div>
-
     <!-- Horarios -->
-    <div class="horarios-container" *ngIf="!cargandoCalendario">
+    <div class="horarios-container" *ngIf="!loading">
 
       <!-- Mañana -->
       <div class="horario-seccion">

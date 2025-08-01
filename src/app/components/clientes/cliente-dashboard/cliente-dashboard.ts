@@ -106,7 +106,8 @@ export class ClienteDashboard {
       nombre: usuario.nombre,
       sede: usuario.nombreSede,
       id: usuario.id,
-      emp: this.idEmpresa
+      emp: this.idEmpresa,
+      img: usuario.foto
     }
     localStorage.setItem('recurso', JSON.stringify(user));
     this.router.navigate(['/cliente/reservar']);

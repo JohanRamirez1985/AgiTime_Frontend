@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
-import { Subject } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { SharedService } from '../../../services/shared.service';
 import { Router } from '@angular/router';
@@ -15,6 +14,7 @@ import { MatInputModule } from '@angular/material/input';
 import Swal from 'sweetalert2';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCardModule } from '@angular/material/card';
 
 registerLocaleData(localeEs);
 
@@ -31,7 +31,8 @@ registerLocaleData(localeEs);
     MatIconModule,
     MatButtonToggleModule,
     MatProgressSpinnerModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatCardModule
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'es' }
@@ -48,18 +49,27 @@ export class ClienteAgendar {
   horaInicioServicios: number = 0;
   horaFinServicios: number = 0;
   horas: {hora: string, disponible: boolean}[] = [];
-  recursoInfo: { emp: number, id:number, nombre:string, sede: string} = {
+  recursoInfo: { emp: number, id:number, nombre:string, sede: string, img: string} = {
     emp: 0,
     id: 0,
     nombre: '',
-    sede: ''
+    sede: '',
+    img: ''
   };
   horasAM: { hora: string; disponible: boolean }[] = [];
   horasPM: { hora: string; disponible: boolean }[] = [];
-  cargandoCalendario: boolean = true;
   mostrarDisponibilidad: boolean = false;
   costo: number = 0;
   idRecurso: number = 0;
+  fotoRecuerso: string = '';
+  loading: boolean = true;
+  mostrarDetalle: boolean = false;
+  mostrarServicios: boolean = false;
+
+
+  detallesRecurso: string[] = ['Disponible de 8:00 a.m.', 'corte + barba + ceja $30000', 'Recurso: Sala 3'];
+
+  
 
     constructor(
     private sharedServices: SharedService,
@@ -70,13 +80,39 @@ export class ClienteAgendar {
   ) {}
 
    ngOnInit() {
-    this.recursoInfo = JSON.parse(localStorage.getItem('recurso') || '{"emp":0,"id":0,"nombre":"","sede":""}');
+    this.recursoInfo = JSON.parse(localStorage.getItem('recurso') || '{"emp":0,"id":0,"nombre":"","sede":"", "img":""}');
     this.idRecurso = this.recursoInfo.id;
     this.nombreDelRecurso = this.recursoInfo.nombre;
     this.idEmpresa = this.recursoInfo.emp;
+    this.fotoRecuerso = this.recursoInfo.img;
     this.obtenerServicios(this.idEmpresa);
     this.obtenerHorarios();
   }
+
+  reservarServicios(): void {
+  this.detallesRecurso = this.serviciosSeleccionados.map(s =>   `${s.nombre} - ${new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(s.valor)}`);
+  this.loading = false;
+  this.mostrarDetalle = true;
+  this.mostrarServicios = false;
+  this.mostrarDisponibilidad = true;
+}
+
+  estaSeleccionado(servicio: any): boolean {
+    return this.serviciosSeleccionados.some(s => s.id === servicio.id);
+  }
+
+toggleSeleccionServicio(servicio: any): void {
+  if (this.estaSeleccionado(servicio)) {
+    this.serviciosSeleccionados = this.serviciosSeleccionados.filter(s => s.id !== servicio.id);
+  } else {
+    this.serviciosSeleccionados.push(servicio);
+  }
+}
 
   public seleccionarHora(hora: any): void {
 
@@ -149,7 +185,8 @@ export class ClienteAgendar {
     }).then(result => {
       if (result.isConfirmed) {
         const datosReserva = result.value;
-        this.cargandoCalendario = true;
+        this.loading = true;
+        this.mostrarDisponibilidad = false;
         this.reservarCita(datosReserva, hora.hora);
       }
     });
@@ -167,7 +204,7 @@ export class ClienteAgendar {
     this.agendaService.registrarCita(request)
     .subscribe({
       next: rest => {
-        this.cargandoCalendario = false;
+        this.loading = false;
         Swal.fire({
           icon: 'success',
           title: '¡Cita creada!',
@@ -179,7 +216,7 @@ export class ClienteAgendar {
         });        
       },
       error: err => {
-        this.cargandoCalendario = false;
+        this.loading = false;
         Swal.fire({
           icon: 'error',
           title: 'Error de servidor',
@@ -253,13 +290,13 @@ export class ClienteAgendar {
   public nextPeriod(): void {
     this.viewDate = new Date(this.viewDate);
     this.viewDate.setDate(this.viewDate.getDate() + 1);
-    this.cargandoCalendario = true;
+    this.loading = false;
     this.obtenerHorarios();
   }
 
   public today(): void {
     this.viewDate = new Date();
-    this.cargandoCalendario = true;
+    this.loading = false;
     this.obtenerHorarios();
   }
 
@@ -286,7 +323,7 @@ export class ClienteAgendar {
           }
           this.horasAM = this.horas.filter(h => h.hora.includes('AM'));
           this.horasPM = this.horas.filter(h => h.hora.includes('PM'));
-          this.cargandoCalendario = false;
+          this.loading = false;
           this.cdr.detectChanges();
         }
       })
@@ -296,7 +333,9 @@ export class ClienteAgendar {
     this.sharedServices.obtenerServicios(emp)
     .subscribe({
       next: rest => {
-        this.serviciosFiltrados = [...rest.datos];        
+        this.serviciosFiltrados = [...rest.datos];  
+        this.loading = false;   
+        this.mostrarServicios = true;   
       }
     })
   }
