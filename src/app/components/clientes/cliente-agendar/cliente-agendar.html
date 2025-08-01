@@ -7,20 +7,6 @@
   </div>
   <h2><mat-icon>event</mat-icon> Agendar cita</h2>
 
-  <!-- Recurso -->
-  <!-- <mat-card class="card-recurso mat-elevation-z4">
-    <mat-card-content class="contenido-recurso">
-      <img [src]="fotoRecuerso" alt="Recurso" class="imagen-recurso" />
-      <div class="info-recurso">
-        <div class="recurso-nombre">
-          <mat-icon color="primary">check_circle</mat-icon>
-          <span class="texto-recurso">{{ nombreDelRecurso }}</span>
-        </div>
-          <small class="subtexto-recurso">Recurso asignado para tu cita</small>
-      </div>
-    </mat-card-content>
-  </mat-card> -->
-
   <mat-card class="card-recurso mat-elevation-z4">
     <mat-card-content class="contenido-recurso">
       <img [src]="fotoRecuerso" alt="Recurso" class="imagen-recurso" />
@@ -43,6 +29,7 @@
     <p class="loading-text">Cargando disponibilidad...</p>
   </div>
 
+   <!-- Servicios -->
   <div class="servicios-wrapper" *ngIf="mostrarServicios">
     <h2 class="titulo">Servicios</h2>
 
@@ -81,15 +68,18 @@
       </button>
     </div>
   </div>
-
-  <!-- Navegación de fechas -->
+ 
   <div *ngIf="mostrarDisponibilidad">
-    <div class="barra-fecha">
+    <!-- Navegación de fechas -->
+    <div class="barra-fecha" *ngIf="!loading">
       <span class="fecha-actual">
         <mat-icon>calendar_today</mat-icon> {{ viewDate | date: 'fullDate' }}
       </span>
       <div class="navegacion-botones">
         <button mat-stroked-button color="primary" (click)="today()">Hoy</button>
+        <button mat-icon-button (click)="previusPeriod()" aria-label="Día siguiente">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
         <button mat-icon-button (click)="nextPeriod()" aria-label="Día siguiente">
           <mat-icon>chevron_right</mat-icon>
         </button>

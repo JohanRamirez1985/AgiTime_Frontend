@@ -290,8 +290,31 @@ toggleSeleccionServicio(servicio: any): void {
   public nextPeriod(): void {
     this.viewDate = new Date(this.viewDate);
     this.viewDate.setDate(this.viewDate.getDate() + 1);
-    this.loading = false;
+    this.loading = true;
+    this.cdr.detectChanges();
     this.obtenerHorarios();
+  }
+
+  public previusPeriod(): void {
+    const nuevaFecha = new Date(this.viewDate);
+    nuevaFecha.setDate(nuevaFecha.getDate() - 1);
+
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    nuevaFecha.setHours(0, 0, 0, 0);
+
+    if (nuevaFecha < hoy) {
+       Swal.fire({
+          icon: 'error',
+          title: 'Dia no habil',
+          text: 'No puedes consultar dias anteriores',
+        });
+    } else {
+      this.viewDate = nuevaFecha;
+      this.loading = true;
+      this.cdr.detectChanges();
+      this.obtenerHorarios();
+    }
   }
 
   public today(): void {
