@@ -43,9 +43,51 @@
   color: #333;
 }
 
-.navegacion-botones button {
-  font-size: 0.85rem;
+.barra-fecha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Permite que se acomode bien en pantallas pequeñas */
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #fafafa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
 }
+
+.fecha-actual {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.navegacion-botones {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.boton-icono {
+  margin-right: 0.4rem;
+}
+
+@media (max-width: 600px) {
+  .barra-fecha {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  .navegacion-botones {
+    align-self: flex-end;
+  }
+}
+
 
 .horario-seccion {
   margin-top: 1.5rem;

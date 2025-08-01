@@ -319,7 +319,8 @@ toggleSeleccionServicio(servicio: any): void {
 
   public today(): void {
     this.viewDate = new Date();
-    this.loading = false;
+    this.loading = true;
+    this.cdr.detectChanges();
     this.obtenerHorarios();
   }
 
