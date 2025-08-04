@@ -8,6 +8,13 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'recurso/dash',
+    loadComponent: () =>
+      import('./components/recursos/dashboard/dashboard').then(m => m.Dashboard),
+    canActivate: [AuthGuard([''], false)],
+
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./components/login/login').then(m => m.Login)
@@ -28,7 +35,7 @@ export const routes: Routes = [
     path: 'admin',
     loadComponent: () =>
       import('./components/dashboard-layout/dashboard-layout').then(m => m.DashboardLayout),
-    canActivate: [AuthGuard(['Administador', 'SuperAdmin'])],
+    canActivate: [AuthGuard(['Administador', 'SuperAdmin'], true)],
     children: [
       {
         path: '',
@@ -59,6 +66,8 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./components/clientes/cliente-routing').then(m => m.routes)
   },
+
+
 
 
   {

@@ -277,7 +277,8 @@ toggleSeleccionServicio(servicio: any): void {
                   "Nombre": datos.nombre,
                   "Telefono": datos.celular,
                   "Correo": datos.correo
-                }
+                },
+                "fechaCreacion": new Date()
           };
       
         return json
@@ -291,8 +292,8 @@ toggleSeleccionServicio(servicio: any): void {
     this.viewDate = new Date(this.viewDate);
     this.viewDate.setDate(this.viewDate.getDate() + 1);
     this.loading = true;
-    this.cdr.detectChanges();
     this.obtenerHorarios();
+    this.cdr.detectChanges();
   }
 
   public previusPeriod(): void {
@@ -312,16 +313,16 @@ toggleSeleccionServicio(servicio: any): void {
     } else {
       this.viewDate = nuevaFecha;
       this.loading = true;
-      this.cdr.detectChanges();
       this.obtenerHorarios();
+      this.cdr.detectChanges();
     }
   }
 
   public today(): void {
     this.viewDate = new Date();
     this.loading = true;
-    this.cdr.detectChanges();
     this.obtenerHorarios();
+    this.cdr.detectChanges();
   }
 
   public seleccionarRecurso(fecha: Date): void {
@@ -345,12 +346,33 @@ toggleSeleccionServicio(servicio: any): void {
             }
             this.horas = this.horas.filter(h => h.disponible);
           }
-          this.horasAM = this.horas.filter(h => h.hora.includes('AM'));
-          this.horasPM = this.horas.filter(h => h.hora.includes('PM'));
-          this.loading = false;
-          this.cdr.detectChanges();
+          this.verificarHoras();         
         }
       })
+  }
+
+  private verificarHoras(): void {
+    const ahora = new Date();
+    const fechaSeleccionada = this.viewDate;
+
+    const esHoy = this.esHoy(fechaSeleccionada);
+
+    const horasFuturas = this.horas
+      .map(h => ({ ...h, fecha: this.convertirHoraAFecha(h.hora, fechaSeleccionada) }))
+      .filter(h =>
+        esHoy
+          ? h.fecha >= ahora
+          : true
+      );
+
+    // Ordenar
+    horasFuturas.sort((a, b) => a.fecha.getTime() - b.fecha.getTime());
+
+    // Separar
+    this.horasAM = horasFuturas.filter(h => h.hora.includes('AM'));
+    this.horasPM = horasFuturas.filter(h => h.hora.includes('PM'));
+    this.loading = false;
+    this.cdr.detectChanges();
   }
 
   private obtenerServicios(emp: number): void {
@@ -392,12 +414,34 @@ toggleSeleccionServicio(servicio: any): void {
             hora: horaFormateada,
             disponible: h.estado
           };
-        });    
-        this.horasAM = this.horas.filter(h => h.hora.includes('AM'));
-        this.horasPM = this.horas.filter(h => h.hora.includes('PM'));
+        });
         this.seleccionarRecurso(this.viewDate);
       }
     })
   }
+
+  private esHoy(fecha: Date): boolean {
+    const hoy = new Date();
+    return fecha.getDate() === hoy.getDate() &&
+          fecha.getMonth() === hoy.getMonth() &&
+          fecha.getFullYear() === hoy.getFullYear();
+  }
+
+
+  private convertirHoraAFecha = (horaStr: string, fechaBase: Date): Date => {
+    const [tiempo, ampm] = horaStr.split(' ');
+    let [hora, minutos] = tiempo.split(':').map(Number);
+
+    if (ampm === 'PM' && hora !== 12) hora += 12;
+    if (ampm === 'AM' && hora === 12) hora = 0;
+
+    return new Date(
+      fechaBase.getFullYear(),
+      fechaBase.getMonth(),
+      fechaBase.getDate(),
+      hora,
+      minutos
+    );
+  };
 
 }

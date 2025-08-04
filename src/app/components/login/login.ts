@@ -93,13 +93,14 @@ export class Login {
   }
 
   private redireccion(): void {
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '');
     if(this.tipo === 'cl') {
       this.router.navigate(['/cliente']);
-    }else { 
+    }else if(usuario.rol === 3) {
+      this.router.navigate(['/recurso/dash'])
+    }
+    else { 
       this.router.navigate(['/admin/dashboard'])
     }
   }
-
-
-
 }

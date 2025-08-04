@@ -75,7 +75,8 @@ export interface UsuarioRegistro {
   documento: string;
   empresa: number;
   rol: number;
-  recurso: boolean
+  recurso: boolean,
+  fechaCreacion: Date
 }
 
 

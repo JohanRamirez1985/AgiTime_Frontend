@@ -1,0 +1,38 @@
+<mat-tab-group>
+  <!-- 🗓 Pestaña 1: Mis Citas -->
+  <mat-tab label="Mis Citas">
+    <div class="dashboard-container">
+      <h2 class="titulo-dashboard"><mat-icon>event</mat-icon> Citas de hoy</h2>
+
+      <ng-container *ngIf="citasHoy.length > 0; else sinCitas">
+        <mat-card class="card-cita" *ngFor="let cita of citasHoy">
+          <div class="card-content">
+            <div class="info-cita">
+              <strong>{{ cita.servicio }}</strong>
+              <span><mat-icon>account_circle</mat-icon> {{ cita.usuario }}</span>
+              <span><mat-icon>access_time</mat-icon> {{ cita.hora }}</span>            
+              <span><mat-icon>monetization_on</mat-icon> {{ cita.valor }}</span>
+            </div>
+            <button mat-raised-button class="btn-cancelar" (click)="cancelarCita(cita)">
+              Cancelar
+            </button>
+          </div>
+        </mat-card>
+      </ng-container>
+
+      <ng-template #sinCitas>
+        <div class="sin-citas">
+          <mat-icon fontIcon="event_busy" style="font-size: 48px;"></mat-icon><br />
+          No tienes citas programadas para hoy.
+        </div>
+      </ng-template>
+    </div>
+  </mat-tab>
+
+  <!-- ➕ Pestaña 2: Agendar Nueva Cita -->
+  <mat-tab label="Agendar Cita">
+    <div class="p-4">
+      <!-- <app-cliente-agendar></app-cliente-agendar> -->
+    </div>
+  </mat-tab>
+</mat-tab-group>

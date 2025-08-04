@@ -1,0 +1,87 @@
+:host {
+  display: block;
+  padding: 1.5rem;
+  background-color: #f4f6f8;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+.dashboard-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.titulo-dashboard {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.card-cita {
+  margin-bottom: 1rem;
+  border-left: 6px solid #3f51b5;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-cita:hover {
+  transform: scale(1.01);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.info-cita {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-cita strong {
+  color: #3f51b5;
+  font-size: 1rem;
+}
+
+.info-cita span {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.sin-citas {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #888;
+}
+
+.mat-card {
+  border-radius: 12px;
+  background-color: white;
+}
+
+.btn-cancelar {
+  background-color: #e53935;
+  color: white;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 6px 16px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-cancelar:hover {
+  background-color: #c62828;
+  transform: scale(1.05);
+}
+
+mat-tab-group {
+  margin-top: 16px;
+}
+
+.p-4 {
+  padding: 16px;
+}
