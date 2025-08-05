@@ -13,7 +13,7 @@
       <div class="info-recurso">
         <div class="recurso-nombre">
           <mat-icon color="primary">check_circle</mat-icon>
-          <span class="texto-recurso">{{ nombreDelRecurso }}</span>
+          <span class="texto-recurso">{{ nombreDelRecurso | titlecase }}</span>
         </div>
         
         <ul class="subtexto-recurso-lista" *ngIf="mostrarDetalle">
@@ -41,7 +41,7 @@
       >
         <div class="contenido-servicio">
           <div class="servicio-info">
-            <div class="servicio-nombre">{{ servicio.nombre }}</div>
+            <div class="servicio-nombre">{{ servicio.nombre | titlecase }}</div>
             <div class="servicio-precio">${{ servicio.valor | number: '1.0-0':'es-CO' }}</div>
           </div>
           <button

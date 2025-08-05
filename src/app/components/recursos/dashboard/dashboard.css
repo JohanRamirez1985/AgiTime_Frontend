@@ -85,3 +85,107 @@ mat-tab-group {
 .p-4 {
   padding: 16px;
 }
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  color: #555;
+}
+
+.loading-text {
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.btn-cancelar {
+  background-color: #546e7a; /* azul acero */
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 4px;
+  padding: 4px 12px;
+  box-shadow: none;
+  border: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 70px;
+}
+
+.btn-cancelar:hover {
+  background-color: #455a64;
+  transform: scale(1.02);
+}
+
+.btn-confirmar {
+  background-color: #1e88e5; /* azul corporativo */
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 4px;
+  padding: 4px 12px;
+  box-shadow: none;
+  border: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 70px;
+}
+
+.btn-confirmar:hover {
+  background-color: #1565c0;
+  transform: scale(1.02);
+}
+
+.acciones-cita {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 0.5rem;
+  align-items: flex-end; /* o 'center' si los quieres centrados */
+}
+
+.navegacion-botones {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Esto centra horizontalmente */
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.fecha-actual {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #333;
+  justify-content: center;
+  margin-top: -15px;
+  margin-bottom: 25px;
+}
+
+.horario-seccion {
+  margin-top: 1.5rem;
+}
+
+.seccion-titulo {
+  font-weight: 600;
+  color: #002d72;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.horas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
+}
+
+button.hora-disponible {
+  background: #e8f5e9;
+  color: #2e7d32 !important;
+  border: 1px solid #a5d6a7;
+  font-weight: 600;
+}

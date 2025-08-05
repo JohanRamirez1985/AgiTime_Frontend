@@ -2,35 +2,137 @@
   <!-- 🗓 Pestaña 1: Mis Citas -->
   <mat-tab label="Mis Citas">
     <div class="dashboard-container">
-      <h2 class="titulo-dashboard"><mat-icon>event</mat-icon> Citas de hoy</h2>
+      <h2 class="titulo-dashboard"> Gestion Citas</h2>
+      <span class="fecha-actual">      
+        {{ day | date: 'fullDate' }}
+      </span>
+      <div class="navegacion-botones">
+        <button mat-icon-button class="boton-navegacion" (click)="previus(true)" aria-label="Día anterior">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-stroked-button color="primary" (click)="today(true)">
+          <mat-icon class="boton-icono">today</mat-icon> Hoy
+        </button>
+        <button mat-icon-button class="boton-navegacion" (click)="nextPeriod(true)" aria-label="Día siguiente">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p class="loading-text">Cargando disponibilidad...</p>
+      </div>
 
-      <ng-container *ngIf="citasHoy.length > 0; else sinCitas">
-        <mat-card class="card-cita" *ngFor="let cita of citasHoy">
-          <div class="card-content">
-            <div class="info-cita">
-              <strong>{{ cita.servicio }}</strong>
-              <span><mat-icon>account_circle</mat-icon> {{ cita.usuario }}</span>
-              <span><mat-icon>access_time</mat-icon> {{ cita.hora }}</span>            
-              <span><mat-icon>monetization_on</mat-icon> {{ cita.valor }}</span>
+      <div style="margin-top: 10px;" *ngIf="!loading">
+        <ng-container *ngIf="citasHoy.length > 0; else sinCitas">
+          <mat-card class="card-cita" *ngFor="let cita of citasHoy">
+            <div class="card-content">
+              <div class="info-cita">
+                <strong>{{ cita.servicio }}</strong>
+                <span><mat-icon>account_circle</mat-icon> {{ cita.nombreCliente | titlecase }}</span>
+                <span><mat-icon>access_time</mat-icon> {{ cita.fechaInicio | date: 'shortTime' }}</span>            
+                <span><mat-icon>monetization_on</mat-icon> {{ cita.totalServicios }}</span>
+              </div>
+              <div *ngIf="cita.estado === 'Activo'" class="acciones-cita">
+                <button class="btn-cancelar" (click)="cancelarCita(cita)">
+                  Cancelar
+                </button>
+                <button  class="btn-confirmar" (click)="confirmarCita(cita)">
+                  Confirmar
+                </button>
+              </div>
             </div>
-            <button mat-raised-button class="btn-cancelar" (click)="cancelarCita(cita)">
-              Cancelar
-            </button>
-          </div>
-        </mat-card>
-      </ng-container>
+          </mat-card>
+        </ng-container>
 
-      <ng-template #sinCitas>
-        <div class="sin-citas">
-          <mat-icon fontIcon="event_busy" style="font-size: 48px;"></mat-icon><br />
-          No tienes citas programadas para hoy.
-        </div>
-      </ng-template>
+        <ng-template #sinCitas>
+          <div class="sin-citas">
+            <mat-icon fontIcon="event_busy" style="font-size: 48px;"></mat-icon><br />
+            No tienes citas programadas para hoy.
+          </div>
+        </ng-template>
+      </div>
+
+
     </div>
   </mat-tab>
 
   <!-- ➕ Pestaña 2: Agendar Nueva Cita -->
   <mat-tab label="Agendar Cita">
+    <div class="p-4">
+      <div>
+        <h2 class="titulo-dashboard"> Agenda Citas</h2>
+        <span class="fecha-actual">      
+          {{ day | date: 'fullDate' }}
+        </span>
+        <div class="navegacion-botones">
+          <button mat-icon-button class="boton-navegacion" (click)="previus(false)" aria-label="Día anterior">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <button mat-stroked-button color="primary" (click)="today(false)">
+            <mat-icon class="boton-icono">today</mat-icon> Hoy
+          </button>
+          <button mat-icon-button class="boton-navegacion" (click)="nextPeriod(false)" aria-label="Día siguiente">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+
+        <div *ngIf="loading" class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p class="loading-text">Cargando disponibilidad...</p>
+        </div>
+
+        <div *ngIf="!loading">
+          <!-- Mañana -->
+          <div class="horario-seccion">
+            <div class="seccion-titulo">
+              <mat-icon>light_mode</mat-icon> Mañana (AM)
+            </div>
+            <div class="horas-grid">
+              <button
+                mat-flat-button
+                *ngFor="let hora of horasAM"
+                [disabled]="!hora.disponible"
+                [ngClass]="{
+                  'hora-disponible': hora.disponible,
+                  'hora-no-disponible': !hora.disponible
+                }"
+                (click)="seleccionarHora(hora)"
+              >
+                {{ hora.hora }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Tarde -->
+          <div class="horario-seccion">
+            <div class="seccion-titulo">
+              <mat-icon>nights_stay</mat-icon> Tarde (PM)
+            </div>
+            <div class="horas-grid">
+              <button
+                mat-flat-button
+                *ngFor="let hora of horasPM"
+                [disabled]="!hora.disponible"
+                [ngClass]="{
+                  'hora-disponible': hora.disponible,
+                  'hora-no-disponible': !hora.disponible
+                }"
+                (click)="seleccionarHora(hora)"
+              >
+                {{ hora.hora }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+    </div>
+  </mat-tab>
+
+    <!-- ➕ Pestaña 2: Agendar Nueva Cita -->
+  <mat-tab label="Bloqueo Horario">
     <div class="p-4">
       <!-- <app-cliente-agendar></app-cliente-agendar> -->
     </div>
