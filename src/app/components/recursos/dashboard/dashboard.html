@@ -1,4 +1,4 @@
-<mat-tab-group>
+<mat-tab-group (selectedTabChange)="onTabChange($event)">
   <!-- 🗓 Pestaña 1: Mis Citas -->
   <mat-tab label="Mis Citas">
     <div class="dashboard-container">

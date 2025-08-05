@@ -265,6 +265,14 @@ toggleSeleccionServicio(servicio: any): void {
         const horasStr = horas.toString().padStart(2, '0');
         const fechaFinal = `${fechaBase}T${horasStr}:${minutos}:00`;
 
+        const now = new Date();
+        const fechaLocal = now.getFullYear() + '-' +
+          String(now.getMonth() + 1).padStart(2, '0') + '-' +
+          String(now.getDate()).padStart(2, '0') + 'T' +
+          String(now.getHours()).padStart(2, '0') + ':' +
+          String(now.getMinutes()).padStart(2, '0') + ':' +
+          String(now.getSeconds()).padStart(2, '0');
+
         const json = {
                 "FechaIni": fechaFinal,
                 "recurso": this.idRecurso,
@@ -278,7 +286,7 @@ toggleSeleccionServicio(servicio: any): void {
                   "Telefono": datos.celular,
                   "Correo": datos.correo
                 },
-                "fechaCreacion": new Date()
+                "fechaCreacion": fechaLocal
           };
       
         return json

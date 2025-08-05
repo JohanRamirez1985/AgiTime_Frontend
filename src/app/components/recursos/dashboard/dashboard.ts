@@ -4,7 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import Swal from 'sweetalert2';
@@ -324,5 +324,18 @@ export class Dashboard {
 
   public seleccionarHora(hora: any): void {
 
+  }
+
+  onTabChange(event: MatTabChangeEvent) {
+    const index = event.index;
+    this.day = new Date();
+
+    if (index === 0) {
+      this.consultarCitas(this.user, this.empresa, this.day);
+    }
+    if (index === 1) {
+      this.loading = true;
+      this.obtenerHorarios();
+    }
   }
 }
