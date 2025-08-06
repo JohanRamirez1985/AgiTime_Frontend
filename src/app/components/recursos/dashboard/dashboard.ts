@@ -189,7 +189,8 @@ export class Dashboard {
         }else {
           this.citasHoy = [];
         } 
-        this.loading = false;        
+        this.loading = false;      
+        this.cdr.detectChanges();  
       }
     })
   }
