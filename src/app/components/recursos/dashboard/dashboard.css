@@ -177,3 +177,102 @@ button.hora-disponible {
   border: 1px solid #a5d6a7;
   font-weight: 600;
 }
+
+
+.servicios-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.servicio-card {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &.selected {
+    border: 2px solid #3f51b5;
+    background-color: #e3f2fd;
+  }
+
+  .contenido-servicio {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .servicio-info {
+    display: flex;
+    flex-direction: column;
+
+    .servicio-nombre {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #374151;
+    }
+
+    .servicio-precio {
+      color: #10b981;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+  }
+
+  .boton-add {
+    margin-left: 1rem;
+  }
+}
+
+.boton-flotante {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 999;
+  font-weight: bold;
+  background-color: #3f51b5;
+  color: white;
+
+  &:hover {
+    background-color: #303f9f;
+  }
+}
+
+.boton-flotante-wrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.boton-flotante-gradiente {
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 50px;
+  color: white;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); /* Azul empresarial */
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.3);
+  transition: all 0.3s ease-in-out;
+  border: none;
+}
+
+.boton-flotante-gradiente:hover {
+  background: linear-gradient(135deg, #1e40af, #1e3a8a);
+  transform: translateY(-2px) scale(1.03);
+  cursor: pointer;
+}
+
+.mensaje-no-horarios {
+  padding: 12px;
+  color: #999;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 8px;
+}

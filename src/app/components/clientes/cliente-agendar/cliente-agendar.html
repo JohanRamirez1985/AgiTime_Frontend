@@ -73,16 +73,15 @@
     <!-- Navegación de fechas -->
     <div class="barra-fecha" *ngIf="!loading">
       <span class="fecha-actual">
-        <mat-icon>calendar_today</mat-icon>
         {{ viewDate | date: 'fullDate' }}
       </span>
 
       <div class="navegacion-botones">
-        <button mat-stroked-button color="primary" (click)="today()">
-          <mat-icon class="boton-icono">today</mat-icon> Hoy
-        </button>
         <button mat-icon-button class="boton-navegacion" (click)="previusPeriod()" aria-label="Día anterior">
           <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-stroked-button color="primary" (click)="today()">
+          <mat-icon class="boton-icono">today</mat-icon> Hoy
         </button>
         <button mat-icon-button class="boton-navegacion" (click)="nextPeriod()" aria-label="Día siguiente">
           <mat-icon>chevron_right</mat-icon>

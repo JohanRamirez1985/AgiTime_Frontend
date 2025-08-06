@@ -41,6 +41,9 @@ export class Dashboard {
   horasPM: { hora: string; disponible: boolean }[] = [];
   horas: {hora: string, disponible: boolean}[] = [];
   idEmpresa: number = 0;
+  mostrarAgenda: boolean = false;
+  serviciosFiltrados: any[] = [];
+  serviciosSeleccionados: any[] = [];
 
   constructor(private router: Router,
     private agendamientoServices: AgendamientoService,
@@ -55,7 +58,34 @@ export class Dashboard {
     this.empresa = JSON.parse(localStorage.getItem('empresa') || '');
     this.consultarCitas(this.user, this.empresa, this.day);
     this.idEmpresa = this.empresa.id;
+    this.obtenerServicios(this.idEmpresa);
     this.obtenerHorarios();
+  }
+
+  reservarServicios(): void {
+
+  }
+
+  toggleSeleccionServicio(servicio: any): void {
+    if (this.estaSeleccionado(servicio)) {
+      this.serviciosSeleccionados = this.serviciosSeleccionados.filter(s => s.id !== servicio.id);
+    } else {
+      this.serviciosSeleccionados.push(servicio);
+    }
+  }
+
+  estaSeleccionado(servicio: any): boolean {
+    return this.serviciosSeleccionados.some(s => s.id === servicio.id);
+  }
+
+  private obtenerServicios(emp: number): void {
+    this.sharedServices.obtenerServicios(emp)
+    .subscribe({
+      next: rest => {
+        this.serviciosFiltrados = [...rest.datos];  
+        this.loading = false;   
+      }
+    })
   }
 
   public obtenerHorarios():void {
@@ -210,7 +240,7 @@ export class Dashboard {
       }
     }).then((result) => {
       this.loading = true;
-      const now = new Date();
+      const now = new Date(this.day);
       const fechaLocal = now.getFullYear() + '-' +
         String(now.getMonth() + 1).padStart(2, '0') + '-' +
         String(now.getDate()).padStart(2, '0') + 'T' +
@@ -246,7 +276,7 @@ export class Dashboard {
     
     Swal.fire({
       title: '¿Cancelar cita?',
-      html: `<p>¿Estás seguro de cancelar la cita programada para las <strong> ${horaCita} </strong> del <strong> hoy </strong>?</p>`,
+      html: `<p>¿Estás seguro de cancelar la cita programada para las <strong> ${horaCita} </strong> de <strong> hoy </strong>?</p>`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí',
@@ -259,7 +289,7 @@ export class Dashboard {
     }).then((result) => {
       if (result.isConfirmed) {
         this.loading = true;
-        const now = new Date();
+        const now = new Date(this.day);
         const fechaLocal = now.getFullYear() + '-' +
           String(now.getMonth() + 1).padStart(2, '0') + '-' +
           String(now.getDate()).padStart(2, '0') + 'T' +
@@ -289,12 +319,25 @@ export class Dashboard {
   public previus(cita: boolean): void {
     const nuevaFecha = new Date(this.day);
     nuevaFecha.setDate(nuevaFecha.getDate() - 1);
-    this.day = nuevaFecha;
     if(cita) {
+      this.day = nuevaFecha;
       this.consultarCitas(this.user, this.empresa, nuevaFecha);
     }else {
-      this.loading = true;
-      this.obtenerHorarios();
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      nuevaFecha.setHours(0, 0, 0, 0);
+
+      if (nuevaFecha < hoy) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Dia no habil',
+            text: 'No puedes consultar dias anteriores',
+          });
+        }else {
+          this.day = nuevaFecha;
+          this.loading = true;
+          this.obtenerHorarios();
+        }
     }
     this.cdr.detectChanges();
   }
@@ -327,13 +370,96 @@ export class Dashboard {
   }
 
   public seleccionarHora(hora: any): void {
+    this.loading = true;
+    const request = this.createJson(hora.hora);
+    this.agendamientoServices.registrarCita(request)
+    .subscribe({
+      next: rest => {
+        if(rest.exito) {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Cita creada!',
+            text: rest.mensaje || 'La cita fue creado exitosamente',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Ok'
+          }).then(() => {
+            this.serviciosSeleccionados = [];
+            this.mostrarAgenda = false;
+            this.obtenerHorarios();
+          });     
+        }else {
+          Swal.fire({
+            icon: 'error',
+            text: rest.mensaje || 'Error de servidor',
+          });
+        }
+        this.loading = false;
+   
+      },
+      error: err => {
+        this.loading = false;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de servidor',
+          text: err.mensaje || 'Error de servidor',
+        });
+      }
+    })    
+  }
 
+  private createJson(hora: string) {
+    const match = hora.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    const fechaBase = this.day.toISOString().split('T')[0];
+
+    if(match) {
+      let horas = parseInt(match[1], 10);
+      const minutos = match[2];
+      const periodo = match[3].toUpperCase();
+
+      // Convertir a formato 24 horas
+      if (periodo === 'PM' && horas < 12) {
+          horas += 12;
+        } else if (periodo === 'AM' && horas === 12) {
+          horas = 0;
+        }
+      const horasStr = horas.toString().padStart(2, '0');
+      const fechaFinal = `${fechaBase}T${horasStr}:${minutos}:00`;
+      const now = new Date(this.day);
+      const fechaLocal = now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0') + 'T' +
+        String(now.getHours()).padStart(2, '0') + ':' +
+        String(now.getMinutes()).padStart(2, '0') + ':' +
+        String(now.getSeconds()).padStart(2, '0');
+
+      const valor = this.serviciosSeleccionados.map(s => s.valor);
+      const tiempoTotalServicio = this.serviciosSeleccionados.map(s => s.tiempo).reduce((a, b) => a + b, 0);
+      const serviciosSeleccionados = this.serviciosSeleccionados.map(s => ({ servicio: s.id }));
+
+      const costo = valor.reduce((a, b) => a + b, 0);
+
+
+      const json = {
+            "FechaIni": fechaFinal,
+            "recurso": this.user.id,
+            "Valor": costo,
+            "UsuarioCreacion": "Usuario",
+            "Hora": tiempoTotalServicio === 0  ? 30 : tiempoTotalServicio,
+            "empresa": this.idEmpresa,
+            "servicios": serviciosSeleccionados,
+            "clienteInfo": null,
+            "fechaCreacion": fechaLocal
+      };      
+        return json
+    }else {
+      return
+    }
   }
 
   onTabChange(event: MatTabChangeEvent) {
     const index = event.index;
     this.day = new Date();
-
+    this.mostrarAgenda = false;
     if (index === 0) {
       this.consultarCitas(this.user, this.empresa, this.day);
     }

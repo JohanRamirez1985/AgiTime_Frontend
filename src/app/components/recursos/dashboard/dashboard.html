@@ -30,7 +30,13 @@
                 <strong>{{ cita.servicio }}</strong>
                 <span><mat-icon>account_circle</mat-icon> {{ cita.nombreCliente | titlecase }}</span>
                 <span><mat-icon>access_time</mat-icon> {{ cita.fechaInicio | date: 'shortTime' }}</span>            
-                <span><mat-icon>monetization_on</mat-icon> {{ cita.totalServicios }}</span>
+                <span><mat-icon>monetization_on</mat-icon> {{ cita.totalServicios | currency:'COP':'symbol':'1.0-0' }}</span>
+                <span>
+                  <mat-icon>assignment</mat-icon>
+                  <ng-container *ngFor="let s of cita.servicios; let last = last">
+                    {{ s.nombre }}<span *ngIf="!last">, </span>
+                  </ng-container>
+                </span>
               </div>
               <div *ngIf="cita.estado === 'Activo'" class="acciones-cita">
                 <button class="btn-cancelar" (click)="cancelarCita(cita)">
@@ -59,7 +65,55 @@
   <!-- ➕ Pestaña 2: Agendar Nueva Cita -->
   <mat-tab label="Agendar Cita">
     <div class="p-4">
-      <div>
+      <div *ngIf="!mostrarAgenda">
+
+        <div *ngIf="loading" class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p class="loading-text">Cargando disponibilidad...</p>
+        </div>
+
+        <h2 style="text-align-last: center;" class="titulo">Servicios</h2>
+        <div class="servicios-container">
+          <mat-card
+            class="servicio-card"
+            *ngFor="let servicio of serviciosFiltrados"
+          >
+            <div class="contenido-servicio">
+              <div class="servicio-info">
+                <div class="servicio-nombre">{{ servicio.nombre | titlecase }}</div>
+                <div class="servicio-precio">${{ servicio.valor | number: '1.0-0':'es-CO' }}</div>
+              </div>
+              <button
+                mat-mini-fab
+                color="primary"
+                class="boton-add"
+                (click)="toggleSeleccionServicio(servicio)"
+              >
+                <mat-icon>{{ estaSeleccionado(servicio) ? 'check' : 'add' }}</mat-icon>
+              </button>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- Botón flotante visible solo si hay servicios seleccionados -->
+        <div class="boton-flotante-wrapper">
+          <button
+            mat-flat-button
+            color="primary"
+            class="boton-flotante-mejorado"
+            (click)="mostrarAgenda = true"
+          >
+            Reservar ({{ serviciosSeleccionados.length }})
+          </button>
+        </div>
+
+
+
+
+
+
+      </div>
+      <div *ngIf="mostrarAgenda">
         <h2 class="titulo-dashboard"> Agenda Citas</h2>
         <span class="fecha-actual">      
           {{ day | date: 'fullDate' }}
@@ -87,7 +141,7 @@
             <div class="seccion-titulo">
               <mat-icon>light_mode</mat-icon> Mañana (AM)
             </div>
-            <div class="horas-grid">
+            <div class="horas-grid" *ngIf="horasAM.length > 0; else sinHorarios">
               <button
                 mat-flat-button
                 *ngFor="let hora of horasAM"
@@ -101,6 +155,12 @@
                 {{ hora.hora }}
               </button>
             </div>
+            <!-- Template alternativo -->
+            <ng-template #sinHorarios>
+              <div class="mensaje-no-horarios">
+                <span>No hay horarios disponibles en la mañana.</span>
+              </div>
+            </ng-template>
           </div>
 
           <!-- Tarde -->
@@ -108,7 +168,7 @@
             <div class="seccion-titulo">
               <mat-icon>nights_stay</mat-icon> Tarde (PM)
             </div>
-            <div class="horas-grid">
+            <div class="horas-grid" *ngIf="horasPM.length > 0; else sinHorarios">
               <button
                 mat-flat-button
                 *ngFor="let hora of horasPM"
@@ -122,6 +182,11 @@
                 {{ hora.hora }}
               </button>
             </div>
+            <ng-template #sinHorarios>
+              <div class="mensaje-no-horarios">
+                <span>No hay horarios disponibles en la tarde.</span>
+              </div>
+            </ng-template>
           </div>
         </div>
 

@@ -90,17 +90,17 @@ export class ClienteAgendar {
   }
 
   reservarServicios(): void {
-  this.detallesRecurso = this.serviciosSeleccionados.map(s =>   `${s.nombre} - ${new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(s.valor)}`);
-  this.loading = false;
-  this.mostrarDetalle = true;
-  this.mostrarServicios = false;
-  this.mostrarDisponibilidad = true;
-}
+    this.detallesRecurso = this.serviciosSeleccionados.map(s =>   `${s.nombre} - ${new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(s.valor)}`);
+    this.loading = false;
+    this.mostrarDetalle = true;
+    this.mostrarServicios = false;
+    this.mostrarDisponibilidad = true;
+  }
 
   estaSeleccionado(servicio: any): boolean {
     return this.serviciosSeleccionados.some(s => s.id === servicio.id);
@@ -265,7 +265,7 @@ toggleSeleccionServicio(servicio: any): void {
         const horasStr = horas.toString().padStart(2, '0');
         const fechaFinal = `${fechaBase}T${horasStr}:${minutos}:00`;
 
-        const now = new Date();
+        const now = new Date(this.viewDate);
         const fechaLocal = now.getFullYear() + '-' +
           String(now.getMonth() + 1).padStart(2, '0') + '-' +
           String(now.getDate()).padStart(2, '0') + 'T' +
