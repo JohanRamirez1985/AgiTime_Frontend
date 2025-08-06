@@ -296,6 +296,7 @@ export class Dashboard {
       this.loading = true;
       this.obtenerHorarios();
     }
+    this.cdr.detectChanges();
   }
 
   public nextPeriod(cita: boolean): void {
@@ -309,6 +310,7 @@ export class Dashboard {
       this.loading = true;
       this.obtenerHorarios();
     }
+    this.cdr.detectChanges();
   }
 
   public today(cita: boolean): void {
@@ -321,6 +323,7 @@ export class Dashboard {
       this.loading = true;
       this.obtenerHorarios();
     }
+    this.cdr.detectChanges();
   }
 
   public seleccionarHora(hora: any): void {
