@@ -11,9 +11,10 @@ import Swal from 'sweetalert2';
 import { AgendamientoService } from '../../../services/agendamiento.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SharedService } from '../../../services/shared.service';
+import { Toolbar } from '../../transversales/toolbar/toolbar';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-dashboardR',
   standalone: true,
   imports: [
     CommonModule,
@@ -24,13 +25,14 @@ import { SharedService } from '../../../services/shared.service';
     MatTabsModule,
     MatDialogModule,
     MatButtonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    Toolbar
     // ClienteAgendar
   ],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
-export class Dashboard {
+export class DashboardRecurso {
   citasHoy: any[] = [];
   totalServicios: number = 0;
   loading: boolean = true;

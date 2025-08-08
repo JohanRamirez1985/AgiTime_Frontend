@@ -10,7 +10,7 @@ export const routes: Routes = [
   {
     path: 'recurso/dash',
     loadComponent: () =>
-      import('./components/recursos/dashboard/dashboard').then(m => m.Dashboard),
+      import('./components/recursos/dashboard/dashboard').then(m => m.DashboardRecurso),
     canActivate: [AuthGuard([''], false)],
 
   },
