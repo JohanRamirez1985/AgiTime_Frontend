@@ -8,7 +8,7 @@ import { DashboardRecurso } from '../recursos/dashboard/dashboard';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, DashboardRecurso],
+  imports: [CommonModule, MatCardModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })

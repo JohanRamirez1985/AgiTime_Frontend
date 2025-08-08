@@ -11,7 +11,6 @@ import { Toolbar } from '../transversales/toolbar/toolbar';
   imports: [
     CommonModule,
     MatSidenavModule,
-    Sidebar,
     Toolbar,
     RouterOutlet
   ],

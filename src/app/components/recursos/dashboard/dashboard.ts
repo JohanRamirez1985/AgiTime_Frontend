@@ -26,7 +26,6 @@ import { Toolbar } from '../../transversales/toolbar/toolbar';
     MatDialogModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    Toolbar
     // ClienteAgendar
   ],
   templateUrl: './dashboard.html',
