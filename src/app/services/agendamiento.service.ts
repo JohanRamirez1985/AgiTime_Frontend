@@ -34,4 +34,8 @@ export class AgendamientoService {
         return this.http.post<any>(`${this.baseUrl}/asistioCita`, request)
     }
 
+    registrarBloqueoDias(request: any) {
+        return this.http.post<any>(`${this.baseUrl}/registrarBloqueo`, request) 
+    }
+
 }

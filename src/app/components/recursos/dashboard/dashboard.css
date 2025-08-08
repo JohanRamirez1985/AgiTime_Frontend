@@ -267,12 +267,113 @@ button.hora-disponible {
   cursor: pointer;
 }
 
-.mensaje-no-horarios {
-  padding: 12px;
-  color: #999;
-  font-style: italic;
+.bloqueo-horario-container {
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.titulo-bloqueo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #333;
+}
+
+.dias-semana {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.dia-checkbox {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 1rem;
+  justify-content: center;
+}
+
+.checkbox-item {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
-  gap: 8px;
+}
+
+.checkbox-label {
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.dia-checkbox:hover {
+  border-color: #3f51b5;
+  box-shadow: 0 2px 6px rgba(63, 81, 181, 0.15);
+}
+
+.horas {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 2rem;
+  margin-top: 25px;
+}
+
+.mat-form-field {
+  width: 200px;
+}
+
+.acciones {
+  text-align: center;
+}
+
+.acciones button {
+  padding: 0.75rem 2rem;
+  font-weight: 500;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.bloqueos-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  justify-content: flex-start;
+}
+
+.bloqueo-card {
+  width: 250px;
+  background-color: #f5f5f5;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.bloqueo-card {
+  width: 100%;
+  max-width: 500px;
+  margin: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 12px;
+}
+
+.bloqueo-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.bloqueo-info {
+  flex: 1;
+}
+
+.bloqueo-acciones {
+  margin-left: 1rem;
 }

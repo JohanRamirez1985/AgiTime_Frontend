@@ -11,6 +11,11 @@ import Swal from 'sweetalert2';
 import { AgendamientoService } from '../../../services/agendamiento.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SharedService } from '../../../services/shared.service';
+import { FormsModule } from '@angular/forms';
+
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,12 +29,17 @@ import { SharedService } from '../../../services/shared.service';
     MatTabsModule,
     MatDialogModule,
     MatButtonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatCheckboxModule ,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule
     // ClienteAgendar
   ],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
+
 export class Dashboard {
   citasHoy: any[] = [];
   totalServicios: number = 0;
@@ -44,6 +54,27 @@ export class Dashboard {
   mostrarAgenda: boolean = false;
   serviciosFiltrados: any[] = [];
   serviciosSeleccionados: any[] = [];
+  dias = [
+    { nombre: 'L', checked: false, value: 1 },
+    { nombre: 'M', checked: false, value: 2 },
+    { nombre: 'M', checked: false, value: 3 },
+    { nombre: 'J', checked: false, value: 4 },
+    { nombre: 'V', checked: false, value: 5 },
+    { nombre: 'S', checked: false, value: 6 },
+    { nombre: 'D', checked: false, value: 7 },
+  ];
+  horaInicio: string = '';
+  horaFin: string = '';
+  motivo: string = '';
+  bloqueoDia: boolean = false;
+  mostrarBloqueo: boolean = false;
+
+
+  bloqueos = [
+    { nombre: 'Bloqueo 1', dia: 'Lunes', hora: '10:00 AM', recurso: 'wilmar' },
+    { nombre: 'Bloqueo 2', dia: 'Martes', hora: '2:00 PM', recurso: 'julian' },
+    // ...otros bloqueos
+  ];
 
   constructor(private router: Router,
     private agendamientoServices: AgendamientoService,
@@ -60,6 +91,36 @@ export class Dashboard {
     this.idEmpresa = this.empresa.id;
     this.obtenerServicios(this.idEmpresa);
     this.obtenerHorarios();
+  }
+
+  irABloqueo(bloqueo: any) {
+    console.log('Ir a bloqueo:', bloqueo);
+    // Aquí puedes navegar o cargar datos específicos del bloqueo
+  }
+
+  inabilitarHorarios(bloqueo: boolean) {
+    this.loading = true;
+    const diasSeleccionados = this.dias.filter(d => d.checked).map(d => d.value);
+    console.log('Inhabilitando:', diasSeleccionados, this.horaInicio, this.horaFin);
+
+    const request ={
+      TipoBloqueo: bloqueo ? 1 : 2,
+      Usuario: this.user.id,
+      FechaInicio: '',
+      HoraInicio: this.horaInicio,
+      HoraFin: this.horaFin,
+      Motivo: this.motivo,
+      DiasSemana: diasSeleccionados
+    }
+    
+    this.agendamientoServices.registrarBloqueoDias(request)
+    .subscribe({
+      next: rest => {
+        console.log();
+        this.loading = false;
+        
+      }
+    })
   }
 
   reservarServicios(): void {
@@ -466,6 +527,9 @@ export class Dashboard {
     if (index === 1) {
       this.loading = true;
       this.obtenerHorarios();
+    }
+    if (index === 2) {
+      this.mostrarBloqueo = false;
     }
   }
 }
