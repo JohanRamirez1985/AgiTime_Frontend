@@ -12,13 +12,12 @@ import { AgendamientoService } from '../../../services/agendamiento.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SharedService } from '../../../services/shared.service';
 import { FormsModule } from '@angular/forms';
-
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-dashboardR',
   standalone: true,
   imports: [
     CommonModule,
@@ -39,8 +38,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
-
-export class Dashboard {
+export class DashboardRecurso {
   citasHoy: any[] = [];
   totalServicios: number = 0;
   loading: boolean = true;
@@ -133,6 +131,12 @@ export class Dashboard {
     } else {
       this.serviciosSeleccionados.push(servicio);
     }
+    this.cdr.detectChanges();
+  }
+
+  public reservar(): void {
+    this.mostrarAgenda = true;
+    this.cdr.detectChanges();
   }
 
   estaSeleccionado(servicio: any): boolean {
@@ -520,11 +524,12 @@ export class Dashboard {
   onTabChange(event: MatTabChangeEvent) {
     const index = event.index;
     this.day = new Date();
-    this.mostrarAgenda = false;
     if (index === 0) {
       this.consultarCitas(this.user, this.empresa, this.day);
     }
     if (index === 1) {
+      this.serviciosSeleccionados = [];
+      this.mostrarAgenda = false;
       this.loading = true;
       this.obtenerHorarios();
     }

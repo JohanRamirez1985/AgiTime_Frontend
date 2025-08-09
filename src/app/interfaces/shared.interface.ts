@@ -35,7 +35,7 @@ export interface LoginResponse {
   datos: {
     usuario: any;
     empresa: any;
-    funcionalidad: string;
+    funcionalidades: { codigo: string} [];
   };
 }
 

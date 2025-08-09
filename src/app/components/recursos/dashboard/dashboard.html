@@ -1,3 +1,4 @@
+<!-- <app-toolbar></app-toolbar> -->
 <mat-tab-group (selectedTabChange)="onTabChange($event)">
   <!-- 🗓 Pestaña 1: Mis Citas -->
   <mat-tab label="Mis Citas">
@@ -72,40 +73,44 @@
           <p class="loading-text">Cargando disponibilidad...</p>
         </div>
 
-        <h2 style="text-align-last: center;" class="titulo">Servicios</h2>
-        <div class="servicios-container">
-          <mat-card
-            class="servicio-card"
-            *ngFor="let servicio of serviciosFiltrados"
-          >
-            <div class="contenido-servicio">
-              <div class="servicio-info">
-                <div class="servicio-nombre">{{ servicio.nombre | titlecase }}</div>
-                <div class="servicio-precio">${{ servicio.valor | number: '1.0-0':'es-CO' }}</div>
+        <div *ngIf="!loading">
+          <h2 style="text-align-last: center;" class="titulo">Servicios</h2>
+          <div class="servicios-container">
+            <mat-card
+              class="servicio-card"
+              *ngFor="let servicio of serviciosFiltrados"
+            >
+              <div class="contenido-servicio">
+                <div class="servicio-info">
+                  <div class="servicio-nombre">{{ servicio.nombre | titlecase }}</div>
+                  <div class="servicio-precio">${{ servicio.valor | number: '1.0-0':'es-CO' }}</div>
+                </div>
+                <button
+                  mat-mini-fab
+                  color="primary"
+                  class="boton-add"
+                  (click)="toggleSeleccionServicio(servicio)"
+                >
+                  <mat-icon>{{ estaSeleccionado(servicio) ? 'check' : 'add' }}</mat-icon>
+                </button>
               </div>
-              <button
-                mat-mini-fab
-                color="primary"
-                class="boton-add"
-                (click)="toggleSeleccionServicio(servicio)"
-              >
-                <mat-icon>{{ estaSeleccionado(servicio) ? 'check' : 'add' }}</mat-icon>
-              </button>
-            </div>
-          </mat-card>
+            </mat-card>
+          </div>
+
+          <!-- Botón flotante visible solo si hay servicios seleccionados -->
+          <div class="boton-flotante-wrapper">
+            <button
+              mat-flat-button
+              color="primary"
+              class="boton-flotante-mejorado"
+              (click)="reservar()"
+            >
+              Reservar ({{ serviciosSeleccionados.length }})
+            </button>
+          </div>
         </div>
 
-        <!-- Botón flotante visible solo si hay servicios seleccionados -->
-        <div class="boton-flotante-wrapper">
-          <button
-            mat-flat-button
-            color="primary"
-            class="boton-flotante-mejorado"
-            (click)="mostrarAgenda = true"
-          >
-            Reservar ({{ serviciosSeleccionados.length }})
-          </button>
-        </div>
+
 
 
 
@@ -113,6 +118,7 @@
 
 
       </div>
+  
       <div *ngIf="mostrarAgenda">
         <h2 class="titulo-dashboard"> Agenda Citas</h2>
         <span class="fecha-actual">      

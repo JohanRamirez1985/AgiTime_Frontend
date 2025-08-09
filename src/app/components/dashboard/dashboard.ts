@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { SharedService } from '../../services/shared.service';
 import { obtenerGeneros, obtenerRoles, obtenerSedes, obtenerTiposDocumentos } from '../../shared/libs/request-generales';
+import { DashboardRecurso } from '../recursos/dashboard/dashboard';
 
 @Component({
   selector: 'app-dashboard',

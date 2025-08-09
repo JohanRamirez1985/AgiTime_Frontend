@@ -3,12 +3,13 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-toolbar',
   standalone: true,
-  imports: [CommonModule, MatToolbarModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatToolbarModule, MatIconModule, MatButtonModule, RouterModule, MatMenuModule],
   templateUrl: './toolbar.html',
   styleUrl: './toolbar.css'
 })
@@ -27,4 +28,11 @@ export class Toolbar {
       queryParams: { em: idEmpresa, tipo: currentUrl }
     });
   }
+
+  validate(codigo: string): boolean {
+    const funcionalidades = JSON.parse(localStorage.getItem('funcionalidades') || '[]');
+    const codigos = funcionalidades.map((f: any) => f.codigo);
+    return codigos.includes(codigo);
+  }
+
 }

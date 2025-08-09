@@ -1,15 +1,57 @@
 <mat-toolbar color="primary" class="toolbar">
-  <button mat-icon-button (click)="toggleSidebar.emit()" class="menu-button">
+  <img src="assets/img/favicon.ico" alt="AgiTime Logo" style="width: 150px;" />
+
+  <!-- Spacer -->
+  <span class="spacer"></span>
+
+  <!-- Botones en pantallas grandes -->
+  <div class="toolbar-buttons desktop-only">
+    <button mat-button routerLink="/admin/dashboard">
+      <mat-icon>dashboard</mat-icon>
+      Ir al Dashboard
+    </button>
+    <button *ngIf="validate('age')" mat-button routerLink="/admin/recurso/dash">
+      <mat-icon>date_range</mat-icon>
+      Agendamientos
+    </button>
+    <button *ngIf="validate('usu')" mat-button routerLink="/admin/usuarios">
+      <mat-icon>people</mat-icon>
+      Usuarios
+    </button>
+    <button mat-button class="logout-button" (click)="cerrarSesion()">
+      <mat-icon>logout</mat-icon>
+      Cerrar sesión
+    </button>
+      <img 
+        src="assets/img/barberia.jpg" 
+        alt="Foto de usuario" 
+        class="user-avatar"
+      />
+  </div>
+
+    <!-- Menú hamburguesa en móviles -->
+  <button mat-icon-button class="mobile-only" [matMenuTriggerFor]="menu">
     <mat-icon>menu</mat-icon>
   </button>
 
-  <span class="toolbar-title">AgiTime</span>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item routerLink="/admin/dashboard">
+      <mat-icon>dashboard</mat-icon>
+      Ir al Dashboard
+    </button>
+    <button *ngIf="validate('age')" mat-menu-item routerLink="/admin/recurso/dash">
+      <mat-icon>date_range</mat-icon>
+      Agendamientos
+    </button>
+    <button *ngIf="validate('usu')" mat-menu-item routerLink="/admin/usuarios">
+      <mat-icon>people</mat-icon>
+      Usuarios
+    </button>
+    <button mat-menu-item (click)="cerrarSesion()">
+      <mat-icon>logout</mat-icon>
+      Cerrar sesión
+    </button>
+  </mat-menu>
 
-  <span class="spacer"></span>
-  
-  <button mat-button class="logout-button" (click)="cerrarSesion()">
-    <mat-icon>logout</mat-icon>
-    Cerrar sesión
-  </button>
 
 </mat-toolbar>

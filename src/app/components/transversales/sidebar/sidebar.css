@@ -52,3 +52,21 @@ mat-icon {
   font-size: 20px;
   color: #1f3c88;
 }
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* alinea a la izquierda */
+  padding: 0;
+}
+
+.nav-list a.mat-list-item {
+  width: 100%; /* que ocupe todo el ancho */
+  justify-content: flex-start; /* ícono y texto a la izquierda */
+  padding-left: 12px; /* margen interno opcional */
+}
+
+.nav-list mat-icon {
+  margin-right: 12px; /* espacio entre ícono y texto */
+}
+

@@ -8,13 +8,6 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'recurso/dash',
-    loadComponent: () =>
-      import('./components/recursos/dashboard/dashboard').then(m => m.Dashboard),
-    canActivate: [AuthGuard([''], false)],
-
-  },
-  {
     path: 'login',
     loadComponent: () =>
       import('./components/login/login').then(m => m.Login)
@@ -35,7 +28,7 @@ export const routes: Routes = [
     path: 'admin',
     loadComponent: () =>
       import('./components/dashboard-layout/dashboard-layout').then(m => m.DashboardLayout),
-    canActivate: [AuthGuard(['Administador', 'SuperAdmin'], true)],
+    canActivate: [AuthGuard(['Administrador', 'SuperAdmin', 'Empleado'], true)],
     children: [
       {
         path: '',
@@ -56,7 +49,12 @@ export const routes: Routes = [
       path: 'usuarios/crear',
         loadComponent: () =>
           import('./components/usuarios/crear-usuario/crear-usuario').then(m => m.CrearUsuario)
-      }
+      },
+      {
+      path: 'recurso/dash',
+        loadComponent: () =>
+          import('./components/recursos/dashboard/dashboard').then(m => m.DashboardRecurso),
+      },
     ]
   },
 
@@ -66,10 +64,7 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./components/clientes/cliente-routing').then(m => m.routes)
   },
-
-
-
-
+  
   {
     path: '**',
     redirectTo: 'seleccionar'
