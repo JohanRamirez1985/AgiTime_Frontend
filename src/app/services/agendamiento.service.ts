@@ -38,4 +38,9 @@ export class AgendamientoService {
         return this.http.post<any>(`${this.baseUrl}/registrarBloqueo`, request) 
     }
 
+    consultarBloqueos(request: any) {
+        const params = new HttpParams({ fromObject: request });
+        return this.http.get<any>(`${this.baseUrl}/consultarBloqueos`, { params });
+    }
+
 }

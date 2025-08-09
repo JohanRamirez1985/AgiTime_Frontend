@@ -15,6 +15,9 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-dashboardR',
@@ -32,7 +35,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatCheckboxModule ,
     FormsModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatOptionModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule
     // ClienteAgendar
   ],
   templateUrl: './dashboard.html',
@@ -66,13 +73,26 @@ export class DashboardRecurso {
   motivo: string = '';
   bloqueoDia: boolean = false;
   mostrarBloqueo: boolean = false;
+  tipoBloqueo: string = '';
+  mostrarTipoBloqueos: boolean = true;
+  fechaBloqueo: Date | null = null;
+  diasMap: { [key: string]: string } = {
+    "1": "Lunes",
+    "2": "Martes",
+    "3": "Miércoles",
+    "4": "Jueves",
+    "5": "Viernes",
+    "6": "Sábado",
+    "7": "Domingo"
+  };
 
 
-  bloqueos = [
-    { nombre: 'Bloqueo 1', dia: 'Lunes', hora: '10:00 AM', recurso: 'wilmar' },
-    { nombre: 'Bloqueo 2', dia: 'Martes', hora: '2:00 PM', recurso: 'julian' },
-    // ...otros bloqueos
-  ];
+  bloqueos = [{
+            nombre: '',
+            dia: '',
+            hora: ``,
+            recurso: `` // Aquí puedes poner el nombre real si lo tienes
+          }];
 
   constructor(private router: Router,
     private agendamientoServices: AgendamientoService,
@@ -82,6 +102,16 @@ export class DashboardRecurso {
 
   }
 
+  onTipoBloqueoChange(valor: string) {
+    this.tipoBloqueo = valor;
+    this.mostrarTipoBloqueos = false
+  }
+
+  public cambiarTipo(): void {
+    this.mostrarTipoBloqueos = true;
+    this.tipoBloqueo = '';
+  }
+
   ngOnInit() {
     this.user = JSON.parse(localStorage.getItem('usuario') || '');
     this.empresa = JSON.parse(localStorage.getItem('empresa') || '');
@@ -89,6 +119,39 @@ export class DashboardRecurso {
     this.idEmpresa = this.empresa.id;
     this.obtenerServicios(this.idEmpresa);
     this.obtenerHorarios();
+    this.obtenerBloqueos();
+  }
+
+  private obtenerBloqueos(): void {
+    const request = {
+      empresa: this.idEmpresa,
+      FechaInicio: this.formatearFechaLocal(this.day, '00:00:00'),
+      Usuario: this.user.id
+    };
+
+    this.agendamientoServices.consultarBloqueos(request)
+    .subscribe({
+      next: rest => {
+        if (rest.exito && Array.isArray(rest.datos)) {
+          this.bloqueos = rest.datos.map((item: any) => {
+            const dias = (item.diasSemana ?? "")
+              .split(",")
+              .filter((d: any) => d.trim() !== "")
+              .map((d:any) => this.diasMap[d] ?? "")
+              .join(", ");
+
+            return {
+              nombre: item.motivo ?? "Sin motivo",
+              dia: dias || "Sin días",
+              hora: `${item.horaInicio} - ${item.horaFin}`,
+              recurso: `Usuario ${item.usuario}`
+            };
+          });
+        } else {
+          this.bloqueos = [];
+        }
+      }
+    });
   }
 
   irABloqueo(bloqueo: any) {
@@ -524,17 +587,24 @@ export class DashboardRecurso {
   onTabChange(event: MatTabChangeEvent) {
     const index = event.index;
     this.day = new Date();
+    this.loading = true;
     if (index === 0) {
       this.consultarCitas(this.user, this.empresa, this.day);
     }
     if (index === 1) {
       this.serviciosSeleccionados = [];
       this.mostrarAgenda = false;
-      this.loading = true;
       this.obtenerHorarios();
     }
     if (index === 2) {
       this.mostrarBloqueo = false;
+      this.tipoBloqueo = '';
+      this.mostrarTipoBloqueos = true;
     }
+  }
+
+  public bloqueo(): void {
+    this.mostrarBloqueo = true;
+    this.loading = false;
   }
 }
