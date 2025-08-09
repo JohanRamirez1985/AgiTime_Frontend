@@ -30,10 +30,9 @@ export class Toolbar {
   }
 
   validate(codigo: string): boolean {
-    const user = localStorage.getItem('funcionalidades');
-    // return user.includes(codigo);
-
-    return true
+    const funcionalidades = JSON.parse(localStorage.getItem('funcionalidades') || '[]');
+    const codigos = funcionalidades.map((f: any) => f.codigo);
+    return codigos.includes(codigo);
   }
 
 }

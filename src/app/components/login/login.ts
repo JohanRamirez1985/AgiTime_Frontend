@@ -65,7 +65,7 @@ export class Login {
         if(res.exito){
           localStorage.setItem('usuario', JSON.stringify(res.datos.usuario));
           localStorage.setItem('empresa', JSON.stringify(res.datos.empresa));
-          localStorage.setItem('funcionalidades', JSON.stringify(res.datos.funcionalidad));
+          localStorage.setItem('funcionalidades', JSON.stringify(res.datos.funcionalidades));
           localStorage.setItem('token', res.token);
           localStorage.setItem('infoEmp', JSON.stringify({
                                                           idEmpresa: this.idEmpresa,

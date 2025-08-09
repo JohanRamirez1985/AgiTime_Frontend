@@ -73,6 +73,12 @@ export class DashboardRecurso {
     } else {
       this.serviciosSeleccionados.push(servicio);
     }
+    this.cdr.detectChanges();
+  }
+
+  public reservar(): void {
+    this.mostrarAgenda = true;
+    this.cdr.detectChanges();
   }
 
   estaSeleccionado(servicio: any): boolean {
@@ -460,11 +466,12 @@ export class DashboardRecurso {
   onTabChange(event: MatTabChangeEvent) {
     const index = event.index;
     this.day = new Date();
-    this.mostrarAgenda = false;
     if (index === 0) {
       this.consultarCitas(this.user, this.empresa, this.day);
     }
     if (index === 1) {
+      this.serviciosSeleccionados = [];
+      this.mostrarAgenda = false;
       this.loading = true;
       this.obtenerHorarios();
     }

@@ -10,11 +10,11 @@
       <mat-icon>dashboard</mat-icon>
       Ir al Dashboard
     </button>
-    <button mat-button routerLink="/admin/recurso/dash">
+    <button *ngIf="validate('age')" mat-button routerLink="/admin/recurso/dash">
       <mat-icon>date_range</mat-icon>
       Agendamientos
     </button>
-    <button mat-button routerLink="/admin/usuarios">
+    <button *ngIf="validate('usu')" mat-button routerLink="/admin/usuarios">
       <mat-icon>people</mat-icon>
       Usuarios
     </button>
@@ -43,7 +43,7 @@
       <mat-icon>date_range</mat-icon>
       Agendamientos
     </button>
-    <button mat-menu-item routerLink="/admin/usuarios">
+    <button *ngIf="validate('usu')" mat-menu-item routerLink="/admin/usuarios">
       <mat-icon>people</mat-icon>
       Usuarios
     </button>
