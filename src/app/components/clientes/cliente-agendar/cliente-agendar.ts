@@ -217,6 +217,7 @@ toggleSeleccionServicio(servicio: any): void {
       },
       error: err => {
         this.loading = false;
+        this.mostrarDisponibilidad = true;
         Swal.fire({
           icon: 'error',
           title: 'Error de servidor',

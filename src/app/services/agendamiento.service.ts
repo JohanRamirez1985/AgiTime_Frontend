@@ -43,4 +43,8 @@ export class AgendamientoService {
         return this.http.get<any>(`${this.baseUrl}/consultarBloqueos`, { params });
     }
 
+    inactivarBloqueo(request: any) {
+        return this.http.post<any>(`${this.baseUrl}/cambiarEstadoBloqueo`, request)
+    }    
+
 }

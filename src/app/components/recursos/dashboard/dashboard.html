@@ -210,21 +210,33 @@
           <mat-icon>add</mat-icon>
           Crear Bloqueo
         </button>
-        <mat-card class="bloqueo-card" *ngFor="let bloqueo of bloqueos">
-          <div class="bloqueo-content">
-            <div class="bloqueo-info">
-              <mat-card-title>{{ bloqueo.nombre }}</mat-card-title>
-              <mat-card-content>
-                <p><strong>Día:</strong> {{ bloqueo.dia }}</p>
-                <p><strong>Hora:</strong> {{ bloqueo.hora }}</p>
-                <p><strong>Recurso:</strong> {{ bloqueo.recurso }}</p>
-              </mat-card-content>
+        <div *ngIf="loading" class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p class="loading-text">Cargando disponibilidad...</p>
+        </div>
+        <div *ngIf="!loading">
+          <mat-card class="bloqueo-card" *ngFor="let bloqueo of bloqueos">
+            <div class="bloqueo-content">
+              <div class="bloqueo-info">
+                <mat-card-title>{{ bloqueo.nombre }}</mat-card-title>
+                <mat-card-content>
+                  <p>
+                    <strong>Día:</strong>
+                    {{ bloqueo.tipoBloqueo === '1' ? bloqueo.dia : bloqueo.fechaInicio | date:'fullDate':'':'es' }}
+                  </p>
+                  <p><strong>Hora:</strong> {{ bloqueo.hora }}</p>
+                  <p><strong>Recurso:</strong> {{ user.nombre | titlecase }}</p>
+                  <p><strong>Estado:</strong> {{ bloqueo.estado | titlecase }}</p>
+                </mat-card-content>
+              </div>
+              <div class="bloqueo-acciones">
+                <button *ngIf="bloqueo.estado === 'Inactivo'" mat-raised-button color="primary" (click)="irABloqueo(bloqueo, true)">Activar</button>
+                <button *ngIf="bloqueo.estado === 'Activo'" mat-raised-button color="primary" (click)="irABloqueo(bloqueo, false)">Inactivar</button>
+              </div>
             </div>
-            <div class="bloqueo-acciones">
-              <button mat-raised-button color="primary" (click)="irABloqueo(bloqueo)">Inactivar</button>
-            </div>
-          </div>
-        </mat-card>
+          </mat-card>
+        </div>
+
 
       </div>
       <div *ngIf="mostrarBloqueo" class="p-4 bloqueo-horario-container">
@@ -296,7 +308,7 @@
           </div>
 
           <div class="acciones">
-            <button mat-flat-button color="primary" (click)="inabilitarHorarios(true)">Inhabilitar</button>
+            <button mat-flat-button color="primary" (click)="inabilitarHorarios(true)">Crear Bloqueo</button>
           </div>
         </div>
       </div>

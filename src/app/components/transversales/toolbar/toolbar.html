@@ -6,7 +6,7 @@
 
   <!-- Botones en pantallas grandes -->
   <div class="toolbar-buttons desktop-only">
-    <button mat-button routerLink="/admin/dashboard">
+    <button *ngIf="validate('das')" mat-button routerLink="/admin/dashboard">
       <mat-icon>dashboard</mat-icon>
       Ir al Dashboard
     </button>
@@ -35,7 +35,7 @@
   </button>
 
   <mat-menu #menu="matMenu">
-    <button mat-menu-item routerLink="/admin/dashboard">
+    <button *ngIf="validate('das')" mat-menu-item routerLink="/admin/dashboard">
       <mat-icon>dashboard</mat-icon>
       Ir al Dashboard
     </button>

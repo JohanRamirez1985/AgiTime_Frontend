@@ -77,22 +77,28 @@ export class DashboardRecurso {
   mostrarTipoBloqueos: boolean = true;
   fechaBloqueo: Date | null = null;
   diasMap: { [key: string]: string } = {
-    "1": "Lunes",
-    "2": "Martes",
-    "3": "Miércoles",
-    "4": "Jueves",
-    "5": "Viernes",
-    "6": "Sábado",
-    "7": "Domingo"
-  };
+      "1": "Lunes",
+      "2": "Martes",
+      "3": "Miércoles",
+      "4": "Jueves",
+      "5": "Viernes",
+      "6": "Sábado",
+      "7": "Domingo"
+    };
+btnActivar: boolean = false;
 
 
   bloqueos = [{
+            id: 0,
             nombre: '',
             dia: '',
             hora: ``,
-            recurso: `` // Aquí puedes poner el nombre real si lo tienes
+            recurso: ``,
+            estado: '',
+            fechaInicio: '',
+            tipoBloqueo: ''
           }];
+  
 
   constructor(private router: Router,
     private agendamientoServices: AgendamientoService,
@@ -144,42 +150,189 @@ export class DashboardRecurso {
               nombre: item.motivo ?? "Sin motivo",
               dia: dias || "Sin días",
               hora: `${item.horaInicio} - ${item.horaFin}`,
-              recurso: `Usuario ${item.usuario}`
+              recurso: `Usuario ${item.usuario}`,
+              id: item.id,
+              estado: item.estado,
+              tipoBloqueo: item.tipoBloqueo.toString(),
+              fechaInicio: item.fechaInicio
             };
           });
         } else {
           this.bloqueos = [];
         }
+        this.loading = false;
       }
     });
   }
 
-  irABloqueo(bloqueo: any) {
-    console.log('Ir a bloqueo:', bloqueo);
-    // Aquí puedes navegar o cargar datos específicos del bloqueo
+  irABloqueo(bloqueo: any, activar: boolean) {
+    this.loading = true;
+    const request = {
+      empresa: this.idEmpresa,
+      Id: bloqueo.id,
+      Activar: activar
+    }
+
+    this.agendamientoServices.inactivarBloqueo(request)
+    .subscribe({
+      next: rest => {
+        if(rest.exito) {
+          this.obtenerBloqueos();
+          Swal.fire({
+            icon: 'success',
+            title: 'Bloqueo actualizado!',
+            text: rest.mensaje || 'El bloqueo fue actualizado exitosamente',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Ok'
+          })
+        }else {
+          this.loading = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: rest.mensaje || 'Error de servidor',
+          });
+        }     
+      },
+      error: err => {
+        this.loading = false;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err.statusText,
+        });
+      }
+    })
   }
 
   inabilitarHorarios(bloqueo: boolean) {
     this.loading = true;
-    const diasSeleccionados = this.dias.filter(d => d.checked).map(d => d.value);
-    console.log('Inhabilitando:', diasSeleccionados, this.horaInicio, this.horaFin);
+    const diasSeleccionados = this.dias
+      .filter(d => d.checked)
+      .map(d => d.value)
+      .join(',');
+    
+    if(this.tipoBloqueo === '') {
+      this.loading = false;
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campo obligatorio',
+        text: 'Debes seleccionar un tipo de bloqueo.',
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Entendido'
+      });
+      return
+    }else {
+      if(this.tipoBloqueo === '1') {
+        const checked = this.dias.filter(dia => dia.checked).length;
+        if(checked === 0) {
+          this.loading = false;
+            Swal.fire({
+              icon: 'warning',
+              title: 'Campo obligatorio',
+              text: 'Debes seleccionar un dia por lo menos.',
+              confirmButtonColor: '#d33',
+              confirmButtonText: 'Entendido'
+            });
+          return
+        }
+      }else if(this.tipoBloqueo === '2') {
+        if(!this.fechaBloqueo) {
+            this.loading = false;
+            Swal.fire({
+              icon: 'warning',
+              title: 'Campo obligatorio',
+              text: 'Debes seleccionar una fecha.',
+              confirmButtonColor: '#d33',
+              confirmButtonText: 'Entendido'
+            });
+          return
+        }
+      }
+    }
+
+    if (!this.horaInicio || !this.horaFin || !this.motivo) {
+      this.loading = false;
+      let campoFaltante = '';
+
+      if (!this.horaInicio) {
+        campoFaltante = 'Hora de inicio';
+      } else if (!this.horaFin) {
+        campoFaltante = 'Hora de fin';
+      } else if (!this.motivo) {
+        campoFaltante = 'Motivo';
+      }
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campo obligatorio',
+        text: `Por favor ingresa ${campoFaltante} antes de continuar.`,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Entendido'
+      });
+
+      return;
+    }
+
+    const now = new Date(this.day);
+    const fechaLocal = now.getFullYear() + '-' +
+      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+      String(now.getDate()).padStart(2, '0') + 'T' +
+      String(now.getHours()).padStart(2, '0') + ':' +
+      String(now.getMinutes()).padStart(2, '0') + ':' +
+      String(now.getSeconds()).padStart(2, '0');
 
     const request ={
-      TipoBloqueo: bloqueo ? 1 : 2,
+      TipoBloqueo: parseInt(this.tipoBloqueo),
       Usuario: this.user.id,
-      FechaInicio: '',
+      FechaInicio: this.tipoBloqueo === '2' ? this.fechaBloqueo : null,
       HoraInicio: this.horaInicio,
       HoraFin: this.horaFin,
       Motivo: this.motivo,
-      DiasSemana: diasSeleccionados
+      DiasSemana: this.tipoBloqueo === '1' ? diasSeleccionados : '',
+      FechaCreacion: fechaLocal,
+      empresa: this.idEmpresa
     }
     
     this.agendamientoServices.registrarBloqueoDias(request)
     .subscribe({
       next: rest => {
-        console.log();
-        this.loading = false;
-        
+        if(rest.exito) {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Bloqueo Creado!',
+            text: rest.mensaje,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Ok'
+          }).then(() => {
+            this.tipoBloqueo = '';
+            this.horaInicio = '';
+            this.horaFin = '';
+            this.motivo = '';
+            this.dias.forEach(dia => {
+              dia.checked = false;
+            });
+            this.loading = true;
+            this.obtenerBloqueos();
+            this.mostrarBloqueo = false;
+            this.cdr.detectChanges();
+          });   
+        }else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: rest.statusText,
+          });
+        }
+        this.loading = false;        
+      },
+      error: err => {
+      this.loading = false;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err.statusText,
+        });
       }
     })
   }
@@ -529,7 +682,7 @@ export class DashboardRecurso {
         Swal.fire({
           icon: 'error',
           title: 'Error de servidor',
-          text: err.mensaje || 'Error de servidor',
+          text: err.statusText,
         });
       }
     })    
@@ -600,6 +753,7 @@ export class DashboardRecurso {
       this.mostrarBloqueo = false;
       this.tipoBloqueo = '';
       this.mostrarTipoBloqueos = true;
+      this.obtenerBloqueos();
     }
   }
 
