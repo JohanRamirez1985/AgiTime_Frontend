@@ -36,22 +36,7 @@ export class ClienteMisCitas {
   mostrarContenido: boolean = false;
   btnConsultar: boolean = false;
 
-  citas = [
-    {
-      servicio: 'Corte de Cabello',
-      profesional: 'Juan Pérez',
-      fecha: new Date(2025, 7, 15), // agosto es mes 7 porque enero = 0
-      hora: '10:30 AM',
-      sede: 'Sede Central'
-    },
-    {
-      servicio: 'Afeitado',
-      profesional: 'Carlos López',
-      fecha: new Date(2025, 7, 18),
-      hora: '4:00 PM',
-      sede: 'Sucursal Norte'
-    }
-  ];
+  citas: any[] = [];
 
 
   constructor(
@@ -91,17 +76,39 @@ export class ClienteMisCitas {
     .subscribe({
       next: rest => {
         if(rest.exito) {
-          console.log();
-          
+          this.citas = rest.datos.flatMap((item: any) =>
+            item.servicios.map((servicio: any) => ({
+              valor: servicio.valor,
+              servicio: servicio.nombre || 'Servicio no especificado',
+              recursoNombre: item.recursoNombre || 'No disponible',
+              fecha: new Date(item.fechaInicio),
+              hora: new Date(item.fechaInicio).toLocaleTimeString('es-CO', {
+                hour: '2-digit',
+                minute: '2-digit'
+              }),
+              sede: item.sede || 'Sede no disponible'
+            }))
+          );
+          this.btnConsultar = false;
+          this.telefono = '';
+          this.mostrarContenido = true;             
         }else {
           Swal.fire({
             icon: 'info',
             title: 'Sin citas encontradas',
             text: `Con el teléfono ${this.telefono} no hay citas agendadas.`
           });
-          this.telefono = '';
         }
+          this.btnConsultar = false;
+          this.telefono = '';
+      },
+      error: errr => {
         this.btnConsultar = false;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: errr.mensaje,
+        });
       }
     })
 

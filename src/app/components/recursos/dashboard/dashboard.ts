@@ -407,13 +407,20 @@ btnActivar: boolean = false;
       .subscribe({
         next: rest => {
           if(rest.exito) {
-            for (let i = 0; i < this.horas.length; i++) {
-              let disponible = true;
-              disponible = rest.datos.find((h : any) => h === this.horas[i].hora);
-              if(disponible) {
-                this.horas[i].disponible = false;
+            if(rest.diaCompletoBloqueado) {
+              this.horas.forEach(h => {
+                h.disponible = false;
+              });
+            }else {
+              for (let i = 0; i < this.horas.length; i++) {
+                let disponible = true;
+                disponible = rest.horasOcupadas.find((h : any) => h === this.horas[i].hora);
+                if(disponible) {
+                  this.horas[i].disponible = false;
+                }
               }
             }
+
             this.horas = this.horas.filter(h => h.disponible);
           }
           this.verificarHoras();         

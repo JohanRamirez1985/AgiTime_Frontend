@@ -57,8 +57,9 @@
       <div class="cita-lista" *ngIf="citas.length > 0">
         <mat-card *ngFor="let cita of citas" class="cita-item mat-elevation-z2">
           <div class="cita-info">
-            <h3>{{ cita.servicio }}</h3>
-            <p><mat-icon>person</mat-icon> {{ cita.profesional }}</p>
+            <h3>{{ cita.servicio | titlecase }}</h3>
+            <h3>{{ cita.valor | currency:'COP':'symbol':'1.0-0':'es-CO' }}</h3>
+            <p><mat-icon>person</mat-icon> {{ cita.recursoNombre | titlecase }}</p>
             <p><mat-icon>event</mat-icon> {{ cita.fecha | date:'EEEE d \'de\' MMMM y':'':'es' }}</p>
             <p><mat-icon>access_time</mat-icon> {{ cita.hora }}</p>
             <p><mat-icon>location_on</mat-icon> {{ cita.sede }}</p>
@@ -69,7 +70,5 @@
         </mat-card>
       </div>
     </div>
-
-
   </mat-card>
 </div>

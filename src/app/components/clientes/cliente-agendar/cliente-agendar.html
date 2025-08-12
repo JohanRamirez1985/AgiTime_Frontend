@@ -124,7 +124,7 @@
         <div class="seccion-titulo">
           <mat-icon>nights_stay</mat-icon> Tarde (PM)
         </div>
-        <div class="horas-grid" *ngIf="horasPM.length > 0; else sinHorarios">
+        <div class="horas-grid" *ngIf="horasPM.length > 0; else sinHorariosT">
           <button
             mat-flat-button
             *ngFor="let hora of horasPM"
@@ -138,7 +138,7 @@
             {{ hora.hora }}
           </button>
         </div>
-        <ng-template #sinHorarios>
+        <ng-template #sinHorariosT>
           <div class="mensaje-no-horarios">
             <span>No hay horarios disponibles en la tarde.</span>
           </div>
