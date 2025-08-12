@@ -55,6 +55,7 @@ export class ClienteMisCitas {
 
   public consultar() {
     this.mostrarContenido = false;
+    this.loading = true;
     if (!this.telefono || this.telefono.length < 10) {
       Swal.fire({
         icon: 'warning',
@@ -76,21 +77,29 @@ export class ClienteMisCitas {
     .subscribe({
       next: rest => {
         if(rest.exito) {
-          this.citas = rest.datos.flatMap((item: any) =>
-            item.servicios.map((servicio: any) => ({
-              valor: servicio.valor,
-              servicio: servicio.nombre || 'Servicio no especificado',
+          this.citas = rest.datos.map((item: any) => {
+            const serviciosNombres = item.servicios
+              .map((s: any) => s.nombre)
+              .join(', ');
+
+            const totalValor = item.servicios
+              .reduce((total: number, s: any) => total + (s.valor || 0), 0);
+
+            return {
+              valor: totalValor,
+              servicio: serviciosNombres || 'Servicio no especificado',
               recursoNombre: item.recursoNombre || 'No disponible',
               fecha: new Date(item.fechaInicio),
               hora: new Date(item.fechaInicio).toLocaleTimeString('es-CO', {
                 hour: '2-digit',
                 minute: '2-digit'
               }),
-              sede: item.sede || 'Sede no disponible'
-            }))
-          );
+              sede: item.sede || 'Sede no disponible',
+              id: item.id
+            };
+          });
           this.btnConsultar = false;
-          this.telefono = '';
+          // this.telefono = '';
           this.mostrarContenido = true;             
         }else {
           Swal.fire({
@@ -99,11 +108,13 @@ export class ClienteMisCitas {
             text: `Con el teléfono ${this.telefono} no hay citas agendadas.`
           });
         }
+          this.loading = false;
           this.btnConsultar = false;
-          this.telefono = '';
+          // this.telefono = '';
       },
       error: errr => {
         this.btnConsultar = false;
+        this.loading = false;
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -120,9 +131,49 @@ export class ClienteMisCitas {
     });
   }
 
-  cancelarCita(cita: any) {
-    console.log('Cancelar cita:', cita);
-    // Aquí pondrías tu lógica para cancelar
+  cancelarCita(cita: any) {   
+    Swal.fire({
+      title: '¿Cancelar cita?',
+      html: `<p>¿Estás seguro de cancelar la cita programada para las <strong> ${cita.hora} </strong> de <strong> hoy </strong>?</p>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#a0aab4ff',
+      customClass: {
+        popup: 'swal-reserva-responsive'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.mostrarContenido = false;
+        const now = new Date();
+        const fechaLocal = now.getFullYear() + '-' +
+          String(now.getMonth() + 1).padStart(2, '0') + '-' +
+          String(now.getDate()).padStart(2, '0') + 'T' +
+          String(now.getHours()).padStart(2, '0') + ':' +
+          String(now.getMinutes()).padStart(2, '0') + ':' +
+          String(now.getSeconds()).padStart(2, '0');
+
+        const request = {
+          empresa: this.idEmpresa,
+          Id: cita.id,
+          fechaCancelacion: fechaLocal,
+          usuarioCancelacion: 'Cliente'
+        }
+        this.agendaService.cancelarCita(request)
+        .subscribe({
+          next : rest => {
+            if(rest.exito) {
+              this.consultar();
+            }            
+          }
+        })
+        
+      }else {
+        this.loading = false;
+      }
+    })
   }
 
 }
