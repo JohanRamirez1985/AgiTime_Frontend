@@ -53,6 +53,14 @@ export class ClienteDashboard {
     this.obtenerRecursos();
   }
 
+  public misCitas(): void {
+    this.router.navigate(['/cliente/misCitas'], {
+      queryParams : {
+        emp: this.idEmpresa
+      }
+    });
+  }
+
   private obtenerSedes(): void {
     this.sharenServices.obtenerSedesUsuarios(this.idEmpresa.toString())
       .subscribe({
@@ -102,15 +110,12 @@ export class ClienteDashboard {
   }
 
   irAReservar(usuario: any) {
-    const user = {
-      nombre: usuario.nombre,
-      sede: usuario.nombreSede,
-      id: usuario.id,
-      emp: this.idEmpresa,
-      img: usuario.foto
-    }
-    localStorage.setItem('recurso', JSON.stringify(user));
-    this.router.navigate(['/cliente/reservar']);
+    localStorage.setItem('recurso', JSON.stringify(usuario));
+    this.router.navigate(['/cliente/reservar'],
+      {
+        queryParams: { emp: this.idEmpresa, rcr: usuario.id }
+      }
+    );
   }
 
   irAHistorial() {

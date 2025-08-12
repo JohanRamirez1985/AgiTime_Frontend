@@ -7,7 +7,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { SharedService } from '../../../services/shared.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AgendamientoService } from '../../../services/agendamiento.service';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
@@ -49,12 +49,12 @@ export class ClienteAgendar {
   horaInicioServicios: number = 0;
   horaFinServicios: number = 0;
   horas: {hora: string, disponible: boolean}[] = [];
-  recursoInfo: { emp: number, id:number, nombre:string, sede: string, img: string} = {
+  recursoInfo: { emp: number, id:number, nombre:string, sede: string, foto: string} = {
     emp: 0,
     id: 0,
     nombre: '',
     sede: '',
-    img: ''
+    foto: ''
   };
   horasAM: { hora: string; disponible: boolean }[] = [];
   horasPM: { hora: string; disponible: boolean }[] = [];
@@ -75,16 +75,21 @@ export class ClienteAgendar {
     private sharedServices: SharedService,
     private agendaService: AgendamientoService,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
    
   ) {}
 
    ngOnInit() {
-    this.recursoInfo = JSON.parse(localStorage.getItem('recurso') || '{"emp":0,"id":0,"nombre":"","sede":"", "img":""}');
-    this.idRecurso = this.recursoInfo.id;
+    this.route.queryParams.subscribe(params => {
+      this.idEmpresa = +params['emp']
+    });
+    this.route.queryParams.subscribe(params => {
+      this.idRecurso = +params['rcr']
+    });
+    this.recursoInfo = JSON.parse(localStorage.getItem('recurso') || '{"emp":0,"id":0,"nombre":"","sede":"", "foto":""}');
     this.nombreDelRecurso = this.recursoInfo.nombre;
-    this.idEmpresa = this.recursoInfo.emp;
-    this.fotoRecuerso = this.recursoInfo.img;
+    this.fotoRecuerso = this.recursoInfo.foto;
     this.obtenerServicios(this.idEmpresa);
     this.obtenerHorarios();
   }
@@ -220,8 +225,8 @@ toggleSeleccionServicio(servicio: any): void {
         this.mostrarDisponibilidad = true;
         Swal.fire({
           icon: 'error',
-          title: 'Error de servidor',
-          text: err.mensaje || 'Error de servidor',
+          title: 'Error',
+          text: err.mensaje,
         });
       }
     })    

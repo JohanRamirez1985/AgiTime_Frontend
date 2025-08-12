@@ -47,4 +47,9 @@ export class AgendamientoService {
         return this.http.post<any>(`${this.baseUrl}/cambiarEstadoBloqueo`, request)
     }    
 
+    consultarCitasCliente(request: any) {
+        const params = new HttpParams({ fromObject: request });
+        return this.http.get<any>(`${this.baseUrl}/consultarCitasCliente`, { params });
+    }
+
 }
