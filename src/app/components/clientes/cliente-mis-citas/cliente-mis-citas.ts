@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
@@ -34,7 +34,6 @@ export class ClienteMisCitas {
   loading: boolean = false;
   telefono: string = '';
   mostrarContenido: boolean = false;
-  btnConsultar: boolean = false;
 
   citas: any[] = [];
 
@@ -42,7 +41,8 @@ export class ClienteMisCitas {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private agendaService : AgendamientoService
+    private agendaService : AgendamientoService,
+    private cdr: ChangeDetectorRef,
   ) {
 
   }
@@ -64,8 +64,6 @@ export class ClienteMisCitas {
       });
       return;
     }
-
-    this.btnConsultar = true;
 
     const request = {
       empresa: this.idEmpresa,
@@ -98,28 +96,28 @@ export class ClienteMisCitas {
               id: item.id
             };
           });
-          this.btnConsultar = false;
-          // this.telefono = '';
-          this.mostrarContenido = true;             
+
+          this.loading = false;
+          this.mostrarContenido = true;   
+          this.cdr.detectChanges();          
         }else {
+          this.loading = false;
           Swal.fire({
             icon: 'info',
             title: 'Sin citas encontradas',
             text: `Con el teléfono ${this.telefono} no hay citas agendadas.`
           });
+          this.cdr.detectChanges();
         }
-          this.loading = false;
-          this.btnConsultar = false;
-          // this.telefono = '';
       },
       error: errr => {
-        this.btnConsultar = false;
         this.loading = false;
         Swal.fire({
           icon: 'error',
           title: 'Error',
           text: errr.mensaje,
         });
+        this.cdr.detectChanges();
       }
     })
 
