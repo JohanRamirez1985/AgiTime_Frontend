@@ -122,14 +122,4 @@ export class ClienteDashboard {
     this.router.navigate(['/cliente/historial']);
   }
 
-  cerrarSesion() {
-    const infoEmpStr = localStorage.getItem('infoEmp');
-    localStorage.clear();
-    const idEmpresa = infoEmpStr ? JSON.parse(infoEmpStr).idEmpresa : null;
-    const currentUrl = infoEmpStr ? JSON.parse(infoEmpStr).tipo : null;
-    this.router.navigate(['/login'], {
-      queryParams: { em: idEmpresa, tipo: currentUrl }
-    });
-  }
-
 }

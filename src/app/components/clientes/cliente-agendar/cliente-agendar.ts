@@ -121,15 +121,6 @@ toggleSeleccionServicio(servicio: any): void {
 
   public seleccionarHora(hora: any): void {
 
-    if (!this.estaDisponible(hora.hora)) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Hora inválida',
-        text: 'No puedes agendar en horarios pasados',
-      });
-      return;
-    }
-
     const fechaFormateada = this.viewDate.toLocaleDateString('es-CO', {
       weekday: 'long',
       year: 'numeric',
@@ -231,22 +222,6 @@ toggleSeleccionServicio(servicio: any): void {
       }
     })    
   }
-
-  private estaDisponible(hora: string): boolean {
-    const hoy = new Date();
-
-    const [time, period] = hora.split(' ');
-    let [hours, minutes] = time.split(':').map(Number);
-
-    if (period === 'PM' && hours < 12) hours += 12;
-    if (period === 'AM' && hours === 12) hours = 0;
-
-    const horaCita = new Date(hoy);
-    horaCita.setHours(hours, minutes, 0, 0);
-
-    return horaCita > hoy;
-  }
-
 
   private createJson(hora : string, datos: { celular: string, nombre: string, fecha: string, hora: string, correo: string }) {
     const fechaBase = this.viewDate.toISOString().split('T')[0];
