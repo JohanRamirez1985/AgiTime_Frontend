@@ -65,6 +65,7 @@ export class Login {
         if(res.exito){
           localStorage.setItem('usuario', JSON.stringify(res.datos.usuario));
           localStorage.setItem('empresa', JSON.stringify(res.datos.empresa));
+          localStorage.setItem('funcionalidades', JSON.stringify(res.datos.funcionalidades));
           localStorage.setItem('token', res.token);
           localStorage.setItem('infoEmp', JSON.stringify({
                                                           idEmpresa: this.idEmpresa,
@@ -93,13 +94,14 @@ export class Login {
   }
 
   private redireccion(): void {
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '');
     if(this.tipo === 'cl') {
       this.router.navigate(['/cliente']);
-    }else { 
+    }else if(usuario.rol === 3) {
+      this.router.navigate(['admin/recurso/dash'])
+    }
+    else { 
       this.router.navigate(['/admin/dashboard'])
     }
   }
-
-
-
 }

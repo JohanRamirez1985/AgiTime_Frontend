@@ -6,3 +6,30 @@ body {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+
+/* Estilo personalizado para SweetAlert2 */
+.swal-reserva-responsive {
+  width: 100% !important;
+  max-width: 95vw !important;
+  box-sizing: border-box;
+}
+
+.swal-reserva-responsive {
+  width: 100% !important; /* o 100%, si prefieres */
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+.swal-reserva-responsive .swal2-html-container {
+  padding: 0;
+  text-align: center;
+  font-size: 14px;
+}
+
+.swal2-input {
+  width: 70% !important;
+  box-sizing: border-box;
+  margin-top: 8px;
+}

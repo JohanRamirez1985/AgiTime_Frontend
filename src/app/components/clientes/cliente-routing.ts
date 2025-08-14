@@ -11,9 +11,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./cliente-agendar/cliente-agendar').then(m => m.ClienteAgendar)
   },
-//   {
-//     path: 'historial',
-//     loadComponent: () =>
-//       import('./cliente-historial/cliente-historial').then(m => m.ClienteHistorialComponent)
-//   }
+  {
+    path: 'misCitas',
+    loadComponent: () =>
+      import('./cliente-mis-citas/cliente-mis-citas').then(m => m.ClienteMisCitas)
+  }
 ];

@@ -179,7 +179,8 @@ export class CrearUsuario {
       documento: this.usuario.documento,
       empresa: Number(this.idEmpresa),
       rol: Number(this.usuario.rol),
-      recurso: this.usuario.recurso
+      recurso: this.usuario.recurso,
+      fechaCreacion: new Date()
     };
 
     return json

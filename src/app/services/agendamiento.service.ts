@@ -21,4 +21,35 @@ export class AgendamientoService {
         return this.http.post<any>(`${this.baseUrl}/registrarCita`, request)
     }
 
+    consultarCitasRecurso(request: any) {
+        const params = new HttpParams({ fromObject: request });
+        return this.http.get<any>(`${this.baseUrl}/consultarCitasRecurso`, { params });
+    }
+
+    cancelarCita(request: any) {
+        return this.http.post<any>(`${this.baseUrl}/cancelarCita`, request)
+    }
+
+    ConfirmarAsitenciaCita(request: any) {
+        return this.http.post<any>(`${this.baseUrl}/asistioCita`, request)
+    }
+
+    registrarBloqueoDias(request: any) {
+        return this.http.post<any>(`${this.baseUrl}/registrarBloqueo`, request) 
+    }
+
+    consultarBloqueos(request: any) {
+        const params = new HttpParams({ fromObject: request });
+        return this.http.get<any>(`${this.baseUrl}/consultarBloqueos`, { params });
+    }
+
+    inactivarBloqueo(request: any) {
+        return this.http.post<any>(`${this.baseUrl}/cambiarEstadoBloqueo`, request)
+    }    
+
+    consultarCitasCliente(request: any) {
+        const params = new HttpParams({ fromObject: request });
+        return this.http.get<any>(`${this.baseUrl}/consultarCitasCliente`, { params });
+    }
+
 }

@@ -25,7 +25,8 @@ export interface Empresa {
 
 export interface EmpresasResponse {
   exito: boolean;
-  datos: Empresa[]
+  datos: Empresa[];
+  mensaje: string
 }
 
 export interface LoginResponse {
@@ -35,7 +36,7 @@ export interface LoginResponse {
   datos: {
     usuario: any;
     empresa: any;
-    funcionalidad: string;
+    funcionalidades: { codigo: string} [];
   };
 }
 
@@ -75,7 +76,8 @@ export interface UsuarioRegistro {
   documento: string;
   empresa: number;
   rol: number;
-  recurso: boolean
+  recurso: boolean,
+  fechaCreacion: Date
 }
 
 

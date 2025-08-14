@@ -1,0 +1,481 @@
+:host {
+  display: block;
+  padding: 1.5rem;
+  background-color: #f4f6f8;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+.dashboard-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.titulo-dashboard {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.card-cita {
+  margin-bottom: 1rem;
+  border-left: 6px solid #3f51b5;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-cita:hover {
+  transform: scale(1.01);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.info-cita {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-cita strong {
+  color: #3f51b5;
+  font-size: 1rem;
+}
+
+.info-cita span {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.sin-citas {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #888;
+}
+
+.mat-card {
+  border-radius: 12px;
+  background-color: white;
+}
+
+
+
+mat-tab-group {
+  margin-top: 16px;
+}
+
+.p-4 {
+  padding: 16px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  color: #555;
+}
+
+.loading-text {
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+.btn-cancelar {
+  background-color: #546e7a; /* azul acero */
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 4px;
+  padding: 4px 12px;
+  box-shadow: none;
+  border: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100px;
+}
+
+.btn-cancelar:hover {
+  background-color: #455a64;
+  transform: scale(1.02);
+}
+
+.btn-confirmar {
+  background-color: #1e88e5; /* azul corporativo */
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 4px;
+  padding: 4px 12px;
+  box-shadow: none;
+  border: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100px;
+}
+
+.btn-confirmar:hover {
+  background-color: #1565c0;
+  transform: scale(1.02);
+}
+
+.acciones-cita {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 0.5rem;
+  align-items: flex-end; /* o 'center' si los quieres centrados */
+}
+
+.navegacion-botones {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Esto centra horizontalmente */
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.fecha-actual {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #333;
+  justify-content: center;
+  margin-top: -15px;
+  margin-bottom: 25px;
+}
+
+.horario-seccion {
+  margin-top: 1.5rem;
+}
+
+.seccion-titulo {
+  font-weight: 600;
+  color: #002d72;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.horas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
+}
+
+button.hora-disponible {
+  background: #e8f5e9;
+  color: #2e7d32 !important;
+  border: 1px solid #a5d6a7;
+  font-weight: 600;
+}
+
+
+.servicios-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.servicio-card {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &.selected {
+    border: 2px solid #3f51b5;
+    background-color: #e3f2fd;
+  }
+
+  .contenido-servicio {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .servicio-info {
+    display: flex;
+    flex-direction: column;
+
+    .servicio-nombre {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #374151;
+    }
+
+    .servicio-precio {
+      color: #10b981;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+  }
+
+  .boton-add {
+    margin-left: 1rem;
+  }
+}
+
+.boton-flotante {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 999;
+  font-weight: bold;
+  background-color: #3f51b5;
+  color: white;
+
+  &:hover {
+    background-color: #303f9f;
+  }
+}
+
+.boton-flotante-wrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.boton-flotante-gradiente {
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 50px;
+  color: white;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8); /* Azul empresarial */
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.3);
+  transition: all 0.3s ease-in-out;
+  border: none;
+}
+
+.boton-flotante-gradiente:hover {
+  background: linear-gradient(135deg, #1e40af, #1e3a8a);
+  transform: translateY(-2px) scale(1.03);
+  cursor: pointer;
+}
+
+.bloqueo-horario-container {
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.titulo-bloqueo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #333;
+}
+
+.dias-semana {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.dia-checkbox {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 1rem;
+  justify-content: center;
+}
+
+.checkbox-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.checkbox-label {
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.dia-checkbox:hover {
+  border-color: #3f51b5;
+  box-shadow: 0 2px 6px rgba(63, 81, 181, 0.15);
+}
+
+.horas {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 2rem;
+  margin-top: 25px;
+}
+
+.mat-form-field {
+  width: 200px;
+}
+
+.acciones {
+  text-align: center;
+}
+
+.acciones button {
+  padding: 0.75rem 2rem;
+  font-weight: 500;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.bloqueos-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  justify-content: flex-start;
+}
+
+/* Contenedor de cada card */
+.bloqueo-card {
+  margin: 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bloqueo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* Distribución interna */
+.bloqueo-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  flex-wrap: wrap;
+}
+
+/* Información del bloqueo */
+.bloqueo-info {
+  flex: 1;
+  min-width: 250px;
+}
+
+mat-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 6px;
+}
+
+mat-card-content p {
+  margin: 4px 0;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+mat-card-content strong {
+  color: #333;
+}
+
+/* Botón de acción */
+.bloqueo-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+}
+
+.bloqueo-acciones button {
+  font-weight: 500;
+  text-transform: none;
+  border-radius: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .bloqueo-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .bloqueo-acciones {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 12px;
+  }
+}
+
+
+.bloqueo-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.bloqueo-info {
+  flex: 1;
+}
+
+
+
+.tipoBloqueos {
+  text-align: -webkit-center;
+}
+
+.bloqueo-header {
+  display: flex;
+  align-items: center;
+  gap: 120px;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.bloqueo-header h3 {
+  margin: 0;
+  font-weight: 500;
+}
+
+.cambiar-tipo {
+  font-size: 0.9rem;
+  color: #1976d2;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-bottom: 25px;
+}
+
+.cambiar-tipo:hover {
+  color: #0d47a1;
+}
+
+.date {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  margin-top: 20px; /* Un poco de espacio arriba */
+}
+
+.date mat-form-field {
+  width: 300px; /* Controla el ancho para que no sea gigante */
+}
+
+button mat-icon {
+  margin-right: 5px;
+}

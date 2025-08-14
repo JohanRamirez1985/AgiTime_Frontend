@@ -2,7 +2,7 @@
   <mat-sidenav mode="side" opened class="sidenav">
     <mat-toolbar class="toolbar-title">AgiTime</mat-toolbar>
 
-    <mat-nav-list>
+    <mat-nav-list class="nav-list">
       <a mat-list-item routerLink="/admin/dashboard" routerLinkActive="active">
         <mat-icon>dashboard</mat-icon>
         <span>Dashboard</span>
@@ -11,10 +11,10 @@
         <mat-icon>people</mat-icon>
         <span>Usuarios</span>
       </a>
-      <!-- <a mat-list-item routerLink="/admin/configuracion" routerLinkActive="active">
-        <mat-icon>settings</mat-icon>
-        <span>Configuración</span>
-      </a> -->
+      <a mat-list-item routerLink="admin/recurso/dash" routerLinkActive="active">
+        <mat-icon>date_range</mat-icon>
+        <span>Agendamientos</span>
+      </a>
     </mat-nav-list>
   </mat-sidenav>
 
