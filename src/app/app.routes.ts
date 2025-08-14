@@ -51,6 +51,11 @@ export const routes: Routes = [
           import('./components/usuarios/crear-usuario/crear-usuario').then(m => m.CrearUsuario)
       },
       {
+        path: 'inventario',
+        loadComponent: () =>
+          import('./components/productos/inventario-productos/inventario-productos').then(m => m.InventarioProductos)
+      },
+      {
       path: 'recurso/dash',
         loadComponent: () =>
           import('./components/recursos/dashboard/dashboard').then(m => m.DashboardRecurso),

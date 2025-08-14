@@ -1,0 +1,34 @@
+.productos-card {
+  padding: 16px;
+}
+
+.encabezado-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.tabla-container {
+  overflow-x: auto;
+}
+
+.acciones-cell {
+  display: flex;
+  gap: 8px;
+}
+
+.productos-cards {
+  display: grid;
+  gap: 16px;
+}
+
+.producto-card {
+  padding: 16px;
+}
+
+.producto-card h3 {
+  margin-top: 0;
+}

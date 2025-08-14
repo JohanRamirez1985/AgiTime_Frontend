@@ -18,6 +18,10 @@
       <mat-icon>people</mat-icon>
       Usuarios
     </button>
+    <button *ngIf="validate('pro')" mat-button routerLink="/admin/inventario">
+      <mat-icon>people</mat-icon>
+      Inventario
+    </button>
     <button mat-button class="logout-button" (click)="cerrarSesion()">
       <mat-icon>logout</mat-icon>
       Cerrar sesión
