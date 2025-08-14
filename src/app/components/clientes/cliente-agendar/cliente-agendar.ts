@@ -375,7 +375,7 @@ toggleSeleccionServicio(servicio: any): void {
     this.sharedServices.obtenerServicios(emp)
     .subscribe({
       next: rest => {
-        if(rest.exite) {
+        if(rest.exito) {
           this.serviciosFiltrados = [...rest.datos];  
           this.loading = false;   
           this.mostrarServicios = true; 
