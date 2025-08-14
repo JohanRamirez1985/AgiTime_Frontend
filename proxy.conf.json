@@ -1,34 +1,6 @@
 {
-  "/api/Parametros": {
-    "target": "http://localhost:82",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "debug"
-  },
-
-  "/api/Usuarios": {
-    "target": "http://localhost:80",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "debug"
-  },
-
-  "/api/Clientes": {
-    "target": "http://localhost:81",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "debug"
-  },
-
-  "/api/Agendamiento": {
-    "target": "http://localhost:83",
-    "secure": false,
-    "changeOrigin": true,
-    "logLevel": "debug"
-  },
-  
-  "/api/Productos": {
-    "target": "http://localhost:84",
+  "/api": {
+    "target": "http://localhost",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
