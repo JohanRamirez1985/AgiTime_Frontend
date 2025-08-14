@@ -65,9 +65,9 @@ export class ClienteAgendar {
   loading: boolean = true;
   mostrarDetalle: boolean = false;
   mostrarServicios: boolean = false;
-
-
   detallesRecurso: string[] = ['Disponible de 8:00 a.m.', 'corte + barba + ceja $30000', 'Recurso: Sala 3'];
+  mensajeError: string = '';
+  inactiva: boolean = false;
 
   
 
@@ -375,9 +375,14 @@ toggleSeleccionServicio(servicio: any): void {
     this.sharedServices.obtenerServicios(emp)
     .subscribe({
       next: rest => {
-        this.serviciosFiltrados = [...rest.datos];  
-        this.loading = false;   
-        this.mostrarServicios = true;   
+        if(rest.exite) {
+          this.serviciosFiltrados = [...rest.datos];  
+          this.loading = false;   
+          this.mostrarServicios = true; 
+        }else {
+          this.inactiva = true;
+          this.mensajeError = rest.mensaje;
+        }
       }
     })
   }
@@ -394,24 +399,29 @@ toggleSeleccionServicio(servicio: any): void {
     this.sharedServices.obtenerAgenda(this.idEmpresa)
     .subscribe({
       next: rest => {
-        const respuesta = rest.datos;
-        this.horas = respuesta.map((h: { valor: string; estado: boolean }) => {
-          const [hour, minute] = h.valor.split(':');
-          const date = new Date();
-          date.setHours(Number(hour), Number(minute));
+        if(rest.exito) {
+          const respuesta = rest.datos;
+          this.horas = respuesta.map((h: { valor: string; estado: boolean }) => {
+            const [hour, minute] = h.valor.split(':');
+            const date = new Date();
+            date.setHours(Number(hour), Number(minute));
 
-          const horaFormateada = date.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
+            const horaFormateada = date.toLocaleTimeString('en-US', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: true
+            });
+
+            return {
+              hora: horaFormateada,
+              disponible: h.estado
+            };
           });
-
-          return {
-            hora: horaFormateada,
-            disponible: h.estado
-          };
-        });
-        this.seleccionarRecurso(this.viewDate);
+          this.seleccionarRecurso(this.viewDate);
+        }else {
+          this.inactiva = true;
+          this.mensajeError = rest.mensaje;
+        }
       }
     })
   }

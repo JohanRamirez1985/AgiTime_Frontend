@@ -1,47 +1,57 @@
-<div class="dashboard-wrapper">
-  <mat-card class="dashboard-card mat-elevation-z8">
-    
-    <div *ngIf="loading" class="loading-container">
-      <mat-spinner diameter="50"></mat-spinner>
-      <p class="loading-text">Cargando disponibilidad...</p>
-    </div>
 
-    <div *ngIf="!loading">
-      <h2 class="title">👋 Bienvenido, {{ nombreEmpresa }}</h2>
-        <mat-divider></mat-divider>
-      <img [src]="img" alt="Imagen barbería" class="imagen-banner" />
 
-      <div class="recurso-lista" >
-          <mat-card
-            *ngFor="let usuario of recursos"
-            class="recurso-card mat-elevation-z2"
-            (click)="irAReservar(usuario)"
-          >
-            <div class="recurso-content">
-              <div class="recurso-info">
-                <h3>{{ usuario.nombre }}</h3>
-                <p><mat-icon>email</mat-icon> {{ usuario.correo }}</p>
-                <p><mat-icon>phone</mat-icon> {{ usuario.telefono }}</p>
-                <p><mat-icon>badge</mat-icon> {{ usuario.nombreSede }}</p>
+  <div class="dashboard-wrapper">
+    <ng-container *ngIf="!inactiva; else mensajeNoAutorizado">
+      <mat-card class="dashboard-card mat-elevation-z8">
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p class="loading-text">Cargando disponibilidad...</p>
+      </div>
+
+      <div *ngIf="!loading">
+        <h2 class="title">👋 Bienvenido, {{ nombreEmpresa }}</h2>
+          <mat-divider></mat-divider>
+        <img [src]="img" alt="Imagen barbería" class="imagen-banner" />
+
+        <div class="recurso-lista" >
+            <mat-card
+              *ngFor="let usuario of recursos"
+              class="recurso-card mat-elevation-z2"
+              (click)="irAReservar(usuario)"
+            >
+              <div class="recurso-content">
+                <div class="recurso-info">
+                  <h3>{{ usuario.nombre }}</h3>
+                  <p><mat-icon>email</mat-icon> {{ usuario.correo }}</p>
+                  <p><mat-icon>phone</mat-icon> {{ usuario.telefono }}</p>
+                  <p><mat-icon>badge</mat-icon> {{ usuario.nombreSede }}</p>
+                </div>
+                <div class="recurso-imagen">
+                  <img [src]="usuario.foto" alt="Foto de {{ usuario.nombre }}" />
+                </div>
               </div>
-              <div class="recurso-imagen">
-                <img [src]="usuario.foto" alt="Foto de {{ usuario.nombre }}" />
-              </div>
-            </div>
-          </mat-card>
-        </div>
-    </div>   
-  </mat-card>
+            </mat-card>
+          </div>
+      </div>      
 
-    <!-- Botón flotante visible solo si hay servicios seleccionados -->
-  <div class="boton-flotante-wrapper">
-    <button
-      mat-flat-button
-      color="primary"
-      class="boton-flotante-mejorado"
-      (click)="misCitas()"
-    >
-      Mis Citas..
-    </button>
+      </mat-card>
+        <!-- Botón flotante visible solo si hay servicios seleccionados -->
+      <div class="boton-flotante-wrapper">
+        <button
+          mat-flat-button
+          color="primary"
+          class="boton-flotante-mejorado"
+          (click)="misCitas()"
+        >
+          Mis Citas..
+        </button>
+      </div>
+    </ng-container>
+    <ng-template #mensajeNoAutorizado>
+      <div class="mensaje-error">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ mensajeError }}</p>
+      </div>
+    </ng-template>
   </div>
-</div>
+

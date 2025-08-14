@@ -64,6 +64,12 @@ export const routes: Routes = [
     loadChildren: () =>
       import('./components/clientes/cliente-routing').then(m => m.routes)
   },
+
+  {
+    path: 'politicasPrivacidad',
+    loadComponent: () =>
+      import('./politica-seguridad/politica-seguridad').then(m => m.PoliticaSeguridad)
+  },
   
   {
     path: '**',

@@ -25,7 +25,8 @@ export interface Empresa {
 
 export interface EmpresasResponse {
   exito: boolean;
-  datos: Empresa[]
+  datos: Empresa[];
+  mensaje: string
 }
 
 export interface LoginResponse {

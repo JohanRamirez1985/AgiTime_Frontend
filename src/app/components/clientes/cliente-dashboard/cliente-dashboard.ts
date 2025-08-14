@@ -34,6 +34,8 @@ export class ClienteDashboard {
   sedes: any[] = [];
   imgRecurso: string = 'assets/img/';
   loading: boolean = true;
+  inactiva: boolean = false;
+  mensajeError: string = '';
 
 
   constructor(private router: Router,
@@ -79,11 +81,15 @@ export class ClienteDashboard {
     this.sharenServices.obtenerEmpresasApp()
       .subscribe({
         next: rest => {
-          const empresa = rest.datos.find(em => em.id === this.idEmpresa);
-          this.nombreEmpresa = empresa?.nombre ?? '';
-          this.img = 'assets/img/' + empresa?.logo;
-          this.loading = false;
-          this.cdr.detectChanges();
+          if(rest.exito) {
+            const empresa = rest.datos.find(em => em.id === this.idEmpresa);
+            this.nombreEmpresa = empresa?.nombre ?? '';
+            this.img = 'assets/img/' + empresa?.logo;
+            this.loading = false;
+            this.cdr.detectChanges();
+          }else {
+            this.inactiva = true;          
+          }
         }
       })
   }
@@ -95,6 +101,9 @@ export class ClienteDashboard {
           if (rest.exito) {
             this.recursos = rest.datos.usuario.filter((u: any) => u.recurso === true);
             this.obtenerSedes();
+          }else {
+            this.inactiva = true;
+            this.mensajeError = rest.mensaje;
           }
         }
       })

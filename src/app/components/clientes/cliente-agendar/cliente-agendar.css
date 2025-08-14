@@ -316,3 +316,21 @@ button.hora-no-disponible {
 .subtexto-recurso-lista li {
   margin-bottom: 2px;
 }
+
+
+.mensaje-error {
+  display: flex;
+  flex-direction: column; /* Para que icono y texto queden uno encima del otro */
+  justify-content: center; /* Centra verticalmente */
+  align-items: center; /* Centra horizontalmente */
+  height: 100%; /* Ocupa toda la altura disponible */
+  text-align: center;
+  padding: 20px;
+  margin-top: 170px;
+}
+
+.mensaje-error p {
+  font-size: 18px;
+  font-weight: 500;
+  color: #b71c1c; /* rojo corporativo */
+}

@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-seleccion-tipo-usuario',
@@ -19,7 +20,8 @@ import { MatListModule } from '@angular/material/list';
     MatButtonModule,
     MatInputModule,
     MatFormFieldModule,
-    MatListModule
+    MatListModule,
+    MatIconModule
   ],
   templateUrl: './seleccion-tipo-usuario.html',
   styleUrls: ['./seleccion-tipo-usuario.css']
@@ -31,6 +33,8 @@ export class SeleccionTipoUsuario {
   mostrarListado: boolean = false;
   listado: { id: number, nombre:string}[] = [];
   idEmpresaSeleccionada: number | null = null;
+  inactiva: boolean = false;
+  mensajeError: string = '';
 
   constructor(private router: Router,
     private sharedService: SharedService,
@@ -51,14 +55,19 @@ export class SeleccionTipoUsuario {
     this.sharedService.obtenerEmpresasApp()
     .subscribe({
       next: res => {
-        const empresas = res.datos;
-        for (let i = 0; i < empresas.length; i++) {
-          this.listado.push({
-            id : empresas[i].id,
-            nombre: empresas[i].nombre
-          })          
+        if(res.exito) {
+          const empresas = res.datos;
+          for (let i = 0; i < empresas.length; i++) {
+            this.listado.push({
+              id : empresas[i].id,
+              nombre: empresas[i].nombre
+            })          
+          }
+          this.listado = res.datos
+        }else {
+          this.inactiva = true;
+          this.mensajeError = res.mensaje;
         }
-        this.listado = res.datos
       }
     })
   }
