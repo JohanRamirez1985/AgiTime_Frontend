@@ -1,6 +1,9 @@
 import { environment } from "../../environments/environment";
 import { HttpClient } from "@angular/common/http";
 import { HttpParams } from '@angular/common/http';
+import { Injectable } from "@angular/core";
+
+@Injectable({ providedIn: 'root' })
 
 export class inventarioProductosService {
     private baseUrlPro = `${environment.apiBaseUrl}/Productos`;
@@ -11,5 +14,9 @@ export class inventarioProductosService {
     consultarProductos(request: any) {
         const params = new HttpParams({ fromObject: request });
         return this.http.get<any>(`${this.baseUrlPar}/productos`, { params });
+    }
+
+    crearProducto(request: any) {
+        return this.http.post<any>(`${this.baseUrlPro}/registrarProducto`, request)
     }
 }

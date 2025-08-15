@@ -1,4 +1,5 @@
 <div class="productos-card">
+<ng-container *ngIf="!inactiva; else mensajeNoAutorizado">
   <!-- Encabezado con título y botón -->
   <div class="encabezado-card">
     <h2>Inventario de Productos</h2>
@@ -20,27 +21,30 @@
         <td mat-cell *matCellDef="let producto"> {{ producto.nombre }} </td>
       </ng-container>
 
-      <!-- Precio -->
-      <ng-container matColumnDef="precio">
-        <th mat-header-cell *matHeaderCellDef> Precio </th>
-        <td mat-cell *matCellDef="let producto"> {{ producto.precio | currency }} </td>
+      <ng-container matColumnDef="codigo">
+        <th mat-header-cell *matHeaderCellDef> Codigo </th>
+        <td mat-cell *matCellDef="let producto"> {{ producto.codigo }} </td>
       </ng-container>
 
-      <!-- Categoría -->
-      <ng-container matColumnDef="categoria">
-        <th mat-header-cell *matHeaderCellDef> Categoría </th>
-        <td mat-cell *matCellDef="let producto"> {{ producto.categoria }} </td>
+      <ng-container matColumnDef="precio">
+        <th mat-header-cell *matHeaderCellDef> Precio </th>
+        <td mat-cell *matCellDef="let producto"> {{ '$' }} {{ producto.valor | number:'1.0-0' }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="stock">
+        <th mat-header-cell *matHeaderCellDef> Stock </th>
+        <td mat-cell *matCellDef="let producto"> {{ producto.stock }} </td>
       </ng-container>
 
       <!-- Acciones -->
-      <ng-container matColumnDef="acciones">
+      <!--<ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef> Acciones </th>
         <td mat-cell *matCellDef="let producto" class="acciones-cell">
           <button mat-icon-button color="accent" (click)="editarProducto(producto)">
             <mat-icon>edit</mat-icon>
           </button>
         </td>
-      </ng-container>
+      </ng-container>-->
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
@@ -66,4 +70,11 @@
       </div>
     </mat-card>
   </div>
+  </ng-container>
+  <ng-template #mensajeNoAutorizado>
+    <div class="mensaje-error">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ mensajeError }}</p>
+    </div>
+  </ng-template>
 </div>

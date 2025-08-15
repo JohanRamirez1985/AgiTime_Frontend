@@ -110,3 +110,21 @@ export interface requestRegistroCita {
   
 }
 
+export interface inventarioProductos {
+  nombre: string;
+  codigo: string;
+  valor: string;
+  estado: string;
+  factura: string;
+  fechaVenta: Date;
+  usuarioVenta: string;
+  ventaId: number;
+  productoId: number;
+  cantidadVenta: number;
+  cantidadIngresada: number;
+  cantidadStock: number;
+  cantidadNueva: number;
+  empresa: number;
+  fechaCreacion: Date;
+}
+

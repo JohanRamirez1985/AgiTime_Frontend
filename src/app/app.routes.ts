@@ -56,6 +56,11 @@ export const routes: Routes = [
           import('./components/productos/inventario-productos/inventario-productos').then(m => m.InventarioProductos)
       },
       {
+      path: 'inventario/crear',
+        loadComponent: () =>
+          import('./components/productos/crear-producto/crear-producto').then(m => m.CrearProducto)
+      },
+      {
       path: 'recurso/dash',
         loadComponent: () =>
           import('./components/recursos/dashboard/dashboard').then(m => m.DashboardRecurso),
