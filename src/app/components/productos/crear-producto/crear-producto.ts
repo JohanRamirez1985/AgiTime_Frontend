@@ -10,6 +10,7 @@ import { MatError } from '@angular/material/form-field'; // opcional si no lo de
 import { MatLabel } from '@angular/material/form-field';
 import { inventarioProductosService } from '../../../services/inventario-productos.service';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-crear-producto',
@@ -20,7 +21,8 @@ import Swal, { SweetAlertIcon } from 'sweetalert2';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './crear-producto.html',
   styleUrls: ['./crear-producto.css']
@@ -53,11 +55,6 @@ export class CrearProducto {
 
     if (!idEmpresa) {
       this.ventanaMensaje('error','Mensaje','Se produjo un error, Por favor contactar al administrador de la aplicación.',false);
-      /*Swal.fire({
-            icon: 'error',
-            title: 'Mensaje',
-            text: 'Se produjo un error, Por favor contactar al administrador de la aplicación.',
-          });*/
       return;
     }
 
@@ -70,10 +67,13 @@ export class CrearProducto {
       UsuarioCreacion: idUsuario,
       FechaCreacion: fechaLocal
     });
+
+    this.loading = false;
   }
 
   guardarProducto(): void {
     if (this.productoForm.valid) {
+      this.loading = true;
       const nuevoProducto = this.productoForm.value;
       this.inventarioService.crearProducto(nuevoProducto)
           .subscribe({

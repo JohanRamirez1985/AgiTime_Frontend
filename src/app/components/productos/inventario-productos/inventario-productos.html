@@ -10,11 +10,12 @@
       </button>
     </div>
   </div>
-
   <!-- Contenedor de la tabla -->
   <div class="tabla-container" *ngIf="!isMobileView">
+    <div class="spinner-overlay" *ngIf="loading">
+        <mat-spinner diameter="50"></mat-spinner>
+    </div>
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-
       <!-- Nombre -->
       <ng-container matColumnDef="nombre">
         <th mat-header-cell *matHeaderCellDef> Nombre </th>

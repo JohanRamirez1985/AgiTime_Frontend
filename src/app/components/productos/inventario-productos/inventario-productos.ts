@@ -10,6 +10,7 @@ import { inventarioProductosService } from '../../../services/inventario-product
 import { inventarioProductos } from '../../../interfaces/shared.interface';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-inventario-productos',
@@ -20,6 +21,7 @@ import { Router } from '@angular/router';
     MatCardModule,
     MatIconModule,
     RouterModule,
+    MatProgressSpinnerModule,
     CommonModule],
   templateUrl: './inventario-productos.html',
   styleUrls: ['./inventario-productos.css']
@@ -72,6 +74,7 @@ export class InventarioProductos {
     this.inventarioService.consultarProductos(request).subscribe({
       next: res => {
         if (res.exito){
+          this.loading = false;
           this.inventario = res.datos;
           this.dataSource.data = res.datos;
         }else {

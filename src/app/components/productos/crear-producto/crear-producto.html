@@ -3,10 +3,12 @@
   <div class="encabezado-card">
     <h2>Crear Producto</h2>
   </div>
-
+  <div class="spinner-overlay" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
   <!-- Formulario -->
   <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()" class="form-container">
-
+    
     <!-- Nombre -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Nombre</mat-label>
