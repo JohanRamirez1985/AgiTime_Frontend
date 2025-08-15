@@ -73,7 +73,7 @@ export class InventarioProductos {
       next: res => {
         if (res.exito){
           this.inventario = res.datos;
-          //this.dataSource.data = res.datos;
+          this.dataSource.data = res.datos;
         }else {
           Swal.fire({
             icon: 'warning',
