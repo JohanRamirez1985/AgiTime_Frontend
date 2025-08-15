@@ -17,6 +17,13 @@ import { SharedService } from '../../../services/shared.service';
 import { Usuario } from '../../../interfaces/shared.interface';
 import { RouterModule } from '@angular/router';
 
+interface tableUser {
+  nombre: string;
+  rol: string;
+  estado: string;
+  acciones: string;
+}
+
 @Component({
   selector: 'app-usuarios',
   standalone: true,
@@ -45,10 +52,21 @@ export class Usuarios implements AfterViewInit {
   rolSeleccionado = '';
   fechaInicio: Date | null = null;
   fechaFin: Date | null = null;
-
+  isMobileView = false;
   usuarios: Usuario[] = [];
-  dataSource = new MatTableDataSource<Usuario>([]);
+  usuariosFiltrados: Usuario[] = [];
+  dataSource = new MatTableDataSource<any>([]);
   loading = false;
+  displayedColumns: string[] = [
+    'nombre',
+    'rol',
+    'estado',
+    'telefono',
+    'identificacion',
+    'sede',
+    'recurso',
+    'acciones'
+  ];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -56,12 +74,29 @@ export class Usuarios implements AfterViewInit {
     this.consultarUsuarios();  }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
+    // this.dataSource.paginator = this.paginator;
 
-    // Aquí sí entra el evento cuando usas flechas
-    this.paginator.page.subscribe(event => {
-      this.onPageChange(event);  // ✅ Llama tu función de cambio de página
-    });
+    // // Aquí sí entra el evento cuando usas flechas
+    // this.paginator.page.subscribe(event => {
+    //   this.onPageChange(event);  // ✅ Llama tu función de cambio de página
+    // });
+  }
+
+  ngOnInit() {
+    this.checkResponsive();
+    window.addEventListener('resize', () => this.checkResponsive());
+  }
+
+  checkResponsive(): void {
+    this.isMobileView = window.innerWidth <= 768;
+  }
+
+  filtrarUsuarios(valor: string) {
+    console.log('Buscando:', valor);
+    const filtroLower = valor.toLowerCase().trim();
+    this.usuariosFiltrados = this.usuarios.filter(user =>
+      user.nombre.toLowerCase().includes(filtroLower)
+    );
   }
 
   public consultarUsuarios(): void {
@@ -79,6 +114,7 @@ export class Usuarios implements AfterViewInit {
       next: res => {
         if (res.exito) {
           this.usuarios = res.datos;
+          this.usuariosFiltrados = this.usuarios;
 
           this.dataSource.data = this.usuarios.filter(u => {
             const texto = this.filtro.toLowerCase();
@@ -118,6 +154,11 @@ export class Usuarios implements AfterViewInit {
 
     // Llama al backend con paginación, si lo tienes preparado
     // this.consultarUsuarios(paginaActual, tamañoPagina);
+  }
+
+  editarProducto(producto: any): void {
+    console.log('Editar producto:', producto);
+    // Aquí abrir modal o redirigir a formulario
   }
 
 
