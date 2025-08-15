@@ -1,10 +1,12 @@
 .form-container {
-  max-width: 800px;
+  max-width: 100%;
+  width: 800px;
   margin: 2rem auto;
   padding: 2rem;
   border-radius: 16px;
   background: #ffffff;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
 h2 {
@@ -13,6 +15,7 @@ h2 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-size: 1.4rem;
 }
 
 .form-grid {
@@ -23,11 +26,11 @@ h2 {
 
 .boton-container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 1rem;
-  grid-column: span 2;
+  grid-column: 1 / -1;
   margin-top: 1rem;
-  text-align-last: center
 }
 
 .toggle-label {
@@ -41,11 +44,46 @@ h2 {
 }
 
 ::ng-deep mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
-  background-color: #1E88E5; /* azul más fuerte */
+  background-color: #1E88E5;
 }
 
 ::ng-deep mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
   background-color: #90CAF9;
 }
 
+/* --- Responsivo --- */
+@media (max-width: 768px) {
+  .form-container {
+    padding: 1.2rem;
+  }
 
+  h2 {
+    font-size: 1.2rem;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr; /* Una columna en tablets/móviles */
+  }
+
+  .boton-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .boton-container button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+}

@@ -61,6 +61,11 @@ export interface Usuario {
   fechaCreacion: string;
   sede: number;
   rol: string;
+  precio: string;
+  categoria: string;
+  nombreRol: string;
+  nombreSede: string;
+  recurso: boolean;
   // agrega más campos si los necesitas
 }
 
