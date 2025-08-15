@@ -54,14 +54,14 @@
   margin-right: 6px;
 }
 
-.user-avatar {
+/* .user-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   margin-left: 10px;
   object-fit: cover;
   border: 2px solid white;
-}
+} */
 
 /* Ocultar hamburguesa en pantallas grandes */
 .mobile-only {
@@ -86,4 +86,13 @@
 
 .menu-button mat-icon {
   color: white !important;/* Ícono blanco */
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
+  border: 2px solid white;
 }
