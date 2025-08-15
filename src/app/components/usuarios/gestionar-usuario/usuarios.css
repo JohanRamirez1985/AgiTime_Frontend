@@ -1,82 +1,147 @@
-mat-card {
-  padding: 1.5rem;
-  margin: 1rem;
+.productos-card {
+  padding: 24px;
+  background-color: #fafafa;
+  border-radius: 8px;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  gap: 1rem;
-}
-
-mat-form-field {
-  flex: 1;
-}
-
-table {
-  width: 100%;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  gap: 1rem;
-}
-
-.no-results {
-  text-align: center;
-  margin-top: 2rem;
-  font-style: italic;
-  color: #777;
-}
-
-
-.filtros {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: flex-end;
-  margin-bottom: 1rem;
-}
-
-mat-form-field {
-  min-width: 200px;
-  flex: 1;
-}
-
-
+/* Encabezado con título y botón */
 .encabezado-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-}
-
-.filtros {
-  display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  align-items: center;
-  margin-bottom: 1rem;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-.spinner-container {
+.encabezado-card h2 {
+  margin: 0;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Contenedor de la tabla */
+.tabla-container {
+  overflow-x: auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  width: 100%;
+  border-spacing: 0;
+}
+
+mat-header-cell {
+  font-weight: 600;
+  color: #555;
+  background-color: #f5f5f5;
+}
+
+mat-header-cell,
+mat-cell {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+/* Estilo para las acciones */
+.acciones-cell {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+button.mat-icon-button {
+  color: #1976d2;
+  transition: background-color 0.2s;
+}
+
+button.mat-icon-button:hover {
+  background-color: rgba(25, 118, 210, 0.1);
+  border-radius: 50%;
+}
+
+/* Vista en tarjetas para móviles */
+.productos-cards {
+  display: grid;
+  gap: 16px;
+}
+
+.producto-card {
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.producto-card h3 {
+  margin-top: 0;
+}
+
+mat-card {
+  border: 1px solid #e0e0e0;
+}
+
+mat-card p {
+  margin: 4px 0;
+}
+
+/* Botón flotante para móvil (opcional) */
+@media (max-width: 768px) {
+  .encabezado-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  button[mat-raised-button] {
+    width: 100%;
+  }
+}
+
+/* Quitar líneas de la tabla de Angular Material */
+.mat-mdc-table .mdc-data-table__row {
+  border-bottom: none !important;
+}
+
+.mat-mdc-table .mdc-data-table__cell {
+  border-bottom: none !important;
+}
+
+/* Opcional: fondo alternado sin líneas */
+.mat-mdc-row:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.filtros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.filtros-grid mat-form-field {
+  width: 100%;
+}
+
+.boton-consultar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.tabla-wrapper {
+  position: relative;
+}
+
+.spinner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
   display: flex;
   justify-content: center;
-  margin: 2rem 0;
+  align-items: center;
+  z-index: 10;
 }
 
