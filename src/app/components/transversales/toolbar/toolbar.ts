@@ -5,19 +5,32 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router, RouterModule } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-toolbar',
   standalone: true,
-  imports: [CommonModule, MatToolbarModule, MatIconModule, MatButtonModule, RouterModule, MatMenuModule],
+  imports: [CommonModule, MatToolbarModule, MatIconModule, MatButtonModule, RouterModule, MatMenuModule, MatDividerModule],
   templateUrl: './toolbar.html',
   styleUrl: './toolbar.css'
 })
 export class Toolbar {
+
+  usuarioLogueado: any;
+
+
   
   @Output() toggleSidebar = new EventEmitter<void>();
 
   constructor(private router: Router) {}
+
+  ngOnInit() {
+    const usuario = localStorage.getItem('usuario');
+    if (usuario) {
+      this.usuarioLogueado = JSON.parse(usuario);
+      
+    }
+  }
 
   cerrarSesion() {
     const infoEmpStr = localStorage.getItem('infoEmp');
