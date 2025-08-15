@@ -52,6 +52,21 @@ export class InventarioProductos implements OnInit {
       { id: 3, nombre: 'Producto C', categoria: 'Categoría 1', precio: 18000 }
     ];
   }
+  
+  crearProducto(): void {
+    console.log('Crear nuevo producto');
+    // Aquí abrir modal o redirigir a formulario
+  }
+
+  editarProducto(producto: Producto): void {
+    console.log('Editar producto:', producto);
+    // Aquí abrir modal o redirigir a formulario
+  }
+
+  onPageChange(event: any): void {
+    console.log('Cambio de página:', event);
+    // Aquí manejar paginación con backend si aplica
+  }
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
