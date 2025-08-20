@@ -29,6 +29,7 @@ export class ClienteDashboard {
 
   nombreEmpresa: string = '';
   recursos: any[] = [];
+  recursosList: any[] = [];
   idEmpresa: number = 0;
   img: string = '';
   sedes: any[] = [];
@@ -36,6 +37,8 @@ export class ClienteDashboard {
   loading: boolean = true;
   inactiva: boolean = false;
   mensajeError: string = '';
+  mostrarSede: boolean = false
+  sedeSeleccionada: string = '';
 
 
   constructor(private router: Router,
@@ -51,7 +54,7 @@ export class ClienteDashboard {
     this.route.queryParams.subscribe(params => {
       this.idEmpresa = +params['em']
     })
-    // this.obtenerSedes();
+    this.obtenerSedes();
     this.obtenerRecursos();
   }
 
@@ -69,6 +72,7 @@ export class ClienteDashboard {
         next: rest => {
           if (rest.exito) {
             this.sedes = rest.datos;
+            this.mostrarSede = this.sedes.length === 1;
             this.encontrarSedesAsociadas();
           }
         }
@@ -100,13 +104,24 @@ export class ClienteDashboard {
         next: rest => {
           if (rest.exito) {
             this.recursos = rest.datos.usuario.filter((u: any) => u.recurso === true);
-            this.obtenerSedes();
           }else {
             this.inactiva = true;
             this.mensajeError = rest.mensaje;
           }
         }
       })
+  }
+
+  public cambiarSede(): void {
+    this.mostrarSede = false;
+    this.cdr.detectChanges();
+  }
+
+  public seleccionarSede(sede: any) {
+    this.recursosList = this.recursos.filter(r => r.id === sede.id);
+    this.sedeSeleccionada = sede.nombre;
+    this.mostrarSede = true;
+    this.cdr.detectChanges();
   }
 
   private encontrarSedesAsociadas(): void {
