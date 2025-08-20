@@ -11,6 +11,7 @@ import { inventarioProductos } from '../../../interfaces/shared.interface';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-inventario-productos',
@@ -22,7 +23,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatIconModule,
     RouterModule,
     MatProgressSpinnerModule,
-    CommonModule],
+    CommonModule,
+    MatTooltipModule],
   templateUrl: './inventario-productos.html',
   styleUrls: ['./inventario-productos.css']
 })
@@ -34,7 +36,7 @@ export class InventarioProductos {
   mensajeError: string = '';
 
   // Variables para la tabla
-  displayedColumns: string[] = ['nombre', 'codigo', 'precio', 'stock'/*, 'acciones'*/];
+  displayedColumns: string[] = ['nombre', 'codigo', 'precio', 'stock', 'acciones'];
   dataSource = new MatTableDataSource<any>([]);
 
   // Paginador
@@ -100,9 +102,11 @@ export class InventarioProductos {
     this.router.navigate(['admin/inventario/crear']);
   }
 
-  editarProducto(producto: any): void {
+  agregarInventario(producto: any): void {
+      this.router.navigate(['admin/inventario/agregar'], {
+      state: { data: producto }
+    });
     console.log('Editar producto:', producto);
-    // Aquí abrir modal o redirigir a formulario
   }
 
   onPageChange(event: any): void {

@@ -141,3 +141,7 @@ mat-card p {
   align-items: center;
   z-index: 10;
 }
+
+.centrado {
+  text-align: center;
+}

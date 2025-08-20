@@ -1,0 +1,48 @@
+<div class="productos-card">
+  <!-- Encabezado -->
+  <div class="encabezado-card">
+    <h2>Agregar Producto</h2>
+  </div>
+  <div class="spinner-overlay" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+  <!-- Formulario -->
+  <form [formGroup]="productoForm" (ngSubmit)="guardar()" class="form-container">
+    
+    <!-- Nombre (solo visual) -->
+    <mat-label>Nombre</mat-label>
+    <div class="campo-valor">{{ producto?.nombre }}</div>
+
+    <!-- Código (solo visual) -->
+    <mat-label>Código</mat-label>
+    <div class="campo-valor">{{ producto?.codigo }}</div>
+
+    <!-- Precio (solo visual) -->
+    <mat-label>Precio</mat-label>
+    <div class="campo-valor">
+      {{ producto?.precio | currency:'COP':'symbol':'1.0-0' }}
+    </div>
+
+    <!-- Cantidad -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Cantidad</mat-label>
+      <input matInput type="number" placeholder="Ingrese la cantidad" formControlName="Cantidad" required>
+      <mat-error *ngIf="productoForm.get('Cantidad')?.hasError('required')">
+        El cantidad es obligatorio
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Botones -->
+    <div class="acciones-header">
+      <button mat-raised-button color="primary" type="submit" [disabled]="productoForm.invalid">
+        <mat-icon>save</mat-icon>
+        Guardar
+      </button>
+      <button mat-button color="warn" type="button" (click)="cancelar()">
+        <mat-icon>cancel</mat-icon>
+        Cancelar
+      </button>
+    </div>
+
+  </form>
+</div>

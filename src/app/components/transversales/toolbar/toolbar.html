@@ -19,7 +19,7 @@
       Usuarios
     </button>
     <button *ngIf="validate('pro')" mat-button routerLink="/admin/inventario">
-      <mat-icon>people</mat-icon>
+      <mat-icon>store</mat-icon>
       Inventario
     </button>
     <button mat-button class="logout-button" (click)="cerrarSesion()">
@@ -66,6 +66,10 @@
     <button *ngIf="validate('usu')" mat-menu-item routerLink="/admin/usuarios">
       <mat-icon>people</mat-icon>
       Usuarios
+    </button>
+    <button *ngIf="validate('pro')" mat-menu-item routerLink="/admin/inventario">
+      <mat-icon>store</mat-icon>
+      Inventario
     </button>
     <button mat-menu-item (click)="cerrarSesion()">
       <mat-icon>logout</mat-icon>

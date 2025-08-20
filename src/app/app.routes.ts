@@ -61,6 +61,11 @@ export const routes: Routes = [
           import('./components/productos/crear-producto/crear-producto').then(m => m.CrearProducto)
       },
       {
+      path: 'inventario/agregar',
+        loadComponent: () =>
+          import('./components/productos/agregar-producto/agergar-producto').then(m => m.AgregarProducto)
+      },
+      {
       path: 'recurso/dash',
         loadComponent: () =>
           import('./components/recursos/dashboard/dashboard').then(m => m.DashboardRecurso),

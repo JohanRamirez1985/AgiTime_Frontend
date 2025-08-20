@@ -19,4 +19,8 @@ export class inventarioProductosService {
     crearProducto(request: any) {
         return this.http.post<any>(`${this.baseUrlPro}/registrarProducto`, request)
     }
+
+    agregarProducto(request: any) {
+        return this.http.post<any>(`${this.baseUrlPro}/actualizarProducto`, request)
+    }
 }
