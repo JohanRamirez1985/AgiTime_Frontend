@@ -12,11 +12,15 @@ import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-inventario-productos',
   standalone: true,
-  imports: [MatTableModule,
+  imports: [FormsModule,
+    MatTableModule,
     MatPaginatorModule,
     MatButtonModule,
     MatCardModule,
@@ -24,6 +28,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     RouterModule,
     MatProgressSpinnerModule,
     CommonModule,
+    MatFormFieldModule,
+    MatInputModule,
     MatTooltipModule],
   templateUrl: './inventario-productos.html',
   styleUrls: ['./inventario-productos.css']
@@ -34,6 +40,7 @@ export class InventarioProductos {
   loading: boolean = true;
   inactiva: boolean = false;
   mensajeError: string = '';
+  filtro = '';
 
   // Variables para la tabla
   displayedColumns: string[] = ['nombre', 'codigo', 'precio', 'stock', 'acciones'];
@@ -106,7 +113,19 @@ export class InventarioProductos {
       this.router.navigate(['admin/inventario/agregar'], {
       state: { data: producto }
     });
-    console.log('Editar producto:', producto);
+  }
+
+  editarProducto(producto: any): void {
+      this.router.navigate(['admin/inventario/editar'], {
+      state: { data: producto }
+    });
+  }
+
+  filtrarProducto(valor: string) {
+  const filtroLower = valor.toLowerCase().trim();
+  this.dataSource.data = this.inventario.filter(i =>
+    i.nombre.toLowerCase().includes(filtroLower)
+  );
   }
 
   onPageChange(event: any): void {

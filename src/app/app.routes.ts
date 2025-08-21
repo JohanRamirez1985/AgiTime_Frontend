@@ -66,6 +66,11 @@ export const routes: Routes = [
           import('./components/productos/agregar-producto/agergar-producto').then(m => m.AgregarProducto)
       },
       {
+      path: 'inventario/editar',
+        loadComponent: () =>
+          import('./components/productos/editar-producto/editar-producto').then(m => m.EditarProducto)
+      },
+      {
       path: 'recurso/dash',
         loadComponent: () =>
           import('./components/recursos/dashboard/dashboard').then(m => m.DashboardRecurso),
