@@ -82,7 +82,9 @@ export class EditarProducto {
     if (this.productoForm.valid) {
       this.loading = true;
       const nuevoProducto = this.productoForm.value;
-      this.inventarioService.editarProducto(nuevoProducto)
+      if(nuevoProducto.Nombre != this.producto.nombre || nuevoProducto.Precio != this.producto.precio)
+      {
+        this.inventarioService.editarProducto(nuevoProducto)
           .subscribe({
             next: res => {
               this.loading = false;
@@ -98,6 +100,12 @@ export class EditarProducto {
               this.ventanaMensaje('error','Error',err.mensaje,false);
             }
           })
+      }
+      else
+      {
+        this.loading = false;
+        this.ventanaMensaje('warning','Mensaje','No se encontraron cambios para guardar.',false);
+      }
     }
   }
 
