@@ -287,17 +287,20 @@ button.hora-no-disponible {
 
 .recurso-nombre {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 20px;
+  align-items: flex-start; /* Alinea el icono arriba */
+  gap: 6px;
+  font-size: 16px;
   font-weight: 600;
-  color: #1f2937; /* gris oscuro elegante */
+  color: #1f2937;
+  max-width: 200px; /* controla el ancho del texto */
 }
 
 .texto-recurso {
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
   overflow: hidden;
-  text-overflow: ellipsis;
+  display: -webkit-box;
+  line-height: 1.3;       /* mejora la legibilidad */
 }
 
 .subtexto-recurso {

@@ -376,7 +376,7 @@ toggleSeleccionServicio(servicio: any): void {
     .subscribe({
       next: rest => {
         if(rest.exito) {
-          this.serviciosFiltrados = [...rest.datos];  
+          this.serviciosFiltrados = [...rest.datos.filter((s : any) => s.sede === this.recursoInfo.sede)];  
           this.loading = false;   
           this.mostrarServicios = true; 
         }else {

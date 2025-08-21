@@ -118,7 +118,7 @@ export class ClienteDashboard {
   }
 
   public seleccionarSede(sede: any) {
-    this.recursosList = this.recursos.filter(r => r.id === sede.id);
+    this.recursosList = this.recursos.filter(r => r.sede === sede.id);    
     this.sedeSeleccionada = sede.nombre;
     this.mostrarSede = true;
     this.cdr.detectChanges();

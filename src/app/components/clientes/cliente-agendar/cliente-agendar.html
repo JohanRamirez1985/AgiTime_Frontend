@@ -34,7 +34,40 @@
       <div class="servicios-wrapper" *ngIf="mostrarServicios">
         <h2 class="titulo">Servicios</h2>
 
-        <div class="servicios-container">
+        <ng-container *ngIf="serviciosFiltrados && serviciosFiltrados.length > 0; else noRecursos">
+          <div class="servicios-container">
+            <mat-card
+              class="servicio-card"
+              *ngFor="let servicio of serviciosFiltrados"
+              [class.selected]="estaSeleccionado(servicio)"
+            >
+              <div class="contenido-servicio">
+                <div class="servicio-info">
+                  <div class="servicio-nombre">{{ servicio.nombre | titlecase }}</div>
+                  <div class="servicio-precio">${{ servicio.valor | number: '1.0-0':'es-CO' }}</div>
+                </div>
+                <button
+                  mat-mini-fab
+                  color="primary"
+                  class="boton-add"
+                  (click)="toggleSeleccionServicio(servicio)"
+                >
+                  <mat-icon>{{ estaSeleccionado(servicio) ? 'check' : 'add' }}</mat-icon>
+                </button>
+              </div>
+            </mat-card>
+          </div>
+
+        </ng-container>
+        <ng-template #noRecursos>
+          <div class="mensaje-vacio">
+            <mat-icon>info</mat-icon>
+            No hay servicios disponibles.
+          </div>
+        </ng-template>
+        
+
+        <!-- <div class="servicios-container">
           <mat-card
             class="servicio-card"
             *ngFor="let servicio of serviciosFiltrados"
@@ -55,7 +88,7 @@
               </button>
             </div>
           </mat-card>
-        </div>
+        </div> -->
 
         <!-- Botón flotante visible solo si hay servicios seleccionados -->
         <div *ngIf="serviciosSeleccionados.length > 0" class="boton-flotante-wrapper">
