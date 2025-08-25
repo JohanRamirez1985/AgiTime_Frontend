@@ -1,21 +1,31 @@
-<h2 class="title">Bienvenido al Panel Administrativo</h2>
+<h2 class="title">Panel de Resultados</h2>
+
+<!-- Filtros -->
+<div class="filtros">
+  <mat-form-field appearance="outline">
+    <mat-label>Seleccione un día</mat-label>
+    <input matInput [matDatepicker]="picker" [(ngModel)]="fechaSeleccionada">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <button mat-flat-button color="primary" (click)="consultar()">
+    <mat-icon>search</mat-icon> Consultar
+  </button>
+</div>
 
 <div class="card-container">
-  <mat-card class="card">
-    <mat-card-title>Resumen</mat-card-title>
-    <mat-card-content>
-      <p>Usuarios activos: 12</p>
-      <p>Empresas registradas: 4</p>
-    </mat-card-content>
-  </mat-card>
+  <mat-card class="card" *ngFor="let recurso of recursos">
+    <mat-card-header>
+      <mat-card-title>{{ recurso.nombre }}</mat-card-title>
+      <mat-card-subtitle>Recurso de la empresa</mat-card-subtitle>
+    </mat-card-header>
 
-  <mat-card class="card">
-    <mat-card-title>Última actividad</mat-card-title>
     <mat-card-content>
-      <p>Ingreso reciente: hace 2 horas</p>
-      <p>Actualización de parámetros: ayer</p>
+      <p><strong>Total generado en servicios:</strong></p>
+      <p class="monto">
+        {{ recurso.totalServicios | currency:'COP':'symbol':'1.0-0' }}
+      </p>
     </mat-card-content>
   </mat-card>
 </div>
-
-<!-- <app-dashboardR></app-dashboardR> -->
