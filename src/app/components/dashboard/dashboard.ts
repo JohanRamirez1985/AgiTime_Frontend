@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { InformesService } from '../../services/informes.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -39,7 +40,10 @@ export class Dashboard {
   fechaSeleccionada: Date = new Date();
 
 
-  constructor( private sharedServices : SharedService ) {}
+  constructor( 
+    private sharedServices : SharedService,
+    private informeService : InformesService
+   ) {}
 
 
   ngOnInit() {
@@ -47,6 +51,24 @@ export class Dashboard {
     const id = info?.idEmpresa;
     this.idEmpresa = id;
     this.obtenerDataLocalStorage();
+    this.consultarDash();
+  }
+
+  public consultarDash():void {
+    const request = {
+      emp: this.idEmpresa,
+      fecha: this.fechaSeleccionada.toISOString()
+    }
+
+    this.informeService.infoDashboard(request)
+    .subscribe({
+      next: rest => {
+        console.log();
+        
+      }
+    })
+
+
   }
 
   public consultar(): void {
