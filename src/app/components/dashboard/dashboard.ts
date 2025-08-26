@@ -56,9 +56,12 @@ export class Dashboard {
 
   public consultarDash():void {
     this.loading = true;
+    const fecha = new Date(this.fechaSeleccionada);
+    fecha.setHours(0, 0, 0, 0);
+
     const request = {
       emp: this.idEmpresa,
-      fecha: this.fechaSeleccionada.toISOString()
+      fecha: fecha.toISOString()
     }
 
     this.informeService.infoDashboard(request)
