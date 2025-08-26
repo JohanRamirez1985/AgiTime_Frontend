@@ -71,6 +71,11 @@ export const routes: Routes = [
           import('./components/productos/editar-producto/editar-producto').then(m => m.EditarProducto)
       },
       {
+        path: 'venta',
+        loadComponent: () =>
+          import('./components/productos/venta-producto/venta-producto').then(m => m.VentaProducto)
+      },
+      {
       path: 'recurso/dash',
         loadComponent: () =>
           import('./components/recursos/dashboard/dashboard').then(m => m.DashboardRecurso),

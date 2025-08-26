@@ -27,4 +27,8 @@ export class inventarioProductosService {
     editarProducto(request: any) {
         return this.http.post<any>(`${this.baseUrlPro}/editarProducto`, request)
     }
+
+    ventaProducto(request: any) {
+        return this.http.post<any>(`${this.baseUrlPro}/ventaProducto`, request)
+    }
 }
