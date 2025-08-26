@@ -80,6 +80,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./components/recursos/dashboard/dashboard').then(m => m.DashboardRecurso),
       },
+      {
+      path: 'usuarioPorcentaje/gestionar',
+        loadComponent: () =>
+          import('./components/usuarios-porcentaje/gestionar-porcentaje/gestionar-porcentaje').then(m => m.GestionarPorcentaje),
+      },
     ]
   },
 

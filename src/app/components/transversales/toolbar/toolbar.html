@@ -18,6 +18,10 @@
       <mat-icon>people</mat-icon>
       Usuarios
     </button>
+    <button *ngIf="validate('edu')" mat-button routerLink="/admin/usuarioPorcentaje/gestionar">
+      <mat-icon>people</mat-icon>
+      Usuarios
+    </button>
     <button *ngIf="validate('pro')" mat-button routerLink="/admin/inventario">
       <mat-icon>store</mat-icon>
       Inventario
@@ -68,6 +72,10 @@
       Agendamientos
     </button>
     <button *ngIf="validate('usu')" mat-menu-item routerLink="/admin/usuarios">
+      <mat-icon>people</mat-icon>
+      Usuarios
+    </button>
+    <button *ngIf="validate('edu')" mat-menu-item routerLink="/admin/usuarioPorcentaje/gestionar">
       <mat-icon>people</mat-icon>
       Usuarios
     </button>

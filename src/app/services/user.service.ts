@@ -16,5 +16,9 @@ export class UserService {
         return this.http.post<UsuarioRegistroResponse>(`${this.baseUrlUsuario}/registrarUsuario`, request);
     }
 
+    editarPorcentaje(request: any) {
+        return this.http.post(`${this.baseUrlUsuario}/editarPorcentaje`, request); 
+    }
+
 
 }
