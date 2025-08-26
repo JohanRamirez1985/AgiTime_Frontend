@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { InformesService } from '../../services/informes.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,6 +25,7 @@ import { InformesService } from '../../services/informes.service';
     MatButtonModule,
     MatIconModule,
     MatCardModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
@@ -31,13 +33,11 @@ import { InformesService } from '../../services/informes.service';
 
 export class Dashboard {
   idEmpresa: string | null = null;
-   recursos = [
-    { nombre: 'Juan Pérez', totalServicios: 1200000 },
-    { nombre: 'María López', totalServicios: 850000 },
-    { nombre: 'Carlos Gómez', totalServicios: 450000 },
-    { nombre: 'Ana Torres', totalServicios: 670000 },
-  ];
+  recursos:any[] = [];
   fechaSeleccionada: Date = new Date();
+  totalCitasNoConfirmadas: number = 0;
+  totalCitasConfirmadas: number = 0;
+  loading: boolean = true;
 
 
   constructor( 
@@ -55,6 +55,7 @@ export class Dashboard {
   }
 
   public consultarDash():void {
+    this.loading = true;
     const request = {
       emp: this.idEmpresa,
       fecha: this.fechaSeleccionada.toISOString()
@@ -63,16 +64,14 @@ export class Dashboard {
     this.informeService.infoDashboard(request)
     .subscribe({
       next: rest => {
-        console.log();
-        
+        if(rest.exito) {
+          this.recursos = rest.datos;
+        }else {
+
+        }
+        this.loading = false;
       }
     })
-
-
-  }
-
-  public consultar(): void {
-
   }
 
   private obtenerDataLocalStorage(): void {

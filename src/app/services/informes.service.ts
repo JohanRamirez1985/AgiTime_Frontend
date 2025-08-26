@@ -7,7 +7,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 
 export class InformesService {
     
-    private baseUrl = `${environment.apiBaseUrl}/informes`;
+    private baseUrl = `${environment.apiBaseUrl}/Informes`;
 
     constructor(private http: HttpClient) {}
 

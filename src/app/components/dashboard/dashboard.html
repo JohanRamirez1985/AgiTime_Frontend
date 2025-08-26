@@ -9,23 +9,40 @@
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
 
-  <button mat-flat-button color="primary" (click)="consultar()">
+  <button mat-flat-button color="primary" [disabled]="loading" (click)="consultarDash()">
     <mat-icon>search</mat-icon> Consultar
   </button>
 </div>
 
-<div class="card-container">
-  <mat-card class="card" *ngFor="let recurso of recursos">
-    <mat-card-header>
-      <mat-card-title>{{ recurso.nombre }}</mat-card-title>
-      <mat-card-subtitle>Recurso de la empresa</mat-card-subtitle>
-    </mat-card-header>
-
-    <mat-card-content>
-      <p><strong>Total generado en servicios:</strong></p>
-      <p class="monto">
-        {{ recurso.totalServicios | currency:'COP':'symbol':'1.0-0' }}
-      </p>
-    </mat-card-content>
-  </mat-card>
+<div *ngIf="loading" class="loading-container">
+  <mat-spinner diameter="50"></mat-spinner>
+  <p class="loading-text">Cargando disponibilidad...</p>
 </div>
+
+<div *ngIf="!loading">
+  <ng-container *ngIf="recursos && recursos.length > 0; else noRecursos">
+    <div class="card-container">
+      <mat-card class="card" *ngFor="let recurso of recursos">
+        <mat-card-header>
+          <mat-card-title>{{ recurso.nombreRecurso }}</mat-card-title>
+          <mat-card-subtitle>Recurso de la empresa</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <p><strong>Total citas confirmadas:</strong> {{recurso.totalCitasConfirmadas}} </p>
+          <p><strong>Total citas no confirmadas:</strong>  {{recurso.totalCitasNoConfirmadas}} </p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </ng-container>
+
+  <ng-template #noRecursos>
+    <div class="mensaje-vacio">
+      <mat-icon>info</mat-icon>
+      No hay informacion disponible para esta fecha.
+    </div>
+  </ng-template>
+</div>
+
+
+
