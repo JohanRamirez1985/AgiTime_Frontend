@@ -161,6 +161,7 @@ btnActivar: boolean = false;
           this.bloqueos = [];
         }
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -185,7 +186,6 @@ btnActivar: boolean = false;
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'Ok'
           })
-          this.cdr.detectChanges();
         }else {
           this.loading = false;
           Swal.fire({
