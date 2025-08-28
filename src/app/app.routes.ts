@@ -85,6 +85,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./components/usuarios-porcentaje/gestionar-porcentaje/gestionar-porcentaje').then(m => m.GestionarPorcentaje),
       },
+      {
+      path: 'servicios',
+        loadComponent: () =>
+          import('./components/servicios/gestion-servicios/gestion-servicios').then(m => m.GestionServicios),
+      },
     ]
   },
 

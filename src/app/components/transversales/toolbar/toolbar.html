@@ -10,6 +10,10 @@
       <mat-icon>dashboard</mat-icon>
       Ir al Dashboard
     </button>
+    <button *ngIf="validate('ser')" mat-button routerLink="/admin/servicios">
+      <mat-icon>home_repair_service</mat-icon>
+      Servicios
+    </button>
     <button *ngIf="validate('age')" mat-button routerLink="/admin/recurso/dash">
       <mat-icon>date_range</mat-icon>
       Agendamientos
@@ -66,6 +70,10 @@
     <button *ngIf="validate('das')" mat-menu-item routerLink="/admin/dashboard">
       <mat-icon>dashboard</mat-icon>
       Ir al Dashboard
+    </button>
+    <button *ngIf="validate('ser')" mat-menu-item routerLink="/admin/servicios">
+      <mat-icon>home_repair_service</mat-icon>
+      Servicos
     </button>
     <button *ngIf="validate('age')" mat-menu-item routerLink="/admin/recurso/dash">
       <mat-icon>date_range</mat-icon>
