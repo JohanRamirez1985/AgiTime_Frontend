@@ -18,6 +18,7 @@ import { SharedService } from '../../../services/shared.service';
 import Swal from 'sweetalert2';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { UserService } from '../../../services/user.service';
+import { Table } from '../../transversales/table/table';
 
 @Component({
   selector: 'app-gestionar-porcentaje',
@@ -36,7 +37,8 @@ import { UserService } from '../../../services/user.service';
     MatNativeDateModule,
     MatProgressSpinnerModule,
     RouterModule,
-    MatTooltipModule
+    MatTooltipModule,
+    Table
   ],
   templateUrl: './gestionar-porcentaje.html',
   styleUrl: './gestionar-porcentaje.css'
@@ -53,18 +55,24 @@ export class GestionarPorcentaje {
   usuariosFiltrados: Usuario[] = [];
   dataSource = new MatTableDataSource<any>([]);
   loading = false;
-  displayedColumns: string[] = [
-    'nombre',
-    'rol',
-    'estado',
-    'telefono',
-    'identificacion',
-    'sede',
-    'recurso',
-    'acciones'
+
+  columnas = [
+    { key: 'nombre', label: 'Nombre' },
+    { key: 'estado', label: 'Estado' },
+    { key: 'telefono', label: 'Telefono' },
+    { key: 'documento', label: 'Identificacion' },
+    { key: 'sede', label: 'Sede' },
   ];
+  
   idEmpresa: string | null = null;
   user: any;
+  acciones: any[] = [
+    { 
+      icon: 'edit', 
+      label: 'Editar usuario', 
+      action: (element: any) => this.editarElemento(element) 
+    },
+  ];
 
 
 

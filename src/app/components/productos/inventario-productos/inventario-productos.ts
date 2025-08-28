@@ -15,6 +15,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
+import { Table } from '../../transversales/table/table';
+
 
 @Component({
   selector: 'app-inventario-productos',
@@ -30,7 +32,9 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatTooltipModule],
+    MatTooltipModule,
+    Table
+  ],
   templateUrl: './inventario-productos.html',
   styleUrls: ['./inventario-productos.css']
 })
@@ -41,6 +45,12 @@ export class InventarioProductos {
   inactiva: boolean = false;
   mensajeError: string = '';
   filtro = '';
+  columnas = [
+    { key: 'nombre', label: 'Nombre' },
+    { key: 'codigo', label: 'Código' },
+    { key: 'precio', label: 'Precio' },
+    { key: 'stock', label: 'Stock (Und)' }
+  ];
 
   // Variables para la tabla
   displayedColumns: string[] = ['nombre', 'codigo', 'precio', 'stock', 'acciones'];
@@ -51,6 +61,20 @@ export class InventarioProductos {
 
   // Responsive
   isMobileView = false;
+
+  acciones: any[] = [
+    { 
+      icon: 'edit', 
+      label: 'Editar inventario', 
+      action: (element: any) => this.editarProducto(element) 
+    },
+    { 
+      icon: 'add_circle', 
+      label: 'Agregar inventario', 
+      color: 'warn',
+      action: (element: any) => this.agregarInventario(element) 
+    }
+  ];
 
   constructor(
     private inventarioService:inventarioProductosService,

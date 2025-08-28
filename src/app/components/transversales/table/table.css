@@ -1,0 +1,44 @@
+.tabla-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* 👉 Estira al 100% en lugar de centrar */
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.custom-table {
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.custom-table th {
+  border-bottom: 2px solid #ccc; /* Línea solo en el header */
+  text-align: center;
+  font-weight: bold;
+  padding: 10px 20px;
+}
+
+.custom-table td {
+  border: none; /* Sin líneas en las filas */
+  text-align: center;
+  padding: 10px 20px;
+}
+
+mat-paginator {
+  margin-top: 15px;
+  align-self: center; /* Centra el paginador */
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px; /* alto mínimo para no "saltar" */
+}
+
+.loading-text {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}

@@ -127,7 +127,7 @@ button.mat-icon-button:hover {
   gap: 16px;
 }
 .filtros-grid mat-form-field {
-  width: 100%;
+  width: 50%;
 }
 
 /* --- Ajustes responsive --- */
