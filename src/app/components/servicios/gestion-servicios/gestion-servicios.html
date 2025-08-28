@@ -1,49 +1,65 @@
-<mat-card>
-  <h2>Gestion de servicios</h2>
-  <!-- Formulario de filtros -->
-  <form class="filtros" (ngSubmit)="consultarServicios()">
-    <div class="filtros-grid">
-      <mat-form-field appearance="outline">
-        <mat-label>Buscar por nombre</mat-label>
-        <input
-          matInput
-          [(ngModel)]="filtro"
-          name="filtro"
-          placeholder="Nombre o correo"
-          (ngModelChange)="filtrarServicio($event)"
-        />
-      </mat-form-field>
-    </div>
-  </form>
-
-  <app-table
-    *ngIf="!isMobileView"
-    [data]="serviciosFiltrados"
-    [columns]="columnas"
-    [actions]="acciones"
-    [loading]="loading"
-  >
-  </app-table>
-
-  <!-- Vista tipo tarjetas en móvil -->
-  <div *ngIf="isMobileView" class="productos-cards">
-    <mat-card
-      *ngFor="let user of serviciosFiltrados"
-      class="producto-card mat-elevation-z4"
-    >
-      <h3>{{ user.nombre }}</h3>
-      <p><strong>Nombre:</strong> {{ user.nombre }}</p>
-      <p><strong>Valor:</strong> {{ user.valor }}</p>
-      <p><strong>Tiempo:</strong> {{ user.tiempo }}</p>
-      <p><strong>Sede:</strong> {{ user.nombreSede }}</p>
-      <p><strong>Estado:</strong> {{ user.estado }}</p>
-      <p><strong>Es pago:</strong> {{ user.esPago }}</p>
-      <p><strong>Orden:</strong> {{ user.orden }}</p>
-      <div class="acciones-cell">
-        <button mat-icon-button color="accent" (click)="editarElemento(user)">
-          <mat-icon>edit</mat-icon>
+<div class="productos-card">
+  <ng-container *ngIf="!inactiva; else mensajeNoAutorizado">
+    <!-- Encabezado con título y botón -->
+    <div class="encabezado-card">
+      <h2>Gestion de servicios</h2>
+      <div class="acciones-header">
+        <button mat-raised-button color="primary">
+          <mat-icon>add</mat-icon>
+          Crear Producto
         </button>
       </div>
-    </mat-card>
-  </div>
-</mat-card>
+    </div>
+    <form class="filtros">
+      <div class="filtros-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Buscar por nombre</mat-label>
+          <input
+            matInput
+            [(ngModel)]="filtro"
+            name="filtro"
+            placeholder="Nombre producto"
+            (ngModelChange)="filtrarServicio($event)"
+          />
+        </mat-form-field>
+      </div>
+    </form>
+    <!-- Contenedor de la tabla -->
+    <app-table
+      *ngIf="!isMobileView"
+      [data]="serviciosFiltrados"
+      [columns]="columnas"
+      [actions]="acciones"
+      [loading]="loading"
+    >
+    </app-table>
+
+    <!-- Vista tipo tarjetas en móvil -->
+    <div *ngIf="isMobileView" class="productos-cards">
+      <mat-card
+        *ngFor="let user of serviciosFiltrados"
+        class="producto-card mat-elevation-z4"
+      >
+        <h3>{{ user.nombre }}</h3>
+        <p><strong>Nombre:</strong> {{ user.nombre }}</p>
+        <p><strong>Valor:</strong> {{ user.valor }}</p>
+        <p><strong>Tiempo:</strong> {{ user.tiempo }}</p>
+        <p><strong>Sede:</strong> {{ user.nombreSede }}</p>
+        <p><strong>Estado:</strong> {{ user.estado }}</p>
+        <p><strong>Es pago:</strong> {{ user.esPago }}</p>
+        <p><strong>Orden:</strong> {{ user.orden }}</p>
+        <div class="acciones-cell">
+          <button mat-icon-button color="accent" (click)="editarElemento(user)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+      </mat-card>
+    </div>
+  </ng-container>
+  <ng-template #mensajeNoAutorizado>
+    <div class="mensaje-error">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ mensajeError }}</p>
+    </div>
+  </ng-template>
+</div>
