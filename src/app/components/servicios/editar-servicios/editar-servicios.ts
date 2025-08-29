@@ -16,6 +16,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { UserService } from '../../../services/user.service';
+import { SharedService } from '../../../services/shared.service';
+import { obtenerSedes } from '../../../shared/libs/request-generales';
 
 @Component({
   selector: 'app-editar-servicios',
@@ -38,11 +40,7 @@ export class EditarServicios {
   servicioForm!: FormGroup;
   loading: boolean = false;
   servicio: any;
-  sedes: { id: number; nombre: string }[] = [
-    { id: 1, nombre: 'Sede Principal' },
-    { id: 2, nombre: 'Sede Norte' },
-    { id: 3, nombre: 'Sede Sur' },
-  ];
+  sedes: { id: number; nombre: string }[] = [];
   estados: { id: number; nombre: string }[] = [
     { id: 1, nombre: 'Activo' },
     { id: 2, nombre: 'Inactivo' },
@@ -52,11 +50,15 @@ export class EditarServicios {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private sharedService: SharedService
   ) {
     const infoEmpresa = JSON.parse(localStorage.getItem('infoEmp') || '{}');
     this.idEmpresa = infoEmpresa?.idEmpresa;
     this.servicio = this.router.getCurrentNavigation()?.extras?.state?.['data'];
+    obtenerSedes(this.sharedService, this.idEmpresa, (datos) => {
+      this.sedes = datos;
+    });
   }
 
   ngOnInit(): void {

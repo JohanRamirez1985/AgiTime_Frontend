@@ -11,8 +11,16 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
 import { SharedService } from '../../../services/shared.service';
-import { obtenerGeneros, obtenerRoles, obtenerSedes, obtenerTiposDocumentos } from '../../../shared/libs/request-generales';
-import { TipoDocumento, UsuarioRegistro } from '../../../interfaces/shared.interface';
+import {
+  obtenerGeneros,
+  obtenerRoles,
+  obtenerSedes,
+  obtenerTiposDocumentos,
+} from '../../../shared/libs/request-generales';
+import {
+  TipoDocumento,
+  UsuarioRegistro,
+} from '../../../interfaces/shared.interface';
 import { UserService } from '../../../services/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import Swal from 'sweetalert2';
@@ -32,12 +40,11 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     MatButtonModule,
     MatCardModule,
     MatIconModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
   ],
   templateUrl: './crear-usuario.html',
-  styleUrl: './crear-usuario.css'
+  styleUrl: './crear-usuario.css',
 })
-
 export class CrearUsuario {
   usuario = {
     nombre: '',
@@ -52,7 +59,7 @@ export class CrearUsuario {
     estado: 'Activo',
     empresa: '',
     rol: '',
-    recurso: false
+    recurso: false,
   };
 
   tipoDocumentos: TipoDocumento[] = [];
@@ -65,13 +72,12 @@ export class CrearUsuario {
   uniqueId = Math.floor(Math.random() * 100000);
   btnGuardar: boolean = false;
 
-  constructor(private router: Router,
-    private sharedServices : SharedService,
-    private userService : UserService,
+  constructor(
+    private router: Router,
+    private sharedServices: SharedService,
+    private userService: UserService,
     private snackBar: MatSnackBar
-  ) {
-    
-  }
+  ) {}
 
   ngOnInit() {
     const info = JSON.parse(localStorage.getItem('infoEmp') || '{}');
@@ -85,32 +91,40 @@ export class CrearUsuario {
       {
         key: 'tiposDoc',
         fetch: obtenerTiposDocumentos,
-        set: (datos: any) => { this.tipoDocumentos = datos; }
+        set: (datos: any) => {
+          this.tipoDocumentos = datos;
+        },
       },
       {
         key: 'generos',
         fetch: obtenerGeneros,
-        set: (datos: any) => { this.listaGeneros = datos; }
+        set: (datos: any) => {
+          this.listaGeneros = datos;
+        },
       },
       {
         key: 'roles',
         fetch: obtenerRoles,
-        set: (datos: any) => { this.listaRoles = datos; }
+        set: (datos: any) => {
+          this.listaRoles = datos;
+        },
       },
       {
         key: 'sedes',
         fetch: obtenerSedes,
-        set: (datos: any) => { this.listaSedes = datos; }
-      }
+        set: (datos: any) => {
+          this.listaSedes = datos;
+        },
+      },
     ];
 
-    config.forEach(c => {
+    config.forEach((c) => {
       const almacenado = localStorage.getItem(c.key);
 
       if (almacenado) {
         c.set(JSON.parse(almacenado));
       } else {
-        c.fetch(this.sharedServices, this.idEmpresa!, datos => {
+        c.fetch(this.sharedServices, this.idEmpresa!, (datos) => {
           c.set(datos);
           localStorage.setItem(c.key, JSON.stringify(datos));
         });
@@ -118,30 +132,37 @@ export class CrearUsuario {
     });
   }
 
-  public cancelar():void {
+  public cancelar(): void {
     this.router.navigate(['/admin/usuarios']);
   }
 
   public esFormularioValido(): boolean {
-    return !!this.usuario.sede && !!this.usuario.rol 
-      && !!this.usuario.correo && !!this.usuario.nombre 
-      && !!this.usuario.telefono && !!this.usuario.tipoDocumento
-      && !!this.usuario.documento && !!this.usuario.fechaNacimiento
-      && !!this.usuario.password && !!this.usuario.genero;
+    return (
+      !!this.usuario.sede &&
+      !!this.usuario.rol &&
+      !!this.usuario.correo &&
+      !!this.usuario.nombre &&
+      !!this.usuario.telefono &&
+      !!this.usuario.tipoDocumento &&
+      !!this.usuario.documento &&
+      !!this.usuario.fechaNacimiento &&
+      !!this.usuario.password &&
+      !!this.usuario.genero
+    );
   }
 
   registrarUsuario() {
     this.btnGuardar = true;
     const request = this.createJson();
     this.userService.crearUsuario(request).subscribe({
-      next: res => {
+      next: (res) => {
         if (res.exito) {
           Swal.fire({
             icon: 'success',
             title: '¡Usuario creado!',
             text: res.mensaje || 'Usuario creado exitosamente',
             confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Ir al listado'
+            confirmButtonText: 'Ir al listado',
           }).then(() => {
             this.router.navigate(['/admin/usuarios']);
           });
@@ -154,19 +175,18 @@ export class CrearUsuario {
         }
         this.btnGuardar = false;
       },
-      error: err => {
+      error: (err) => {
         this.btnGuardar = false;
         Swal.fire({
           icon: 'error',
           title: 'Error de servidor',
           text: 'No se pudo conectar con el backend',
         });
-      }
+      },
     });
   }
 
-  createJson():UsuarioRegistro {
-    
+  createJson(): UsuarioRegistro {
     const json: UsuarioRegistro = {
       nombre: this.usuario.nombre,
       correo: this.usuario.correo,
@@ -180,9 +200,9 @@ export class CrearUsuario {
       empresa: Number(this.idEmpresa),
       rol: Number(this.usuario.rol),
       recurso: this.usuario.recurso,
-      fechaCreacion: new Date()
+      fechaCreacion: new Date(),
     };
 
-    return json
+    return json;
   }
 }

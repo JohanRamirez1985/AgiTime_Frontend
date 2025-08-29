@@ -1,5 +1,9 @@
-import { GeneroResponse, TipoDocumento, TipoDocumentoResponse } from "../../interfaces/shared.interface";
-import { SharedService } from "../../services/shared.service";
+import {
+  GeneroResponse,
+  TipoDocumento,
+  TipoDocumentoResponse,
+} from '../../interfaces/shared.interface';
+import { SharedService } from '../../services/shared.service';
 
 export function obtenerTiposDocumentos(
   sharedService: SharedService,
@@ -7,7 +11,7 @@ export function obtenerTiposDocumentos(
   callback: (datos: TipoDocumento[]) => void
 ) {
   sharedService.obtenerTiposDocumentos(idEmpresa).subscribe({
-    next: (res: TipoDocumentoResponse) => callback(res.datos)
+    next: (res: TipoDocumentoResponse) => callback(res.datos),
   });
 }
 
@@ -17,7 +21,7 @@ export function obtenerGeneros(
   callback: (datos: TipoDocumento[]) => void
 ) {
   sharedService.obtenerGenerosUsuarios(idEmpresa).subscribe({
-    next: (res: GeneroResponse) => callback(res.datos)
+    next: (res: GeneroResponse) => callback(res.datos),
   });
 }
 
@@ -27,7 +31,7 @@ export function obtenerRoles(
   callback: (datos: TipoDocumento[]) => void
 ) {
   sharedService.obtenerRolesUsuarios(idEmpresa).subscribe({
-    next: (res: GeneroResponse) => callback(res.datos)
+    next: (res: GeneroResponse) => callback(res.datos),
   });
 }
 
@@ -37,6 +41,6 @@ export function obtenerSedes(
   callback: (datos: TipoDocumento[]) => void
 ) {
   sharedService.obtenerSedesUsuarios(idEmpresa).subscribe({
-    next: (res: GeneroResponse) => callback(res.datos)
+    next: (res: GeneroResponse) => callback(res.datos),
   });
 }
