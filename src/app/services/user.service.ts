@@ -29,4 +29,8 @@ export class UserService {
       params,
     });
   }
+
+  editarServicios(request: any) {
+    return this.http.post(`${this.baseUrlUsuario}/editarServicio`, request);
+  }
 }

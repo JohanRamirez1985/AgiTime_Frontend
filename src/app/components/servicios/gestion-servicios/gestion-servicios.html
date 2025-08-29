@@ -4,9 +4,13 @@
     <div class="encabezado-card">
       <h2>Gestion de servicios</h2>
       <div class="acciones-header">
-        <button mat-raised-button color="primary">
+        <button
+          mat-raised-button
+          color="primary"
+          [routerLink]="'/admin/servicios/crear'"
+        >
           <mat-icon>add</mat-icon>
-          Crear Producto
+          Crear Servicio
         </button>
       </div>
     </div>

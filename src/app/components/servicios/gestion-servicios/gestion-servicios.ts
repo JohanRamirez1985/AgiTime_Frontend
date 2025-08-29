@@ -8,12 +8,16 @@ import { Table } from '../../transversales/table/table';
 import { MatInputModule } from '@angular/material/input';
 import { UserService } from '../../../services/user.service';
 import Swal from 'sweetalert2';
+import { MatButtonModule } from '@angular/material/button';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-gestion-servicios',
   standalone: true,
   imports: [
     MatIconModule,
+    MatButtonModule,
+    RouterModule,
     FormsModule,
     CommonModule,
     MatFormFieldModule,
@@ -48,11 +52,11 @@ export class GestionServicios {
     {
       icon: 'edit',
       label: 'Editar usuario',
-      // action: (element: any) => this.editarElemento(element)
+      action: (element: any) => this.editarElemento(element),
     },
   ];
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit() {
     this.user = JSON.parse(localStorage.getItem('usuario') || '');
@@ -107,5 +111,9 @@ export class GestionServicios {
     this.isMobileView = window.innerWidth <= 768;
   }
 
-  public editarElemento(recurso: any) {}
+  public editarElemento(recurso: any) {
+    this.router.navigate(['/admin/servicios/editar'], {
+      state: { data: recurso },
+    });
+  }
 }
