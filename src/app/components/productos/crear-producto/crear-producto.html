@@ -7,12 +7,20 @@
     <mat-spinner diameter="50"></mat-spinner>
   </div>
   <!-- Formulario -->
-  <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()" class="form-container">
-    
+  <form
+    [formGroup]="productoForm"
+    (ngSubmit)="guardarProducto()"
+    class="form-container"
+  >
     <!-- Nombre -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Nombre</mat-label>
-      <input matInput placeholder="Ingrese el nombre" formControlName="Nombre" required>
+      <input
+        matInput
+        placeholder="Ingrese el nombre"
+        formControlName="Nombre"
+        required
+      />
       <mat-error *ngIf="productoForm.get('Nombre')?.hasError('required')">
         El nombre es obligatorio
       </mat-error>
@@ -21,7 +29,12 @@
     <!-- Código -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Código</mat-label>
-      <input matInput placeholder="Ingrese el código" formControlName="Codigo" required>
+      <input
+        matInput
+        placeholder="Ingrese el código"
+        formControlName="Codigo"
+        required
+      />
       <mat-error *ngIf="productoForm.get('Codigo')?.hasError('required')">
         El código es obligatorio
       </mat-error>
@@ -30,7 +43,13 @@
     <!-- Precio -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Precio</mat-label>
-      <input matInput type="number" placeholder="Ingrese el precio" formControlName="Precio" required>
+      <input
+        matInput
+        type="number"
+        placeholder="Ingrese el precio"
+        formControlName="Precio"
+        required
+      />
       <mat-error *ngIf="productoForm.get('Precio')?.hasError('required')">
         El precio es obligatorio
       </mat-error>
@@ -39,7 +58,13 @@
     <!-- Cantidad -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Cantidad</mat-label>
-      <input matInput type="number" placeholder="Ingrese la cantidad" formControlName="Cantidad" required>
+      <input
+        matInput
+        type="number"
+        placeholder="Ingrese la cantidad"
+        formControlName="Cantidad"
+        required
+      />
       <mat-error *ngIf="productoForm.get('Cantidad')?.hasError('required')">
         El cantidad es obligatorio
       </mat-error>
@@ -47,7 +72,12 @@
 
     <!-- Botones -->
     <div class="acciones-header">
-      <button mat-raised-button color="primary" type="submit" [disabled]="productoForm.invalid">
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="productoForm.invalid"
+      >
         <mat-icon>save</mat-icon>
         Guardar
       </button>
@@ -56,6 +86,5 @@
         Cancelar
       </button>
     </div>
-
   </form>
 </div>

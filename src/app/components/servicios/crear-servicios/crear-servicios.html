@@ -1,1 +1,116 @@
-<p>crear-servicios works!</p>
+<div class="productos-card">
+  <!-- Encabezado -->
+  <div class="encabezado-card">
+    <h2>Crear Servicio</h2>
+  </div>
+  <div class="spinner-overlay" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+  <!-- Formulario -->
+  <form
+    [formGroup]="servicioForm"
+    (ngSubmit)="guardarServicio()"
+    class="form-container"
+  >
+    <!-- Nombre -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nombre</mat-label>
+      <input
+        matInput
+        placeholder="Ingrese el nombre"
+        formControlName="nombre"
+        required
+      />
+      <mat-error *ngIf="servicioForm.get('nombre')?.hasError('required')">
+        El nombre es obligatorio
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Valor -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Valor</mat-label>
+      <input
+        matInput
+        type="number"
+        placeholder="Ingrese el valor"
+        formControlName="valor"
+        required
+      />
+      <mat-error *ngIf="servicioForm.get('valor')?.hasError('required')">
+        El valor es obligatorio
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Tiempo (minutos) -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Tiempo (minutos)</mat-label>
+      <input
+        matInput
+        type="number"
+        placeholder="Duración en minutos"
+        formControlName="tiempo"
+        required
+      />
+      <mat-error *ngIf="servicioForm.get('tiempo')?.hasError('required')">
+        El tiempo es obligatorio
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Sede -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Sede</mat-label>
+      <mat-select formControlName="sede" required>
+        <mat-option *ngFor="let s of sedes" [value]="s.id">
+          {{ s.nombre }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="servicioForm.get('sede')?.hasError('required')">
+        La sede es obligatoria
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Es Pago -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>¿Es Pago?</mat-label>
+      <mat-select formControlName="esPago" required>
+        <mat-option [value]="true">Sí</mat-option>
+        <mat-option [value]="false">No</mat-option>
+      </mat-select>
+      <mat-error *ngIf="servicioForm.get('esPago')?.hasError('required')">
+        Este campo es obligatorio
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Orden -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Orden</mat-label>
+      <input
+        matInput
+        type="number"
+        placeholder="Ingrese el orden"
+        formControlName="orden"
+        required
+      />
+      <mat-error *ngIf="servicioForm.get('orden')?.hasError('required')">
+        El orden es obligatorio
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Botones -->
+    <div class="acciones-header">
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="servicioForm.invalid"
+      >
+        <mat-icon>save</mat-icon>
+        Guardar
+      </button>
+      <button mat-button color="warn" type="button" (click)="cancelar()">
+        <mat-icon>cancel</mat-icon>
+        Cancelar
+      </button>
+    </div>
+  </form>
+</div>

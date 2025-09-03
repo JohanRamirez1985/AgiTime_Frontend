@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -22,19 +27,18 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   templateUrl: './crear-producto.html',
-  styleUrls: ['./crear-producto.css']
+  styleUrls: ['./crear-producto.css'],
 })
 export class CrearProducto {
-
   productoForm!: FormGroup;
   loading: boolean = true;
   viewDate: Date = new Date();
 
   constructor(
-    private inventarioService:inventarioProductosService,
+    private inventarioService: inventarioProductosService,
     private fb: FormBuilder,
     private router: Router
   ) {}
@@ -45,16 +49,26 @@ export class CrearProducto {
     const idEmpresa = infoEmpresa?.idEmpresa;
     const idUsuario = infoUsuario?.id;
     const now = new Date(this.viewDate);
-    const fechaLocal = now.getFullYear() + '-' +
-      String(now.getMonth() + 1).padStart(2, '0') + '-' +
-      String(now.getDate()).padStart(2, '0') + 'T' +
-      String(now.getHours()).padStart(2, '0') + ':' +
-      String(now.getMinutes()).padStart(2, '0') + ':' +
+    const fechaLocal =
+      now.getFullYear() +
+      '-' +
+      String(now.getMonth() + 1).padStart(2, '0') +
+      '-' +
+      String(now.getDate()).padStart(2, '0') +
+      'T' +
+      String(now.getHours()).padStart(2, '0') +
+      ':' +
+      String(now.getMinutes()).padStart(2, '0') +
+      ':' +
       String(now.getSeconds()).padStart(2, '0');
 
-
     if (!idEmpresa) {
-      this.ventanaMensaje('error','Mensaje','Se produjo un error, Por favor contactar al administrador de la aplicación.',false);
+      this.ventanaMensaje(
+        'error',
+        'Mensaje',
+        'Se produjo un error, Por favor contactar al administrador de la aplicación.',
+        false
+      );
       return;
     }
 
@@ -65,7 +79,7 @@ export class CrearProducto {
       Cantidad: [null, [Validators.required, Validators.min(0)]],
       empresa: idEmpresa,
       UsuarioCreacion: idUsuario,
-      FechaCreacion: fechaLocal
+      FechaCreacion: fechaLocal,
     });
 
     this.loading = false;
@@ -75,35 +89,43 @@ export class CrearProducto {
     if (this.productoForm.valid) {
       this.loading = true;
       const nuevoProducto = this.productoForm.value;
-      this.inventarioService.crearProducto(nuevoProducto)
-          .subscribe({
-            next: res => {
-              this.loading = false;
-              if (res.exito){
-                this.ventanaMensaje('success','Producto creado',res.mensaje,true);
-              }else {
-                this.ventanaMensaje('warning','Mensaje',res.mensaje,false);
-              }
-                      
-            },
-            error: err => {
-              this.loading = false;
-              this.ventanaMensaje('error','Error',err.mensaje,false);
-            }
-          })
+      this.inventarioService.crearProducto(nuevoProducto).subscribe({
+        next: (res) => {
+          this.loading = false;
+          if (res.exito) {
+            this.ventanaMensaje(
+              'success',
+              'Producto creado',
+              res.mensaje,
+              true
+            );
+          } else {
+            this.ventanaMensaje('warning', 'Mensaje', res.mensaje, false);
+          }
+        },
+        error: (err) => {
+          this.loading = false;
+          this.ventanaMensaje('error', 'Error', err.mensaje, false);
+        },
+      });
     }
   }
 
-  ventanaMensaje(icon: string, title: string, text: string, validador: boolean){
+  ventanaMensaje(
+    icon: string,
+    title: string,
+    text: string,
+    validador: boolean
+  ) {
     Swal.fire({
-                icon: icon as SweetAlertIcon,
-                title: title,
-                text: text,
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'Ok'
-              }).then(() => {
-                validador ? this.cancelar():null;
-              });
+      icon: icon as SweetAlertIcon,
+      title: title,
+      text: text,
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Ok',
+    }).then(() => {
+      validador ? this.cancelar() : null;
+    });
   }
 
   cancelar(): void {

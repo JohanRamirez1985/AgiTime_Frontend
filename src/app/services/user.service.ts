@@ -33,4 +33,8 @@ export class UserService {
   editarServicios(request: any) {
     return this.http.post(`${this.baseUrlUsuario}/editarServicio`, request);
   }
+
+  crearServicios(request: any) {
+    return this.http.post(`${this.baseUrlUsuario}/registrarServicio`, request);
+  }
 }
