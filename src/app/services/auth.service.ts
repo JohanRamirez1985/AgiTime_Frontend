@@ -7,14 +7,23 @@ import { LoginResponse } from '../interfaces/shared.interface';
 export class AuthService {
   private baseUrlUsuario = `${environment.apiBaseUrl}/Usuarios`;
   private baseUrlCliente = `${environment.apiBaseUrl}/Clientes`;
-  
+
   constructor(private http: HttpClient) {}
 
-  login(credentials: { Login: string; Password: string ; empresa: string}, Cliente: boolean) {
-    if(Cliente)
-      return this.http.post<LoginResponse>(`${this.baseUrlCliente}/Login`, credentials);
+  login(
+    credentials: { Login: string; Password: string; empresa: string },
+    Cliente: boolean
+  ) {
+    if (Cliente)
+      return this.http.post<LoginResponse>(
+        `${this.baseUrlCliente}/Login`,
+        credentials
+      );
     else
-      return this.http.post<LoginResponse>(`${this.baseUrlUsuario}/Login`, credentials);
+      return this.http.post<LoginResponse>(
+        `${this.baseUrlUsuario}/Login`,
+        credentials
+      );
   }
 
   register(user: { name: string; email: string; password: string }) {

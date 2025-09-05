@@ -1,22 +1,25 @@
-
-
-  <div class="dashboard-wrapper">
-    <ng-container *ngIf="!inactiva; else mensajeNoAutorizado">
-      <mat-card class="dashboard-card mat-elevation-z8">
+<div class="dashboard-wrapper">
+  <ng-container *ngIf="!inactiva; else mensajeNoAutorizado">
+    <mat-card class="dashboard-card mat-elevation-z8">
+      <!-- Loading -->
       <div *ngIf="loading" class="loading-container">
         <mat-spinner diameter="50"></mat-spinner>
         <p class="loading-text">Cargando disponibilidad...</p>
       </div>
 
+      <!-- Contenido -->
       <div *ngIf="!loading">
         <h2 class="title">👋 Bienvenido, {{ nombreEmpresa }}</h2>
-          <mat-divider></mat-divider>
+        <mat-divider></mat-divider>
         <img [src]="img" alt="Imagen barbería" class="imagen-banner" />
 
-        <div *ngIf="!mostrarSede" class="recurso-lista" >
+        <!-- Selección de sede -->
+        <div *ngIf="!mostrarSede" class="recurso-lista">
           <p class="mensaje-sede">
-            Por favor, selecciona la <strong>sede</strong> en la que deseas agendar tu cita para continuar.
+            Por favor, selecciona la <strong>sede</strong> en la que deseas
+            agendar tu cita para continuar.
           </p>
+
           <mat-card
             *ngFor="let sede of sedes"
             class="recurso-card mat-elevation-z2"
@@ -30,18 +33,24 @@
           </mat-card>
         </div>
 
-        <div *ngIf="mostrarSede" class="recurso-lista" >
-        <div class="sede-header">
-          <h3>
-            <!-- <mat-icon>business</mat-icon> -->
-            <span>{{ sedeSeleccionada }}</span>
-          </h3>
-          <div class="cambiar-sede-link" (click)="cambiarSede()" >
-            <mat-icon>refresh</mat-icon> Cambiar sede
+        <!-- Recursos de la sede -->
+        <div *ngIf="mostrarSede" class="recurso-lista">
+          <div class="sede-header">
+            <h3>
+              <span>{{ sedeSeleccionada }}</span>
+            </h3>
+            <div
+              *ngIf="btnRefresh"
+              class="cambiar-sede-link"
+              (click)="cambiarSede()"
+            >
+              <mat-icon>refresh</mat-icon> Cambiar sede
+            </div>
           </div>
-        </div>
 
-          <ng-container *ngIf="recursosList && recursosList.length > 0; else noRecursos">
+          <ng-container
+            *ngIf="recursosList && recursosList.length > 0; else noRecursos"
+          >
             <mat-card
               *ngFor="let usuario of recursosList"
               class="recurso-card mat-elevation-z2"
@@ -50,63 +59,48 @@
               <div class="recurso-content">
                 <div class="recurso-info">
                   <h3>{{ usuario.nombre }}</h3>
-                  <p><mat-icon>email</mat-icon> {{ usuario.correo }}</p>
                   <p><mat-icon>phone</mat-icon> {{ usuario.telefono }}</p>
                   <p><mat-icon>badge</mat-icon> {{ sedeSeleccionada }}</p>
                 </div>
                 <div class="recurso-imagen">
-                  <img [src]="usuario.foto" alt="Foto de {{ usuario.nombre }}" />
+                  <img
+                    [src]="usuario.foto"
+                    alt="Foto de {{ usuario.nombre }}"
+                  />
                 </div>
               </div>
             </mat-card>
           </ng-container>
 
-          <!-- Template cuando no hay recursos -->
+          <!-- Sin recursos -->
           <ng-template #noRecursos>
             <div class="mensaje-vacio">
               <mat-icon>info</mat-icon>
               No hay recursos disponibles para esta sede.
             </div>
           </ng-template>
-
-          <!-- <mat-card
-            *ngFor="let usuario of recursosList"
-            class="recurso-card mat-elevation-z2"
-            (click)="irAReservar(usuario)"
-          >
-            <div class="recurso-content">
-              <div class="recurso-info">
-                <h3>{{ usuario.nombre }}</h3>
-                <p><mat-icon>email</mat-icon> {{ usuario.correo }}</p>
-                <p><mat-icon>phone</mat-icon> {{ usuario.telefono }}</p>
-                <p><mat-icon>badge</mat-icon> {{ usuario.nombreSede }}</p>
-              </div>
-              <div class="recurso-imagen">
-                <img [src]="usuario.foto" alt="Foto de {{ usuario.nombre }}" />
-              </div>
-            </div>
-          </mat-card> -->
         </div>
-      </div>      
-
-      </mat-card>
-        <!-- Botón flotante visible solo si hay servicios seleccionados -->
-      <div class="boton-flotante-wrapper">
-        <button
-          mat-flat-button
-          color="primary"
-          class="boton-flotante-mejorado"
-          (click)="misCitas()"
-        >
-          Mis Citas..
-        </button>
       </div>
-    </ng-container>
-    <ng-template #mensajeNoAutorizado>
-      <div class="mensaje-error">
-        <mat-icon color="warn">error</mat-icon>
-        <p>{{ mensajeError }}</p>
-      </div>
-    </ng-template>
-  </div>
+    </mat-card>
 
+    <!-- Botón flotante -->
+    <div class="boton-flotante-wrapper">
+      <button
+        mat-flat-button
+        color="primary"
+        class="boton-flotante-mejorado"
+        (click)="misCitas()"
+      >
+        Mis Citas..
+      </button>
+    </div>
+  </ng-container>
+
+  <!-- Mensaje de error -->
+  <ng-template #mensajeNoAutorizado>
+    <div class="mensaje-error">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ mensajeError }}</p>
+    </div>
+  </ng-template>
+</div>

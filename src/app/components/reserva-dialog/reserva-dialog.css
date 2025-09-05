@@ -1,0 +1,47 @@
+/* Contenedor general */
+mat-dialog-content {
+  padding: 10px 20px;
+}
+
+/* Título centrado */
+h2[mat-dialog-title] {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+/* Texto de info (fecha, hora, costo) */
+mat-dialog-content p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+/* Inputs más compactos */
+mat-form-field.full-width {
+  width: 100%;
+  margin-bottom: 8px; /* menos espacio entre campos */
+}
+
+/* Botones */
+mat-dialog-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+mat-dialog-actions button {
+  min-width: 100px;
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+button[mat-raised-button] {
+  background-color: #5a50ef; /* morado empresarial */
+  color: white;
+}
+
+button[mat-button] {
+  background-color: #555;
+  color: white;
+}

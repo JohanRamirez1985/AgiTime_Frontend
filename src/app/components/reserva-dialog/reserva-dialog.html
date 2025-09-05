@@ -1,0 +1,63 @@
+<div class="reserva-dialog-container">
+  <h2 mat-dialog-title>Confirmar reserva</h2>
+
+  <mat-dialog-content [formGroup]="form">
+    <p><strong>Fecha:</strong> {{ data.fecha }}</p>
+    <p><strong>Hora:</strong> {{ data.hora }}</p>
+    <p><strong>Costo:</strong> {{ data.costo }}</p>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Celular</mat-label>
+      <input matInput formControlName="celular" placeholder="Ej: 3001234567" />
+      <mat-error *ngIf="form.get('celular')?.invalid">
+        Ingresa un número de celular válido (mínimo 7 dígitos)
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombres</mat-label>
+      <input matInput formControlName="nombre" placeholder="Ej: Juan Pérez" />
+      <mat-error *ngIf="form.get('nombre')?.invalid">
+        Ingresa un nombre válido (solo letras y espacios)
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Correo</mat-label>
+      <input
+        matInput
+        formControlName="correo"
+        placeholder="ejemplo@correo.com"
+      />
+      <mat-error *ngIf="form.get('correo')?.invalid">
+        Ingresa un correo electrónico válido
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Fecha de nacimiento</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        formControlName="fechaNacimiento"
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="form.get('fechaNacimiento')?.invalid">
+        Ingresa una fecha válida
+      </mat-error>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="form.invalid"
+      (click)="confirmar()"
+    >
+      Reservar
+    </button>
+    <button mat-button (click)="cerrar()">Cancelar</button>
+  </mat-dialog-actions>
+</div>
