@@ -17,11 +17,11 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { Table } from '../../transversales/table/table';
 
-
 @Component({
   selector: 'app-inventario-productos',
   standalone: true,
-  imports: [FormsModule,
+  imports: [
+    FormsModule,
     MatTableModule,
     MatPaginatorModule,
     MatButtonModule,
@@ -33,13 +33,12 @@ import { Table } from '../../transversales/table/table';
     MatFormFieldModule,
     MatInputModule,
     MatTooltipModule,
-    Table
+    Table,
   ],
   templateUrl: './inventario-productos.html',
-  styleUrls: ['./inventario-productos.css']
+  styleUrls: ['./inventario-productos.css'],
 })
 export class InventarioProductos {
-
   inventario: inventarioProductos[] = [];
   loading: boolean = true;
   inactiva: boolean = false;
@@ -49,11 +48,17 @@ export class InventarioProductos {
     { key: 'nombre', label: 'Nombre' },
     { key: 'codigo', label: 'Código' },
     { key: 'precio', label: 'Precio' },
-    { key: 'stock', label: 'Stock (Und)' }
+    { key: 'stock', label: 'Stock (Und)' },
   ];
 
   // Variables para la tabla
-  displayedColumns: string[] = ['nombre', 'codigo', 'precio', 'stock', 'acciones'];
+  displayedColumns: string[] = [
+    'nombre',
+    'codigo',
+    'precio',
+    'stock',
+    'acciones',
+  ];
   dataSource = new MatTableDataSource<any>([]);
 
   // Paginador
@@ -63,23 +68,23 @@ export class InventarioProductos {
   isMobileView = false;
 
   acciones: any[] = [
-    { 
-      icon: 'edit', 
-      label: 'Editar inventario', 
-      action: (element: any) => this.editarProducto(element) 
+    {
+      icon: 'edit',
+      label: 'Editar inventario',
+      action: (element: any) => this.editarProducto(element),
     },
-    { 
-      icon: 'add_circle', 
-      label: 'Agregar inventario', 
+    {
+      icon: 'add_circle',
+      label: 'Agregar inventario',
       color: 'warn',
-      action: (element: any) => this.agregarInventario(element) 
-    }
+      action: (element: any) => this.agregarInventario(element),
+    },
   ];
 
   constructor(
-    private inventarioService:inventarioProductosService,
+    private inventarioService: inventarioProductosService,
     private router: Router
-  ){}
+  ) {}
 
   ngOnInit(): void {
     this.checkResponsive();
@@ -87,69 +92,69 @@ export class InventarioProductos {
     this.consultarProductos();
   }
 
-  public consultarProductos(): void{
+  public consultarProductos(): void {
     const info = JSON.parse(localStorage.getItem('infoEmp') || '{}');
     const idEmpresa = info?.idEmpresa;
 
     if (!idEmpresa) {
       Swal.fire({
-            icon: 'error',
-            title: 'Mensaje',
-            text: 'Se produjo un error, Por favor contactar al administrador de la aplicación.',
-          });
+        icon: 'error',
+        title: 'Mensaje',
+        text: 'Se produjo un error, Por favor contactar al administrador de la aplicación.',
+      });
       return;
     }
 
     const request = {
-      emp:idEmpresa
+      emp: idEmpresa,
     };
     this.loading = true;
     this.inventarioService.consultarProductos(request).subscribe({
-      next: res => {
-        if (res.exito){
-          this.loading = false;
+      next: (res) => {
+        if (res.exito) {
           this.inventario = res.datos;
           this.dataSource.data = res.datos;
-        }else {
+        } else {
           Swal.fire({
             icon: 'warning',
             title: 'Mensaje',
             text: res.mensaje,
           });
         }
+        this.loading = false;
       },
-        error: err => {
-          this.loading = false;
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: err.mensaje,
-          });
-        }
-    })
+      error: (err) => {
+        this.loading = false;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err.mensaje,
+        });
+      },
+    });
   }
-  
+
   crearProducto(): void {
     this.router.navigate(['admin/inventario/crear']);
   }
 
   agregarInventario(producto: any): void {
-      this.router.navigate(['admin/inventario/agregar'], {
-      state: { data: producto }
+    this.router.navigate(['admin/inventario/agregar'], {
+      state: { data: producto },
     });
   }
 
   editarProducto(producto: any): void {
-      this.router.navigate(['admin/inventario/editar'], {
-      state: { data: producto }
+    this.router.navigate(['admin/inventario/editar'], {
+      state: { data: producto },
     });
   }
 
   filtrarProducto(valor: string) {
-  const filtroLower = valor.toLowerCase().trim();
-  this.dataSource.data = this.inventario.filter(i =>
-    i.nombre.toLowerCase().includes(filtroLower)
-  );
+    const filtroLower = valor.toLowerCase().trim();
+    this.dataSource.data = this.inventario.filter((i) =>
+      i.nombre.toLowerCase().includes(filtroLower)
+    );
   }
 
   onPageChange(event: any): void {
@@ -164,5 +169,4 @@ export class InventarioProductos {
   checkResponsive(): void {
     this.isMobileView = window.innerWidth <= 768;
   }
-
 }

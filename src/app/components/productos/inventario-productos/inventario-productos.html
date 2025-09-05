@@ -1,49 +1,72 @@
 <div class="productos-card">
   <ng-container *ngIf="!inactiva; else mensajeNoAutorizado">
-  <!-- Encabezado con título y botón -->
-  <div class="encabezado-card">
-    <h2>Inventario de Productos</h2>
-    <div class="acciones-header">
-      <button mat-raised-button color="primary" (click)="crearProducto()">
-        <mat-icon>add</mat-icon>
-        Crear Producto
-      </button>
-    </div>
-  </div>
-  <form class="filtros">
-    <div class="filtros-grid">
-      <mat-form-field appearance="outline">
-        <mat-label>Buscar por nombre</mat-label>
-        <input matInput [(ngModel)]="filtro" name="filtro" placeholder="Nombre producto" (ngModelChange)="filtrarProducto($event)" />
-      </mat-form-field>
-    </div>
-  </form>
-  <!-- Contenedor de la tabla -->
-  <app-table 
-    *ngIf="!isMobileView"
-    [data]="dataSource.data" 
-    [columns]="columnas"
-    [actions]="acciones"
-    [loading]="loading">
-  </app-table>
-
-  <!-- Vista tipo tarjetas en móvil -->
-  <div *ngIf="isMobileView" class="productos-cards">
-    <mat-card *ngFor="let producto of dataSource.data" class="producto-card mat-elevation-z4">
-      <h3>{{ producto.nombre }}</h3>
-      <p><strong>Codigo:</strong> {{ producto.codigo }}</p>
-      <p><strong>Precio:</strong> {{ '$' }} {{ producto.precio | number:'1.0-0' }}</p>
-      <p><strong>Stock (Und):</strong> {{ producto.stock }}</p>
-      <div class="acciones-cell">
-        <button mat-icon-button color="accent" (click)="agregarInventario(producto)" matTooltip="Agregar inventario">
-          <mat-icon>add_circle</mat-icon>
+    <!-- Encabezado con título y botón -->
+    <div class="encabezado-card">
+      <h2>Inventario de Productos</h2>
+      <div class="acciones-header">
+        <button mat-raised-button color="primary" (click)="crearProducto()">
+          <mat-icon>add</mat-icon>
+          Crear Producto
         </button>
-        <button mat-icon-button color="accent" (click)="editarProducto(producto)" matTooltip="Editar producto">
+      </div>
+    </div>
+    <form class="filtros">
+      <div class="filtros-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Buscar por nombre</mat-label>
+          <input
+            matInput
+            [(ngModel)]="filtro"
+            name="filtro"
+            placeholder="Nombre producto"
+            (ngModelChange)="filtrarProducto($event)"
+          />
+        </mat-form-field>
+      </div>
+    </form>
+    <!-- Contenedor de la tabla -->
+    <app-table
+      *ngIf="!isMobileView"
+      [data]="dataSource.data"
+      [columns]="columnas"
+      [actions]="acciones"
+      [loading]="loading"
+    >
+    </app-table>
+
+    <!-- Vista tipo tarjetas en móvil -->
+    <div *ngIf="isMobileView" class="productos-cards">
+      <mat-card
+        *ngFor="let producto of dataSource.data"
+        class="producto-card mat-elevation-z4"
+      >
+        <h3>{{ producto.nombre }}</h3>
+        <p><strong>Codigo:</strong> {{ producto.codigo }}</p>
+        <p>
+          <strong>Precio:</strong> {{ "$" }}
+          {{ producto.precio | number : "1.0-0" }}
+        </p>
+        <p><strong>Stock (Und):</strong> {{ producto.stock }}</p>
+        <div class="acciones-cell">
+          <button
+            mat-icon-button
+            color="accent"
+            (click)="agregarInventario(producto)"
+            matTooltip="Agregar inventario"
+          >
+            <mat-icon>add_circle</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="accent"
+            (click)="editarProducto(producto)"
+            matTooltip="Editar producto"
+          >
             <mat-icon>edit</mat-icon>
           </button>
-      </div>
-    </mat-card>
-  </div>
+        </div>
+      </mat-card>
+    </div>
   </ng-container>
   <ng-template #mensajeNoAutorizado>
     <div class="mensaje-error">

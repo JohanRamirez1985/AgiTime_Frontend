@@ -5,8 +5,22 @@
         <mat-icon>arrow_back</mat-icon>
       </button>
       <span class="header-title">Inicio</span>
+
+      <div class="header-empresa">
+        <span class="empresa-nombre">{{ empresaNombre }}</span>
+        <img
+          *ngIf="empresaLogo"
+          [src]="empresaLogo"
+          alt="Logo empresa"
+          class="empresa-logo"
+        />
+      </div>
     </div>
-    <h2><mat-icon>event</mat-icon> Agendar cita</h2>
+
+    <h2 class="titulo-cita">
+      <mat-icon>event</mat-icon>
+      Agendar cita
+    </h2>
 
     <mat-card class="card-recurso mat-elevation-z4">
       <mat-card-content class="contenido-recurso">

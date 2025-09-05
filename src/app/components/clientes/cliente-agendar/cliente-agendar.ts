@@ -80,6 +80,8 @@ export class ClienteAgendar {
   mensajeError: string = '';
   inactiva: boolean = false;
   clientesEmpresa: any[] = [];
+  empresaLogo: string = '';
+  empresaNombre: string = '';
 
   constructor(
     private sharedServices: SharedService,
@@ -102,6 +104,12 @@ export class ClienteAgendar {
       localStorage.getItem('recurso') ||
         '{"emp":0,"id":0,"nombre":"","sede":"", "foto":""}'
     );
+    const infoempresa = localStorage.getItem('empresa');
+    if (infoempresa) {
+      const empresa = JSON.parse(infoempresa);
+      this.empresaLogo = 'assets/img/' + empresa?.logo;
+      this.empresaNombre = empresa.nombre;
+    }
     this.nombreDelRecurso = this.recursoInfo.nombre;
     this.fotoRecuerso = this.recursoInfo.foto;
     this.obtenerServicios(this.idEmpresa);

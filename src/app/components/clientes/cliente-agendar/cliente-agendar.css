@@ -5,7 +5,7 @@
   background: #fefefe;
   border-radius: 12px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Segoe UI", sans-serif;
 }
 
 /* ---------- Título ---------- */
@@ -41,7 +41,7 @@
   border-bottom: 1px solid #e0e0e0;
   background-color: #fafafa;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   margin-bottom: 1.5rem;
   font-size: 1rem;
 }
@@ -130,11 +130,14 @@ button.hora-no-disponible {
 .header-container {
   display: flex;
   align-items: center;
-  padding: 0.5rem 0;
-  gap: 0.5rem;
+  justify-content: space-between; /* separa izquierda y derecha */
+  padding: 8px 16px;
+  background-color: #fff; /* puedes ajustarlo a tu tema */
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .header-title {
+  flex: 1; /* ocupa espacio para centrar */
   font-size: 1.2rem;
   font-weight: 500;
   color: #333;
@@ -204,17 +207,17 @@ button.hora-no-disponible {
   font-size: 0.75rem;
   color: #555;
   line-height: 1.3;
-  max-height: 3.6em;        /* límite de 3 líneas */
+  max-height: 3.6em; /* límite de 3 líneas */
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  white-space: normal;      /* 👈 permite saltos de línea */
-  word-break: break-word;   /* 👈 evita que palabras largas se salgan */
+  white-space: normal; /* 👈 permite saltos de línea */
+  word-break: break-word; /* 👈 evita que palabras largas se salgan */
 }
 
 .servicio-descripcion ul {
-  padding-left: 16px;       /* sangría bonita para las viñetas */
+  padding-left: 16px; /* sangría bonita para las viñetas */
   margin: 4px 0;
 }
 
@@ -223,9 +226,8 @@ button.hora-no-disponible {
   color: #666;
   line-height: 1.3;
   margin-bottom: 2px;
-  list-style-type: disc;    /* viñetas normales */
+  list-style-type: disc; /* viñetas normales */
 }
-
 
 .boton-add {
   margin-left: 1rem;
@@ -350,4 +352,32 @@ button.hora-no-disponible {
   font-size: 18px;
   font-weight: 500;
   color: #b71c1c;
+}
+
+.header-empresa {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* espacio entre nombre y logo */
+}
+
+
+.empresa-logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+
+.empresa-nombre {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #444;
+}
+
+.titulo-cita {
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #1a237e;
+  margin: 0 0 16px 0;
 }

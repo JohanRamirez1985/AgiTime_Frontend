@@ -1,6 +1,9 @@
 <mat-toolbar color="primary" class="toolbar">
-  <img src="assets/img/favicon.ico" alt="AgiTime Logo" style="width: 150px;" />
-
+  <div class="user-info">
+    <img [src]="img" alt="Foto de usuario" class="user-avatar" />
+    <span class="user-text">{{ nombreEmpresa }}</span>
+    <span class="user-subtext">{{ usuarioLogueado.nombre }}</span>
+  </div>
   <!-- Spacer -->
   <span class="spacer"></span>
 
@@ -22,7 +25,11 @@
       <mat-icon>people</mat-icon>
       Usuarios
     </button>
-    <button *ngIf="validate('edu')" mat-button routerLink="/admin/usuarioPorcentaje/gestionar">
+    <button
+      *ngIf="validate('edu')"
+      mat-button
+      routerLink="/admin/usuarioPorcentaje/gestionar"
+    >
       <mat-icon>people</mat-icon>
       Usuarios
     </button>
@@ -38,30 +45,19 @@
       <mat-icon>logout</mat-icon>
       Cerrar sesión
     </button>
-    <img 
-      src="assets/img/barberia.jpg" 
-      alt="Foto de usuario" 
-      class="user-avatar"
-      [matMenuTriggerFor]="userMenu"
-    />
 
     <mat-menu #userMenu="matMenu">
-      <div style="padding: 8px 16px; font-weight: bold;">
+      <div style="padding: 8px 16px; font-weight: bold">
         {{ usuarioLogueado.nombre }}
       </div>
       <mat-divider></mat-divider>
-      <div style="padding: 8px 16px; font-weight: bold;">
-        {{ usuarioLogueado?.nombreRol || 'Rol' }}
+      <div style="padding: 8px 16px; font-weight: bold">
+        {{ usuarioLogueado?.nombreRol || "Rol" }}
       </div>
-
-      <!-- <button mat-menu-item (click)="cerrarSesion()">
-        <mat-icon>logout</mat-icon> Cerrar sesión
-      </button> -->
     </mat-menu>
-
   </div>
 
-    <!-- Menú hamburguesa en móviles -->
+  <!-- Menú hamburguesa en móviles -->
   <button mat-icon-button class="mobile-only" [matMenuTriggerFor]="menu">
     <mat-icon>menu</mat-icon>
   </button>
@@ -75,7 +71,11 @@
       <mat-icon>home_repair_service</mat-icon>
       Servicos
     </button>
-    <button *ngIf="validate('age')" mat-menu-item routerLink="/admin/recurso/dash">
+    <button
+      *ngIf="validate('age')"
+      mat-menu-item
+      routerLink="/admin/recurso/dash"
+    >
       <mat-icon>date_range</mat-icon>
       Agendamientos
     </button>
@@ -83,11 +83,19 @@
       <mat-icon>people</mat-icon>
       Usuarios
     </button>
-    <button *ngIf="validate('edu')" mat-menu-item routerLink="/admin/usuarioPorcentaje/gestionar">
+    <button
+      *ngIf="validate('edu')"
+      mat-menu-item
+      routerLink="/admin/usuarioPorcentaje/gestionar"
+    >
       <mat-icon>people</mat-icon>
       Usuarios
     </button>
-    <button *ngIf="validate('pro')" mat-menu-item routerLink="/admin/inventario">
+    <button
+      *ngIf="validate('pro')"
+      mat-menu-item
+      routerLink="/admin/inventario"
+    >
       <mat-icon>store</mat-icon>
       Inventario
     </button>
@@ -100,6 +108,4 @@
       Cerrar sesión
     </button>
   </mat-menu>
-
-
 </mat-toolbar>

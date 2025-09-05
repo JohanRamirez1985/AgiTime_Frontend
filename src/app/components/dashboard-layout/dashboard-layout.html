@@ -1,9 +1,4 @@
 <mat-sidenav-container class="dashboard-container">
-  <!-- Sidebar -->
-  <!-- <mat-sidenav #sidenav mode="side" opened class="dashboard-sidenav">
-    <app-sidebar></app-sidebar>
-  </mat-sidenav> -->
-
   <!-- Contenido principal -->
   <mat-sidenav-content class="dashboard-content">
     <app-toolbar (toggleSidebar)="toggleSidebar()"></app-toolbar>
@@ -11,5 +6,14 @@
     <div class="page-container">
       <router-outlet></router-outlet>
     </div>
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <span
+          >&copy; {{ currentYear }} www.agitime.com.co Todos los derechos
+          reservados.</span
+        >
+      </div>
+    </footer>
   </mat-sidenav-content>
 </mat-sidenav-container>

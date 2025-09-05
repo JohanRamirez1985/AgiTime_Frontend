@@ -8,19 +8,13 @@ import { Toolbar } from '../transversales/toolbar/toolbar';
 @Component({
   selector: 'app-dashboard-layout',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatSidenavModule,
-    Toolbar,
-    RouterOutlet
-  ],
+  imports: [CommonModule, MatSidenavModule, Toolbar, RouterOutlet],
   templateUrl: './dashboard-layout.html',
-  styleUrl: './dashboard-layout.css'
+  styleUrl: './dashboard-layout.css',
 })
-
 export class DashboardLayout {
-
   @ViewChild('sidenav') sidenav!: MatSidenav;
+  currentYear: number = new Date().getFullYear();
 
   toggleSidebar() {
     this.sidenav.toggle();
