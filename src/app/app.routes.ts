@@ -34,7 +34,12 @@ export const routes: Routes = [
       import('./components/dashboard-layout/dashboard-layout').then(
         (m) => m.DashboardLayout
       ),
-    canActivate: [AuthGuard(['Administrador', 'SuperAdmin', 'Empleado'], true)],
+    canActivate: [
+      AuthGuard(
+        ['Administrador', 'SuperAdmin', 'Empleado', 'Supervisor'],
+        true
+      ),
+    ],
     children: [
       {
         path: '',
