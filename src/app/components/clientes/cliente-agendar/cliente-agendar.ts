@@ -179,6 +179,7 @@ export class ClienteAgendar {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
+        this.loading = true;
         this.reservarCita(result, hora.hora);
       }
     });
