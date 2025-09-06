@@ -87,6 +87,7 @@ export class ClienteDashboard {
           this.nombreEmpresa = empresa?.nombre ?? '';
           this.img = 'assets/img/' + empresa?.logo;
           this.loading = false;
+          localStorage.setItem('empresa', JSON.stringify(empresa));
           this.cdr.detectChanges();
         } else {
           this.inactiva = true;
@@ -146,6 +147,7 @@ export class ClienteDashboard {
     this.router.navigate(['/cliente/reservar'], {
       queryParams: { emp: this.idEmpresa, rcr: usuario.id },
     });
+    this.cdr.detectChanges();
   }
 
   irAHistorial() {
