@@ -3,18 +3,28 @@
   <!-- 🗓 Pestaña 1: Mis Citas -->
   <mat-tab label="Mis Citas">
     <div class="dashboard-container">
-      <h2 class="titulo-dashboard"> Gestion Citas</h2>
+      <h2 class="titulo-dashboard">Gestion Citas</h2>
       <span class="fecha-actual">
-        {{ day | date: 'fullDate' }}
+        {{ day | date : "fullDate" }}
       </span>
       <div class="navegacion-botones">
-        <button mat-icon-button class="boton-navegacion" (click)="previus(true)" aria-label="Día anterior">
+        <button
+          mat-icon-button
+          class="boton-navegacion"
+          (click)="previus(true)"
+          aria-label="Día anterior"
+        >
           <mat-icon>chevron_left</mat-icon>
         </button>
         <button mat-stroked-button color="primary" (click)="today(true)">
           <mat-icon class="boton-icono">today</mat-icon> Hoy
         </button>
-        <button mat-icon-button class="boton-navegacion" (click)="nextPeriod(true)" aria-label="Día siguiente">
+        <button
+          mat-icon-button
+          class="boton-navegacion"
+          (click)="nextPeriod(true)"
+          aria-label="Día siguiente"
+        >
           <mat-icon>chevron_right</mat-icon>
         </button>
       </div>
@@ -23,18 +33,31 @@
         <p class="loading-text">Cargando disponibilidad...</p>
       </div>
 
-      <div style="margin-top: 10px;" *ngIf="!loading">
+      <div style="margin-top: 10px" *ngIf="!loading">
         <ng-container *ngIf="citasHoy.length > 0; else sinCitas">
           <mat-card class="card-cita" *ngFor="let cita of citasHoy">
             <div class="card-content">
               <div class="info-cita">
                 <strong>{{ cita.servicio }}</strong>
-                <span><mat-icon>account_circle</mat-icon> {{ cita.nombreCliente | titlecase }}</span>
-                <span><mat-icon>access_time</mat-icon> {{ cita.fechaInicio | date: 'shortTime' }}</span>
-                <span><mat-icon>monetization_on</mat-icon> {{ cita.totalServicios | currency:'COP':'symbol':'1.0-0' }}</span>
+                <span
+                  ><mat-icon>account_circle</mat-icon>
+                  {{ cita.nombreCliente | titlecase }}</span
+                >
+                <span
+                  ><mat-icon>access_time</mat-icon>
+                  {{ cita.fechaInicio | date : "shortTime" }}</span
+                >
+                <span
+                  ><mat-icon>monetization_on</mat-icon>
+                  {{
+                    cita.totalServicios | currency : "COP" : "symbol" : "1.0-0"
+                  }}</span
+                >
                 <span>
                   <mat-icon>assignment</mat-icon>
-                  <ng-container *ngFor="let s of cita.servicios; let last = last">
+                  <ng-container
+                    *ngFor="let s of cita.servicios; let last = last"
+                  >
                     {{ s.nombre }}<span *ngIf="!last">, </span>
                   </ng-container>
                 </span>
@@ -43,7 +66,7 @@
                 <button class="btn-cancelar" (click)="cancelarCita(cita)">
                   Cancelar
                 </button>
-                <button  class="btn-confirmar" (click)="confirmarCita(cita)">
+                <button class="btn-confirmar" (click)="confirmarCita(cita)">
                   Confirmar
                 </button>
               </div>
@@ -53,13 +76,12 @@
 
         <ng-template #sinCitas>
           <div class="sin-citas">
-            <mat-icon fontIcon="event_busy" style="font-size: 48px;"></mat-icon><br />
+            <mat-icon fontIcon="event_busy" style="font-size: 48px"></mat-icon
+            ><br />
             No tienes citas programadas para hoy.
           </div>
         </ng-template>
       </div>
-
-
     </div>
   </mat-tab>
 
@@ -67,14 +89,13 @@
   <mat-tab label="Agendar Cita">
     <div class="p-4">
       <div *ngIf="!mostrarAgenda">
-
         <div *ngIf="loading" class="loading-container">
           <mat-spinner diameter="50"></mat-spinner>
           <p class="loading-text">Cargando disponibilidad...</p>
         </div>
 
         <div *ngIf="!loading">
-          <h2 style="text-align-last: center;" class="titulo">Servicios</h2>
+          <h2 style="text-align-last: center" class="titulo">Servicios</h2>
           <div class="servicios-container">
             <mat-card
               class="servicio-card"
@@ -82,8 +103,12 @@
             >
               <div class="contenido-servicio">
                 <div class="servicio-info">
-                  <div class="servicio-nombre">{{ servicio.nombre | titlecase }}</div>
-                  <div class="servicio-precio">${{ servicio.valor | number: '1.0-0':'es-CO' }}</div>
+                  <div class="servicio-nombre">
+                    {{ servicio.nombre | titlecase }}
+                  </div>
+                  <div class="servicio-precio">
+                    ${{ servicio.valor | number : "1.0-0" : "es-CO" }}
+                  </div>
                 </div>
                 <button
                   mat-mini-fab
@@ -91,14 +116,19 @@
                   class="boton-add"
                   (click)="toggleSeleccionServicio(servicio)"
                 >
-                  <mat-icon>{{ estaSeleccionado(servicio) ? 'check' : 'add' }}</mat-icon>
+                  <mat-icon>{{
+                    estaSeleccionado(servicio) ? "check" : "add"
+                  }}</mat-icon>
                 </button>
               </div>
             </mat-card>
           </div>
 
           <!-- Botón flotante visible solo si hay servicios seleccionados -->
-          <div class="boton-flotante-wrapper">
+          <div
+            class="boton-flotante-wrapper"
+            *ngIf="serviciosSeleccionados.length > 0"
+          >
             <button
               mat-flat-button
               color="primary"
@@ -109,29 +139,31 @@
             </button>
           </div>
         </div>
-
-
-
-
-
-
-
-
       </div>
 
       <div *ngIf="mostrarAgenda">
-        <h2 class="titulo-dashboard"> Agenda Citas</h2>
+        <h2 class="titulo-dashboard">Agenda Citas</h2>
         <span class="fecha-actual">
-          {{ day | date: 'fullDate' }}
+          {{ day | date : "fullDate" }}
         </span>
         <div class="navegacion-botones">
-          <button mat-icon-button class="boton-navegacion" (click)="previus(false)" aria-label="Día anterior">
+          <button
+            mat-icon-button
+            class="boton-navegacion"
+            (click)="previus(false)"
+            aria-label="Día anterior"
+          >
             <mat-icon>chevron_left</mat-icon>
           </button>
           <button mat-stroked-button color="primary" (click)="today(false)">
             <mat-icon class="boton-icono">today</mat-icon> Hoy
           </button>
-          <button mat-icon-button class="boton-navegacion" (click)="nextPeriod(false)" aria-label="Día siguiente">
+          <button
+            mat-icon-button
+            class="boton-navegacion"
+            (click)="nextPeriod(false)"
+            aria-label="Día siguiente"
+          >
             <mat-icon>chevron_right</mat-icon>
           </button>
         </div>
@@ -147,7 +179,10 @@
             <div class="seccion-titulo">
               <mat-icon>light_mode</mat-icon> Mañana (AM)
             </div>
-            <div class="horas-grid" *ngIf="horasAM.length > 0; else sinHorarios">
+            <div
+              class="horas-grid"
+              *ngIf="horasAM.length > 0; else sinHorarios"
+            >
               <button
                 mat-flat-button
                 *ngFor="let hora of horasAM"
@@ -174,7 +209,10 @@
             <div class="seccion-titulo">
               <mat-icon>nights_stay</mat-icon> Tarde (PM)
             </div>
-            <div class="horas-grid" *ngIf="horasPM.length > 0; else sinHorarios">
+            <div
+              class="horas-grid"
+              *ngIf="horasPM.length > 0; else sinHorarios"
+            >
               <button
                 mat-flat-button
                 *ngFor="let hora of horasPM"
@@ -195,14 +233,11 @@
             </ng-template>
           </div>
         </div>
-
-
-
       </div>
     </div>
   </mat-tab>
 
-    <!-- ➕ Pestaña 2: Agendar Nueva Cita -->
+  <!-- ➕ Pestaña 3: Bloqueos -->
   <mat-tab label="Bloqueo Horario">
     <div class="p-4">
       <div *ngIf="!mostrarBloqueo">
@@ -222,22 +257,40 @@
                 <mat-card-content>
                   <p>
                     <strong>Día:</strong>
-                    {{ bloqueo.tipoBloqueo === '1' ? bloqueo.dia : bloqueo.fechaInicio | date:'fullDate':'':'es' }}
+                    {{
+                      bloqueo.tipoBloqueo === "1"
+                        ? bloqueo.dia
+                        : (bloqueo.fechaInicio | date : "fullDate" : "" : "es")
+                    }}
                   </p>
                   <p><strong>Hora:</strong> {{ bloqueo.hora }}</p>
                   <p><strong>Recurso:</strong> {{ user.nombre | titlecase }}</p>
-                  <p><strong>Estado:</strong> {{ bloqueo.estado | titlecase }}</p>
+                  <p>
+                    <strong>Estado:</strong> {{ bloqueo.estado | titlecase }}
+                  </p>
                 </mat-card-content>
               </div>
               <div class="bloqueo-acciones">
-                <button *ngIf="bloqueo.estado === 'Inactivo'" mat-raised-button color="primary" (click)="irABloqueo(bloqueo, true)">Activar</button>
-                <button *ngIf="bloqueo.estado === 'Activo'" mat-raised-button color="primary" (click)="irABloqueo(bloqueo, false)">Inactivar</button>
+                <button
+                  *ngIf="bloqueo.estado === 'Inactivo'"
+                  mat-raised-button
+                  color="primary"
+                  (click)="irABloqueo(bloqueo, true)"
+                >
+                  Activar
+                </button>
+                <button
+                  *ngIf="bloqueo.estado === 'Activo'"
+                  mat-raised-button
+                  color="primary"
+                  (click)="irABloqueo(bloqueo, false)"
+                >
+                  Inactivar
+                </button>
               </div>
             </div>
           </mat-card>
         </div>
-
-
       </div>
       <div *ngIf="mostrarBloqueo" class="p-4 bloqueo-horario-container">
         <button mat-button color="primary" (click)="mostrarBloqueo = false">
@@ -250,7 +303,7 @@
         </div>
         <div class="cambiar-tipo" *ngIf="tipoBloqueo !== ''">
           <span (click)="cambiarTipo()">Cambiar tipo</span>
-        </div>   
+        </div>
 
         <div *ngIf="loading" class="loading-container">
           <mat-spinner diameter="50"></mat-spinner>
@@ -262,7 +315,10 @@
           <div class="tipoBloqueos" *ngIf="mostrarTipoBloqueos">
             <mat-form-field appearance="fill">
               <mat-label>Tipo de bloqueo</mat-label>
-              <mat-select [(ngModel)]="tipoBloqueo" (selectionChange)="onTipoBloqueoChange($event.value)">
+              <mat-select
+                [(ngModel)]="tipoBloqueo"
+                (selectionChange)="onTipoBloqueoChange($event.value)"
+              >
                 <mat-option value="1">Bloqueo por día</mat-option>
                 <mat-option value="2">Bloqueo puntual</mat-option>
               </mat-select>
@@ -277,18 +333,22 @@
             </div>
           </div>
 
-
           <!-- Mostrar fecha solo si el tipo es "2" -->
           <div class="date" *ngIf="tipoBloqueo === '2'">
             <mat-form-field appearance="fill">
               <mat-label>Fecha</mat-label>
-              <input matInput [matDatepicker]="picker" [(ngModel)]="fechaBloqueo">
-              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <input
+                matInput
+                [matDatepicker]="picker"
+                [(ngModel)]="fechaBloqueo"
+              />
+              <mat-datepicker-toggle
+                matSuffix
+                [for]="picker"
+              ></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
           </div>
-
-
 
           <div class="horas">
             <mat-form-field appearance="outline">
@@ -308,7 +368,13 @@
           </div>
 
           <div class="acciones">
-            <button mat-flat-button color="primary" (click)="inabilitarHorarios(true)">Crear Bloqueo</button>
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="inhabilitarHorarios()"
+            >
+              Crear Bloqueo
+            </button>
           </div>
         </div>
       </div>

@@ -1,55 +1,64 @@
-import { Injectable } from "@angular/core";
-import { environment } from "../../environments/environment";
-import { HttpClient } from "@angular/common/http";
+import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 import { HttpParams } from '@angular/common/http';
 
-
 @Injectable({ providedIn: 'root' })
-
 export class AgendamientoService {
-    
   private baseUrl = `${environment.apiBaseUrl}/Agendamiento`;
-  
+
   constructor(private http: HttpClient) {}
 
-    consultarAgendamientos(request: any) {
-        const params = new HttpParams({ fromObject: request });
-        return this.http.get<any>(`${this.baseUrl}/consultarAgendaRecurso`, { params });
-    }
+  consultarAgendamientos(request: any) {
+    const params = new HttpParams({ fromObject: request });
+    return this.http.get<any>(`${this.baseUrl}/consultarAgendaRecurso`, {
+      params,
+    });
+  }
 
-    registrarCita(request: any) {
-        return this.http.post<any>(`${this.baseUrl}/registrarCita`, request)
-    }
+  consultarAgendamientosEmpleado(request: any) {
+    const params = new HttpParams({ fromObject: request });
+    return this.http.get<any>(`${this.baseUrl}/consultarMiAgenda`, {
+      params,
+    });
+  }
 
-    consultarCitasRecurso(request: any) {
-        const params = new HttpParams({ fromObject: request });
-        return this.http.get<any>(`${this.baseUrl}/consultarCitasRecurso`, { params });
-    }
+  registrarCita(request: any) {
+    return this.http.post<any>(`${this.baseUrl}/registrarCita`, request);
+  }
 
-    cancelarCita(request: any) {
-        return this.http.post<any>(`${this.baseUrl}/cancelarCita`, request)
-    }
+  consultarCitasRecurso(request: any) {
+    const params = new HttpParams({ fromObject: request });
+    return this.http.get<any>(`${this.baseUrl}/consultarCitasRecurso`, {
+      params,
+    });
+  }
 
-    ConfirmarAsitenciaCita(request: any) {
-        return this.http.post<any>(`${this.baseUrl}/asistioCita`, request)
-    }
+  cancelarCita(request: any) {
+    return this.http.post<any>(`${this.baseUrl}/cancelarCita`, request);
+  }
 
-    registrarBloqueoDias(request: any) {
-        return this.http.post<any>(`${this.baseUrl}/registrarBloqueo`, request) 
-    }
+  ConfirmarAsitenciaCita(request: any) {
+    return this.http.post<any>(`${this.baseUrl}/asistioCita`, request);
+  }
 
-    consultarBloqueos(request: any) {
-        const params = new HttpParams({ fromObject: request });
-        return this.http.get<any>(`${this.baseUrl}/consultarBloqueos`, { params });
-    }
+  registrarBloqueoDias(request: any) {
+    return this.http.post<any>(`${this.baseUrl}/registrarBloqueo`, request);
+  }
 
-    inactivarBloqueo(request: any) {
-        return this.http.post<any>(`${this.baseUrl}/cambiarEstadoBloqueo`, request)
-    }    
+  consultarBloqueos(request: any) {
+    const params = new HttpParams({ fromObject: request });
+    return this.http.get<any>(`${this.baseUrl}/consultarBloqueos`, { params });
+  }
 
-    consultarCitasCliente(request: any) {
-        const params = new HttpParams({ fromObject: request });
-        return this.http.get<any>(`${this.baseUrl}/consultarCitasCliente`, { params });
-    }
+  inactivarBloqueo(request: any) {
+    return this.http.post<any>(`${this.baseUrl}/cambiarEstadoBloqueo`, request);
+  }
 
+  consultarCitasCliente(request: any) {
+    const params = new HttpParams({ fromObject: request });
+    return this.http.get<any>(`${this.baseUrl}/consultarCitasCliente`, {
+      params,
+    });
+  }
 }

@@ -18,6 +18,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { RolesContent } from '../../../shared/libs/roles';
 
 @Component({
   selector: 'app-dashboardR',
@@ -32,18 +33,18 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatDialogModule,
     MatButtonModule,
     MatProgressSpinnerModule,
-    MatCheckboxModule ,
+    MatCheckboxModule,
     FormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatOptionModule,
     MatSelectModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
     // ClienteAgendar
   ],
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.css']
+  styleUrls: ['./dashboard.css'],
 })
 export class DashboardRecurso {
   citasHoy: any[] = [];
@@ -54,7 +55,7 @@ export class DashboardRecurso {
   day: Date = new Date();
   horasAM: { hora: string; disponible: boolean }[] = [];
   horasPM: { hora: string; disponible: boolean }[] = [];
-  horas: {hora: string, disponible: boolean}[] = [];
+  horas: { hora: string; disponible: boolean }[] = [];
   idEmpresa: number = 0;
   mostrarAgenda: boolean = false;
   serviciosFiltrados: any[] = [];
@@ -77,40 +78,39 @@ export class DashboardRecurso {
   mostrarTipoBloqueos: boolean = true;
   fechaBloqueo: Date | null = null;
   diasMap: { [key: string]: string } = {
-      "1": "Lunes",
-      "2": "Martes",
-      "3": "Miércoles",
-      "4": "Jueves",
-      "5": "Viernes",
-      "6": "Sábado",
-      "7": "Domingo"
-    };
-btnActivar: boolean = false;
+    '1': 'Lunes',
+    '2': 'Martes',
+    '3': 'Miércoles',
+    '4': 'Jueves',
+    '5': 'Viernes',
+    '6': 'Sábado',
+    '7': 'Domingo',
+  };
+  btnActivar: boolean = false;
+  bloqueos = [
+    {
+      id: 0,
+      nombre: '',
+      dia: '',
+      hora: ``,
+      recurso: ``,
+      estado: '',
+      fechaInicio: '',
+      tipoBloqueo: '',
+    },
+  ];
+  rol: number | null = null;
 
-
-  bloqueos = [{
-            id: 0,
-            nombre: '',
-            dia: '',
-            hora: ``,
-            recurso: ``,
-            estado: '',
-            fechaInicio: '',
-            tipoBloqueo: ''
-          }];
-  
-
-  constructor(private router: Router,
+  constructor(
+    private router: Router,
     private agendamientoServices: AgendamientoService,
     private sharedServices: SharedService,
     private cdr: ChangeDetectorRef
-  ) {
-
-  }
+  ) {}
 
   onTipoBloqueoChange(valor: string) {
     this.tipoBloqueo = valor;
-    this.mostrarTipoBloqueos = false
+    this.mostrarTipoBloqueos = false;
   }
 
   public cambiarTipo(): void {
@@ -123,6 +123,7 @@ btnActivar: boolean = false;
     this.empresa = JSON.parse(localStorage.getItem('empresa') || '');
     this.consultarCitas(this.user, this.empresa, this.day);
     this.idEmpresa = this.empresa.id;
+    this.rol = this.user.rol;
     this.obtenerServicios(this.idEmpresa);
     this.obtenerHorarios();
     this.obtenerBloqueos();
@@ -132,29 +133,28 @@ btnActivar: boolean = false;
     const request = {
       empresa: this.idEmpresa,
       FechaInicio: this.formatearFechaLocal(this.day, '00:00:00'),
-      Usuario: this.user.id
+      Usuario: this.user.id,
     };
 
-    this.agendamientoServices.consultarBloqueos(request)
-    .subscribe({
-      next: rest => {
+    this.agendamientoServices.consultarBloqueos(request).subscribe({
+      next: (rest) => {
         if (rest.exito && Array.isArray(rest.datos)) {
           this.bloqueos = rest.datos.map((item: any) => {
-            const dias = (item.diasSemana ?? "")
-              .split(",")
-              .filter((d: any) => d.trim() !== "")
-              .map((d:any) => this.diasMap[d] ?? "")
-              .join(", ");
+            const dias = (item.diasSemana ?? '')
+              .split(',')
+              .filter((d: any) => d.trim() !== '')
+              .map((d: any) => this.diasMap[d] ?? '')
+              .join(', ');
 
             return {
-              nombre: item.motivo ?? "Sin motivo",
-              dia: dias || "Sin días",
+              nombre: item.motivo ?? 'Sin motivo',
+              dia: dias || 'Sin días',
               hora: `${item.horaInicio} - ${item.horaFin}`,
               recurso: `Usuario ${item.usuario}`,
               id: item.id,
               estado: item.estado,
               tipoBloqueo: item.tipoBloqueo.toString(),
-              fechaInicio: item.fechaInicio
+              fechaInicio: item.fechaInicio,
             };
           });
         } else {
@@ -162,7 +162,7 @@ btnActivar: boolean = false;
         }
         this.loading = false;
         this.cdr.detectChanges();
-      }
+      },
     });
   }
 
@@ -171,83 +171,82 @@ btnActivar: boolean = false;
     const request = {
       empresa: this.idEmpresa,
       Id: bloqueo.id,
-      Activar: activar
-    }
+      Activar: activar,
+    };
 
-    this.agendamientoServices.inactivarBloqueo(request)
-    .subscribe({
-      next: rest => {
-        if(rest.exito) {
+    this.agendamientoServices.inactivarBloqueo(request).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
           this.obtenerBloqueos();
           Swal.fire({
             icon: 'success',
             title: 'Bloqueo actualizado!',
             text: rest.mensaje || 'El bloqueo fue actualizado exitosamente',
             confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Ok'
-          })
-        }else {
+            confirmButtonText: 'Ok',
+          });
+        } else {
           this.loading = false;
           Swal.fire({
             icon: 'error',
             title: 'Error',
             text: rest.mensaje || 'Error de servidor',
           });
-        }     
+        }
       },
-      error: err => {
+      error: (err) => {
         this.loading = false;
         Swal.fire({
           icon: 'error',
           title: 'Error',
           text: err.statusText,
         });
-      }
-    })
+      },
+    });
   }
 
-  inabilitarHorarios(bloqueo: boolean) {
+  inhabilitarHorarios() {
     this.loading = true;
     const diasSeleccionados = this.dias
-      .filter(d => d.checked)
-      .map(d => d.value)
+      .filter((d) => d.checked)
+      .map((d) => d.value)
       .join(',');
-    
-    if(this.tipoBloqueo === '') {
+
+    if (this.tipoBloqueo === '') {
       this.loading = false;
       Swal.fire({
         icon: 'warning',
         title: 'Campo obligatorio',
         text: 'Debes seleccionar un tipo de bloqueo.',
         confirmButtonColor: '#d33',
-        confirmButtonText: 'Entendido'
+        confirmButtonText: 'Entendido',
       });
-      return
-    }else {
-      if(this.tipoBloqueo === '1') {
-        const checked = this.dias.filter(dia => dia.checked).length;
-        if(checked === 0) {
+      return;
+    } else {
+      if (this.tipoBloqueo === '1') {
+        const checked = this.dias.filter((dia) => dia.checked).length;
+        if (checked === 0) {
           this.loading = false;
-            Swal.fire({
-              icon: 'warning',
-              title: 'Campo obligatorio',
-              text: 'Debes seleccionar un dia por lo menos.',
-              confirmButtonColor: '#d33',
-              confirmButtonText: 'Entendido'
-            });
-          return
+          Swal.fire({
+            icon: 'warning',
+            title: 'Campo obligatorio',
+            text: 'Debes seleccionar un dia por lo menos.',
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Entendido',
+          });
+          return;
         }
-      }else if(this.tipoBloqueo === '2') {
-        if(!this.fechaBloqueo) {
-            this.loading = false;
-            Swal.fire({
-              icon: 'warning',
-              title: 'Campo obligatorio',
-              text: 'Debes seleccionar una fecha.',
-              confirmButtonColor: '#d33',
-              confirmButtonText: 'Entendido'
-            });
-          return
+      } else if (this.tipoBloqueo === '2') {
+        if (!this.fechaBloqueo) {
+          this.loading = false;
+          Swal.fire({
+            icon: 'warning',
+            title: 'Campo obligatorio',
+            text: 'Debes seleccionar una fecha.',
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Entendido',
+          });
+          return;
         }
       }
     }
@@ -269,21 +268,27 @@ btnActivar: boolean = false;
         title: 'Campo obligatorio',
         text: `Por favor ingresa ${campoFaltante} antes de continuar.`,
         confirmButtonColor: '#d33',
-        confirmButtonText: 'Entendido'
+        confirmButtonText: 'Entendido',
       });
 
       return;
     }
 
     const now = new Date(this.day);
-    const fechaLocal = now.getFullYear() + '-' +
-      String(now.getMonth() + 1).padStart(2, '0') + '-' +
-      String(now.getDate()).padStart(2, '0') + 'T' +
-      String(now.getHours()).padStart(2, '0') + ':' +
-      String(now.getMinutes()).padStart(2, '0') + ':' +
+    const fechaLocal =
+      now.getFullYear() +
+      '-' +
+      String(now.getMonth() + 1).padStart(2, '0') +
+      '-' +
+      String(now.getDate()).padStart(2, '0') +
+      'T' +
+      String(now.getHours()).padStart(2, '0') +
+      ':' +
+      String(now.getMinutes()).padStart(2, '0') +
+      ':' +
       String(now.getSeconds()).padStart(2, '0');
 
-    const request ={
+    const request = {
       TipoBloqueo: parseInt(this.tipoBloqueo),
       Usuario: this.user.id,
       FechaInicio: this.tipoBloqueo === '2' ? this.fechaBloqueo : null,
@@ -292,59 +297,56 @@ btnActivar: boolean = false;
       Motivo: this.motivo,
       DiasSemana: this.tipoBloqueo === '1' ? diasSeleccionados : '',
       FechaCreacion: fechaLocal,
-      empresa: this.idEmpresa
-    }
-    
-    this.agendamientoServices.registrarBloqueoDias(request)
-    .subscribe({
-      next: rest => {
-        if(rest.exito) {
+      empresa: this.idEmpresa,
+    };
+
+    this.agendamientoServices.registrarBloqueoDias(request).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
           Swal.fire({
             icon: 'success',
             title: '¡Bloqueo Creado!',
             text: rest.mensaje,
             confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Ok'
+            confirmButtonText: 'Ok',
           }).then(() => {
             this.tipoBloqueo = '';
             this.horaInicio = '';
             this.horaFin = '';
             this.motivo = '';
-            this.dias.forEach(dia => {
+            this.dias.forEach((dia) => {
               dia.checked = false;
             });
             this.loading = true;
             this.obtenerBloqueos();
             this.mostrarBloqueo = false;
             this.cdr.detectChanges();
-          });   
-        }else {
+          });
+        } else {
           Swal.fire({
             icon: 'error',
             title: 'Error',
             text: rest.statusText,
           });
         }
-        this.loading = false;        
+        this.loading = false;
       },
-      error: err => {
-      this.loading = false;
+      error: (err) => {
+        this.loading = false;
         Swal.fire({
           icon: 'error',
           title: 'Error',
           text: err.statusText,
         });
-      }
-    })
-  }
-
-  reservarServicios(): void {
-
+      },
+    });
   }
 
   toggleSeleccionServicio(servicio: any): void {
     if (this.estaSeleccionado(servicio)) {
-      this.serviciosSeleccionados = this.serviciosSeleccionados.filter(s => s.id !== servicio.id);
+      this.serviciosSeleccionados = this.serviciosSeleccionados.filter(
+        (s) => s.id !== servicio.id
+      );
     } else {
       this.serviciosSeleccionados.push(servicio);
     }
@@ -357,23 +359,21 @@ btnActivar: boolean = false;
   }
 
   estaSeleccionado(servicio: any): boolean {
-    return this.serviciosSeleccionados.some(s => s.id === servicio.id);
+    return this.serviciosSeleccionados.some((s) => s.id === servicio.id);
   }
 
   private obtenerServicios(emp: number): void {
-    this.sharedServices.obtenerServicios(emp)
-    .subscribe({
-      next: rest => {
-        this.serviciosFiltrados = [...rest.datos];  
-        this.loading = false;   
-      }
-    })
+    this.sharedServices.obtenerServicios(emp).subscribe({
+      next: (rest) => {
+        this.serviciosFiltrados = [...rest.datos];
+        this.loading = false;
+      },
+    });
   }
 
-  public obtenerHorarios():void {
-    this.sharedServices.obtenerAgenda(this.idEmpresa)
-    .subscribe({
-      next: rest => {
+  public obtenerHorarios(): void {
+    this.sharedServices.obtenerAgenda(this.idEmpresa).subscribe({
+      next: (rest) => {
         const respuesta = rest.datos;
         this.horas = respuesta.map((h: { valor: string; estado: boolean }) => {
           const [hour, minute] = h.valor.split(':');
@@ -383,57 +383,94 @@ btnActivar: boolean = false;
           const horaFormateada = date.toLocaleTimeString('en-US', {
             hour: '2-digit',
             minute: '2-digit',
-            hour12: true
+            hour12: true,
           });
 
           return {
             hora: horaFormateada,
-            disponible: h.estado
+            disponible: h.estado,
           };
         });
-        this.seleccionarRecurso(this.day);
-      }
-    })
+
+        if (this.rol === RolesContent.Empleado) {
+          this.seleccionarRecursoEmpleado(this.day);
+        } else {
+          this.seleccionarRecurso(this.day);
+        }
+      },
+    });
+  }
+
+  seleccionarRecursoEmpleado(fecha: Date): void {
+    const request = {
+      empresa: this.idEmpresa,
+      FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
+      fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
+      recurso: this.user.id,
+    };
+
+    this.agendamientoServices
+      .consultarAgendamientosEmpleado(request)
+      .subscribe({
+        next: (rest) => {
+          if (rest.exito) {
+            for (let i = 0; i < this.horas.length; i++) {
+              let disponible = true;
+              disponible = rest.horasOcupadas.find(
+                (h: any) => h === this.horas[i].hora
+              );
+              if (disponible) {
+                this.horas[i].disponible = false;
+              }
+            }
+            this.horas = this.horas.filter((h) => h.disponible);
+          }
+          this.verificarHoras();
+        },
+      });
   }
 
   public seleccionarRecurso(fecha: Date): void {
     const request = {
       empresa: this.idEmpresa,
-      FechaIni : this.formatearFechaLocal(fecha, '00:00:00'),
-      fechaFin : this.formatearFechaLocal(fecha, '23:59:59'),
-      recurso: this.user.id
+      FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
+      fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
+      recurso: this.user.id,
     };
-    
-    this.agendamientoServices.consultarAgendamientos(request)
-      .subscribe({
-        next: rest => {
-          if(rest.exito) {
-            if(rest.diaCompletoBloqueado) {
-              this.horas.forEach(h => {
-                h.disponible = false;
-              });
-            }else {
-              for (let i = 0; i < this.horas.length; i++) {
-                let disponible = true;
-                disponible = rest.horasOcupadas.find((h : any) => h === this.horas[i].hora);
-                if(disponible) {
-                  this.horas[i].disponible = false;
-                }
+
+    this.agendamientoServices.consultarAgendamientos(request).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          if (rest.diaCompletoBloqueado) {
+            this.horas.forEach((h) => {
+              h.disponible = false;
+            });
+          } else {
+            for (let i = 0; i < this.horas.length; i++) {
+              let disponible = true;
+              disponible = rest.horasOcupadas.find(
+                (h: any) => h === this.horas[i].hora
+              );
+              if (disponible) {
+                this.horas[i].disponible = false;
               }
             }
-
-            this.horas = this.horas.filter(h => h.disponible);
           }
-          this.verificarHoras();         
+
+          this.horas = this.horas.filter((h) => h.disponible);
         }
-      })
+        this.verificarHoras();
+      },
+    });
   }
 
   private esHoy(fecha: Date): boolean {
     const hoy = new Date();
-    return fecha.getDate() === hoy.getDate() &&
-          fecha.getMonth() === hoy.getMonth() &&
-          fecha.getFullYear() === hoy.getFullYear();
+    return (
+      fecha.getDate() === hoy.getDate() &&
+      fecha.getMonth() === hoy.getMonth() &&
+      fecha.getFullYear() === hoy.getFullYear()
+    );
   }
 
   private verificarHoras(): void {
@@ -442,20 +479,29 @@ btnActivar: boolean = false;
 
     const esHoy = this.esHoy(fechaSeleccionada);
 
-    const horasFuturas = this.horas
-      .map(h => ({ ...h, fecha: this.convertirHoraAFecha(h.hora, fechaSeleccionada) }))
-      .filter(h =>
-        esHoy
-          ? h.fecha >= ahora
-          : true
-      );
+    let horasFuturas: any[] = [];
+
+    if (this.rol === RolesContent.Empleado) {
+      horasFuturas = this.horas.map((h) => ({
+        ...h,
+        fecha: this.convertirHoraAFecha(h.hora, fechaSeleccionada),
+      }));
+    } else {
+      horasFuturas = this.horas
+        .map((h) => ({
+          ...h,
+          fecha: this.convertirHoraAFecha(h.hora, fechaSeleccionada),
+        }))
+        .filter((h) => (esHoy ? h.fecha >= ahora : true));
+    }
 
     // Ordenar
     horasFuturas.sort((a, b) => a.fecha.getTime() - b.fecha.getTime());
 
     // Separar
-    this.horasAM = horasFuturas.filter(h => h.hora.includes('AM'));
-    this.horasPM = horasFuturas.filter(h => h.hora.includes('PM'));
+    this.horasAM = horasFuturas.filter((h) => h.hora.includes('AM'));
+    this.horasPM = horasFuturas.filter((h) => h.hora.includes('PM'));
+
     this.loading = false;
     this.cdr.detectChanges();
   }
@@ -489,29 +535,31 @@ btnActivar: boolean = false;
       empresa: empresa.id,
       FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
       FechaFin: this.formatearFechaLocal(fecha, '23:59:00'),
-      recurso: user.id
-    }
-  
-    this.agendamientoServices.consultarCitasRecurso(request)
-    .subscribe({
-      next: rest => {
-        if(rest.exito) {
+      recurso: user.id,
+    };
+
+    this.agendamientoServices.consultarCitasRecurso(request).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
           this.citasHoy = rest.datos;
-          const citasConTotales = this.citasHoy.map(cita => {
-            const totalServicios = cita.servicios.reduce((acum: any, servicio: any) => acum + servicio.valor, 0);
+          const citasConTotales = this.citasHoy.map((cita) => {
+            const totalServicios = cita.servicios.reduce(
+              (acum: any, servicio: any) => acum + servicio.valor,
+              0
+            );
             return {
               ...cita,
-              totalServicios
+              totalServicios,
             };
           });
-          this.citasHoy = citasConTotales;          
-        }else {
+          this.citasHoy = citasConTotales;
+        } else {
           this.citasHoy = [];
-        } 
-        this.loading = false;      
-        this.cdr.detectChanges();  
-      }
-    })
+        }
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   public confirmarCita(cita: any) {
@@ -525,31 +573,36 @@ btnActivar: boolean = false;
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#a0aab4ff',
       customClass: {
-        popup: 'swal-reserva-responsive'
-      }
+        popup: 'swal-reserva-responsive',
+      },
     }).then((result) => {
       this.loading = true;
       const now = new Date(this.day);
-      const fechaLocal = now.getFullYear() + '-' +
-        String(now.getMonth() + 1).padStart(2, '0') + '-' +
-        String(now.getDate()).padStart(2, '0') + 'T' +
-        String(now.getHours()).padStart(2, '0') + ':' +
-        String(now.getMinutes()).padStart(2, '0') + ':' +
+      const fechaLocal =
+        now.getFullYear() +
+        '-' +
+        String(now.getMonth() + 1).padStart(2, '0') +
+        '-' +
+        String(now.getDate()).padStart(2, '0') +
+        'T' +
+        String(now.getHours()).padStart(2, '0') +
+        ':' +
+        String(now.getMinutes()).padStart(2, '0') +
+        ':' +
         String(now.getSeconds()).padStart(2, '0');
 
       const request = {
         empresa: JSON.parse(localStorage.getItem('empresa') || '{}').id,
         Id: cita.id,
-        Asistencia: result.isConfirmed
-      }
+        Asistencia: result.isConfirmed,
+      };
 
-      this.agendamientoServices.ConfirmarAsitenciaCita(request)
-      .subscribe({
-        next: rest => {
+      this.agendamientoServices.ConfirmarAsitenciaCita(request).subscribe({
+        next: (rest) => {
           this.consultarCitas(this.user, this.empresa, new Date(fechaLocal));
-        }
-      })
-    })
+        },
+      });
+    });
   }
 
   abrirAgendar() {
@@ -558,11 +611,11 @@ btnActivar: boolean = false;
 
   cancelarCita(cita: any) {
     const horaCita = new Date(cita.fechaInicio).toLocaleTimeString('es-CO', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      });
-    
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+
     Swal.fire({
       title: '¿Cancelar cita?',
       html: `<p>¿Estás seguro de cancelar la cita programada para las <strong> ${horaCita} </strong> de <strong> hoy </strong>?</p>`,
@@ -573,60 +626,68 @@ btnActivar: boolean = false;
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#a0aab4ff',
       customClass: {
-        popup: 'swal-reserva-responsive'
-      }
+        popup: 'swal-reserva-responsive',
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         this.loading = true;
         const now = new Date(this.day);
-        const fechaLocal = now.getFullYear() + '-' +
-          String(now.getMonth() + 1).padStart(2, '0') + '-' +
-          String(now.getDate()).padStart(2, '0') + 'T' +
-          String(now.getHours()).padStart(2, '0') + ':' +
-          String(now.getMinutes()).padStart(2, '0') + ':' +
+        const fechaLocal =
+          now.getFullYear() +
+          '-' +
+          String(now.getMonth() + 1).padStart(2, '0') +
+          '-' +
+          String(now.getDate()).padStart(2, '0') +
+          'T' +
+          String(now.getHours()).padStart(2, '0') +
+          ':' +
+          String(now.getMinutes()).padStart(2, '0') +
+          ':' +
           String(now.getSeconds()).padStart(2, '0');
 
         const request = {
           empresa: JSON.parse(localStorage.getItem('empresa') || '{}').id,
           Id: cita.id,
           fechaCancelacion: fechaLocal,
-          usuarioCancelacion: 'Usuario'
-        }
-        this.agendamientoServices.cancelarCita(request)
-        .subscribe({
-          next : rest => {
-            if(rest.exito) {
-              this.consultarCitas(this.user, this.empresa, new Date(fechaLocal));
-            }            
-          }
-        })
-        
+          usuarioCancelacion: 'Usuario',
+        };
+        this.agendamientoServices.cancelarCita(request).subscribe({
+          next: (rest) => {
+            if (rest.exito) {
+              this.consultarCitas(
+                this.user,
+                this.empresa,
+                new Date(fechaLocal)
+              );
+            }
+          },
+        });
       }
-    })
+    });
   }
 
   public previus(cita: boolean): void {
     const nuevaFecha = new Date(this.day);
     nuevaFecha.setDate(nuevaFecha.getDate() - 1);
-    if(cita) {
+    if (cita) {
       this.day = nuevaFecha;
       this.consultarCitas(this.user, this.empresa, nuevaFecha);
-    }else {
+    } else {
       const hoy = new Date();
       hoy.setHours(0, 0, 0, 0);
       nuevaFecha.setHours(0, 0, 0, 0);
 
-      if (nuevaFecha < hoy) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Dia no habil',
-            text: 'No puedes consultar dias anteriores',
-          });
-        }else {
-          this.day = nuevaFecha;
-          this.loading = true;
-          this.obtenerHorarios();
-        }
+      if (nuevaFecha < hoy && this.rol !== RolesContent.Empleado) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Dia no habil',
+          text: 'No puedes consultar dias anteriores',
+        });
+      } else {
+        this.day = nuevaFecha;
+        this.loading = true;
+        this.obtenerHorarios();
+      }
     }
     this.cdr.detectChanges();
   }
@@ -636,9 +697,9 @@ btnActivar: boolean = false;
     nuevaFecha.setDate(nuevaFecha.getDate() + 1);
     this.day = nuevaFecha;
     this.day = nuevaFecha;
-    if(cita) {
+    if (cita) {
       this.consultarCitas(this.user, this.empresa, nuevaFecha);
-    }else {
+    } else {
       this.loading = true;
       this.obtenerHorarios();
     }
@@ -649,9 +710,9 @@ btnActivar: boolean = false;
     const nuevaFecha = new Date();
     this.day = nuevaFecha;
     this.day = nuevaFecha;
-    if(cita) {
+    if (cita) {
       this.consultarCitas(this.user, this.empresa, nuevaFecha);
-    }else {
+    } else {
       this.loading = true;
       this.obtenerHorarios();
     }
@@ -661,87 +722,95 @@ btnActivar: boolean = false;
   public seleccionarHora(hora: any): void {
     this.loading = true;
     const request = this.createJson(hora.hora);
-    this.agendamientoServices.registrarCita(request)
-    .subscribe({
-      next: rest => {
-        if(rest.exito) {
+    this.agendamientoServices.registrarCita(request).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
           Swal.fire({
             icon: 'success',
             title: '¡Cita creada!',
             text: rest.mensaje || 'La cita fue creado exitosamente',
             confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Ok'
+            confirmButtonText: 'Ok',
           }).then(() => {
             this.serviciosSeleccionados = [];
             this.mostrarAgenda = false;
             this.obtenerHorarios();
-          });     
-        }else {
+          });
+        } else {
           Swal.fire({
             icon: 'error',
             text: rest.mensaje || 'Error de servidor',
           });
         }
         this.loading = false;
-   
       },
-      error: err => {
+      error: (err) => {
         this.loading = false;
         Swal.fire({
           icon: 'error',
           title: 'Error de servidor',
           text: err.statusText,
         });
-      }
-    })    
+      },
+    });
+    this.cdr.detectChanges();
   }
 
   private createJson(hora: string) {
     const match = hora.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
     const fechaBase = this.day.toISOString().split('T')[0];
 
-    if(match) {
+    if (match) {
       let horas = parseInt(match[1], 10);
       const minutos = match[2];
       const periodo = match[3].toUpperCase();
 
       // Convertir a formato 24 horas
       if (periodo === 'PM' && horas < 12) {
-          horas += 12;
-        } else if (periodo === 'AM' && horas === 12) {
-          horas = 0;
-        }
+        horas += 12;
+      } else if (periodo === 'AM' && horas === 12) {
+        horas = 0;
+      }
       const horasStr = horas.toString().padStart(2, '0');
       const fechaFinal = `${fechaBase}T${horasStr}:${minutos}:00`;
       const now = new Date(this.day);
-      const fechaLocal = now.getFullYear() + '-' +
-        String(now.getMonth() + 1).padStart(2, '0') + '-' +
-        String(now.getDate()).padStart(2, '0') + 'T' +
-        String(now.getHours()).padStart(2, '0') + ':' +
-        String(now.getMinutes()).padStart(2, '0') + ':' +
+      const fechaLocal =
+        now.getFullYear() +
+        '-' +
+        String(now.getMonth() + 1).padStart(2, '0') +
+        '-' +
+        String(now.getDate()).padStart(2, '0') +
+        'T' +
+        String(now.getHours()).padStart(2, '0') +
+        ':' +
+        String(now.getMinutes()).padStart(2, '0') +
+        ':' +
         String(now.getSeconds()).padStart(2, '0');
 
-      const valor = this.serviciosSeleccionados.map(s => s.valor);
-      const tiempoTotalServicio = this.serviciosSeleccionados.map(s => s.tiempo).reduce((a, b) => a + b, 0);
-      const serviciosSeleccionados = this.serviciosSeleccionados.map(s => ({ servicio: s.id }));
+      const valor = this.serviciosSeleccionados.map((s) => s.valor);
+      const tiempoTotalServicio = this.serviciosSeleccionados
+        .map((s) => s.tiempo)
+        .reduce((a, b) => a + b, 0);
+      const serviciosSeleccionados = this.serviciosSeleccionados.map((s) => ({
+        servicio: s.id,
+      }));
 
       const costo = valor.reduce((a, b) => a + b, 0);
 
-
       const json = {
-            "FechaIni": fechaFinal,
-            "recurso": this.user.id,
-            "Valor": costo,
-            "UsuarioCreacion": "Usuario",
-            "Hora": tiempoTotalServicio === 0  ? 30 : tiempoTotalServicio,
-            "empresa": this.idEmpresa,
-            "servicios": serviciosSeleccionados,
-            "clienteInfo": null,
-            "fechaCreacion": fechaLocal
-      };      
-        return json
-    }else {
-      return
+        FechaIni: fechaFinal,
+        recurso: this.user.id,
+        Valor: costo,
+        UsuarioCreacion: 'Usuario',
+        Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
+        empresa: this.idEmpresa,
+        servicios: serviciosSeleccionados,
+        clienteInfo: null,
+        fechaCreacion: fechaLocal,
+      };
+      return json;
+    } else {
+      return;
     }
   }
 
