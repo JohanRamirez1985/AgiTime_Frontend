@@ -95,7 +95,7 @@ export class Informes {
             Swal.fire({
               icon: 'warning',
               title: 'Sin datos',
-              text: 'No se generó ningún archivo para este rango de fechas.',
+              text: blob.mensaje,
               confirmButtonColor: '#0d47a1',
             });
           }
