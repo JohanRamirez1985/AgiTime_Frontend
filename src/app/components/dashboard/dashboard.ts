@@ -2,7 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { SharedService } from '../../services/shared.service';
-import { obtenerGeneros, obtenerRoles, obtenerSedes, obtenerTiposDocumentos } from '../../shared/libs/request-generales';
+import {
+  obtenerGeneros,
+  obtenerRoles,
+  obtenerSedes,
+  obtenerTiposDocumentos,
+} from '../../shared/libs/request-generales';
 import { DashboardRecurso } from '../recursos/dashboard/dashboard';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -25,26 +30,23 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatButtonModule,
     MatIconModule,
     MatCardModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css'
+  styleUrl: './dashboard.css',
 })
-
 export class Dashboard {
   idEmpresa: string | null = null;
-  recursos:any[] = [];
+  recursos: any[] = [];
   fechaSeleccionada: Date = new Date();
   totalCitasNoConfirmadas: number = 0;
   totalCitasConfirmadas: number = 0;
   loading: boolean = true;
 
-
-  constructor( 
-    private sharedServices : SharedService,
-    private informeService : InformesService
-   ) {}
-
+  constructor(
+    private sharedServices: SharedService,
+    private informeService: InformesService
+  ) {}
 
   ngOnInit() {
     const info = JSON.parse(localStorage.getItem('infoEmp') || '{}');
@@ -54,42 +56,40 @@ export class Dashboard {
     this.consultarDash();
   }
 
-  public consultarDash():void {
+  public consultarDash(): void {
     this.loading = true;
     const fecha = new Date(this.fechaSeleccionada);
     fecha.setHours(0, 0, 0, 0);
 
     const request = {
       emp: this.idEmpresa,
-      fecha: fecha.toISOString()
-    }
+      fecha: fecha.toISOString(),
+    };
 
-    this.informeService.infoDashboard(request)
-    .subscribe({
-      next: rest => {
-        if(rest.exito) {
+    this.informeService.infoDashboard(request).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
           this.recursos = rest.datos;
-        }else {
-
+        } else {
         }
         this.loading = false;
-      }
-    })
+      },
+    });
   }
 
   private obtenerDataLocalStorage(): void {
     if (!this.idEmpresa) return;
 
     const configuraciones = [
-      { key: 'generos',     fetch: obtenerGeneros },
-      { key: 'tiposDoc',    fetch: obtenerTiposDocumentos },
-      { key: 'roles',       fetch: obtenerRoles },
-      { key: 'sedes',       fetch: obtenerSedes },
+      { key: 'generos', fetch: obtenerGeneros },
+      { key: 'tiposDoc', fetch: obtenerTiposDocumentos },
+      { key: 'roles', fetch: obtenerRoles },
+      { key: 'sedes', fetch: obtenerSedes },
     ];
 
-    configuraciones.forEach(config => {
+    configuraciones.forEach((config) => {
       if (!localStorage.getItem(config.key)) {
-        config.fetch(this.sharedServices, this.idEmpresa!, datos => {
+        config.fetch(this.sharedServices, this.idEmpresa!, (datos) => {
           localStorage.setItem(config.key, JSON.stringify(datos));
         });
       }

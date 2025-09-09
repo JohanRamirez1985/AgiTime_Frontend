@@ -41,6 +41,10 @@
       <mat-icon>attach_money</mat-icon>
       Venta
     </button>
+    <button *ngIf="validate('inf')" mat-button routerLink="/admin/informes">
+      <mat-icon>bar_chart</mat-icon>
+      Informes
+    </button>
     <button mat-button class="logout-button" (click)="cerrarSesion()">
       <mat-icon>logout</mat-icon>
       Cerrar sesión
@@ -102,6 +106,10 @@
     <button *ngIf="validate('ven')" mat-menu-item routerLink="/admin/venta">
       <mat-icon>attach_money</mat-icon>
       Venta
+    </button>
+    <button *ngIf="validate('inf')" mat-button routerLink="/admin/informes">
+      <mat-icon>bar_chart</mat-icon>
+      Informes
     </button>
     <button mat-menu-item (click)="cerrarSesion()">
       <mat-icon>logout</mat-icon>

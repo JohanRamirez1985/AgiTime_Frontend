@@ -135,6 +135,11 @@ export const routes: Routes = [
             './components/servicios/editar-servicios/editar-servicios'
           ).then((m) => m.EditarServicios),
       },
+      {
+        path: 'informes',
+        loadComponent: () =>
+          import('./components/informes/informes').then((m) => m.Informes),
+      },
     ],
   },
 
