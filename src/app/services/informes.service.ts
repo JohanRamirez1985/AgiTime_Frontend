@@ -17,13 +17,16 @@ export class InformesService {
 
   generarInforme(request: any, diario: boolean) {
     const params = new HttpParams({ fromObject: request });
+
     if (diario) {
-      return this.http.get<any>(`${this.baseUrl}/informacionDiaria`, {
+      return this.http.get(`${this.baseUrl}/informacionDiaria`, {
         params,
+        responseType: 'blob', // 👈 recibir archivo binario
       });
     } else {
-      return this.http.get<any>(`${this.baseUrl}/informacionSemanal`, {
+      return this.http.get(`${this.baseUrl}/informacionSemanal`, {
         params,
+        responseType: 'blob',
       });
     }
   }

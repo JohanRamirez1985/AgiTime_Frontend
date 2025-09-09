@@ -67,7 +67,6 @@ export class Informes {
       const tipoDiario = this.tipoReporte === 'diario';
       const request = this.createJson(tipoDiario);
 
-      // Mostrar loading
       Swal.fire({
         title: 'Generando reporte...',
         text: 'Por favor espera unos segundos',
@@ -78,11 +77,14 @@ export class Informes {
       });
 
       this.informeServie.generarInforme(request, tipoDiario).subscribe({
-        next: (blob) => {
+        next: (blob: Blob) => {
           Swal.close(); // cerrar loading
 
-          if (blob.exito) {
+          if (blob && blob.size > 0) {
+            // Crear URL temporal del archivo
             const fileURL = URL.createObjectURL(blob);
+
+            // Abrir en una nueva pestaña
             window.open(fileURL);
 
             Swal.fire({
@@ -95,7 +97,7 @@ export class Informes {
             Swal.fire({
               icon: 'warning',
               title: 'Sin datos',
-              text: blob.mensaje,
+              text: 'No se generó ningún archivo para este rango.',
               confirmButtonColor: '#0d47a1',
             });
           }
@@ -105,7 +107,8 @@ export class Informes {
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: err.error.mensaje,
+            text:
+              err.error?.mensaje || 'Error inesperado al generar el reporte.',
             confirmButtonColor: '#d33',
           });
         },
@@ -121,10 +124,16 @@ export class Informes {
       };
       return request;
     } else {
+      const fechaInicio = new Date(this.form.value.fechaInicio);
+      fechaInicio.setHours(0, 0, 0, 0);
+
+      const fechaFin = new Date(this.form.value.fechaFin);
+      fechaFin.setHours(23, 59, 59, 999);
+
       const request = {
         emp: this.idEmpresa,
-        fechaInicio: this.form.value.fechaInicio.toISOString(),
-        fechaFin: this.form.value.fechaFin.toISOString(),
+        fechaInicio: fechaInicio.toISOString(), // se queda como Date local
+        fechaFin: fechaFin.toISOString(),
       };
       return request;
     }
