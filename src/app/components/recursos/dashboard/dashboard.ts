@@ -99,7 +99,8 @@ export class DashboardRecurso {
       tipoBloqueo: '',
     },
   ];
-  rol: number | null = null;
+  rol: any;
+  rolesPermitidos: number[] = [];
 
   constructor(
     private router: Router,
@@ -125,7 +126,8 @@ export class DashboardRecurso {
     this.idEmpresa = this.empresa.id;
     this.rol = this.user.rol;
     this.obtenerServicios(this.idEmpresa);
-    this.obtenerHorarios();
+    this.rolesPermitidos = [RolesContent.Empleado, RolesContent.Administrador];
+    this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
     this.obtenerBloqueos();
   }
 
@@ -371,7 +373,7 @@ export class DashboardRecurso {
     });
   }
 
-  public obtenerHorarios(): void {
+  public obtenerHorarios(rolPermitido: boolean): void {
     this.sharedServices.obtenerAgenda(this.idEmpresa).subscribe({
       next: (rest) => {
         const respuesta = rest.datos;
@@ -392,7 +394,7 @@ export class DashboardRecurso {
           };
         });
 
-        if (this.rol === RolesContent.Empleado) {
+        if (rolPermitido) {
           this.seleccionarRecursoEmpleado(this.day);
         } else {
           this.seleccionarRecurso(this.day);
@@ -481,7 +483,7 @@ export class DashboardRecurso {
 
     let horasFuturas: any[] = [];
 
-    if (this.rol === RolesContent.Empleado) {
+    if (!this.rolesPermitidos.includes(this.rol)) {
       horasFuturas = this.horas.map((h) => ({
         ...h,
         fecha: this.convertirHoraAFecha(h.hora, fechaSeleccionada),
@@ -677,16 +679,19 @@ export class DashboardRecurso {
       hoy.setHours(0, 0, 0, 0);
       nuevaFecha.setHours(0, 0, 0, 0);
 
-      if (nuevaFecha < hoy && this.rol !== RolesContent.Empleado) {
+      if (
+        nuevaFecha < hoy &&
+        (this.rol === null || !this.rolesPermitidos.includes(this.rol))
+      ) {
         Swal.fire({
           icon: 'error',
-          title: 'Dia no habil',
-          text: 'No puedes consultar dias anteriores',
+          title: 'Día no hábil',
+          text: 'No puedes consultar días anteriores',
         });
       } else {
         this.day = nuevaFecha;
         this.loading = true;
-        this.obtenerHorarios();
+        this.obtenerHorarios(!this.rolesPermitidos.includes(this.rol));
       }
     }
     this.cdr.detectChanges();
@@ -701,7 +706,7 @@ export class DashboardRecurso {
       this.consultarCitas(this.user, this.empresa, nuevaFecha);
     } else {
       this.loading = true;
-      this.obtenerHorarios();
+      this.obtenerHorarios(!this.rolesPermitidos.includes(this.rol));
     }
     this.cdr.detectChanges();
   }
@@ -714,7 +719,7 @@ export class DashboardRecurso {
       this.consultarCitas(this.user, this.empresa, nuevaFecha);
     } else {
       this.loading = true;
-      this.obtenerHorarios();
+      this.obtenerHorarios(!this.rolesPermitidos.includes(this.rol));
     }
     this.cdr.detectChanges();
   }
@@ -734,7 +739,7 @@ export class DashboardRecurso {
           }).then(() => {
             this.serviciosSeleccionados = [];
             this.mostrarAgenda = false;
-            this.obtenerHorarios();
+            this.obtenerHorarios(!this.rolesPermitidos.includes(this.rol));
           });
         } else {
           Swal.fire({
@@ -824,7 +829,7 @@ export class DashboardRecurso {
     if (index === 1) {
       this.serviciosSeleccionados = [];
       this.mostrarAgenda = false;
-      this.obtenerHorarios();
+      this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
     }
     if (index === 2) {
       this.mostrarBloqueo = false;
