@@ -2,16 +2,22 @@
   display: flex;
   justify-content: center;
   padding: 2rem;
+  min-height: 100vh;
+  background: #f0f2f5 url('https://www.transparenttextures.com/patterns/black-linen.png');
 }
 
+
+/* Tarjeta con efecto vidrio */
 .dashboard-card {
   width: 100%;
   max-width: 600px;
   padding: 2rem 1.5rem 1.5rem;
   position: relative;
   border-radius: 16px;
-  background-color: #ffffff;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(12px);            /* 🔑 desenfoque vidrio */
+  -webkit-backdrop-filter: blur(12px);    /* compatibilidad Safari */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Título */

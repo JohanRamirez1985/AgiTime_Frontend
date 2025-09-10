@@ -9,7 +9,7 @@
 
       <!-- Contenido -->
       <div *ngIf="!loading">
-        <h2 class="title">Bienvenido, {{ nombreEmpresa }}</h2>
+        <h2 class="title">{{ nombreEmpresa }}</h2>
         <mat-divider></mat-divider>
         <img [src]="img" alt="Imagen barbería" class="imagen-banner" />
 
@@ -91,7 +91,7 @@
         class="boton-flotante-mejorado"
         (click)="misCitas()"
       >
-        Mis Citas..
+        Mis Citas
       </button>
     </div>
   </ng-container>
