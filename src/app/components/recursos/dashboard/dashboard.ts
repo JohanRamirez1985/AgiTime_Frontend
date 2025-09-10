@@ -483,7 +483,7 @@ export class DashboardRecurso {
 
     let horasFuturas: any[] = [];
 
-    if (!this.rolesPermitidos.includes(this.rol)) {
+    if (this.rolesPermitidos.includes(this.rol)) {
       horasFuturas = this.horas.map((h) => ({
         ...h,
         fecha: this.convertirHoraAFecha(h.hora, fechaSeleccionada),
@@ -691,7 +691,7 @@ export class DashboardRecurso {
       } else {
         this.day = nuevaFecha;
         this.loading = true;
-        this.obtenerHorarios(!this.rolesPermitidos.includes(this.rol));
+        this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
       }
     }
     this.cdr.detectChanges();
@@ -706,7 +706,7 @@ export class DashboardRecurso {
       this.consultarCitas(this.user, this.empresa, nuevaFecha);
     } else {
       this.loading = true;
-      this.obtenerHorarios(!this.rolesPermitidos.includes(this.rol));
+      this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
     }
     this.cdr.detectChanges();
   }
@@ -719,7 +719,7 @@ export class DashboardRecurso {
       this.consultarCitas(this.user, this.empresa, nuevaFecha);
     } else {
       this.loading = true;
-      this.obtenerHorarios(!this.rolesPermitidos.includes(this.rol));
+      this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
     }
     this.cdr.detectChanges();
   }
@@ -739,7 +739,7 @@ export class DashboardRecurso {
           }).then(() => {
             this.serviciosSeleccionados = [];
             this.mostrarAgenda = false;
-            this.obtenerHorarios(!this.rolesPermitidos.includes(this.rol));
+            this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
           });
         } else {
           Swal.fire({
