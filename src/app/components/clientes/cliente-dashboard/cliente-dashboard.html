@@ -1,6 +1,9 @@
 <div class="dashboard-wrapper">
   <ng-container *ngIf="!inactiva; else mensajeNoAutorizado">
     <mat-card class="dashboard-card mat-elevation-z8">
+      <div class="header-card">
+        <a class="link-login" (click)="irALogin()">Iniciar Sesión</a>
+      </div>
       <!-- Loading -->
       <div *ngIf="loading" class="loading-container">
         <mat-spinner diameter="50"></mat-spinner>

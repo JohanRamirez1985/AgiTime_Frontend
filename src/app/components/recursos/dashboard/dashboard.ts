@@ -19,6 +19,7 @@ import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { RolesContent } from '../../../shared/libs/roles';
+import { switchMap, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboardR',
@@ -125,10 +126,115 @@ export class DashboardRecurso {
     this.consultarCitas(this.user, this.empresa, this.day);
     this.idEmpresa = this.empresa.id;
     this.rol = this.user.rol;
+    this.estadoActivoInactivo();
     this.obtenerServicios(this.idEmpresa);
     this.rolesPermitidos = [RolesContent.Empleado, RolesContent.Administrador];
     this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
     this.obtenerBloqueos();
+  }
+
+  private estadoActivoInactivo() {
+    const request = {
+      emp: this.idEmpresa,
+      usuario: this.user.id,
+    };
+
+    this.agendamientoServices.consultarEstadoUsuario(request).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          this.btnActivar = rest.datos;
+        }
+      },
+    });
+  }
+
+  public activarUsuario() {
+    const request = {
+      emp: this.idEmpresa,
+      usuario: this.user.id,
+    };
+
+    this.agendamientoServices.activarUsuarioBtn(request).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+        }
+        this.estadoActivoInactivo();
+      },
+    });
+
+    console.log();
+  }
+
+  public inactivarUsuario() {
+    this.loading = true;
+
+    const fechaInicio = new Date();
+    const horaInicio =
+      String(fechaInicio.getHours()).padStart(2, '0') +
+      ':' +
+      String(fechaInicio.getMinutes()).padStart(2, '0');
+
+    this.sharedServices
+      .parametros(this.idEmpresa.toString())
+      .pipe(
+        switchMap((rest: any) => {
+          const activarmeObj = rest.datos.find(
+            (item: any) => item.tipo === 'Activarme'
+          );
+          const motivo = activarmeObj ? activarmeObj.valor : '';
+
+          const request = this.crearRequest(
+            '2',
+            fechaInicio,
+            horaInicio,
+            '23:59',
+            motivo,
+            this.idEmpresa,
+            fechaInicio
+          );
+
+          // Retornamos el observable del segundo servicio
+          return this.agendamientoServices.registrarBloqueoDias(request);
+        })
+      )
+      .subscribe({
+        next: (rest) => {
+          if (rest.exito) {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Bloqueo Creado!',
+              text: rest.mensaje,
+              confirmButtonColor: '#3085d6',
+              confirmButtonText: 'Ok',
+            }).then(() => {
+              this.tipoBloqueo = '';
+              this.horaInicio = '';
+              this.horaFin = '';
+              this.dias.forEach((dia) => (dia.checked = false));
+              this.obtenerBloqueos();
+              this.mostrarBloqueo = false;
+              this.cdr.detectChanges();
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: rest.statusText,
+            });
+          }
+          this.estadoActivoInactivo();
+          this.loading = false;
+        },
+        error: (err) => {
+          this.estadoActivoInactivo();
+          this.loading = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: err.statusText,
+          });
+        },
+      });
   }
 
   private obtenerBloqueos(): void {
@@ -209,10 +315,6 @@ export class DashboardRecurso {
 
   inhabilitarHorarios() {
     this.loading = true;
-    const diasSeleccionados = this.dias
-      .filter((d) => d.checked)
-      .map((d) => d.value)
-      .join(',');
 
     if (this.tipoBloqueo === '') {
       this.loading = false;
@@ -276,31 +378,15 @@ export class DashboardRecurso {
       return;
     }
 
-    const now = new Date(this.day);
-    const fechaLocal =
-      now.getFullYear() +
-      '-' +
-      String(now.getMonth() + 1).padStart(2, '0') +
-      '-' +
-      String(now.getDate()).padStart(2, '0') +
-      'T' +
-      String(now.getHours()).padStart(2, '0') +
-      ':' +
-      String(now.getMinutes()).padStart(2, '0') +
-      ':' +
-      String(now.getSeconds()).padStart(2, '0');
-
-    const request = {
-      TipoBloqueo: parseInt(this.tipoBloqueo),
-      Usuario: this.user.id,
-      FechaInicio: this.tipoBloqueo === '2' ? this.fechaBloqueo : null,
-      HoraInicio: this.horaInicio,
-      HoraFin: this.horaFin,
-      Motivo: this.motivo,
-      DiasSemana: this.tipoBloqueo === '1' ? diasSeleccionados : '',
-      FechaCreacion: fechaLocal,
-      empresa: this.idEmpresa,
-    };
+    const request = this.crearRequest(
+      this.tipoBloqueo,
+      this.fechaBloqueo,
+      this.horaInicio,
+      this.horaFin,
+      this.motivo,
+      this.idEmpresa,
+      this.day
+    );
 
     this.agendamientoServices.registrarBloqueoDias(request).subscribe({
       next: (rest) => {
@@ -342,6 +428,51 @@ export class DashboardRecurso {
         });
       },
     });
+  }
+
+  private crearRequest(
+    tipoBloqueo: string,
+    fechaBloqueo: Date | null,
+    horaInicio: string,
+    horaFin: string,
+    motivo: string,
+    idEmpresa: number,
+    day?: Date // opcional, si quieres calcular fechaLocal a partir de otro día
+  ) {
+    const diasSeleccionados = this.dias
+      .filter((d) => d.checked)
+      .map((d) => d.value)
+      .join(',');
+    const now = day ? new Date(day) : new Date(); // si no se pasa day, usa ahora
+    const fechaLocal =
+      now.getFullYear() +
+      '-' +
+      String(now.getMonth() + 1).padStart(2, '0') +
+      '-' +
+      String(now.getDate()).padStart(2, '0') +
+      'T' +
+      String(now.getHours()).padStart(2, '0') +
+      ':' +
+      String(now.getMinutes()).padStart(2, '0') +
+      ':' +
+      String(now.getSeconds()).padStart(2, '0');
+
+    return {
+      TipoBloqueo: parseInt(tipoBloqueo),
+      Usuario: this.user.id,
+      FechaInicio:
+        tipoBloqueo === '2'
+          ? fechaBloqueo
+            ? fechaBloqueo.toISOString()
+            : null
+          : null,
+      HoraInicio: horaInicio,
+      HoraFin: horaFin,
+      Motivo: motivo,
+      DiasSemana: tipoBloqueo === '1' ? diasSeleccionados : '',
+      FechaCreacion: fechaLocal,
+      empresa: idEmpresa,
+    };
   }
 
   toggleSeleccionServicio(servicio: any): void {

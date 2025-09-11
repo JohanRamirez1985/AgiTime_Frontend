@@ -68,4 +68,10 @@ export class SharedService {
       params: { emp: emp.toString() },
     });
   }
+
+  parametros(emp: string) {
+    return this.http.get<any>(`${this.baseUrlUsuario}/parametros`, {
+      params: { emp: emp.toString() },
+    });
+  }
 }

@@ -6,6 +6,28 @@
   background: #f0f2f5 url('https://www.transparenttextures.com/patterns/black-linen.png');
 }
 
+.dashboard-card {
+  position: relative; /* para que el link se posicione dentro de la tarjeta */
+}
+
+.link-login {
+  position: absolute;
+  top: 8px;      /* bien pegado arriba */
+  right: 12px;   /* bien pegado a la derecha */
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #555; /* gris elegante */
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.link-login:hover {
+  color: #1976d2; /* azul Material al hover */
+}
+
+
+
 
 /* Tarjeta con efecto vidrio */
 .dashboard-card {

@@ -61,4 +61,18 @@ export class AgendamientoService {
       params,
     });
   }
+
+  consultarEstadoUsuario(request: any) {
+    const params = new HttpParams({ fromObject: request });
+    return this.http.get<any>(`${this.baseUrl}/consultarEstadoActivarme`, {
+      params,
+    });
+  }
+
+  activarUsuarioBtn(request: any) {
+    return this.http.post<any>(
+      `${this.baseUrl}/cambiarEstadoActivarme`,
+      request
+    );
+  }
 }

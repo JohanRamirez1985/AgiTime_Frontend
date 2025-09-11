@@ -1,63 +1,86 @@
-<div class="agendar-wrapper">
-  <div class="header-container">
-    <button mat-icon-button color="primary" (click)="volver()">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
-    <span class="header-title">Inicio</span>
-  </div>
-  <h2><mat-icon>event</mat-icon> Mis Citas</h2>
-  <mat-divider></mat-divider>
-
-  <div class="telefono-container">
-    <mat-form-field appearance="outline" class="telefono-field">
-      <mat-label>📱 No. Celular</mat-label>
-      <input
-        matInput
-        placeholder="Ej. 3001234567"
-        type="tel"
-        [(ngModel)]="telefono"
-        name="telefono"
-        maxlength="10"
-      />
-      <mat-icon matSuffix>phone_android</mat-icon>
-    </mat-form-field>
-
-    <div *ngIf="!loading" class="btn-container">
-      <button mat-flat-button class="btn-pill" (click)="consultar()">
-        <mat-icon style="font-size: 16px;">search</mat-icon>
-        Consultar
+<div class="agendar-background">
+  <div class="agendar-wrapper">
+    <div class="header-container">
+      <button mat-icon-button color="primary" (click)="volver()">
+        <mat-icon>arrow_back</mat-icon>
       </button>
+      <span class="header-title">Inicio</span>
+      <div class="header-empresa">
+        <span class="empresa-nombre">{{ empresaNombre }}</span>
+        <img
+          *ngIf="empresaLogo"
+          [src]="empresaLogo"
+          alt="Logo empresa"
+          class="empresa-logo"
+        />
+      </div>
+    </div>
+    <h2><mat-icon>event</mat-icon> Mis Citas</h2>
+    <mat-divider></mat-divider>
+
+    <div class="telefono-container">
+      <mat-form-field appearance="outline" class="telefono-field">
+        <mat-label>📱 No. Celular</mat-label>
+        <input
+          matInput
+          placeholder="Ej. 3001234567"
+          type="tel"
+          [(ngModel)]="telefono"
+          name="telefono"
+          maxlength="10"
+        />
+        <mat-icon matSuffix>phone_android</mat-icon>
+      </mat-form-field>
+
+      <div *ngIf="!loading" class="btn-container">
+        <button mat-flat-button class="btn-pill" (click)="consultar()">
+          <mat-icon style="font-size: 16px">search</mat-icon>
+          Consultar
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p class="loading-text">Cargando disponibilidad...</p>
+    </div>
+
+    <div *ngIf="mostrarContenido">
+      <!-- Si no hay citas -->
+      <div *ngIf="citas.length === 0" class="sin-citas">
+        <mat-icon>event_busy</mat-icon>
+        <p>No tienes citas agendadas.</p>
+      </div>
+
+      <!-- Lista de citas -->
+      <div class="cita-lista" *ngIf="citas.length > 0">
+        <mat-card *ngFor="let cita of citas" class="cita-item mat-elevation-z2">
+          <div class="cita-info">
+            <h3>{{ cita.servicio | titlecase }}</h3>
+            <h3>
+              {{ cita.valor | currency : "COP" : "symbol" : "1.0-0" : "es-CO" }}
+            </h3>
+            <p>
+              <mat-icon>person</mat-icon> {{ cita.recursoNombre | titlecase }}
+            </p>
+            <p>
+              <mat-icon>event</mat-icon>
+              {{ cita.fecha | date : "EEEE d 'de' MMMM y" : "" : "es" }}
+            </p>
+            <p><mat-icon>access_time</mat-icon> {{ cita.hora }}</p>
+            <p><mat-icon>location_on</mat-icon> {{ cita.sede }}</p>
+          </div>
+          <div class="cita-acciones">
+            <button
+              mat-stroked-button
+              color="warn"
+              (click)="cancelarCita(cita)"
+            >
+              Cancelar
+            </button>
+          </div>
+        </mat-card>
+      </div>
     </div>
   </div>
-
-  <div *ngIf="loading" class="loading-container">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p class="loading-text">Cargando disponibilidad...</p>
-  </div>
-
-  <div *ngIf="mostrarContenido">
-    <!-- Si no hay citas -->
-    <div *ngIf="citas.length === 0" class="sin-citas">
-      <mat-icon>event_busy</mat-icon>
-      <p>No tienes citas agendadas.</p>
-    </div>
-
-    <!-- Lista de citas -->
-    <div class="cita-lista" *ngIf="citas.length > 0">
-      <mat-card *ngFor="let cita of citas" class="cita-item mat-elevation-z2">
-        <div class="cita-info">
-          <h3>{{ cita.servicio | titlecase }}</h3>
-          <h3>{{ cita.valor | currency:'COP':'symbol':'1.0-0':'es-CO' }}</h3>
-          <p><mat-icon>person</mat-icon> {{ cita.recursoNombre | titlecase }}</p>
-          <p><mat-icon>event</mat-icon> {{ cita.fecha | date:'EEEE d \'de\' MMMM y':'':'es' }}</p>
-          <p><mat-icon>access_time</mat-icon> {{ cita.hora }}</p>
-          <p><mat-icon>location_on</mat-icon> {{ cita.sede }}</p>
-        </div>
-        <div class="cita-acciones">
-          <button mat-stroked-button color="warn" (click)="cancelarCita(cita)">Cancelar</button>
-        </div>
-      </mat-card>
-    </div>
-  </div>
-
 </div>

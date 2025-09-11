@@ -479,3 +479,9 @@ mat-card-content strong {
 button mat-icon {
   margin-right: 5px;
 }
+
+.tabs-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}

@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AgendamientoService } from '../../../services/agendamiento.service';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-cliente-mis-citas',
@@ -22,35 +23,45 @@ import { AgendamientoService } from '../../../services/agendamiento.service';
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatInputModule,
-    FormsModule
+    FormsModule,
+    MatButtonModule,
   ],
   templateUrl: './cliente-mis-citas.html',
-  styleUrl: './cliente-mis-citas.css'
+  styleUrl: './cliente-mis-citas.css',
 })
-
 export class ClienteMisCitas {
   idEmpresa: number = 0;
   empresa: any = '';
   loading: boolean = false;
   telefono: string = '';
   mostrarContenido: boolean = false;
+  empresaNombre: string = '';
+  empresaLogo: string = '';
 
   citas: any[] = [];
-
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private agendaService : AgendamientoService,
-    private cdr: ChangeDetectorRef,
-  ) {
-
-  }
+    private agendaService: AgendamientoService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      this.idEmpresa = +params['emp']
-    })
+    this.route.queryParams.subscribe((params) => {
+      this.idEmpresa = +params['emp'];
+    });
+    const empresaData = localStorage.getItem('empresa');
+
+    if (empresaData) {
+      try {
+        const empresa = JSON.parse(empresaData);
+        this.empresaNombre = empresa.nombre || '';
+        this.empresaLogo = 'assets/img/' + empresa.logo || '';
+      } catch (error) {
+        console.error('Error al parsear empresa desde localStorage', error);
+      }
+    }
   }
 
   public consultar() {
@@ -68,20 +79,21 @@ export class ClienteMisCitas {
     const request = {
       empresa: this.idEmpresa,
       FechaIni: new Date().toISOString().split('T')[0] + 'T00:00:00',
-      'clienteInfo.Telefono': this.telefono
-    }
+      'clienteInfo.Telefono': this.telefono,
+    };
 
-    this.agendaService.consultarCitasCliente(request)
-    .subscribe({
-      next: rest => {
-        if(rest.exito) {
+    this.agendaService.consultarCitasCliente(request).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
           this.citas = rest.datos.map((item: any) => {
             const serviciosNombres = item.servicios
               .map((s: any) => s.nombre)
               .join(', ');
 
-            const totalValor = item.servicios
-              .reduce((total: number, s: any) => total + (s.valor || 0), 0);
+            const totalValor = item.servicios.reduce(
+              (total: number, s: any) => total + (s.valor || 0),
+              0
+            );
 
             return {
               valor: totalValor,
@@ -90,27 +102,27 @@ export class ClienteMisCitas {
               fecha: new Date(item.fechaInicio),
               hora: new Date(item.fechaInicio).toLocaleTimeString('es-CO', {
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
               }),
               sede: item.sede || 'Sede no disponible',
-              id: item.id
+              id: item.id,
             };
           });
 
           this.loading = false;
-          this.mostrarContenido = true;   
-          this.cdr.detectChanges();          
-        }else {
+          this.mostrarContenido = true;
+          this.cdr.detectChanges();
+        } else {
           this.loading = false;
           Swal.fire({
             icon: 'info',
             title: 'Sin citas encontradas',
-            text: `Con el teléfono ${this.telefono} no hay citas agendadas.`
+            text: `Con el teléfono ${this.telefono} no hay citas agendadas.`,
           });
           this.cdr.detectChanges();
         }
       },
-      error: errr => {
+      error: (errr) => {
         this.loading = false;
         Swal.fire({
           icon: 'error',
@@ -118,18 +130,17 @@ export class ClienteMisCitas {
           text: errr.mensaje,
         });
         this.cdr.detectChanges();
-      }
-    })
-
+      },
+    });
   }
 
   volver(): void {
     this.router.navigate(['/cliente'], {
-      queryParams: { em: this.idEmpresa }
+      queryParams: { em: this.idEmpresa },
     });
   }
 
-  cancelarCita(cita: any) {   
+  cancelarCita(cita: any) {
     Swal.fire({
       title: '¿Cancelar cita?',
       html: `<p>¿Estás seguro de cancelar la cita programada para las <strong> ${cita.hora} </strong> de <strong> hoy </strong>?</p>`,
@@ -140,38 +151,41 @@ export class ClienteMisCitas {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#a0aab4ff',
       customClass: {
-        popup: 'swal-reserva-responsive'
-      }
+        popup: 'swal-reserva-responsive',
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         this.mostrarContenido = false;
         const now = new Date();
-        const fechaLocal = now.getFullYear() + '-' +
-          String(now.getMonth() + 1).padStart(2, '0') + '-' +
-          String(now.getDate()).padStart(2, '0') + 'T' +
-          String(now.getHours()).padStart(2, '0') + ':' +
-          String(now.getMinutes()).padStart(2, '0') + ':' +
+        const fechaLocal =
+          now.getFullYear() +
+          '-' +
+          String(now.getMonth() + 1).padStart(2, '0') +
+          '-' +
+          String(now.getDate()).padStart(2, '0') +
+          'T' +
+          String(now.getHours()).padStart(2, '0') +
+          ':' +
+          String(now.getMinutes()).padStart(2, '0') +
+          ':' +
           String(now.getSeconds()).padStart(2, '0');
 
         const request = {
           empresa: this.idEmpresa,
           Id: cita.id,
           fechaCancelacion: fechaLocal,
-          usuarioCancelacion: 'Cliente'
-        }
-        this.agendaService.cancelarCita(request)
-        .subscribe({
-          next : rest => {
-            if(rest.exito) {
+          usuarioCancelacion: 'Cliente',
+        };
+        this.agendaService.cancelarCita(request).subscribe({
+          next: (rest) => {
+            if (rest.exito) {
               this.consultar();
-            }            
-          }
-        })
-        
-      }else {
+            }
+          },
+        });
+      } else {
         this.loading = false;
       }
-    })
+    });
   }
-
 }

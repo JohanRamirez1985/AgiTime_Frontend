@@ -79,6 +79,12 @@ export class ClienteDashboard {
       });
   }
 
+  public irALogin() {
+    this.router.navigate(['/login'], {
+      queryParams: { em: this.idEmpresa, tipo: 'em' },
+    });
+  }
+
   private obtenerEmpresas() {
     this.sharenServices.obtenerEmpresasApp().subscribe({
       next: (rest) => {

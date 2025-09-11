@@ -1,13 +1,15 @@
 <div class="login-wrapper">
   <mat-card class="login-card">
-
     <ng-container *ngIf="!inactiva; else mensajeNoAutorizado">
-      
       <!-- Paso 1: Selección de tipo -->
       <ng-container *ngIf="idEmpresaSeleccionada">
         <h2>Selecciona tu tipo de usuario</h2>
         <div class="button-group">
-          <button mat-raised-button color="primary" (click)="seleccionarTipo('empresa')">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="seleccionarTipo('empresa')"
+          >
             Soy una Empresa
           </button>
           <button mat-raised-button color="accent" (click)="irCliente()">
@@ -22,11 +24,18 @@
 
         <mat-form-field appearance="fill" class="full-width">
           <mat-label>Buscar por nombre...</mat-label>
-          <input matInput [(ngModel)]="filtro" (ngModelChange)="buscarNombre()" />
+          <input
+            matInput
+            [(ngModel)]="filtro"
+            (ngModelChange)="buscarNombre()"
+          />
         </mat-form-field>
 
         <mat-list class="listado" *ngIf="mostrarListado">
-          <mat-list-item *ngFor="let item of listadoFiltrado()" (click)="seleccionarEmpresa(item)">
+          <mat-list-item
+            *ngFor="let item of listadoFiltrado()"
+            (click)="seleccionarEmpresa(item)"
+          >
             {{ item.nombre }}
           </mat-list-item>
           <mat-list-item *ngIf="listadoFiltrado().length === 0">
@@ -34,9 +43,10 @@
           </mat-list-item>
         </mat-list>
 
-        <button mat-stroked-button color="warn" (click)="cancelar()">Volver</button>
+        <button mat-stroked-button color="warn" (click)="cancelar()">
+          Volver
+        </button>
       </ng-container>
-
     </ng-container>
 
     <ng-template #mensajeNoAutorizado>
@@ -45,6 +55,5 @@
         <p>{{ mensajeError }}</p>
       </div>
     </ng-template>
-
   </mat-card>
 </div>
