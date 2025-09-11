@@ -1,208 +1,216 @@
-<div class="agendar-wrapper">
-  <ng-container *ngIf="!inactiva; else mensajeNoAutorizado">
-    <div class="header-container">
-      <button mat-icon-button color="primary" (click)="volver()">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <span class="header-title">Inicio</span>
+<div class="agendar-background">
+  <div class="agendar-wrapper">
+    <ng-container *ngIf="!inactiva; else mensajeNoAutorizado">
+      <div class="header-container">
+        <button mat-icon-button color="primary" (click)="volver()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <span class="header-title">Inicio</span>
 
-      <div class="header-empresa">
-        <span class="empresa-nombre">{{ empresaNombre }}</span>
-        <img
-          *ngIf="empresaLogo"
-          [src]="empresaLogo"
-          alt="Logo empresa"
-          class="empresa-logo"
-        />
-      </div>
-    </div>
-
-    <h2 class="titulo-cita">
-      <mat-icon>event</mat-icon>
-      Agendar cita
-    </h2>
-
-    <mat-card class="card-recurso mat-elevation-z4">
-      <mat-card-content class="contenido-recurso">
-        <img [src]="fotoRecuerso" alt="Recurso" class="imagen-recurso" />
-        <div class="info-recurso">
-          <div class="recurso-nombre">
-            <mat-icon color="primary">check_circle</mat-icon>
-            <span class="texto-recurso">{{
-              nombreDelRecurso | titlecase
-            }}</span>
-          </div>
-
-          <ul class="subtexto-recurso-lista" *ngIf="mostrarDetalle">
-            <li *ngFor="let detalle of detallesRecurso">{{ detalle }}</li>
-          </ul>
+        <div class="header-empresa">
+          <span class="empresa-nombre">{{ empresaNombre }}</span>
+          <img
+            *ngIf="empresaLogo"
+            [src]="empresaLogo"
+            alt="Logo empresa"
+            class="empresa-logo"
+          />
         </div>
-      </mat-card-content>
-    </mat-card>
+      </div>
 
-    <div *ngIf="loading" class="loading-container">
-      <mat-spinner diameter="50"></mat-spinner>
-      <p class="loading-text">Cargando disponibilidad...</p>
-    </div>
-
-    <!-- Servicios -->
-    <div class="servicios-wrapper" *ngIf="mostrarServicios">
-      <h2 class="titulo">Servicios</h2>
-
-      <ng-container
-        *ngIf="
-          serviciosFiltrados && serviciosFiltrados.length > 0;
-          else noRecursos
-        "
-      >
-        <div class="servicios-container">
-          <mat-card
-            class="servicio-card"
-            *ngFor="let servicio of serviciosFiltrados"
-            [class.selected]="estaSeleccionado(servicio)"
-          >
-            <div class="contenido-servicio">
-              <div class="servicio-info">
-                <div class="servicio-nombre">
-                  {{ servicio.nombre | titlecase }}
-                </div>
-                <div class="servicio-precio">
-                  ${{ servicio.valor | number : "1.0-0" : "es-CO" }}
-                </div>
-                <div
-                  class="servicio-descripcion"
-                  *ngIf="servicio.observaciones"
-                >
-                  {{ servicio.observaciones }}
-                </div>
+      <h2 class="titulo-cita">
+        <mat-icon>event</mat-icon>
+        Agendar cita
+      </h2>
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p class="loading-text">Cargando disponibilidad...</p>
+      </div>
+      <div *ngIf="!loading">
+        <mat-card class="card-recurso mat-elevation-z4">
+          <mat-card-content class="contenido-recurso">
+            <img [src]="fotoRecurso" alt="Recurso" class="imagen-recurso" />
+            <div class="info-recurso">
+              <div class="recurso-nombre">
+                <mat-icon color="primary">check_circle</mat-icon>
+                <span class="texto-recurso">{{
+                  nombreDelRecurso | titlecase
+                }}</span>
               </div>
 
-              <button
-                mat-mini-fab
-                color="primary"
-                class="boton-add"
-                (click)="toggleSeleccionServicio(servicio)"
+              <ul class="subtexto-recurso-lista" *ngIf="mostrarDetalle">
+                <li *ngFor="let detalle of detallesRecurso">{{ detalle }}</li>
+              </ul>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Servicios -->
+        <div class="servicios-wrapper" *ngIf="mostrarServicios">
+          <h2 class="titulo">Servicios</h2>
+
+          <ng-container
+            *ngIf="
+              serviciosFiltrados && serviciosFiltrados.length > 0;
+              else noRecursos
+            "
+          >
+            <div class="servicios-container">
+              <mat-card
+                class="servicio-card"
+                *ngFor="let servicio of serviciosFiltrados"
+                [class.selected]="estaSeleccionado(servicio)"
               >
-                <mat-icon>
-                  {{ estaSeleccionado(servicio) ? "check" : "add" }}
-                </mat-icon>
+                <div class="contenido-servicio">
+                  <div class="servicio-info">
+                    <div class="servicio-nombre">
+                      {{ servicio.nombre | titlecase }}
+                    </div>
+                    <div class="servicio-precio">
+                      ${{ servicio.valor | number : "1.0-0" : "es-CO" }}
+                    </div>
+                    <div
+                      class="servicio-descripcion"
+                      *ngIf="servicio.observaciones"
+                    >
+                      {{ servicio.observaciones }}
+                    </div>
+                  </div>
+
+                  <button
+                    mat-mini-fab
+                    color="primary"
+                    class="boton-add"
+                    (click)="toggleSeleccionServicio(servicio)"
+                  >
+                    <mat-icon>
+                      {{ estaSeleccionado(servicio) ? "check" : "add" }}
+                    </mat-icon>
+                  </button>
+                </div>
+              </mat-card>
+            </div>
+          </ng-container>
+          <ng-template #noRecursos>
+            <div class="mensaje-vacio">
+              <mat-icon>info</mat-icon>
+              No hay servicios disponibles.
+            </div>
+          </ng-template>
+
+          <div
+            *ngIf="serviciosSeleccionados.length > 0"
+            class="boton-flotante-wrapper"
+          >
+            <button
+              mat-flat-button
+              color="primary"
+              class="boton-flotante-mejorado"
+              (click)="reservarServicios()"
+            >
+              Reservar ({{ serviciosSeleccionados.length }})
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="mostrarDisponibilidad">
+          <!-- Navegación de fechas -->
+          <div class="barra-fecha" *ngIf="!loading">
+            <span class="fecha-actual">
+              {{ viewDate | date : "fullDate" }}
+            </span>
+
+            <div class="navegacion-botones">
+              <button
+                mat-icon-button
+                class="boton-navegacion"
+                (click)="previusPeriod()"
+                aria-label="Día anterior"
+              >
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              <button mat-stroked-button color="primary" (click)="today()">
+                <mat-icon class="boton-icono">today</mat-icon> Hoy
+              </button>
+              <button
+                mat-icon-button
+                class="boton-navegacion"
+                (click)="nextPeriod()"
+                aria-label="Día siguiente"
+              >
+                <mat-icon>chevron_right</mat-icon>
               </button>
             </div>
-          </mat-card>
-        </div>
-      </ng-container>
-      <ng-template #noRecursos>
-        <div class="mensaje-vacio">
-          <mat-icon>info</mat-icon>
-          No hay servicios disponibles.
-        </div>
-      </ng-template>
-
-      <div
-        *ngIf="serviciosSeleccionados.length > 0"
-        class="boton-flotante-wrapper"
-      >
-        <button
-          mat-flat-button
-          color="primary"
-          class="boton-flotante-mejorado"
-          (click)="reservarServicios()"
-        >
-          Reservar ({{ serviciosSeleccionados.length }})
-        </button>
-      </div>
-    </div>
-
-    <div *ngIf="mostrarDisponibilidad">
-      <!-- Navegación de fechas -->
-      <div class="barra-fecha" *ngIf="!loading">
-        <span class="fecha-actual">
-          {{ viewDate | date : "fullDate" }}
-        </span>
-
-        <div class="navegacion-botones">
-          <button
-            mat-icon-button
-            class="boton-navegacion"
-            (click)="previusPeriod()"
-            aria-label="Día anterior"
-          >
-            <mat-icon>chevron_left</mat-icon>
-          </button>
-          <button mat-stroked-button color="primary" (click)="today()">
-            <mat-icon class="boton-icono">today</mat-icon> Hoy
-          </button>
-          <button
-            mat-icon-button
-            class="boton-navegacion"
-            (click)="nextPeriod()"
-            aria-label="Día siguiente"
-          >
-            <mat-icon>chevron_right</mat-icon>
-          </button>
-        </div>
-      </div>
-
-      <!-- Horarios -->
-      <div class="horarios-container" *ngIf="!loading">
-        <!-- Mañana -->
-        <div class="horario-seccion">
-          <div class="seccion-titulo">
-            <mat-icon>light_mode</mat-icon> Mañana (AM)
           </div>
-          <div class="horas-grid" *ngIf="horasAM.length > 0; else sinHorarios">
-            <button
-              mat-flat-button
-              *ngFor="let hora of horasAM"
-              [disabled]="!hora.disponible"
-              [ngClass]="{
-                'hora-disponible': hora.disponible,
-                'hora-no-disponible': !hora.disponible
-              }"
-              (click)="seleccionarHora(hora)"
-            >
-              {{ hora.hora }}
-            </button>
-          </div>
-          <ng-template #sinHorarios>
-            <div class="mensaje-no-horarios">
-              <span>No hay horarios disponibles en la mañana.</span>
+
+          <!-- Horarios -->
+          <div class="horarios-container" *ngIf="!loading">
+            <!-- Mañana -->
+            <div class="horario-seccion">
+              <div class="seccion-titulo">
+                <mat-icon>light_mode</mat-icon> Mañana (AM)
+              </div>
+              <div
+                class="horas-grid"
+                *ngIf="horasAM.length > 0; else sinHorarios"
+              >
+                <button
+                  mat-flat-button
+                  *ngFor="let hora of horasAM"
+                  [disabled]="!hora.disponible"
+                  [ngClass]="{
+                    'hora-disponible': hora.disponible,
+                    'hora-no-disponible': !hora.disponible
+                  }"
+                  (click)="seleccionarHora(hora)"
+                >
+                  {{ hora.hora }}
+                </button>
+              </div>
+              <ng-template #sinHorarios>
+                <div class="mensaje-no-horarios">
+                  <span>No hay horarios disponibles en la mañana.</span>
+                </div>
+              </ng-template>
             </div>
-          </ng-template>
-        </div>
 
-        <!-- Tarde -->
-        <div class="horario-seccion">
-          <div class="seccion-titulo">
-            <mat-icon>nights_stay</mat-icon> Tarde (PM)
-          </div>
-          <div class="horas-grid" *ngIf="horasPM.length > 0; else sinHorariosT">
-            <button
-              mat-flat-button
-              *ngFor="let hora of horasPM"
-              [disabled]="!hora.disponible"
-              [ngClass]="{
-                'hora-disponible': hora.disponible,
-                'hora-no-disponible': !hora.disponible
-              }"
-              (click)="seleccionarHora(hora)"
-            >
-              {{ hora.hora }}
-            </button>
-          </div>
-          <ng-template #sinHorariosT>
-            <div class="mensaje-no-horarios">
-              <span>No hay horarios disponibles en la tarde.</span>
+            <!-- Tarde -->
+            <div class="horario-seccion">
+              <div class="seccion-titulo">
+                <mat-icon>nights_stay</mat-icon> Tarde (PM)
+              </div>
+              <div
+                class="horas-grid"
+                *ngIf="horasPM.length > 0; else sinHorariosT"
+              >
+                <button
+                  mat-flat-button
+                  *ngFor="let hora of horasPM"
+                  [disabled]="!hora.disponible"
+                  [ngClass]="{
+                    'hora-disponible': hora.disponible,
+                    'hora-no-disponible': !hora.disponible
+                  }"
+                  (click)="seleccionarHora(hora)"
+                >
+                  {{ hora.hora }}
+                </button>
+              </div>
+              <ng-template #sinHorariosT>
+                <div class="mensaje-no-horarios">
+                  <span>No hay horarios disponibles en la tarde.</span>
+                </div>
+              </ng-template>
             </div>
-          </ng-template>
+          </div>
         </div>
       </div>
-    </div>
-  </ng-container>
-  <ng-template #mensajeNoAutorizado>
-    <div class="mensaje-error">
-      <mat-icon color="warn">error</mat-icon>
-      <p>{{ mensajeError }}</p>
-    </div>
-  </ng-template>
+    </ng-container>
+    <ng-template #mensajeNoAutorizado>
+      <div class="mensaje-error">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ mensajeError }}</p>
+      </div>
+    </ng-template>
+  </div>
 </div>

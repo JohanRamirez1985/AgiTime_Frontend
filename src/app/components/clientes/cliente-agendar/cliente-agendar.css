@@ -1,11 +1,20 @@
 .agendar-wrapper {
   max-width: 860px;
-  margin: 0 auto;
+  width: 100%;
   padding: 1.5rem;
-  background: #fefefe;
+  background: #fefefe; /* 👈 este se mantiene blanco */
   border-radius: 12px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
   font-family: "Segoe UI", sans-serif;
+}
+
+.agendar-background {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  min-height: 100vh;
+  background: #f0f2f5 url('https://www.transparenttextures.com/patterns/black-linen.png');
+  background-size: cover; /* asegura que la textura cubra */
 }
 
 /* ---------- Título ---------- */
@@ -131,8 +140,6 @@ button.hora-no-disponible {
   display: flex;
   align-items: center;
   justify-content: space-between; /* separa izquierda y derecha */
-  padding: 8px 16px;
-  background-color: #fff; /* puedes ajustarlo a tu tema */
   border-bottom: 1px solid #e0e0e0;
 }
 
@@ -149,6 +156,7 @@ button.hora-no-disponible {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: -20px;
 }
 
 .servicios-wrapper .titulo {
@@ -370,7 +378,8 @@ button.hora-no-disponible {
 .empresa-nombre {
   font-size: 1rem;
   font-weight: 500;
-  color: #444;
+  color: #333;
+  text-align: -webkit-right;
 }
 
 .titulo-cita {
@@ -380,4 +389,5 @@ button.hora-no-disponible {
   font-weight: bold;
   color: #1a237e;
   margin: 0 0 16px 0;
+  margin-top: 20px;
 }

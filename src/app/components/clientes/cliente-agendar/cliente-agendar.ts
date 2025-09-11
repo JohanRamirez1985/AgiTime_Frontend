@@ -50,25 +50,12 @@ export class ClienteAgendar {
   horaInicioServicios: number = 0;
   horaFinServicios: number = 0;
   horas: { hora: string; disponible: boolean }[] = [];
-  recursoInfo: {
-    emp: number;
-    id: number;
-    nombre: string;
-    sede: string;
-    foto: string;
-  } = {
-    emp: 0,
-    id: 0,
-    nombre: '',
-    sede: '',
-    foto: '',
-  };
   horasAM: { hora: string; disponible: boolean }[] = [];
   horasPM: { hora: string; disponible: boolean }[] = [];
   mostrarDisponibilidad: boolean = false;
   costo: number = 0;
   idRecurso: number = 0;
-  fotoRecuerso: string = '';
+  fotoRecurso: string = '';
   loading: boolean = true;
   mostrarDetalle: boolean = false;
   mostrarServicios: boolean = false;
@@ -81,7 +68,9 @@ export class ClienteAgendar {
   inactiva: boolean = false;
   clientesEmpresa: any[] = [];
   empresaLogo: string = '';
-  empresaNombre: string = '';
+  empresaNombre: any = '';
+  recursoSede: any;
+  recursoId: any;
 
   constructor(
     private sharedServices: SharedService,
@@ -100,21 +89,7 @@ export class ClienteAgendar {
     this.route.queryParams.subscribe((params) => {
       this.idRecurso = +params['rcr'];
     });
-    this.recursoInfo = JSON.parse(
-      localStorage.getItem('recurso') ||
-        '{"emp":0,"id":0,"nombre":"","sede":"", "foto":""}'
-    );
-    const infoempresa = localStorage.getItem('empresa');
-    if (infoempresa) {
-      const empresa = JSON.parse(infoempresa);
-      this.empresaLogo = 'assets/img/' + empresa?.logo;
-      this.empresaNombre = empresa.nombre;
-    }
-    this.nombreDelRecurso = this.recursoInfo.nombre;
-    this.fotoRecuerso = this.recursoInfo.foto;
-    this.obtenerServicios(this.idEmpresa);
-    this.obtenerHorarios();
-    this.consultarInfoCliente();
+    this.obtenerEmpresas();
   }
 
   reservarServicios(): void {
@@ -127,10 +102,48 @@ export class ClienteAgendar {
           maximumFractionDigits: 0,
         }).format(s.valor)}`
     );
-    this.loading = false;
     this.mostrarDetalle = true;
     this.mostrarServicios = false;
     this.mostrarDisponibilidad = true;
+    this.cdr.detectChanges();
+  }
+
+  private obtenerEmpresas() {
+    this.sharedServices.obtenerEmpresasApp().subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          const empresa = rest.datos.find((em) => em.id === this.idEmpresa);
+          this.empresaLogo = 'assets/img/' + empresa?.logo;
+          this.empresaNombre = empresa?.nombre;
+          localStorage.setItem('empresa', JSON.stringify(empresa));
+          this.obtenerRecursos();
+        } else {
+          this.inactiva = true;
+        }
+      },
+    });
+  }
+
+  private obtenerRecursos(): void {
+    this.sharedServices.obtenerRecursosAgenda(this.idEmpresa).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          let recurso = rest.datos;
+          const recursoActual = recurso.usuario.find(
+            (r: any) => r.id === this.idRecurso
+          );
+          this.fotoRecurso = recursoActual.foto;
+          this.nombreDelRecurso = recursoActual.nombre;
+          this.recursoId = recursoActual.id;
+          this.recursoSede = recursoActual.sede;
+          localStorage.setItem('recurso', JSON.stringify(recursoActual));
+          this.obtenerServicios(this.idEmpresa);
+        } else {
+          this.inactiva = true;
+          this.mensajeError = rest.mensaje;
+        }
+      },
+    });
   }
 
   estaSeleccionado(servicio: any): boolean {
@@ -145,6 +158,7 @@ export class ClienteAgendar {
     } else {
       this.serviciosSeleccionados.push(servicio);
     }
+    this.cdr.detectChanges();
   }
 
   public seleccionarHora(hora: any): void {
@@ -364,7 +378,7 @@ export class ClienteAgendar {
       empresa: this.idEmpresa,
       FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
       fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
-      recurso: this.recursoInfo.id,
+      recurso: this.recursoId,
     };
 
     this.agendaService.consultarAgendamientos(request).subscribe({
@@ -388,7 +402,9 @@ export class ClienteAgendar {
 
           this.horas = this.horas.filter((h) => h.disponible);
         }
+        this.consultarInfoCliente();
         this.verificarHoras();
+        this.cdr.detectChanges();
       },
     });
   }
@@ -421,10 +437,10 @@ export class ClienteAgendar {
       next: (rest) => {
         if (rest.exito) {
           this.serviciosFiltrados = [
-            ...rest.datos.filter((s: any) => s.sede === this.recursoInfo.sede),
+            ...rest.datos.filter((s: any) => s.sede === this.recursoSede),
           ];
-          this.loading = false;
           this.mostrarServicios = true;
+          this.obtenerHorarios();
         } else {
           this.inactiva = true;
           this.mensajeError = rest.mensaje;
