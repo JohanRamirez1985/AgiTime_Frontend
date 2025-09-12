@@ -172,7 +172,7 @@ export class Informes {
       const request = {
         emp: this.idEmpresa,
         fecha: this.form.value.fecha.toISOString(),
-        usuario: this.usuario.rol === 3 ? this.usuario.id : null,
+        ...(this.usuario?.rol === 3 && { usuario: this.usuario.rol }),
       };
       return request;
     } else {
