@@ -17,6 +17,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { InformesService } from '../../services/informes.service';
 import Swal from 'sweetalert2';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RolesContent } from '../../shared/libs/roles';
 
 @Component({
   selector: 'app-informes',
@@ -33,6 +35,7 @@ import Swal from 'sweetalert2';
     MatButtonModule,
     MatCardModule,
     MatIconModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './informes.html',
   styleUrls: ['./informes.css'],
@@ -41,6 +44,12 @@ export class Informes {
   form: FormGroup;
   tipoReporte: 'diario' | 'semanal' | null = null;
   idEmpresa: string | null = null;
+  permitirSeleccion: boolean = true;
+  loading: boolean = true;
+  btnGenerarReporte: boolean = false;
+  usuario: any;
+
+  private intervalId: any;
 
   constructor(private fb: FormBuilder, private informeServie: InformesService) {
     this.form = this.fb.group({
@@ -53,8 +62,50 @@ export class Informes {
 
   ngOnInit() {
     const info = JSON.parse(localStorage.getItem('infoEmp') || '{}');
+    const infoUser = JSON.parse(localStorage.getItem('usuario') || '{}');
+    this.usuario = infoUser;
     const id = info?.idEmpresa;
     this.idEmpresa = id;
+    this.validarRol(infoUser);
+    this.startBtnValidation();
+  }
+
+  ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+
+  private startBtnValidation() {
+    this.intervalId = setInterval(() => {
+      if (this.usuario?.rol === RolesContent.Empleado) {
+        const tipo = this.form.get('tipo')?.value;
+        const fecha = this.form.get('fecha')?.value;
+        this.btnGenerarReporte = !!(tipo && fecha);
+      } else {
+        if (this.tipoReporte === 'diario') {
+          const tipo = this.form.get('tipo')?.value;
+          const fecha = this.form.get('fecha')?.value;
+          this.btnGenerarReporte = !!(tipo && fecha);
+        } else {
+          const tipo = this.form.get('tipo')?.value;
+          const fechaIni = this.form.get('fechaInicio')?.value;
+          const fechaFin = this.form.get('fechaFin')?.value;
+          this.btnGenerarReporte = !!(tipo && fechaIni && fechaFin);
+        }
+      }
+    }, 1000);
+  }
+
+  private validarRol(usuario: any) {
+    if (usuario.rol === RolesContent.Empleado) {
+      this.permitirSeleccion = false;
+      this.tipoReporte = 'diario';
+      this.form.get('fecha')?.setValue(new Date());
+      this.form.get('tipo')?.setValue(this.tipoReporte);
+      this.btnGenerarReporte = true;
+    }
+    this.loading = false;
   }
 
   onTipoChange(tipo: 'diario' | 'semanal') {
@@ -121,6 +172,7 @@ export class Informes {
       const request = {
         emp: this.idEmpresa,
         fecha: this.form.value.fecha.toISOString(),
+        usuario: this.usuario.rol === 3 ? this.usuario.id : null,
       };
       return request;
     } else {

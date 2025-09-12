@@ -149,16 +149,39 @@ export class DashboardRecurso {
   }
 
   public activarUsuario() {
+    this.loading = true;
     const request = {
-      emp: this.idEmpresa,
-      usuario: this.user.id,
+      empresa: this.idEmpresa,
+      Usuario: this.user.id,
     };
 
     this.agendamientoServices.activarUsuarioBtn(request).subscribe({
       next: (rest) => {
         if (rest.exito) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Bloqueo actualizado!',
+            text: rest.mensaje,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Ok',
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: rest.mensaje,
+          });
         }
+        this.loading = false;
         this.estadoActivoInactivo();
+      },
+      error: (err) => {
+        this.loading = false;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err.statusText,
+        });
       },
     });
 
@@ -167,12 +190,7 @@ export class DashboardRecurso {
 
   public inactivarUsuario() {
     this.loading = true;
-
     const fechaInicio = new Date();
-    const horaInicio =
-      String(fechaInicio.getHours()).padStart(2, '0') +
-      ':' +
-      String(fechaInicio.getMinutes()).padStart(2, '0');
 
     this.sharedServices
       .parametros(this.idEmpresa.toString())
@@ -186,7 +204,7 @@ export class DashboardRecurso {
           const request = this.crearRequest(
             '2',
             fechaInicio,
-            horaInicio,
+            '07:00',
             '23:59',
             motivo,
             this.idEmpresa,

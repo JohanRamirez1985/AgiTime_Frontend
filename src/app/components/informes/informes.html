@@ -6,80 +6,97 @@
     </mat-card-title>
   </mat-card-header>
 
-  <mat-card-content>
-    <form [formGroup]="form" class="reporte-form">
-      <!-- Selección tipo reporte -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Tipo de Reporte</mat-label>
-        <mat-select
-          formControlName="tipo"
-          (selectionChange)="onTipoChange($event.value)"
-        >
-          <mat-option value="diario">Diario</mat-option>
-          <mat-option value="semanal">Semanal</mat-option>
-        </mat-select>
-      </mat-form-field>
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="loading-text">Cargando disponibilidad...</p>
+  </div>
 
-      <!-- Si es diario -->
-      <div *ngIf="tipoReporte === 'diario'" class="campo-fecha">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Fecha</mat-label>
-          <input
-            matInput
-            [matDatepicker]="pickerDiario"
-            formControlName="fecha"
-          />
-          <mat-datepicker-toggle
-            matSuffix
-            [for]="pickerDiario"
-          ></mat-datepicker-toggle>
-          <mat-datepicker #pickerDiario></mat-datepicker>
-        </mat-form-field>
-      </div>
+  <div *ngIf="!loading">
+    <mat-card-content>
+      <form [formGroup]="form" class="reporte-form">
+        <!-- Selección tipo reporte -->
+        <ng-container *ngIf="permitirSeleccion; else fijoDiario">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Tipo de Reporte</mat-label>
+            <mat-select
+              formControlName="tipo"
+              (selectionChange)="onTipoChange($event.value)"
+            >
+              <mat-option value="diario">Diario</mat-option>
+              <mat-option value="semanal">Semanal</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
 
-      <!-- Si es semanal -->
-      <div *ngIf="tipoReporte === 'semanal'" class="rango-fechas">
-        <mat-form-field appearance="outline" class="half-width">
-          <mat-label>Fecha Inicial</mat-label>
-          <input
-            matInput
-            [matDatepicker]="pickerInicio"
-            formControlName="fechaInicio"
-          />
-          <mat-datepicker-toggle
-            matSuffix
-            [for]="pickerInicio"
-          ></mat-datepicker-toggle>
-          <mat-datepicker #pickerInicio></mat-datepicker>
-        </mat-form-field>
+        <!-- Versión fija cuando no se permite cambiar -->
+        <ng-template #fijoDiario>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Tipo de Reporte</mat-label>
+            <input matInput value="Diario" readonly />
+          </mat-form-field>
+        </ng-template>
 
-        <mat-form-field appearance="outline" class="half-width">
-          <mat-label>Fecha Final</mat-label>
-          <input
-            matInput
-            [matDatepicker]="pickerFin"
-            formControlName="fechaFin"
-          />
-          <mat-datepicker-toggle
-            matSuffix
-            [for]="pickerFin"
-          ></mat-datepicker-toggle>
-          <mat-datepicker #pickerFin></mat-datepicker>
-        </mat-form-field>
-      </div>
+        <!-- Si es diario -->
+        <div *ngIf="tipoReporte === 'diario'" class="campo-fecha">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Fecha</mat-label>
+            <input
+              matInput
+              [matDatepicker]="pickerDiario"
+              formControlName="fecha"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="pickerDiario"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #pickerDiario></mat-datepicker>
+          </mat-form-field>
+        </div>
 
-      <!-- Botón -->
-      <div class="btn-container">
-        <button
-          mat-raised-button
-          color="primary"
-          (click)="generarReporte()"
-          [disabled]="form.invalid"
-        >
-          <mat-icon>analytics</mat-icon>
-          Generar Reporte
-        </button>
-      </div>
-    </form>
-  </mat-card-content>
+        <!-- Si es semanal -->
+        <div *ngIf="tipoReporte === 'semanal'" class="rango-fechas">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Fecha Inicial</mat-label>
+            <input
+              matInput
+              [matDatepicker]="pickerInicio"
+              formControlName="fechaInicio"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="pickerInicio"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #pickerInicio></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Fecha Final</mat-label>
+            <input
+              matInput
+              [matDatepicker]="pickerFin"
+              formControlName="fechaFin"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="pickerFin"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #pickerFin></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <!-- Botón -->
+        <div class="btn-container">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="generarReporte()"
+            [disabled]="!btnGenerarReporte"
+          >
+            <mat-icon>analytics</mat-icon>
+            Generar Reporte
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </div>
 </mat-card>
