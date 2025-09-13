@@ -145,9 +145,14 @@ export const routes: Routes = [
 
   {
     path: 'cliente',
-    // canActivate: [AuthGuard(['Cliente'])],
     loadChildren: () =>
       import('./components/clientes/cliente-routing').then((m) => m.routes),
+  },
+
+  {
+    path: 'agendaDiaria',
+    loadComponent: () =>
+      import('./components/agenda/agenda').then((m) => m.Agenda),
   },
 
   {
