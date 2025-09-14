@@ -143,6 +143,7 @@ export class DashboardRecurso {
       next: (rest) => {
         if (rest.exito) {
           this.btnActivar = rest.datos;
+          this.cdr.detectChanges();
         }
       },
     });

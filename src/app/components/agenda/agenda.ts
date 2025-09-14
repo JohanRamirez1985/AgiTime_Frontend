@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { SharedService } from '../../services/shared.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
 import { AgendamientoService } from '../../services/agendamiento.service';
@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { ReservaDialog } from '../reserva-dialog/reserva-dialog';
+import { ClienteService } from '../../services/cliente.service';
 
 @Component({
   selector: 'app-agenda',
@@ -46,6 +47,7 @@ export class Agenda {
   tiempoAgenda: string = '';
   tipoRango: string = 'Tiempo_Agenda_Diaria';
   tipoRangoTiempo: string = 'Tiempo_Agenda';
+  clientesEmpresa: any[] = [];
 
   reservas = [
     {
@@ -69,20 +71,21 @@ export class Agenda {
     private route: ActivatedRoute,
     private agendaService: AgendamientoService,
     private cdr: ChangeDetectorRef,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router,
+    private clienteService: ClienteService
   ) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
       this.idEmpresa = +params['emp'];
     });
+    this.consultarInfoCliente();
     this.obtenerRangoParametrizado();
     this.obtenerRecursos();
     this.obtenerHorarios();
     this.obtenerSedes();
     this.obtenerEmpresas();
-    // this.consultarAgenda();
-    // this.obtenerServicios(this.idEmpresa);
   }
 
   private obtenerRangoParametrizado(): void {
@@ -317,7 +320,12 @@ export class Agenda {
 
       if (encontrado) {
         const ahora = new Date();
-        ahora.setMinutes(Math.ceil(ahora.getMinutes() / 15) * 15, 0, 0);
+        ahora.setMinutes(
+          Math.ceil(ahora.getMinutes() / parseInt(this.tiempoAgenda)) *
+            parseInt(this.tiempoAgenda),
+          0,
+          0
+        );
 
         const horas = ahora.getHours();
         const minutos = ahora.getMinutes();
@@ -333,10 +341,12 @@ export class Agenda {
         );
 
         // Marcar disponibles / ocupadas
-        const horasDisponibles = todasLasHoras.map((h) => ({
-          hora: h,
-          ocupado: encontrado.horasOcu.includes(h),
-        }));
+        const horasDisponibles = todasLasHoras
+          .filter((h) => !encontrado.horasOcu.includes(h.hora))
+          .map((h) => ({
+            hora: h.hora,
+            ocupado: false,
+          }));
 
         return { ...r, horasDisponibles };
       }
@@ -381,6 +391,18 @@ export class Agenda {
     this.consultarAgenda();
   }
 
+  private consultarInfoCliente(): void {
+    this.clienteService
+      .obtenerInfoCliente(this.idEmpresa.toString())
+      .subscribe({
+        next: (rest) => {
+          if (rest.exito) {
+            this.clientesEmpresa = rest.datos;
+          }
+        },
+      });
+  }
+
   public seleccionarHora(item: any, hora: any): void {
     const fechaFormateada = new Date().toLocaleDateString();
 
@@ -388,18 +410,29 @@ export class Agenda {
       width: '400px',
       data: {
         fecha: fechaFormateada,
-        hora: hora.hora.hora, // 👈 aquí va la hora seleccionada
+        hora: hora.hora.hora,
         costo: item.valor,
       },
+    });
+
+    // 👂 Accedemos a la instancia del modal para escuchar el evento
+    const instance = dialogRef.componentInstance;
+
+    instance.celularIngresado.subscribe((celular: string) => {
+      const cliente = this.clientesEmpresa.find(
+        (c) => c.telefono === celular || c.celular === celular
+      );
+
+      if (cliente) {
+        instance.poblarDatos(cliente); // ✅ rellenar datos en el modal
+      }
     });
 
     // 👂 escuchar cuando se cierre el modal
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        console.log('✅ Reserva confirmada:', result);
-        // Aquí puedes llamar a tu servicio para guardar la reserva
-      } else {
-        console.log('❌ Reserva cancelada');
+        this.loading = true;
+        this.reservarCita(result, hora.hora.hora, item);
       }
     });
   }
@@ -413,32 +446,38 @@ export class Agenda {
       correo: string;
       fechaNacimiento: string;
     },
-    hora: string
+    hora: string,
+    item: any
   ) {
-    // const request = this.createJson(hora, datos);
-    // this.agendaService.registrarCita(request).subscribe({
-    //   next: (rest) => {
-    //     this.loading = false;
-    //     Swal.fire({
-    //       icon: 'success',
-    //       title: '¡Cita creada!',
-    //       text: rest.mensaje || 'La cita fue creado exitosamente',
-    //       confirmButtonColor: '#3085d6',
-    //       confirmButtonText: 'Ok',
-    //     }).then(() => {
-    //       this.volver();
-    //     });
-    //   },
-    //   error: (err) => {
-    //     this.loading = false;
-    //     this.mostrarDisponibilidad = true;
-    //     Swal.fire({
-    //       icon: 'error',
-    //       title: 'Error',
-    //       text: err.mensaje,
-    //     });
-    //   },
-    // });
+    const request = this.createJson(hora, datos, item);
+    this.agendaService.registrarCita(request).subscribe({
+      next: (rest) => {
+        this.loading = false;
+        Swal.fire({
+          icon: 'success',
+          title: '¡Cita creada!',
+          text: rest.mensaje || 'La cita fue creado exitosamente',
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Ok',
+        }).then(() => {
+          this.volver();
+        });
+      },
+      error: (err) => {
+        this.loading = false;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err.mensaje,
+        });
+      },
+    });
+  }
+
+  volver(): void {
+    this.router.navigate(['/cliente'], {
+      queryParams: { em: this.idEmpresa },
+    });
   }
 
   private createJson(
@@ -450,62 +489,63 @@ export class Agenda {
       hora: string;
       correo: string;
       fechaNacimiento: string;
-    }
+    },
+    item: any
   ) {
-    // const fechaBase = this.viewDate.toISOString().split('T')[0];
-    // const tiempoTotalServicio = this.serviciosSeleccionados
-    //   .map((s) => s.tiempo)
-    //   .reduce((a, b) => a + b, 0);
-    // const serviciosSeleccionados = this.serviciosSeleccionados.map((s) => ({
-    //   servicio: s.id,
-    // }));
-    // // Extraer la hora y el periodo (AM o PM)
-    // const match = hora.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-    // if (match) {
-    //   let horas = parseInt(match[1], 10);
-    //   const minutos = match[2];
-    //   const periodo = match[3].toUpperCase();
-    //   // Convertir a formato 24 horas
-    //   if (periodo === 'PM' && horas < 12) {
-    //     horas += 12;
-    //   } else if (periodo === 'AM' && horas === 12) {
-    //     horas = 0;
-    //   }
-    //   // Asegurar formato 2 dígitos
-    //   const horasStr = horas.toString().padStart(2, '0');
-    //   const fechaFinal = `${fechaBase}T${horasStr}:${minutos}:00`;
-    //   const now = new Date();
-    //   const fechaLocal =
-    //     now.getFullYear() +
-    //     '-' +
-    //     String(now.getMonth() + 1).padStart(2, '0') +
-    //     '-' +
-    //     String(now.getDate()).padStart(2, '0') +
-    //     'T' +
-    //     String(now.getHours()).padStart(2, '0') +
-    //     ':' +
-    //     String(now.getMinutes()).padStart(2, '0') +
-    //     ':' +
-    //     String(now.getSeconds()).padStart(2, '0');
-    //   const json = {
-    //     FechaIni: fechaFinal,
-    //     recurso: this.idRecurso,
-    //     Valor: this.costo,
-    //     UsuarioCreacion: 'Cliente',
-    //     Hora: tiempoTotalServicio,
-    //     empresa: this.idEmpresa,
-    //     servicios: serviciosSeleccionados,
-    //     clienteInfo: {
-    //       Nombre: datos.nombre,
-    //       Telefono: datos.celular,
-    //       Correo: datos.correo,
-    //       FechaNacimiento: datos.fechaNacimiento,
-    //     },
-    //     fechaCreacion: fechaLocal,
-    //   };
-    //   return json;
-    // } else {
-    //   return;
-    // }
+    const fechaBase = new Date().toISOString().split('T')[0];
+    const tiempoTotalServicio = this.serviciosSeleccionados
+      .map((s) => s.tiempo)
+      .reduce((a, b) => a + b, 0);
+    const serviciosSeleccionados = this.serviciosSeleccionados.map((s) => ({
+      servicio: s.id,
+    }));
+    // Extraer la hora y el periodo (AM o PM)
+    const match = hora.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (match) {
+      let horas = parseInt(match[1], 10);
+      const minutos = match[2];
+      const periodo = match[3].toUpperCase();
+      // Convertir a formato 24 horas
+      if (periodo === 'PM' && horas < 12) {
+        horas += 12;
+      } else if (periodo === 'AM' && horas === 12) {
+        horas = 0;
+      }
+      // Asegurar formato 2 dígitos
+      const horasStr = horas.toString().padStart(2, '0');
+      const fechaFinal = `${fechaBase}T${horasStr}:${minutos}:00`;
+      const now = new Date();
+      const fechaLocal =
+        now.getFullYear() +
+        '-' +
+        String(now.getMonth() + 1).padStart(2, '0') +
+        '-' +
+        String(now.getDate()).padStart(2, '0') +
+        'T' +
+        String(now.getHours()).padStart(2, '0') +
+        ':' +
+        String(now.getMinutes()).padStart(2, '0') +
+        ':' +
+        String(now.getSeconds()).padStart(2, '0');
+      const json = {
+        FechaIni: fechaFinal,
+        recurso: item.id,
+        Valor: item.valor,
+        UsuarioCreacion: 'Cliente',
+        Hora: tiempoTotalServicio,
+        empresa: this.idEmpresa,
+        servicios: serviciosSeleccionados,
+        clienteInfo: {
+          Nombre: datos.nombre,
+          Telefono: datos.celular,
+          Correo: datos.correo,
+          FechaNacimiento: datos.fechaNacimiento,
+        },
+        fechaCreacion: fechaLocal,
+      };
+      return json;
+    } else {
+      return;
+    }
   }
 }
