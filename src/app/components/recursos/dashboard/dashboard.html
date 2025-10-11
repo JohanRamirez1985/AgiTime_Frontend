@@ -82,11 +82,15 @@
                   </ng-container>
                 </span>
               </div>
-              <div *ngIf="cita.estado === 'Activo'" class="acciones-cita">
+              <div class="acciones-cita">
                 <button class="btn-cancelar" (click)="cancelarCita(cita)">
                   Cancelar
                 </button>
-                <button class="btn-confirmar" (click)="confirmarCita(cita)">
+                <button
+                  *ngIf="cita.estado === 'Activo'"
+                  class="btn-confirmar"
+                  (click)="confirmarCita(cita)"
+                >
                   Confirmar
                 </button>
               </div>
@@ -135,6 +139,9 @@
                   color="primary"
                   class="boton-add"
                   (click)="toggleSeleccionServicio(servicio)"
+                  [disabled]="
+                    otroSeleccionado && servicio.nombre.toLowerCase() !== 'otro'
+                  "
                 >
                   <mat-icon>{{
                     estaSeleccionado(servicio) ? "check" : "add"

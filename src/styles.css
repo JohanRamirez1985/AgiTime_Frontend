@@ -4,10 +4,14 @@ body {
   font-family: Arial, sans-serif;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 /* Estilo personalizado para SweetAlert2 */
 .swal-reserva-responsive {
@@ -32,4 +36,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   width: 70% !important;
   box-sizing: border-box;
   margin-top: 8px;
+}
+
+.swal-input-centered {
+  display: block !important;
+  margin: 0 auto !important;
+  text-align: center !important;
+  width: 60% !important;
 }

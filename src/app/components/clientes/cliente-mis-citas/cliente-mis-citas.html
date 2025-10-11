@@ -70,7 +70,7 @@
             <p><mat-icon>access_time</mat-icon> {{ cita.hora }}</p>
             <p><mat-icon>location_on</mat-icon> {{ cita.sede }}</p>
           </div>
-          <div class="cita-acciones">
+          <div *ngIf="cita.estado == 'Activo'" class="cita-acciones">
             <button
               mat-stroked-button
               color="warn"

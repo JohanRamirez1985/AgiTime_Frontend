@@ -67,12 +67,14 @@ export class ClienteMisCitas {
   public consultar() {
     this.mostrarContenido = false;
     this.loading = true;
+    this.cdr.detectChanges();
     if (!this.telefono || this.telefono.length < 10) {
       Swal.fire({
         icon: 'warning',
         title: 'Teléfono requerido',
         text: 'Por favor, ingresa un número de celular válido',
       });
+      this.loading = false;
       return;
     }
 
@@ -106,6 +108,7 @@ export class ClienteMisCitas {
               }),
               sede: item.sede || 'Sede no disponible',
               id: item.id,
+              estado: item.estado,
             };
           });
 

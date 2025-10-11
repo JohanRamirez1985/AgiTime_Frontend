@@ -102,6 +102,8 @@ export class DashboardRecurso {
   ];
   rol: any;
   rolesPermitidos: number[] = [];
+  otroSeleccionado: boolean = false;
+  costoOtro: number = 0;
 
   constructor(
     private router: Router,
@@ -185,8 +187,6 @@ export class DashboardRecurso {
         });
       },
     });
-
-    console.log();
   }
 
   public inactivarUsuario() {
@@ -495,19 +495,72 @@ export class DashboardRecurso {
   }
 
   toggleSeleccionServicio(servicio: any): void {
+    const esOtro = servicio.nombre?.toLowerCase() === 'otro';
+
     if (this.estaSeleccionado(servicio)) {
+      // Si el servicio ya estaba seleccionado, lo quitamos
       this.serviciosSeleccionados = this.serviciosSeleccionados.filter(
         (s) => s.id !== servicio.id
       );
+
+      // Si se desmarcó "Otro", volvemos a permitir todos
+      if (esOtro) {
+        this.otroSeleccionado = false;
+      }
     } else {
-      this.serviciosSeleccionados.push(servicio);
+      // Si se selecciona un servicio nuevo
+      if (esOtro) {
+        // Si selecciona "Otro", limpiamos los demás
+        this.serviciosSeleccionados = [servicio];
+        this.otroSeleccionado = true;
+      } else {
+        // Si "Otro" ya estaba seleccionado, no permitimos seleccionar otro
+        if (this.otroSeleccionado) return;
+
+        // Caso normal: agregar el servicio
+        this.serviciosSeleccionados.push(servicio);
+      }
     }
+
     this.cdr.detectChanges();
   }
 
   public reservar(): void {
-    this.mostrarAgenda = true;
-    this.cdr.detectChanges();
+    if (this.otroSeleccionado) {
+      Swal.fire({
+        title: 'Ingrese el costo del servicio',
+        input: 'number',
+        inputLabel: 'Valor del servicio',
+        inputPlaceholder: 'Ej: 25000',
+        inputAttributes: {
+          min: '0',
+          step: '1000',
+        },
+        confirmButtonText: 'Guardar',
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        allowOutsideClick: false,
+        customClass: {
+          input: 'swal-input-centered', // 👈 agregamos una clase personalizada
+        },
+        inputValidator: (value) => {
+          if (!value || isNaN(+value) || +value <= 0) {
+            return 'Por favor ingrese un valor válido';
+          }
+          return null;
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const costo = Number(result.value);
+          this.costoOtro = costo;
+          this.mostrarAgenda = true;
+          this.cdr.detectChanges();
+        }
+      });
+    } else {
+      this.mostrarAgenda = true;
+      this.cdr.detectChanges();
+    }
   }
 
   estaSeleccionado(servicio: any): boolean {
@@ -955,7 +1008,7 @@ export class DashboardRecurso {
       const json = {
         FechaIni: fechaFinal,
         recurso: this.user.id,
-        Valor: costo,
+        Valor: this.otroSeleccionado ? this.costoOtro : costo,
         UsuarioCreacion: 'Usuario',
         Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
         empresa: this.idEmpresa,

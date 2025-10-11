@@ -436,15 +436,22 @@ export class ClienteAgendar {
     this.sharedServices.obtenerServicios(emp).subscribe({
       next: (rest) => {
         if (rest.exito) {
-          this.serviciosFiltrados = [
-            ...rest.datos.filter((s: any) => s.sede === this.recursoSede),
-          ];
+          this.serviciosFiltrados = rest.datos.filter(
+            (s: any) =>
+              s.sede === this.recursoSede &&
+              s.nombre?.toLowerCase().trim() !== 'otro'
+          );
+
           this.mostrarServicios = true;
           this.obtenerHorarios();
         } else {
           this.inactiva = true;
           this.mensajeError = rest.mensaje;
         }
+      },
+      error: (err) => {
+        console.error('Error al obtener servicios:', err);
+        this.loading = false;
       },
     });
   }
