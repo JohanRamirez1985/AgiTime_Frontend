@@ -506,27 +506,33 @@ export class DashboardRecurso {
       // Si se desmarcó "Otro", volvemos a permitir todos
       if (esOtro) {
         this.otroSeleccionado = false;
+        this.cdr.detectChanges();
       }
+      this.cdr.detectChanges();
     } else {
       // Si se selecciona un servicio nuevo
       if (esOtro) {
         // Si selecciona "Otro", limpiamos los demás
         this.serviciosSeleccionados = [servicio];
         this.otroSeleccionado = true;
+        this.cdr.detectChanges();
       } else {
         // Si "Otro" ya estaba seleccionado, no permitimos seleccionar otro
         if (this.otroSeleccionado) return;
 
         // Caso normal: agregar el servicio
         this.serviciosSeleccionados.push(servicio);
+        this.cdr.detectChanges();
       }
+      this.cdr.detectChanges();
     }
-
-    this.cdr.detectChanges();
   }
 
   public reservar(): void {
     if (this.otroSeleccionado) {
+      console.log('ENTROOOOOOOOOOOOO');
+
+      this.cdr.detectChanges();
       Swal.fire({
         title: 'Ingrese el costo del servicio',
         input: 'number',
