@@ -104,6 +104,8 @@ export class DashboardRecurso {
   rolesPermitidos: number[] = [];
   otroSeleccionado: boolean = false;
   costoOtro: number = 0;
+  rangoTiempo: string = '';
+  tipoRangoTiempo: string = 'Tiempo_Agenda';
 
   constructor(
     private router: Router,
@@ -129,10 +131,23 @@ export class DashboardRecurso {
     this.idEmpresa = this.empresa.id;
     this.rol = this.user.rol;
     this.estadoActivoInactivo();
+    this.obtenerRangoParametrizado();
     this.obtenerServicios(this.idEmpresa);
     this.rolesPermitidos = [RolesContent.Empleado, RolesContent.Administrador];
     this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
     this.obtenerBloqueos();
+  }
+
+  private obtenerRangoParametrizado(): void {
+    this.sharedServices.parametros(this.idEmpresa.toString()).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          this.rangoTiempo = rest.datos.find(
+            (h: any) => h.tipo === this.tipoRangoTiempo
+          ).valor;
+        }
+      },
+    });
   }
 
   private estadoActivoInactivo() {
@@ -929,39 +944,100 @@ export class DashboardRecurso {
 
   public seleccionarHora(hora: any): void {
     this.loading = true;
-    const request = this.createJson(hora.hora);
-    this.agendamientoServices.registrarCita(request).subscribe({
-      next: (rest) => {
-        if (rest.exito) {
-          Swal.fire({
-            icon: 'success',
-            title: '¡Cita creada!',
-            text: rest.mensaje || 'La cita fue creado exitosamente',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Ok',
-          }).then(() => {
-            this.serviciosSeleccionados = [];
-            this.mostrarAgenda = false;
-            this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
-          });
-        } else {
+    let horaDiponible = false;
+
+    horaDiponible = this.validarHoraDisponible(hora.hora);
+
+    if (horaDiponible) {
+      const request = this.createJson(hora.hora);
+      this.agendamientoServices.registrarCita(request).subscribe({
+        next: (rest) => {
+          if (rest.exito) {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Cita creada!',
+              text: rest.mensaje || 'La cita fue creado exitosamente',
+              confirmButtonColor: '#3085d6',
+              confirmButtonText: 'Ok',
+            }).then(() => {
+              this.serviciosSeleccionados = [];
+              this.mostrarAgenda = false;
+              this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              text: rest.mensaje || 'Error de servidor',
+            });
+          }
+          this.loading = false;
+        },
+        error: (err) => {
+          this.loading = false;
           Swal.fire({
             icon: 'error',
-            text: rest.mensaje || 'Error de servidor',
+            title: 'Error de servidor',
+            text: err.statusText,
           });
-        }
-        this.loading = false;
-      },
-      error: (err) => {
-        this.loading = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Error de servidor',
-          text: err.statusText,
-        });
-      },
-    });
+        },
+      });
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Mensaje',
+        text: 'No puedes realizar el agendamiento ya que el tiempo de la cita sobrepasa al rango de horas disponibles.',
+      });
+      this.loading = false;
+    }
+
     this.cdr.detectChanges();
+  }
+
+  private validarHoraDisponible(hora: string): boolean {
+    const loteHoras =
+      this.serviciosSeleccionados.reduce((acc, item) => acc + item.tiempo, 0) /
+      parseInt(this.rangoTiempo);
+
+    const parseHora = (horaStr: string): Date => {
+      const [time, modifier] = horaStr.split(' ');
+      let [hours, minutes] = time.split(':').map(Number);
+
+      if (modifier === 'PM' && hours !== 12) hours += 12;
+      if (modifier === 'AM' && hours === 12) hours = 0;
+
+      const date = new Date();
+      date.setHours(hours, minutes, 0, 0);
+      return date;
+    };
+
+    const formatHora = (date: Date): string => {
+      let hours = date.getHours();
+      const minutes = date.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      const mm = minutes.toString().padStart(2, '0');
+      const hh = hours.toString().padStart(2, '0');
+      return `${hh}:${mm} ${ampm}`;
+    };
+
+    const rangoMinutos = parseInt(this.rangoTiempo);
+    const horaBase = parseHora(hora);
+    const horasGeneradas: string[] = [];
+
+    for (let i = 0; i < loteHoras; i++) {
+      const nuevaHora = new Date(horaBase.getTime() + i * rangoMinutos * 60000);
+      horasGeneradas.push(formatHora(nuevaHora));
+    }
+
+    const conflicto = horasGeneradas.find(
+      (h) => !this.horas.some((x) => x.hora === h)
+    );
+
+    if (conflicto) {
+      return false;
+    }
+
+    return true;
   }
 
   private createJson(hora: string) {
