@@ -136,14 +136,22 @@ export class Informes {
             const fileURL = URL.createObjectURL(blob);
 
             // Abrir en una nueva pestaña
-            window.open(fileURL);
-
-            Swal.fire({
-              icon: 'success',
-              title: 'Reporte generado',
-              text: 'El reporte se ha abierto en una nueva pestaña.',
-              confirmButtonColor: '#3085d6',
-            });
+            if (blob.size != 80) {
+              window.open(fileURL);
+              Swal.fire({
+                icon: 'success',
+                title: 'Reporte generado',
+                text: 'El reporte se ha abierto en una nueva pestaña.',
+                confirmButtonColor: '#3085d6',
+              });
+            } else {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Sin datos',
+                text: 'No se generó ningún archivo para este rango.',
+                confirmButtonColor: '#0d47a1',
+              });
+            }
           } else {
             Swal.fire({
               icon: 'warning',
