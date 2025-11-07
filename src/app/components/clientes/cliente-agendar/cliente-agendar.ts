@@ -71,6 +71,8 @@ export class ClienteAgendar {
   empresaNombre: any = '';
   recursoSede: any;
   recursoId: any;
+  rangoTiempo: string = '';
+  tipoRangoTiempo: string = 'Tiempo_Agenda';
 
   constructor(
     private sharedServices: SharedService,
@@ -89,7 +91,20 @@ export class ClienteAgendar {
     this.route.queryParams.subscribe((params) => {
       this.idRecurso = +params['rcr'];
     });
+    this.obtenerRangoParametrizado();
     this.obtenerEmpresas();
+  }
+
+  private obtenerRangoParametrizado(): void {
+    this.sharedServices.parametros(this.idEmpresa.toString()).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          this.rangoTiempo = rest.datos.find(
+            (h: any) => h.tipo === this.tipoRangoTiempo
+          ).valor;
+        }
+      },
+    });
   }
 
   reservarServicios(): void {
@@ -162,49 +177,107 @@ export class ClienteAgendar {
   }
 
   public seleccionarHora(hora: any): void {
-    const fechaFormateada = this.viewDate.toLocaleDateString('es-CO', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    let horaDiponible = false;
+    horaDiponible = this.validarHoraDisponible(hora.hora);
 
-    const valor = this.serviciosSeleccionados.map((s) => s.valor);
-    this.costo = valor.reduce((a, b) => a + b, 0);
-    const costoFormateado = new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      minimumFractionDigits: 0,
-    }).format(this.costo);
+    if (horaDiponible) {
+      const fechaFormateada = this.viewDate.toLocaleDateString('es-CO', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
 
-    const dialogRef = this.dialog.open(ReservaDialog, {
-      width: '400px',
-      data: {
-        fecha: fechaFormateada,
-        hora: hora.hora,
-        costo: costoFormateado,
-      },
-    });
+      const valor = this.serviciosSeleccionados.map((s) => s.valor);
+      this.costo = valor.reduce((a, b) => a + b, 0);
+      const costoFormateado = new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0,
+      }).format(this.costo);
 
-    // 👂 Accedemos a la instancia del modal para escuchar el evento
-    const instance = dialogRef.componentInstance;
+      const dialogRef = this.dialog.open(ReservaDialog, {
+        width: '400px',
+        data: {
+          fecha: fechaFormateada,
+          hora: hora.hora,
+          costo: costoFormateado,
+        },
+      });
 
-    instance.celularIngresado.subscribe((celular: string) => {
-      const cliente = this.clientesEmpresa.find(
-        (c) => c.telefono === celular || c.celular === celular
-      );
+      // 👂 Accedemos a la instancia del modal para escuchar el evento
+      const instance = dialogRef.componentInstance;
 
-      if (cliente) {
-        instance.poblarDatos(cliente); // ✅ rellenar datos en el modal
-      }
-    });
+      instance.celularIngresado.subscribe((celular: string) => {
+        const cliente = this.clientesEmpresa.find(
+          (c) => c.telefono === celular || c.celular === celular
+        );
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loading = true;
-        this.reservarCita(result, hora.hora);
-      }
-    });
+        if (cliente) {
+          instance.poblarDatos(cliente); // ✅ rellenar datos en el modal
+        }
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this.loading = true;
+          this.reservarCita(result, hora.hora);
+        }
+      });
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Mensaje',
+        text: 'No puedes realizar el agendamiento ya que el tiempo de la cita sobrepasa al rango de horas disponibles.',
+      });
+    }
+  }
+
+  private validarHoraDisponible(hora: string): boolean {
+    const loteHoras =
+      this.serviciosSeleccionados.reduce((acc, item) => acc + item.tiempo, 0) /
+      parseInt(this.rangoTiempo);
+
+    const parseHora = (horaStr: string): Date => {
+      const [time, modifier] = horaStr.split(' ');
+      let [hours, minutes] = time.split(':').map(Number);
+
+      if (modifier === 'PM' && hours !== 12) hours += 12;
+      if (modifier === 'AM' && hours === 12) hours = 0;
+
+      const date = new Date();
+      date.setHours(hours, minutes, 0, 0);
+      return date;
+    };
+
+    const formatHora = (date: Date): string => {
+      let hours = date.getHours();
+      const minutes = date.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      const mm = minutes.toString().padStart(2, '0');
+      const hh = hours.toString().padStart(2, '0');
+      return `${hh}:${mm} ${ampm}`;
+    };
+
+    const rangoMinutos = parseInt(this.rangoTiempo);
+    const horaBase = parseHora(hora);
+    const horasGeneradas: string[] = [];
+
+    for (let i = 0; i < loteHoras; i++) {
+      const nuevaHora = new Date(horaBase.getTime() + i * rangoMinutos * 60000);
+      horasGeneradas.push(formatHora(nuevaHora));
+    }
+
+    const conflicto = horasGeneradas.find(
+      (h) => !this.horas.some((x) => x.hora === h)
+    );
+
+    if (conflicto) {
+      return false;
+    }
+
+    return true;
   }
 
   private consultarInfoCliente(): void {
