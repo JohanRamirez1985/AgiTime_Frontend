@@ -346,7 +346,10 @@ export class ClienteAgendar {
       fechaNacimiento: string;
     }
   ) {
-    const fechaBase = this.viewDate.toISOString().split('T')[0];
+    const year = this.viewDate.getFullYear();
+    const month = String(this.viewDate.getMonth() + 1).padStart(2, '0');
+    const day = String(this.viewDate.getDate()).padStart(2, '0');
+    const fechaBase = `${year}-${month}-${day}`;
     const tiempoTotalServicio = this.serviciosSeleccionados
       .map((s) => s.tiempo)
       .reduce((a, b) => a + b, 0);
