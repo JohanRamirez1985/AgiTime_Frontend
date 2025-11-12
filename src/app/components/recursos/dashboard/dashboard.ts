@@ -1042,7 +1042,11 @@ export class DashboardRecurso {
 
   private createJson(hora: string) {
     const match = hora.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-    const fechaBase = this.day.toISOString().split('T')[0];
+    //const fechaBase = this.day.toISOString().split('T')[0];
+    const year = this.day.getFullYear();
+    const month = String(this.day.getMonth() + 1).padStart(2, '0');
+    const day = String(this.day.getDate()).padStart(2, '0');
+    const fechaBase = `${year}-${month}-${day}`;
 
     if (match) {
       let horas = parseInt(match[1], 10);
