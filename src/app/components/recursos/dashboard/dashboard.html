@@ -285,7 +285,7 @@
                   <p>
                     <strong>Día:</strong>
                     {{
-                      bloqueo.tipoBloqueo === "1"
+                      bloqueo.tipoBloqueo === "1" || bloqueo.tipoBloqueo === "3"
                         ? bloqueo.dia
                         : (bloqueo.fechaInicio | date : "fullDate" : "" : "es")
                     }}
