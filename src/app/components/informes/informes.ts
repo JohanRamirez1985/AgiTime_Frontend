@@ -177,25 +177,39 @@ export class Informes {
 
   private createJson(diario: boolean) {
     if (diario) {
-      const request = {
+      const fecha = new Date(this.form.value.fecha);
+      fecha.setHours(0, 0, 0, 0);
+
+      const fechaString = `${fecha.getFullYear()}-${String(
+        fecha.getMonth() + 1
+      ).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}T00:00:00`;
+
+      return {
         emp: this.idEmpresa,
-        fecha: this.form.value.fecha.toISOString(),
+        fecha: fechaString,
         ...(this.usuario?.rol === 3 && { usuario: this.usuario.id }),
       };
-      return request;
     } else {
-      const fechaInicio = new Date(this.form.value.fechaInicio);
-      fechaInicio.setHours(0, 0, 0, 0);
+      const inicio = new Date(this.form.value.fechaInicio);
+      inicio.setHours(0, 0, 0, 0);
+      const inicioString = `${inicio.getFullYear()}-${String(
+        inicio.getMonth() + 1
+      ).padStart(2, '0')}-${String(inicio.getDate()).padStart(
+        2,
+        '0'
+      )}T00:00:00`;
 
-      const fechaFin = new Date(this.form.value.fechaFin);
-      fechaFin.setHours(23, 59, 59, 999);
+      const fin = new Date(this.form.value.fechaFin);
+      fin.setHours(23, 59, 59, 999);
+      const finString = `${fin.getFullYear()}-${String(
+        fin.getMonth() + 1
+      ).padStart(2, '0')}-${String(fin.getDate()).padStart(2, '0')}T23:59:59`;
 
-      const request = {
+      return {
         emp: this.idEmpresa,
-        fechaInicio: fechaInicio.toISOString(), // se queda como Date local
-        fechaFin: fechaFin.toISOString(),
+        fechaInicio: inicioString,
+        fechaFin: finString,
       };
-      return request;
     }
   }
 }

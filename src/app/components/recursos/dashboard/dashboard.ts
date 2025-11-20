@@ -78,6 +78,8 @@ export class DashboardRecurso {
   tipoBloqueo: string = '';
   mostrarTipoBloqueos: boolean = true;
   fechaBloqueo: Date | null = null;
+  fechaInicioVacaciones: any;
+  fechaFinVacaciones: any;
   diasMap: { [key: string]: string } = {
     '1': 'Lunes',
     '2': 'Martes',
@@ -106,6 +108,7 @@ export class DashboardRecurso {
   costoOtro: number = 0;
   rangoTiempo: string = '';
   tipoRangoTiempo: string = 'Tiempo_Agenda';
+  estaDeshabilitado: boolean = false;
 
   constructor(
     private router: Router,
@@ -117,11 +120,22 @@ export class DashboardRecurso {
   onTipoBloqueoChange(valor: string) {
     this.tipoBloqueo = valor;
     this.mostrarTipoBloqueos = false;
+    this.estaDeshabilitado = false;
+    if (this.tipoBloqueo === '3') {
+      this.horaInicio = '00:00';
+      this.horaFin = '23:59';
+      this.motivo = 'Descanso';
+      this.estaDeshabilitado = true;
+    }
   }
 
   public cambiarTipo(): void {
     this.mostrarTipoBloqueos = true;
     this.tipoBloqueo = '';
+    this.estaDeshabilitado = false;
+    this.horaInicio = '';
+    this.horaFin = '';
+    this.motivo = '';
   }
 
   ngOnInit() {
@@ -361,7 +375,7 @@ export class DashboardRecurso {
       });
       return;
     } else {
-      if (this.tipoBloqueo === '1') {
+      if (this.tipoBloqueo === '1' || this.tipoBloqueo === '3') {
         const checked = this.dias.filter((dia) => dia.checked).length;
         if (checked === 0) {
           this.loading = false;
@@ -386,30 +400,44 @@ export class DashboardRecurso {
           });
           return;
         }
+      } else if (this.tipoBloqueo === '4') {
+        if (!this.fechaInicioVacaciones || !this.fechaFinVacaciones) {
+          this.loading = false;
+          Swal.fire({
+            icon: 'warning',
+            title: 'Campo obligatorio',
+            text: 'Debes seleccionar una fecha inicial y una final para tus vacaciones.',
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Entendido',
+          });
+          return;
+        }
       }
     }
 
-    if (!this.horaInicio || !this.horaFin || !this.motivo) {
-      this.loading = false;
-      let campoFaltante = '';
+    if (this.tipoBloqueo !== '4') {
+      if (!this.horaInicio || !this.horaFin || !this.motivo) {
+        this.loading = false;
+        let campoFaltante = '';
 
-      if (!this.horaInicio) {
-        campoFaltante = 'Hora de inicio';
-      } else if (!this.horaFin) {
-        campoFaltante = 'Hora de fin';
-      } else if (!this.motivo) {
-        campoFaltante = 'Motivo';
+        if (!this.horaInicio) {
+          campoFaltante = 'Hora de inicio';
+        } else if (!this.horaFin) {
+          campoFaltante = 'Hora de fin';
+        } else if (!this.motivo) {
+          campoFaltante = 'Motivo';
+        }
+
+        Swal.fire({
+          icon: 'warning',
+          title: 'Campo obligatorio',
+          text: `Por favor ingresa ${campoFaltante} antes de continuar.`,
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'Entendido',
+        });
+
+        return;
       }
-
-      Swal.fire({
-        icon: 'warning',
-        title: 'Campo obligatorio',
-        text: `Por favor ingresa ${campoFaltante} antes de continuar.`,
-        confirmButtonColor: '#d33',
-        confirmButtonText: 'Entendido',
-      });
-
-      return;
     }
 
     const request = this.crearRequest(
@@ -464,6 +492,11 @@ export class DashboardRecurso {
     });
   }
 
+  public back() {
+    this.mostrarBloqueo = false;
+    this.cdr.detectChanges();
+  }
+
   private crearRequest(
     tipoBloqueo: string,
     fechaBloqueo: Date | null,
@@ -471,42 +504,54 @@ export class DashboardRecurso {
     horaFin: string,
     motivo: string,
     idEmpresa: number,
-    day?: Date // opcional, si quieres calcular fechaLocal a partir de otro día
+    day?: Date
   ) {
     const diasSeleccionados = this.dias
       .filter((d) => d.checked)
       .map((d) => d.value)
       .join(',');
-    const now = day ? new Date(day) : new Date(); // si no se pasa day, usa ahora
-    const fechaLocal =
-      now.getFullYear() +
-      '-' +
-      String(now.getMonth() + 1).padStart(2, '0') +
-      '-' +
-      String(now.getDate()).padStart(2, '0') +
-      'T' +
-      String(now.getHours()).padStart(2, '0') +
-      ':' +
-      String(now.getMinutes()).padStart(2, '0') +
-      ':' +
-      String(now.getSeconds()).padStart(2, '0');
+    const now = day ? new Date(day) : new Date();
+    const fechaLocal = this.formatearFechaManual(now);
+    let fechaIni: any = fechaLocal;
+
+    if (this.tipoBloqueo === '4') {
+      fechaIni = new Date(fechaLocal);
+      fechaIni.setHours(0, 0, 0, 0);
+      fechaIni = this.formatearFechaManual(fechaIni);
+      motivo = 'Vacaciones';
+      horaInicio = '00:00';
+      horaFin = '23:59';
+
+      if (this.fechaFinVacaciones) {
+        const fechaFin = new Date(this.fechaFinVacaciones);
+        fechaFin.setHours(23, 59, 59, 999);
+        this.fechaFinVacaciones = this.formatearFechaManual(fechaFin);
+      }
+    }
 
     return {
       TipoBloqueo: parseInt(tipoBloqueo),
       Usuario: this.user.id,
-      FechaInicio:
-        tipoBloqueo === '2'
-          ? fechaBloqueo
-            ? fechaBloqueo.toISOString()
-            : null
-          : null,
+      FechaInicio: ['2', '4'].includes(tipoBloqueo) ? fechaIni : null,
+      FechaFin: tipoBloqueo === '4' ? this.fechaFinVacaciones : null,
       HoraInicio: horaInicio,
       HoraFin: horaFin,
       Motivo: motivo,
-      DiasSemana: tipoBloqueo === '1' ? diasSeleccionados : '',
+      DiasSemana: ['1', '3'].includes(tipoBloqueo) ? diasSeleccionados : '',
       FechaCreacion: fechaLocal,
       empresa: idEmpresa,
     };
+  }
+
+  private formatearFechaManual(fecha: Date): string {
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+    const hours = String(fecha.getHours()).padStart(2, '0');
+    const minutes = String(fecha.getMinutes()).padStart(2, '0');
+    const seconds = String(fecha.getSeconds()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
   }
 
   toggleSeleccionServicio(servicio: any): void {
@@ -1040,6 +1085,10 @@ export class DashboardRecurso {
     return true;
   }
 
+  prueba(tipo: string) {
+    console.log();
+  }
+
   private createJson(hora: string) {
     const match = hora.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
     //const fechaBase = this.day.toISOString().split('T')[0];
@@ -1125,5 +1174,7 @@ export class DashboardRecurso {
   public bloqueo(): void {
     this.mostrarBloqueo = true;
     this.loading = false;
+    this.mostrarTipoBloqueos = true;
+    this.cdr.detectChanges();
   }
 }
