@@ -237,8 +237,7 @@ export class DashboardRecurso {
             '07:00',
             '23:59',
             motivo,
-            this.idEmpresa,
-            fechaInicio
+            this.idEmpresa
           );
 
           // Retornamos el observable del segundo servicio
@@ -446,8 +445,7 @@ export class DashboardRecurso {
       this.horaInicio,
       this.horaFin,
       this.motivo,
-      this.idEmpresa,
-      this.day
+      this.idEmpresa
     );
 
     this.agendamientoServices.registrarBloqueoDias(request).subscribe({
@@ -503,19 +501,18 @@ export class DashboardRecurso {
     horaInicio: string,
     horaFin: string,
     motivo: string,
-    idEmpresa: number,
-    day?: Date
+    idEmpresa: number
   ) {
     const diasSeleccionados = this.dias
       .filter((d) => d.checked)
       .map((d) => d.value)
       .join(',');
-    const now = day ? new Date(day) : new Date();
-    const fechaLocal = this.formatearFechaManual(now);
-    let fechaIni: any = fechaLocal;
+    const now = fechaBloqueo ? new Date(fechaBloqueo) : new Date(this.day);
+    const fechaLocal = this.formatearFechaManual(this.day);
+    let fechaIni: any = this.formatearFechaManual(now);
 
     if (this.tipoBloqueo === '4') {
-      fechaIni = new Date(fechaLocal);
+      fechaIni = new Date(this.fechaInicioVacaciones);
       fechaIni.setHours(0, 0, 0, 0);
       fechaIni = this.formatearFechaManual(fechaIni);
       motivo = 'Vacaciones';
@@ -552,6 +549,13 @@ export class DashboardRecurso {
     const seconds = String(fecha.getSeconds()).padStart(2, '0');
 
     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+  }
+
+  formatearFechaLocal(fecha: Date, hora: string): string {
+    const anio = fecha.getFullYear();
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    const dia = fecha.getDate().toString().padStart(2, '0');
+    return `${anio}-${mes}-${dia}T${hora}`;
   }
 
   toggleSeleccionServicio(servicio: any): void {
@@ -787,13 +791,6 @@ export class DashboardRecurso {
     );
   };
 
-  formatearFechaLocal(fecha: Date, hora: string): string {
-    const anio = fecha.getFullYear();
-    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
-    const dia = fecha.getDate().toString().padStart(2, '0');
-    return `${anio}-${mes}-${dia}T${hora}`;
-  }
-
   private consultarCitas(user: any, empresa: any, fecha: Date): void {
     this.loading = true;
     const request = {
@@ -843,18 +840,7 @@ export class DashboardRecurso {
     }).then((result) => {
       this.loading = true;
       const now = new Date(this.day);
-      const fechaLocal =
-        now.getFullYear() +
-        '-' +
-        String(now.getMonth() + 1).padStart(2, '0') +
-        '-' +
-        String(now.getDate()).padStart(2, '0') +
-        'T' +
-        String(now.getHours()).padStart(2, '0') +
-        ':' +
-        String(now.getMinutes()).padStart(2, '0') +
-        ':' +
-        String(now.getSeconds()).padStart(2, '0');
+      const fechaLocal = this.formatearFechaManual(now);
 
       const request = {
         empresa: JSON.parse(localStorage.getItem('empresa') || '{}').id,
@@ -897,18 +883,7 @@ export class DashboardRecurso {
       if (result.isConfirmed) {
         this.loading = true;
         const now = new Date(this.day);
-        const fechaLocal =
-          now.getFullYear() +
-          '-' +
-          String(now.getMonth() + 1).padStart(2, '0') +
-          '-' +
-          String(now.getDate()).padStart(2, '0') +
-          'T' +
-          String(now.getHours()).padStart(2, '0') +
-          ':' +
-          String(now.getMinutes()).padStart(2, '0') +
-          ':' +
-          String(now.getSeconds()).padStart(2, '0');
+        const fechaLocal = this.formatearFechaManual(now);
 
         const request = {
           empresa: JSON.parse(localStorage.getItem('empresa') || '{}').id,
@@ -1085,10 +1060,6 @@ export class DashboardRecurso {
     return true;
   }
 
-  prueba(tipo: string) {
-    console.log();
-  }
-
   private createJson(hora: string) {
     const match = hora.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
     //const fechaBase = this.day.toISOString().split('T')[0];
@@ -1111,18 +1082,7 @@ export class DashboardRecurso {
       const horasStr = horas.toString().padStart(2, '0');
       const fechaFinal = `${fechaBase}T${horasStr}:${minutos}:00`;
       const now = new Date(this.day);
-      const fechaLocal =
-        now.getFullYear() +
-        '-' +
-        String(now.getMonth() + 1).padStart(2, '0') +
-        '-' +
-        String(now.getDate()).padStart(2, '0') +
-        'T' +
-        String(now.getHours()).padStart(2, '0') +
-        ':' +
-        String(now.getMinutes()).padStart(2, '0') +
-        ':' +
-        String(now.getSeconds()).padStart(2, '0');
+      const fechaLocal = this.formatearFechaManual(now);
 
       const valor = this.serviciosSeleccionados.map((s) => s.valor);
       const tiempoTotalServicio = this.serviciosSeleccionados
