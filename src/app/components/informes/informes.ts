@@ -78,21 +78,15 @@ export class Informes {
 
   private startBtnValidation() {
     this.intervalId = setInterval(() => {
-      if (this.usuario?.rol === RolesContent.Empleado) {
+      if (this.tipoReporte === 'diario') {
         const tipo = this.form.get('tipo')?.value;
         const fecha = this.form.get('fecha')?.value;
         this.btnGenerarReporte = !!(tipo && fecha);
       } else {
-        if (this.tipoReporte === 'diario') {
-          const tipo = this.form.get('tipo')?.value;
-          const fecha = this.form.get('fecha')?.value;
-          this.btnGenerarReporte = !!(tipo && fecha);
-        } else {
-          const tipo = this.form.get('tipo')?.value;
-          const fechaIni = this.form.get('fechaInicio')?.value;
-          const fechaFin = this.form.get('fechaFin')?.value;
-          this.btnGenerarReporte = !!(tipo && fechaIni && fechaFin);
-        }
+        const tipo = this.form.get('tipo')?.value;
+        const fechaIni = this.form.get('fechaInicio')?.value;
+        const fechaFin = this.form.get('fechaFin')?.value;
+        this.btnGenerarReporte = !!(tipo && fechaIni && fechaFin);
       }
     }, 1000);
   }
