@@ -99,7 +99,6 @@ export class Informes {
 
   private validarRol(usuario: any) {
     if (usuario.rol === RolesContent.Empleado) {
-      this.permitirSeleccion = false;
       this.tipoReporte = 'diario';
       this.form.get('fecha')?.setValue(new Date());
       this.form.get('tipo')?.setValue(this.tipoReporte);
