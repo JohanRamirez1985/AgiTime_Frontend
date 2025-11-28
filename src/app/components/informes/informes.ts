@@ -209,6 +209,7 @@ export class Informes {
         emp: this.idEmpresa,
         fechaInicio: inicioString,
         fechaFin: finString,
+        ...(this.usuario?.rol === 3 && { usuario: this.usuario.id }),
       };
     }
   }
