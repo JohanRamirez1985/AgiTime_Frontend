@@ -99,7 +99,6 @@ export class Informes {
 
   private validarRol(usuario: any) {
     if (usuario.rol === RolesContent.Empleado) {
-      this.permitirSeleccion = false;
       this.tipoReporte = 'diario';
       this.form.get('fecha')?.setValue(new Date());
       this.form.get('tipo')?.setValue(this.tipoReporte);
@@ -209,6 +208,7 @@ export class Informes {
         emp: this.idEmpresa,
         fechaInicio: inicioString,
         fechaFin: finString,
+        ...(this.usuario?.rol === 3 && { usuario: this.usuario.id }),
       };
     }
   }
