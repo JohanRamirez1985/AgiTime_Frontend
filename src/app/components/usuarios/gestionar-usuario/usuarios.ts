@@ -8,7 +8,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import {
+  MatPaginator,
+  MatPaginatorModule,
+  PageEvent,
+} from '@angular/material/paginator';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSelectModule } from '@angular/material/select';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -41,12 +45,11 @@ interface tableUser {
     MatSelectModule,
     MatNativeDateModule,
     MatProgressSpinnerModule,
-    RouterModule
+    RouterModule,
   ],
   templateUrl: './usuarios.html',
-  styleUrl: './usuarios.css'
+  styleUrl: './usuarios.css',
 })
-
 export class Usuarios implements AfterViewInit {
   filtro = '';
   rolSeleccionado = '';
@@ -65,17 +68,17 @@ export class Usuarios implements AfterViewInit {
     'identificacion',
     'sede',
     'recurso',
-    'acciones'
+    'acciones',
   ];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(private sharedService: SharedService) {
-    this.consultarUsuarios();  }
+    this.consultarUsuarios();
+  }
 
   ngAfterViewInit() {
     // this.dataSource.paginator = this.paginator;
-
     // // Aquí sí entra el evento cuando usas flechas
     // this.paginator.page.subscribe(event => {
     //   this.onPageChange(event);  // ✅ Llama tu función de cambio de página
@@ -94,7 +97,7 @@ export class Usuarios implements AfterViewInit {
   filtrarUsuarios(valor: string) {
     console.log('Buscando:', valor);
     const filtroLower = valor.toLowerCase().trim();
-    this.usuariosFiltrados = this.usuarios.filter(user =>
+    this.usuariosFiltrados = this.usuarios.filter((user) =>
       user.nombre.toLowerCase().includes(filtroLower)
     );
   }
@@ -111,24 +114,27 @@ export class Usuarios implements AfterViewInit {
     this.loading = true;
 
     this.sharedService.obtenerUsuarios(idEmpresa).subscribe({
-      next: res => {
+      next: (res) => {
         if (res.exito) {
           this.usuarios = res.datos;
           this.usuariosFiltrados = this.usuarios;
 
-          this.dataSource.data = this.usuarios.filter(u => {
+          this.dataSource.data = this.usuarios.filter((u) => {
             const texto = this.filtro.toLowerCase();
-            const nombreCorreo = u.nombre.toLowerCase().includes(texto) || u.correo.toLowerCase().includes(texto);
+            const nombreCorreo =
+              u.nombre.toLowerCase().includes(texto) ||
+              u.correo.toLowerCase().includes(texto);
 
-            const rolMatch = this.rolSeleccionado ? u.rol === this.rolSeleccionado : true;
+            const rolMatch = this.rolSeleccionado
+              ? u.rol === this.rolSeleccionado
+              : true;
 
             const fecha = new Date(u.fechaCreacion);
             const desde = this.fechaInicio ? new Date(this.fechaInicio) : null;
             const hasta = this.fechaFin ? new Date(this.fechaFin) : null;
 
             const fechaMatch =
-              (!desde || fecha >= desde) &&
-              (!hasta || fecha <= hasta);
+              (!desde || fecha >= desde) && (!hasta || fecha <= hasta);
 
             return nombreCorreo && rolMatch && fechaMatch;
           });
@@ -138,10 +144,10 @@ export class Usuarios implements AfterViewInit {
 
         this.loading = false;
       },
-      error: err => {
+      error: (err) => {
         this.loading = false;
         console.error('Error al obtener usuarios:', err);
-      }
+      },
     });
   }
 
@@ -160,7 +166,6 @@ export class Usuarios implements AfterViewInit {
     console.log('Editar producto:', producto);
     // Aquí abrir modal o redirigir a formulario
   }
-
 
   crearUsuario(): void {
     console.log('Crear usuario');
