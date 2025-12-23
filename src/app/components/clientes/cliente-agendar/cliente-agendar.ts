@@ -269,9 +269,27 @@ export class ClienteAgendar {
       horasGeneradas.push(formatHora(nuevaHora));
     }
 
-    const conflicto = horasGeneradas.find(
-      (h) => !this.horas.some((x) => x.hora === h)
-    );
+    let ultimoId =
+      this.horas.findIndex((h) => h.hora === hora) === this.horas.length - 1;
+
+    if (ultimoId) {
+      return true;
+    }
+
+    let conflicto;
+
+    if (
+      this.horas.findIndex((h) => h.hora === hora) ===
+      this.horas.length - 2
+    ) {
+      conflicto =
+        !this.horas[this.horas.findIndex((h) => h.hora === hora) + 1]
+          .disponible;
+    } else {
+      conflicto = horasGeneradas.find(
+        (h) => !this.horas.some((x) => x.hora === h)
+      );
+    }
 
     if (conflicto) {
       return false;
