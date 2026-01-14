@@ -635,6 +635,9 @@ export class DashboardRecurso {
     this.sharedServices.obtenerServicios(emp).subscribe({
       next: (rest) => {
         this.serviciosFiltrados = [...rest.datos];
+        this.serviciosFiltrados = this.serviciosFiltrados.filter(
+          (s) => s.sede === this.user.sede
+        );
         this.loading = false;
       },
     });
