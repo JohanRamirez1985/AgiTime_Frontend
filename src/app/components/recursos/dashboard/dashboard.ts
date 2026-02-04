@@ -114,7 +114,7 @@ export class DashboardRecurso {
     private router: Router,
     private agendamientoServices: AgendamientoService,
     private sharedServices: SharedService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   onTipoBloqueoChange(valor: string) {
@@ -157,7 +157,7 @@ export class DashboardRecurso {
       next: (rest) => {
         if (rest.exito) {
           this.rangoTiempo = rest.datos.find(
-            (h: any) => h.tipo === this.tipoRangoTiempo
+            (h: any) => h.tipo === this.tipoRangoTiempo,
           ).valor;
         }
       },
@@ -227,7 +227,7 @@ export class DashboardRecurso {
       .pipe(
         switchMap((rest: any) => {
           const activarmeObj = rest.datos.find(
-            (item: any) => item.tipo === 'Activarme'
+            (item: any) => item.tipo === 'Activarme',
           );
           const motivo = activarmeObj ? activarmeObj.valor : '';
 
@@ -237,12 +237,12 @@ export class DashboardRecurso {
             '07:00',
             '23:59',
             motivo,
-            this.idEmpresa
+            this.idEmpresa,
           );
 
           // Retornamos el observable del segundo servicio
           return this.agendamientoServices.registrarBloqueoDias(request);
-        })
+        }),
       )
       .subscribe({
         next: (rest) => {
@@ -445,7 +445,7 @@ export class DashboardRecurso {
       this.horaInicio,
       this.horaFin,
       this.motivo,
-      this.idEmpresa
+      this.idEmpresa,
     );
 
     this.agendamientoServices.registrarBloqueoDias(request).subscribe({
@@ -501,7 +501,7 @@ export class DashboardRecurso {
     horaInicio: string,
     horaFin: string,
     motivo: string,
-    idEmpresa: number
+    idEmpresa: number,
   ) {
     const diasSeleccionados = this.dias
       .filter((d) => d.checked)
@@ -564,7 +564,7 @@ export class DashboardRecurso {
     if (this.estaSeleccionado(servicio)) {
       // Si el servicio ya estaba seleccionado, lo quitamos
       this.serviciosSeleccionados = this.serviciosSeleccionados.filter(
-        (s) => s.id !== servicio.id
+        (s) => s.id !== servicio.id,
       );
 
       // Si se desmarcó "Otro", volvemos a permitir todos
@@ -636,7 +636,7 @@ export class DashboardRecurso {
       next: (rest) => {
         this.serviciosFiltrados = [...rest.datos];
         this.serviciosFiltrados = this.serviciosFiltrados.filter(
-          (s) => s.sede === this.user.sede
+          (s) => s.sede === this.user.sede,
         );
         this.loading = false;
       },
@@ -689,7 +689,7 @@ export class DashboardRecurso {
             for (let i = 0; i < this.horas.length; i++) {
               let disponible = true;
               disponible = rest.horasOcupadas.find(
-                (h: any) => h === this.horas[i].hora
+                (h: any) => h === this.horas[i].hora,
               );
               if (disponible) {
                 this.horas[i].disponible = false;
@@ -721,7 +721,7 @@ export class DashboardRecurso {
             for (let i = 0; i < this.horas.length; i++) {
               let disponible = true;
               disponible = rest.horasOcupadas.find(
-                (h: any) => h === this.horas[i].hora
+                (h: any) => h === this.horas[i].hora,
               );
               if (disponible) {
                 this.horas[i].disponible = false;
@@ -790,7 +790,7 @@ export class DashboardRecurso {
       fechaBase.getMonth(),
       fechaBase.getDate(),
       hora,
-      minutos
+      minutos,
     );
   };
 
@@ -810,7 +810,7 @@ export class DashboardRecurso {
           const citasConTotales = this.citasHoy.map((cita) => {
             const totalServicios = cita.servicios.reduce(
               (acum: any, servicio: any) => acum + servicio.valor,
-              0
+              0,
             );
             return {
               ...cita,
@@ -829,8 +829,8 @@ export class DashboardRecurso {
 
   public confirmarCita(cita: any) {
     Swal.fire({
-      title: 'Confirmar Asistecia',
-      html: `<p>¿El cliente <strong> ${cita.nombreCliente} </strong>  asistio a la cita?</p>`,
+      title: 'Confirmar Asistencia',
+      html: `<p>¿El cliente <strong> ${cita.nombreCliente} </strong>  asistió a la cita?</p>`,
       icon: 'success',
       showCancelButton: true,
       confirmButtonText: 'Sí',
@@ -900,7 +900,7 @@ export class DashboardRecurso {
               this.consultarCitas(
                 this.user,
                 this.empresa,
-                new Date(fechaLocal)
+                new Date(fechaLocal),
               );
             }
           },
@@ -1053,7 +1053,7 @@ export class DashboardRecurso {
     }
 
     const conflicto = horasGeneradas.find(
-      (h) => !this.horas.some((x) => x.hora === h)
+      (h) => !this.horas.some((x) => x.hora === h),
     );
 
     if (conflicto) {
