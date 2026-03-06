@@ -51,6 +51,7 @@ export class Informes {
   usuario: any;
   generate: boolean = false;
   personas: any[] = [];
+  cumplioHorario: boolean = false;
 
   private intervalId: any;
 
@@ -129,6 +130,23 @@ export class Informes {
     this.form.patchValue({ fecha: null, fechaInicio: null, fechaFin: null });
   }
 
+  private async createJsonDiario(): Promise<any | null> {
+    const fecha = new Date(this.form.value.fecha);
+    fecha.setHours(0, 0, 0, 0);
+
+    const fechaString = `${fecha.getFullYear()}-${String(
+      fecha.getMonth() + 1
+    ).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}T00:00:00`;
+
+    this.generate = true;
+
+    return {
+      emp: this.idEmpresa,
+      fecha: fechaString,
+      ...(this.usuario?.rol === 3 && { usuario: this.usuario.id }),
+    };
+  }
+
   async generarReporte() {
     if (!this.form.valid) {
       return;
@@ -136,9 +154,133 @@ export class Informes {
 
     this.generate = false;
     const tipoDiario = this.tipoReporte === 'diario';
+    let request: any;
 
-    // ⏳ ESPERAR a que createJson termine (modal incluido)
-    const request = await this.createJson(tipoDiario);
+    if (tipoDiario) {
+      // ⏳ ESPERAR a que createJson termine (modal incluido)
+      request = await this.createJsonDiario();
+    } else {
+      if (this.usuario.rol !== 3) {
+        await Swal.fire({
+          title: '¿Cómo deseas exportar el reporte?',
+          html: `
+          <div style="text-align:left">
+            <label>
+              <input type="radio" name="tipoExport" value="individual" checked>
+              Exportar Individual
+            </label>
+            <br><br>
+            <label>
+              <input type="radio" name="tipoExport" value="grupal">
+              Exportar Grupal
+            </label>
+
+            <div id="personasContainer" style="margin-top:15px; display:none;">
+              ${this.personas
+              .map(
+                (p) => `
+                  <label>
+                    <input type="checkbox" value="${p.id}" class="personaChk">
+                    ${p.nombre}
+                  </label><br>
+                `
+              )
+              .join('')}
+            </div>
+          </div>
+        `,
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Aceptar',
+          cancelButtonText: 'Cancelar',
+          preConfirm: async () => {
+            const tipo = (
+              document.querySelector(
+                'input[name="tipoExport"]:checked'
+              ) as HTMLInputElement
+            ).value;
+
+            const tipoIndividual = tipo === 'individual';
+
+            if (tipoIndividual) {
+              const result = await Swal.fire({
+                title: 'Seleccione un barbero',
+                html: `
+    <div style="text-align:left">
+
+      <b>Barbero:</b><br>
+      ${this.personas
+                    .map(
+                      (p) => `
+          <label>
+            <input type="radio" name="barbero" value="${p.id}" class="personaRadio">
+            ${p.nombre}
+          </label><br>
+        `
+                    )
+                    .join('')}
+
+      <br><br>
+
+      <b>¿El barbero cumplió con el horario semanal?</b><br>
+      <label>
+        <input type="radio" name="cumplioHorario" value="true"> Sí
+      </label><br>
+      <label>
+        <input type="radio" name="cumplioHorario" value="false"> No
+      </label>
+
+    </div>
+              `,
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Aceptar',
+                cancelButtonText: 'Cancelar',
+
+                preConfirm: () => {
+                  const barbero = (
+                    document.querySelector(
+                      'input[name="barbero"]:checked'
+                    ) as HTMLInputElement
+                  )?.value;
+
+                  const cumplio = (
+                    document.querySelector(
+                      'input[name="cumplioHorario"]:checked'
+                    ) as HTMLInputElement
+                  )?.value;
+
+                  this.cumplioHorario = cumplio === 'true';
+
+                  if (!barbero) {
+                    Swal.showValidationMessage('Debe seleccionar un barbero');
+                    return;
+                  }
+
+                  if (cumplio === undefined) {
+                    Swal.showValidationMessage('Debe indicar si cumplió el horario');
+                    return;
+                  }
+
+                  return {
+                    barberoId: barbero,
+                    cumplioHorario: cumplio === 'true',
+                  };
+                },
+              });
+              request = await this.createJsonSemanal(false);
+
+            } else {
+              request = await this.createJsonSemanal(true);
+            }
+          },
+        });
+      } else {
+        request = await this.createJsonSemanal(true);
+      }
+
+
+    }
 
     // ❌ Usuario canceló el modal
     if (!request) {
@@ -199,23 +341,7 @@ export class Informes {
     });
   }
 
-  private async createJson(diario: boolean): Promise<any | null> {
-    if (diario) {
-      const fecha = new Date(this.form.value.fecha);
-      fecha.setHours(0, 0, 0, 0);
-
-      const fechaString = `${fecha.getFullYear()}-${String(
-        fecha.getMonth() + 1
-      ).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}T00:00:00`;
-
-      this.generate = true;
-
-      return {
-        emp: this.idEmpresa,
-        fecha: fechaString,
-        ...(this.usuario?.rol === 3 && { usuario: this.usuario.id }),
-      };
-    }
+  private async createJsonSemanal(tipoIndividual: boolean): Promise<any | null> {
 
     // ===== NO DIARIO =====
 
@@ -232,7 +358,7 @@ export class Informes {
     ).padStart(2, '0')}-${String(fin.getDate()).padStart(2, '0')}T23:59:59`;
 
     // 👉 USUARIO DISTINTO DE 3 → MODAL
-    if (this.usuario.rol !== 3) {
+    if (this.usuario.rol !== 3 && tipoIndividual) {
       this.generate = false;
 
       const result = await Swal.fire({
@@ -280,11 +406,22 @@ export class Informes {
     // 👉 USUARIO 3 → SIN MODAL
     this.generate = true;
 
-    return {
-      emp: this.idEmpresa,
-      fechaInicio: inicioString,
-      fechaFin: finString,
-      usuario: this.usuario.id,
-    };
+    if (!tipoIndividual) {
+      return {
+        emp: this.idEmpresa,
+        fechaInicio: inicioString,
+        fechaFin: finString,
+        usuario: this.usuario.id,
+        barberos: !this.cumplioHorario ? '' : this.usuario.id,
+        personal: true
+      };
+    } else {
+      return {
+        emp: this.idEmpresa,
+        fechaInicio: inicioString,
+        fechaFin: finString,
+        usuario: this.usuario.id,
+      };
+    }
   }
 }
