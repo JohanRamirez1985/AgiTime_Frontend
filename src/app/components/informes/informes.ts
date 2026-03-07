@@ -52,6 +52,7 @@ export class Informes {
   generate: boolean = false;
   personas: any[] = [];
   cumplioHorario: boolean = false;
+  barberoSeleccionado: number = 0;
 
   private intervalId: any;
 
@@ -251,6 +252,7 @@ export class Informes {
                   )?.value;
 
                   this.cumplioHorario = cumplio === 'true';
+                  this.barberoSeleccionado = parseInt(barbero);
 
                   if (!barbero) {
                     Swal.showValidationMessage('Debe seleccionar un barbero');
@@ -411,8 +413,8 @@ export class Informes {
         emp: this.idEmpresa,
         fechaInicio: inicioString,
         fechaFin: finString,
-        usuario: this.usuario.id,
-        barberos: !this.cumplioHorario ? '' : this.usuario.id,
+        usuario: this.barberoSeleccionado,
+        barberos: !this.cumplioHorario ? '' : this.barberoSeleccionado,
         personal: true
       };
     } else {
