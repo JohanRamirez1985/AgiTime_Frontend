@@ -115,7 +115,7 @@ export class DashboardRecurso {
     private agendamientoServices: AgendamientoService,
     private sharedServices: SharedService,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) { }
 
   onTipoBloqueoChange(valor: string) {
     this.tipoBloqueo = valor;
@@ -836,9 +836,19 @@ export class DashboardRecurso {
   public confirmarCita(cita: any) {
     Swal.fire({
       title: 'Confirmar Asistencia',
-      html: `<p>¿El cliente <strong> ${cita.nombreCliente} </strong>  asistió a la cita?</p>`,
+      html: `
+        <div style="margin-top: 15px; display: flex; justify-content: center; align-items: center;">
+    <label style="font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+      <input type="checkbox" id="usoBonoCheckbox">
+      ¿El servicio incluye bono?
+    </label>
+  </div>
+  <p>¿El cliente <strong>${cita.nombreCliente}</strong> asistió a la cita?</p>
+
+`,
       icon: 'success',
       showCancelButton: true,
+      showCloseButton: true,
       confirmButtonText: 'Sí',
       cancelButtonText: 'No',
       confirmButtonColor: '#3085d6',
@@ -846,22 +856,30 @@ export class DashboardRecurso {
       customClass: {
         popup: 'swal-reserva-responsive',
       },
+      preConfirm: () => {
+        const usoBono = (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked;
+        return { usoBono };
+      }
     }).then((result) => {
-      this.loading = true;
-      const now = new Date(this.day);
-      const fechaLocal = this.formatearFechaManual(now);
+      if (result.isConfirmed || result.dismiss === Swal.DismissReason.cancel) {
+        this.loading = true;
 
-      const request = {
-        empresa: JSON.parse(localStorage.getItem('empresa') || '{}').id,
-        Id: cita.id,
-        Asistencia: result.isConfirmed,
-      };
+        const now = new Date(this.day);
+        const fechaLocal = this.formatearFechaManual(now);
 
-      this.agendamientoServices.ConfirmarAsitenciaCita(request).subscribe({
-        next: (rest) => {
-          this.consultarCitas(this.user, this.empresa, new Date(fechaLocal));
-        },
-      });
+        const request = {
+          empresa: JSON.parse(localStorage.getItem('empresa') || '{}').id,
+          Id: cita.id,
+          Asistencia: result.isConfirmed,
+          Bono: result.value?.usoBono || false
+        };
+
+        this.agendamientoServices.ConfirmarAsitenciaCita(request).subscribe({
+          next: (rest) => {
+            this.consultarCitas(this.user, this.empresa, new Date(fechaLocal));
+          },
+        });
+      }
     });
   }
 
@@ -971,6 +989,41 @@ export class DashboardRecurso {
     this.cdr.detectChanges();
   }
 
+  private agendar(hora: any, bono: boolean) {
+    const request = this.createJson(hora, bono);
+    this.agendamientoServices.registrarCita(request).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Cita creada!',
+            text: rest.mensaje || 'La cita fue creado exitosamente',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Ok',
+          }).then(() => {
+            this.serviciosSeleccionados = [];
+            this.mostrarAgenda = false;
+            this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            text: rest.mensaje || 'Error de servidor',
+          });
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de servidor',
+          text: err.statusText,
+        });
+      },
+    });
+  }
+
   public seleccionarHora(hora: any): void {
     this.loading = true;
     let horaDiponible = false;
@@ -978,37 +1031,37 @@ export class DashboardRecurso {
     horaDiponible = this.validarHoraDisponible(hora.hora);
 
     if (horaDiponible) {
-      const request = this.createJson(hora.hora);
-      this.agendamientoServices.registrarCita(request).subscribe({
-        next: (rest) => {
-          if (rest.exito) {
-            Swal.fire({
-              icon: 'success',
-              title: '¡Cita creada!',
-              text: rest.mensaje || 'La cita fue creado exitosamente',
-              confirmButtonColor: '#3085d6',
-              confirmButtonText: 'Ok',
-            }).then(() => {
-              this.serviciosSeleccionados = [];
-              this.mostrarAgenda = false;
-              this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
-            });
-          } else {
-            Swal.fire({
-              icon: 'error',
-              text: rest.mensaje || 'Error de servidor',
-            });
-          }
+      Swal.fire({
+        title: 'Cita',
+        html: `
+        <div style="margin-top: 15px; display: flex; justify-content: center; align-items: center;">
+    <label style="font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+      <input type="checkbox" id="usoBonoCheckbox">
+      ¿El servicio incluye bono?
+    </label>
+  </div>
+
+`,
+        icon: 'success',
+        //showCancelButton: true,
+        showCloseButton: true,
+        confirmButtonText: 'Agendar',
+        //cancelButtonText: 'No',
+        confirmButtonColor: '#3085d6',
+        //cancelButtonColor: '#a0aab4ff',
+        preConfirm: () => {
+          const usoBono = (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked;
+          return { usoBono };
+        }
+      }).then((result) => {
+      if (result.dismiss === Swal.DismissReason.close) {
           this.loading = false;
-        },
-        error: (err) => {
-          this.loading = false;
-          Swal.fire({
-            icon: 'error',
-            title: 'Error de servidor',
-            text: err.statusText,
-          });
-        },
+          this.cdr.detectChanges();
+        }else {
+          const usoBono = result.value?.usoBono || false;
+          this.loading = true;
+          this.agendar(hora.hora, usoBono);
+        }
       });
     } else {
       Swal.fire({
@@ -1069,7 +1122,7 @@ export class DashboardRecurso {
     return true;
   }
 
-  private createJson(hora: string) {
+  private createJson(hora: string, bono: boolean) {
     const match = hora.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
     //const fechaBase = this.day.toISOString().split('T')[0];
     const year = this.day.getFullYear();
@@ -1113,6 +1166,7 @@ export class DashboardRecurso {
         servicios: serviciosSeleccionados,
         clienteInfo: null,
         fechaCreacion: fechaLocal,
+        Bono: bono
       };
       return json;
     } else {
