@@ -414,7 +414,7 @@ export class Informes {
         fechaInicio: inicioString,
         fechaFin: finString,
         usuario: this.barberoSeleccionado,
-        barberos: !this.cumplioHorario ? '' : this.barberoSeleccionado,
+        barberos: this.cumplioHorario ? '' : this.barberoSeleccionado,
         personal: true
       };
     } else {
