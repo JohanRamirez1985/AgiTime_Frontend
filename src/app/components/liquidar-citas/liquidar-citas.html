@@ -1,0 +1,63 @@
+<mat-card class="reporte-card">
+    <mat-card-header>
+        <mat-card-title>
+            <mat-icon color="primary">bar_chart</mat-icon>
+            Liquidacíon de Citas
+        </mat-card-title>
+    </mat-card-header>
+
+    <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p class="loading-text">Cargando disponibilidad...</p>
+    </div>
+
+    <div *ngIf="!loading">
+        <mat-card-content>
+            <form [formGroup]="form" class="reporte-form" (ngSubmit)="guardar()">
+
+                <div class="rango-fechas">
+                    <mat-form-field appearance="outline" class="half-width">
+                        <mat-label>Fecha Inicial</mat-label>
+                        <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio"
+                            [matDatepickerFilter]="soloLunes" />
+                        <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+                        <mat-datepicker #pickerInicio></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="half-width">
+                        <mat-label>Fecha Final</mat-label>
+                        <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin" />
+                        <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+                        <mat-datepicker #pickerFin></mat-datepicker>
+                    </mat-form-field>
+                </div>
+
+                <div class="barberos-section" formArrayName="barberos">
+                    <label class="titulo-barberos">
+                        Seleccione los barberos que no cumplieron con su horario
+                    </label>
+
+                    <div class="lista-barberos">
+                        <mat-checkbox *ngFor="let barbero of listaBarberos; let i = index" [formControlName]="i">
+                            {{ barbero.nombre }}
+                        </mat-checkbox>
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <button mat-raised-button color="primary" [disabled]="!btnGuardar" type="submit">
+                        <mat-icon>analytics</mat-icon>
+                        Guardar
+                    </button>
+                </div>
+
+            </form>
+        </mat-card-content>
+    </div>
+
+
+
+
+
+
+</mat-card>

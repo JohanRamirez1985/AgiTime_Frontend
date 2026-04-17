@@ -140,6 +140,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./components/informes/informes').then((m) => m.Informes),
       },
+      {
+        path: 'liquidacion',
+        loadComponent: () =>
+          import('./components/liquidar-citas/liquidar-citas').then((m) => m.LiquidarCitas),
+      },
     ],
   },
 
