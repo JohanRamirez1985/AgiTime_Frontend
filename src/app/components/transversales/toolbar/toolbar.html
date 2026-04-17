@@ -45,6 +45,10 @@
       <mat-icon>bar_chart</mat-icon>
       Informes
     </button>
+    <button *ngIf="validate('liq')" mat-button routerLink="/admin/liquidacion">
+      <mat-icon>bar_chart</mat-icon>
+      Liquidación
+    </button>
     <button mat-button class="logout-button" (click)="cerrarSesion()">
       <mat-icon>logout</mat-icon>
       Cerrar sesión
@@ -110,6 +114,10 @@
     <button *ngIf="validate('inf')" mat-menu-item routerLink="/admin/informes">
       <mat-icon>bar_chart</mat-icon>
       Informes
+    </button>
+    <button *ngIf="validate('liq')" mat-menu-item routerLink="/admin/liquidacion">
+      <mat-icon>bar_chart</mat-icon>
+      Liquidación
     </button>
     <button mat-menu-item (click)="cerrarSesion()">
       <mat-icon>logout</mat-icon>
