@@ -16,7 +16,7 @@ export class InformesService {
     });
   }
 
-  generarInforme(request: any, diario: boolean) {
+  generarInforme(request: any, diario: boolean, tipoReporte: any) {
     const params = new HttpParams({ fromObject: request });
 
     if (diario) {
@@ -25,7 +25,11 @@ export class InformesService {
         responseType: 'blob', // 👈 recibir archivo binario
       });
     } else {
-      return this.http.get(`${this.baseUrl}/informacionSemanal`, {
+      const endpoint = tipoReporte === 'info'
+        ? 'informacionLiquidacion'
+        : 'informacionSemanal';
+
+      return this.http.get(`${this.baseUrl}/${endpoint}`, {
         params,
         responseType: 'blob',
       });

@@ -155,12 +155,6 @@ export const routes: Routes = [
   },
 
   {
-    path: 'agendaDiaria',
-    loadComponent: () =>
-      import('./components/agenda/agenda').then((m) => m.Agenda),
-  },
-
-  {
     path: 'politicasPrivacidad',
     loadComponent: () =>
       import('./politica-seguridad/politica-seguridad').then(

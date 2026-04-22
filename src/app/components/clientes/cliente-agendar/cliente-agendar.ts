@@ -18,6 +18,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { ReservaDialog } from '../../reserva-dialog/reserva-dialog';
 import { ClienteService } from '../../../services/cliente.service';
+import { Modal } from '../../../shared/services/modal';
 
 registerLocaleData(localeEs);
 
@@ -81,8 +82,9 @@ export class ClienteAgendar {
     private router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog,
-    private clienteService: ClienteService
-  ) {}
+    private clienteService: ClienteService,
+    private modalService: Modal
+  ) { }
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
@@ -330,25 +332,16 @@ export class ClienteAgendar {
     const request = this.createJson(hora, datos);
     this.agendaService.registrarCita(request).subscribe({
       next: (rest) => {
+        this.modalService.success(
+          rest.mensaje || 'La cita fue creada exitosamente',
+          () => this.volver()
+        );
         this.loading = false;
-        Swal.fire({
-          icon: 'success',
-          title: '¡Cita creada!',
-          text: rest.mensaje || 'La cita fue creado exitosamente',
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'Ok',
-        }).then(() => {
-          this.volver();
-        });
       },
       error: (err) => {
+        this.modalService.error(err.mensaje);
         this.loading = false;
         this.mostrarDisponibilidad = true;
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: err.mensaje,
-        });
       },
     });
   }

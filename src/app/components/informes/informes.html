@@ -15,7 +15,7 @@
     <mat-card-content>
       <form [formGroup]="form" class="reporte-form">
         <!-- Selección tipo reporte -->
-        <ng-container *ngIf="permitirSeleccion; else fijoDiario">
+        <ng-container>
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Tipo de Reporte</mat-label>
             <mat-select
@@ -24,17 +24,10 @@
             >
               <mat-option value="diario">Diario</mat-option>
               <mat-option value="semanal">Semanal</mat-option>
+              <mat-option *ngIf="usuario.rol === 4 || usuario.rol === 2" value="info">Informe</mat-option>
             </mat-select>
           </mat-form-field>
         </ng-container>
-
-        <!-- Versión fija cuando no se permite cambiar -->
-        <ng-template #fijoDiario>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Tipo de Reporte</mat-label>
-            <input matInput value="Diario" readonly />
-          </mat-form-field>
-        </ng-template>
 
         <!-- Si es diario -->
         <div *ngIf="tipoReporte === 'diario'" class="campo-fecha">
@@ -54,7 +47,7 @@
         </div>
 
         <!-- Si es semanal -->
-        <div *ngIf="tipoReporte === 'semanal'" class="rango-fechas">
+        <div *ngIf="tipoReporte === 'semanal' || tipoReporte === 'info'" class="rango-fechas">
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Fecha Inicial</mat-label>
             <input
