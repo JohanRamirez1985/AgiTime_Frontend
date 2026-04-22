@@ -43,7 +43,7 @@ import { SharedService } from '../../services/shared.service';
 })
 export class Informes {
   form: FormGroup;
-  tipoReporte: 'diario' | 'semanal' | null = null;
+  tipoReporte: 'diario' | 'semanal' | 'info' | null = null;
   idEmpresa: string | null = null;
   permitirSeleccion: boolean = true;
   loading: boolean = true;
@@ -207,32 +207,30 @@ export class Informes {
               const result = await Swal.fire({
                 title: 'Seleccione un barbero',
                 html: `
-    <div style="text-align:left">
+                <div style="text-align:left">
 
-      <b>Barbero:</b><br>
-      ${this.personas
-                    .map(
-                      (p) => `
-          <label>
-            <input type="radio" name="barbero" value="${p.id}" class="personaRadio">
-            ${p.nombre}
-          </label><br>
-        `
-                    )
-                    .join('')}
+                  <b>Barbero:</b><br>
+                  ${this.personas.map((p) => `
+                      <label>
+                        <input type="radio" name="barbero" value="${p.id}" class="personaRadio">
+                        ${p.nombre}
+                      </label><br>
+                    `).join('')}
 
-      <br><br>
+                  ${this.tipoReporte !== 'info' ? `
+                      <br><br>
+                      <b>¿El barbero cumplió con el horario semanal?</b><br>
+                      <label>
+                        <input type="radio" name="cumplioHorario" value="true"> Sí
+                      </label><br>
+                      <label>
+                        <input type="radio" name="cumplioHorario" value="false"> No
+                      </label>
+                    ` : ''
+                  }
 
-      <b>¿El barbero cumplió con el horario semanal?</b><br>
-      <label>
-        <input type="radio" name="cumplioHorario" value="true"> Sí
-      </label><br>
-      <label>
-        <input type="radio" name="cumplioHorario" value="false"> No
-      </label>
-
-    </div>
-              `,
+                </div>
+                `,
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'Aceptar',
@@ -259,7 +257,7 @@ export class Informes {
                     return;
                   }
 
-                  if (cumplio === undefined) {
+                  if (this.tipoReporte !== 'info' && cumplio === undefined) {
                     Swal.showValidationMessage('Debe indicar si cumplió el horario');
                     return;
                   }
@@ -299,7 +297,7 @@ export class Informes {
       },
     });
 
-    this.informeServie.generarInforme(request, tipoDiario).subscribe({
+    this.informeServie.generarInforme(request, tipoDiario, this.tipoReporte).subscribe({
       next: (blob: Blob) => {
         Swal.close();
 
@@ -363,45 +361,48 @@ export class Informes {
     if (this.usuario.rol !== 3 && tipoIndividual) {
       this.generate = false;
 
-      const result = await Swal.fire({
-        title: 'Seleccione los barberos que no cumplieron con su horario',
-        html: `
+      let resp: any;
+
+      if (this.tipoReporte !== 'info') {
+        const result = await Swal.fire({
+          title: 'Seleccione los barberos que no cumplieron con su horario',
+          html: `
         <div style="text-align:left">
           ${this.personas
-            .map(
-              (p) => `
+              .map(
+                (p) => `
             <label>
               <input type="checkbox" value="${p.id}" class="personaChk">
               ${p.nombre}
             </label><br>
           `
-            )
-            .join('')}
+              )
+              .join('')}
         </div>
       `,
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        confirmButtonText: 'Aceptar',
-        cancelButtonText: 'Cancelar',
-        preConfirm: () => {
-          const seleccionados = Array.from(
-            document.querySelectorAll('.personaChk:checked')
-          ).map((el: any) => el.value);
-          return seleccionados;
-        },
-      });
-
-      if (!result.isConfirmed || !result.value) {
-        return null; // canceló
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Aceptar',
+          cancelButtonText: 'Cancelar',
+          preConfirm: () => {
+            const seleccionados = Array.from(
+              document.querySelectorAll('.personaChk:checked')
+            ).map((el: any) => el.value);
+            return seleccionados;
+          },
+        });
+        resp = result;
+        if (!result.isConfirmed || !result.value) {
+          return null; // canceló
+        }
       }
-
       this.generate = true;
 
       return {
         emp: this.idEmpresa,
         fechaInicio: inicioString,
         fechaFin: finString,
-        barberos: result.value.join(','),
+        barberos: this.tipoReporte !== 'info' ? resp.value.join(',') : '',
       };
     }
 
@@ -409,14 +410,20 @@ export class Informes {
     this.generate = true;
 
     if (!tipoIndividual) {
-      return {
+      const request: any = {
         emp: this.idEmpresa,
         fechaInicio: inicioString,
         fechaFin: finString,
         usuario: this.barberoSeleccionado,
-        barberos: this.cumplioHorario ? '' : this.barberoSeleccionado,
         personal: true
-      };
+      }
+
+      if (this.tipoReporte !== 'info') {
+        request.barberos = this.cumplioHorario ? '' : this.barberoSeleccionado;
+      }
+
+      return request
+
     } else {
       return {
         emp: this.idEmpresa,

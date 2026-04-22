@@ -20,6 +20,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { RolesContent } from '../../../shared/libs/roles';
 import { switchMap, tap } from 'rxjs/operators';
+import { Modal } from '../../../shared/services/modal';
 
 @Component({
   selector: 'app-dashboardR',
@@ -115,6 +116,7 @@ export class DashboardRecurso {
     private agendamientoServices: AgendamientoService,
     private sharedServices: SharedService,
     private cdr: ChangeDetectorRef,
+    private modalService: Modal
   ) { }
 
   onTipoBloqueoChange(valor: string) {
@@ -190,30 +192,19 @@ export class DashboardRecurso {
     this.agendamientoServices.activarUsuarioBtn(request).subscribe({
       next: (rest) => {
         if (rest.exito) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Bloqueo actualizado!',
-            text: rest.mensaje,
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Ok',
-          });
+          this.modalService.success(
+            rest.mensaje || 'Bloqueo actualizado!',
+            () => { }
+          );
         } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: rest.mensaje,
-          });
+          this.modalService.error(rest.mensaje);
         }
         this.loading = false;
         this.estadoActivoInactivo();
       },
       error: (err) => {
+        this.modalService.error(err.statusText);
         this.loading = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: err.statusText,
-        });
       },
     });
   }
@@ -247,39 +238,28 @@ export class DashboardRecurso {
       .subscribe({
         next: (rest) => {
           if (rest.exito) {
-            Swal.fire({
-              icon: 'success',
-              title: '¡Bloqueo Creado!',
-              text: rest.mensaje,
-              confirmButtonColor: '#3085d6',
-              confirmButtonText: 'Ok',
-            }).then(() => {
-              this.tipoBloqueo = '';
-              this.horaInicio = '';
-              this.horaFin = '';
-              this.dias.forEach((dia) => (dia.checked = false));
-              this.obtenerBloqueos();
-              this.mostrarBloqueo = false;
-              this.cdr.detectChanges();
-            });
+            this.modalService.success(
+              rest.mensaje || '¡Bloqueo Creado!',
+              () => {
+                this.tipoBloqueo = '';
+                this.horaInicio = '';
+                this.horaFin = '';
+                this.dias.forEach((dia) => (dia.checked = false));
+                this.obtenerBloqueos();
+                this.mostrarBloqueo = false;
+                this.cdr.detectChanges();
+              }
+            );
           } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: rest.statusText,
-            });
+            this.modalService.error(rest.statusText);
           }
           this.estadoActivoInactivo();
           this.loading = false;
         },
         error: (err) => {
+          this.modalService.error(err.statusText);
           this.estadoActivoInactivo();
           this.loading = false;
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: err.statusText,
-          });
         },
       });
   }
@@ -332,30 +312,20 @@ export class DashboardRecurso {
     this.agendamientoServices.inactivarBloqueo(request).subscribe({
       next: (rest) => {
         if (rest.exito) {
-          this.obtenerBloqueos();
-          Swal.fire({
-            icon: 'success',
-            title: 'Bloqueo actualizado!',
-            text: rest.mensaje || 'El bloqueo fue actualizado exitosamente',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Ok',
-          });
+          this.modalService.success(
+            rest.mensaje || 'El bloqueo fue actualizado exitosamente',
+            () => {
+              this.obtenerBloqueos();
+            }
+          );
         } else {
+          this.modalService.error(rest.mensaje || 'Error de servidor');
           this.loading = false;
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: rest.mensaje || 'Error de servidor',
-          });
         }
       },
       error: (err) => {
         this.loading = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: err.statusText,
-        });
+        this.modalService.error(err.statusText);
       },
     });
   }
@@ -451,41 +421,30 @@ export class DashboardRecurso {
     this.agendamientoServices.registrarBloqueoDias(request).subscribe({
       next: (rest) => {
         if (rest.exito) {
-          Swal.fire({
-            icon: 'success',
-            title: '¡Bloqueo Creado!',
-            text: rest.mensaje,
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Ok',
-          }).then(() => {
-            this.tipoBloqueo = '';
-            this.horaInicio = '';
-            this.horaFin = '';
-            this.motivo = '';
-            this.dias.forEach((dia) => {
-              dia.checked = false;
-            });
-            this.loading = true;
-            this.obtenerBloqueos();
-            this.mostrarBloqueo = false;
-            this.cdr.detectChanges();
-          });
+          this.modalService.success(
+            rest.mensaje || '¡Bloqueo Creado!',
+            () => {
+              this.tipoBloqueo = '';
+              this.horaInicio = '';
+              this.horaFin = '';
+              this.motivo = '';
+              this.dias.forEach((dia) => {
+                dia.checked = false;
+              });
+              this.loading = true;
+              this.obtenerBloqueos();
+              this.mostrarBloqueo = false;
+              this.cdr.detectChanges();
+            }
+          );
         } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: rest.statusText,
-          });
+          this.modalService.error(rest.statusText);
         }
         this.loading = false;
       },
       error: (err) => {
+        this.modalService.error(err.statusText);
         this.loading = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: err.statusText,
-        });
       },
     });
   }
@@ -988,32 +947,22 @@ export class DashboardRecurso {
     this.agendamientoServices.registrarCita(request).subscribe({
       next: (rest) => {
         if (rest.exito) {
-          Swal.fire({
-            icon: 'success',
-            title: '¡Cita creada!',
-            text: rest.mensaje || 'La cita fue creado exitosamente',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Ok',
-          }).then(() => {
-            this.serviciosSeleccionados = [];
-            this.mostrarAgenda = false;
-            this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
-          });
+          this.modalService.success(
+            rest.mensaje || 'La cita fue creado exitosamente',
+            () => {
+              this.serviciosSeleccionados = [];
+              this.mostrarAgenda = false;
+              this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
+            }
+          );
         } else {
-          Swal.fire({
-            icon: 'error',
-            text: rest.mensaje || 'Error de servidor',
-          });
+          this.modalService.error(rest.mensaje || 'Error de servidor')
         }
         this.loading = false;
       },
       error: (err) => {
+        this.modalService.error(err.statusText);
         this.loading = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Error de servidor',
-          text: err.statusText,
-        });
       },
     });
   }
@@ -1037,21 +986,17 @@ export class DashboardRecurso {
 
 `,
         icon: 'success',
-        //showCancelButton: true,
         showCloseButton: true,
-        confirmButtonText: 'Agendar',
-        //cancelButtonText: 'No',
         confirmButtonColor: '#3085d6',
-        //cancelButtonColor: '#a0aab4ff',
         preConfirm: () => {
           const usoBono = (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked;
           return { usoBono };
         }
       }).then((result) => {
-      if (result.dismiss === Swal.DismissReason.close) {
+        if (result.dismiss === Swal.DismissReason.close) {
           this.loading = false;
           this.cdr.detectChanges();
-        }else {
+        } else {
           const usoBono = result.value?.usoBono || false;
           this.loading = true;
           this.agendar(hora.hora, usoBono);
