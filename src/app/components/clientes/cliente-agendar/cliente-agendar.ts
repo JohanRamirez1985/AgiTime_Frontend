@@ -113,6 +113,11 @@ export class ClienteAgendar {
   }
 
   reservarServicios(): void {
+    if (this.seleccionRubro) {
+      this.loading = true;
+      this.seleccionarRecurso(this.viewDate, this.seleccionRubro);
+    }
+
     this.detallesRecurso = this.serviciosSeleccionados.map(
       (s) =>
         `${s.nombre} - ${new Intl.NumberFormat('es-CO', {
@@ -122,6 +127,7 @@ export class ClienteAgendar {
           maximumFractionDigits: 0,
         }).format(s.valor)}`
     );
+
     this.mostrarDetalle = true;
     this.mostrarServicios = false;
     this.mostrarDisponibilidad = true;
@@ -190,7 +196,7 @@ export class ClienteAgendar {
 
   public seleccionarHora(hora: any): void {
     let horaDiponible = false;
-    horaDiponible = !this.seleccionRubro ? this.validarHoraDisponible(hora.hora) : true;
+    horaDiponible = this.validarHoraDisponible(hora.hora);
 
     if (horaDiponible) {
       const fechaFormateada = this.viewDate.toLocaleDateString('es-CO', {
@@ -343,16 +349,22 @@ export class ClienteAgendar {
     if (this.seleccionRubro) {
       this.agendaService.guardarCita(request).subscribe({
         next: (rest) => {
-          this.modalService.success(
-            rest.mensaje || 'La cita fue creada exitosamente',
-            () => this.volver()
-          );
+          if (rest.exito) {
+            this.modalService.success(
+              rest.mensaje || 'La cita fue creada exitosamente',
+              () => this.volver()
+            );
+          } else {
+            this.modalService.error(rest.mensaje)
+          }
           this.loading = false;
+          this.cdr.detectChanges();
         },
         error: (err) => {
-          this.modalService.error(err.mensaje);
+          this.modalService.error(err.statusText);
           this.loading = false;
           this.mostrarDisponibilidad = true;
+          this.cdr.detectChanges();
         },
       });
     } else {
@@ -502,7 +514,7 @@ export class ClienteAgendar {
         });
 
         json = {
-          FechaCita: fechaFinal,
+          FechaIni: fechaFinal,
           empresa: this.idEmpresa,
           UsuarioCreacion: 'Cliente',
           fechaCreacion: fechaLocal,
@@ -512,10 +524,8 @@ export class ClienteAgendar {
             Correo: datos.correo,
             FechaNacimiento: datos.fechaNacimiento,
           },
-          citas: resultadoAlterno 
+          citas: resultadoAlterno
         }
-        console.log();
-
       } else {
         json = {
           FechaIni: fechaFinal,
@@ -577,13 +587,29 @@ export class ClienteAgendar {
     this.cdr.detectChanges();
   }
 
-  public seleccionarRecurso(fecha: Date): void {
-    const request = {
-      empresa: this.idEmpresa,
-      FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
-      fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
-      recurso: this.recursoId,
-    };
+  public seleccionarRecurso(fecha: Date, seleccionRubro: boolean): void {
+    let request = {}
+
+    if (seleccionRubro) {
+      request = {
+        empresa: this.idEmpresa,
+        FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
+        fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
+        profesional: [...new Set(
+          this.serviciosSeleccionados
+            .filter(s => s.recurso != null)
+            .map(s => s.recurso)
+        )].join(',')
+      };
+    } else {
+      request = {
+        empresa: this.idEmpresa,
+        FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
+        fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
+        recurso: this.recursoId,
+      };
+    }
+
 
     this.agendaService.consultarAgendamientos(request).subscribe({
       next: (rest) => {
@@ -695,8 +721,10 @@ export class ClienteAgendar {
             }
           );
 
+          // this.seleccionarRecurso(this.viewDate);
+
           if (!this.seleccionRubro) {
-            this.seleccionarRecurso(this.viewDate);
+            this.seleccionarRecurso(this.viewDate, this.seleccionRubro);
           } else {
             this.consultarInfoCliente();
             this.verificarHoras();

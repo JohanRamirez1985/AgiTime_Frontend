@@ -590,6 +590,7 @@ export class DashboardRecurso {
         }
       });
     } else {
+      this.seleccionarRecursoEmpleado(this.day);
       this.mostrarAgenda = true;
       this.cdr.detectChanges();
     }
@@ -633,6 +634,9 @@ export class DashboardRecurso {
         });
 
         if (rolPermitido) {
+          if (this.seleccionRecurso) {
+            this.loading = false;
+          }
           this.seleccionarRecursoEmpleado(this.day);
         } else {
           this.seleccionarRecurso(this.day);
@@ -642,32 +646,53 @@ export class DashboardRecurso {
   }
 
   seleccionarRecursoEmpleado(fecha: Date): void {
-    const request = {
-      empresa: this.idEmpresa,
-      FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
-      fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
-      recurso: this.user.id,
-    };
 
-    this.agendamientoServices
-      .consultarAgendamientosEmpleado(request)
-      .subscribe({
-        next: (rest) => {
-          if (rest.exito) {
-            for (let i = 0; i < this.horas.length; i++) {
-              let disponible = true;
-              disponible = rest.horasOcupadas.find(
-                (h: any) => h === this.horas[i].hora,
-              );
-              if (disponible) {
-                this.horas[i].disponible = false;
+    let request: any = {}
+
+    if (this.seleccionRecurso) {
+      request = {
+        empresa: this.idEmpresa,
+        FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
+        fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
+        profesional: [...new Set(
+          this.serviciosSeleccionados
+            .filter(s => s.recurso != null)
+            .map(s => s.recurso)
+        )].join(',')
+      };
+    } else {
+      request = {
+        empresa: this.idEmpresa,
+        FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
+        fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
+        recurso: this.user.id,
+      };
+    }
+
+    if (this.seleccionRecurso && !request.profesional) {
+      this.loading = false;
+      this.cdr.detectChanges();
+    } else {
+      this.agendamientoServices
+        .consultarAgendamientosEmpleado(request)
+        .subscribe({
+          next: (rest) => {
+            if (rest.exito) {
+              for (let i = 0; i < this.horas.length; i++) {
+                let disponible = true;
+                disponible = rest.horasOcupadas.find(
+                  (h: any) => h === this.horas[i].hora,
+                );
+                if (disponible) {
+                  this.horas[i].disponible = false;
+                }
               }
+              this.horas = this.horas.filter((h) => h.disponible);
             }
-            this.horas = this.horas.filter((h) => h.disponible);
-          }
-          this.verificarHoras();
-        },
-      });
+            this.verificarHoras();
+          },
+        });
+    }
   }
 
   public seleccionarRecurso(fecha: Date): void {
@@ -781,12 +806,18 @@ export class DashboardRecurso {
     this.agendamientoServices.consultarCitasRecurso(request).subscribe({
       next: (rest) => {
         if (rest.exito) {
-          this.citasHoy = rest.datos;
+          this.ordenCitas(rest.datos);
           const citasConTotales = this.citasHoy.map((cita) => {
-            const totalServicios = cita.servicios.reduce(
-              (acum: any, servicio: any) => acum + servicio.valor,
-              0,
-            );
+            let totalServicios
+            if (this.seleccionRecurso) {
+              totalServicios = cita.total;
+            } else {
+              totalServicios = cita.servicios.reduce(
+                (acum: any, servicio: any) => acum + servicio.valor,
+                0,
+              );
+            }
+
             return {
               ...cita,
               totalServicios,
@@ -802,20 +833,92 @@ export class DashboardRecurso {
     });
   }
 
-  public recordatorioWssp(cliente: any) {
-    const fechaOriginal = cliente.fechaInicio;
-    const fechaFormateada = fechaOriginal.replace('T', ' ');
+  private ordenCitas(citas: any) {
+    if (this.seleccionRecurso) {
+      this.agruparPorRecurso(citas);
+    } else {
+      this.citasHoy = citas;
+    }
+  }
 
-    const mensaje = `Hola 👋, te recordamos que tienes una cita programada para el ${fechaFormateada}.
-          Para hacer efectiva la reserva, es necesario cancelar el 50% del valor del servicio.
-          Quedamos atentos a tu confirmación. ¡Gracias!`;
+  private agruparPorRecurso(citas: any[]) {
+    const resultado = citas
+      .map(item => {
+        const clienteInfo = item.citas[0]?.cliente;
+        const cliente = `${clienteInfo?.nombreCliente ?? ''} - ${clienteInfo?.telefonoCliente ?? ''}`;
+        const nombreCliente = item.citas[0]?.cliente?.nombreCliente ?? '';
+        const telefono = item.citas[0]?.cliente?.telefonoCliente ?? '';
+
+        const todasLasCitas = item.citas.flatMap((c: any) => c.servicios || []);
+
+        const nombresServicios = todasLasCitas
+          .map((s: any) => s.nombre)
+          .join(', ');
+
+        const totalServicios = todasLasCitas
+          .reduce((sum: number, s: any) => sum + (s.valor || 0), 0);
+
+        const citaMasAntigua = item.citas
+          .slice()
+          .sort((a: any, b: any) =>
+            new Date(a.fechaInicio).getTime() - new Date(b.fechaInicio).getTime()
+          )[0];
+
+        const fecha = new Date(citaMasAntigua.fechaInicio);
+
+        const hora = fecha.toLocaleTimeString('es-CO', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        });
+
+        return {
+          padre: item.padre,
+          nombreCliente: cliente,
+          hora,
+          fechaOrden: fecha.getTime(), // 👈 clave para ordenar
+          nombre: nombresServicios,
+          total: totalServicios,
+          cliente: nombreCliente,
+          telefono: telefono
+        };
+      })
+      .sort((a, b) => a.fechaOrden - b.fechaOrden);
+
+    this.citasHoy = resultado
+  }
+
+  public recordatorioWssp(cliente: any) {
+    const fecha = new Date(cliente.fechaOrden);
+
+    const fechaFormateada = fecha.toLocaleDateString('es-CO');
+    const horaFormateada = fecha.toLocaleTimeString('es-CO', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    const telefonoBreB = '3137938061'
+    const abono = cliente.total / 2;
+
+
+    const mensaje = `¡Hola ${cliente.cliente}! 
+
+    Queremos recordarte que tu servicio de ${cliente.nombre} está programado para el ${fechaFormateada} a las ${horaFormateada}.
+    Para confirmar la cita se debe realizar un abono de $${abono.toLocaleString("es-CO")}, para mayor comodidad, te ofrecemos la opción de pagar de manera rápida y segura a través de la llave Bre-b ${telefonoBreB}.  
+    Por favor envía el comprobante al WhatsApp. Se aclara que si no se realiza el abono, el sistema libera la cita y puede ser ocupada por otro cliente.
+    Si necesitas asistencia con el proceso de pago, no dudes en contactarnos.
+
+    ¡Nos vemos pronto!
+
+    Saludos,  
+    El equipo de KC NAILS COFFE BAR`;
 
 
     // 👉 Redirección a WhatsApp
-    const numero = '57' + cliente.telefonoCliente;
+    const numero = '57' + cliente.telefono;
 
     const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-
     window.open(url, '_blank');
   }
 
@@ -974,40 +1077,94 @@ export class DashboardRecurso {
   }
 
   private agendar(hora: any, bono: boolean, result: any) {
-    debugger
-    const request = this.createJson(hora, bono, result);
-    this.agendamientoServices.registrarCita(request).subscribe({
-      next: (rest) => {
-        if (rest.exito) {
+    const request: any = this.createJson(hora, bono, result);
+    // Si request.FechaIni viene como ISO: 2026-04-07T15:00:00
+    const fecha = new Date(request?.FechaIni);
+
+    // Formato fecha: 07-04-26
+    const fechaFormateada = fecha.toLocaleDateString("es-CO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    });
+
+    // Hora: 15:00
+    const horaFormateada = fecha.toLocaleTimeString("es-CO", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    const numero = '57' + result.celular;
+    const nombre = result.nombre;
+    const nombresServicios = this.serviciosSeleccionados.map(s => s.nombre);
+    const servicio =
+      nombresServicios.length > 1
+        ? nombresServicios.slice(0, -1).join(', ') + ' y ' + nombresServicios[nombresServicios.length - 1]
+        : nombresServicios[0];
+
+    const abono = (this.serviciosSeleccionados
+      .reduce((acc, s) => acc + (s.valor || 0), 0)) / 2;
+
+    const telefonoBreB = '3137938061'
+
+
+    const mensaje = `¡Hola ${nombre}! 
+
+    Queremos recordarte que tu servicio de ${servicio} está programado para el ${fechaFormateada} a las ${horaFormateada}.
+    Para confirmar la cita se debe realizar un abono de $${abono.toLocaleString("es-CO")}, para mayor comodidad, te ofrecemos la opción de pagar de manera rápida y segura a través de la llave Bre-b ${telefonoBreB}.  
+    Por favor envía el comprobante al WhatsApp. Se aclara que si no se realiza el abono, el sistema libera la cita y puede ser ocupada por otro cliente.
+    Si necesitas asistencia con el proceso de pago, no dudes en contactarnos.
+
+    ¡Nos vemos pronto!
+
+    Saludos,  
+    El equipo de KC NAILS COFFE BAR`;
+
+    if (this.seleccionRecurso) {
+      this.agendamientoServices.guardarCita(request).subscribe({
+        next: (rest) => {
           this.modalService.success(
-            rest.mensaje || 'La cita fue creado exitosamente',
+            rest.mensaje || 'La cita fue creada exitosamente',
             () => {
               this.serviciosSeleccionados = [];
               this.mostrarAgenda = false;
               this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
-
-              if (this.seleccionRecurso) {
-                // 👉 Redirección a WhatsApp
-                const numero = '57' + result.celular; // formato: país + número (sin + ni espacios)
-                const mensaje = `Hola, tu cita fue creada correctamente para el día ${request?.FechaIni}`;
-
-                const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-
-                window.open(url, '_blank');
-              }
-
             }
           );
-        } else {
-          this.modalService.error(rest.mensaje || 'Error de servidor')
-        }
-        this.loading = false;
-      },
-      error: (err) => {
-        this.modalService.error(err.statusText);
-        this.loading = false;
-      },
-    });
+          this.loading = false;
+
+          const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+          window.open(url, '_blank');
+        },
+        error: (err) => {
+          this.modalService.error(err.statusText);
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+      });
+    } else {
+      this.agendamientoServices.registrarCita(request).subscribe({
+        next: (rest) => {
+          if (rest.exito) {
+            this.modalService.success(
+              rest.mensaje || 'La cita fue creado exitosamente',
+              () => {
+                this.serviciosSeleccionados = [];
+                this.mostrarAgenda = false;
+                this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
+              }
+            );
+          } else {
+            this.modalService.error(rest.mensaje || 'Error de servidor')
+          }
+          this.loading = false;
+        },
+        error: (err) => {
+          this.modalService.error(err.statusText);
+          this.loading = false;
+        },
+      });
+    }
   }
 
   private consultarInfoCliente(): void {
@@ -1070,6 +1227,8 @@ export class DashboardRecurso {
           if (result) {
             this.loading = true;
             this.agendar(hora.hora, false, result);
+          } else {
+            this.loading = false;
           }
         });
       } else {
@@ -1192,27 +1351,115 @@ export class DashboardRecurso {
 
       const costo = valor.reduce((a, b) => a + b, 0);
 
-      const json = {
-        recurso: result.celular ? 0 : this.user.id,
-        FechaIni: fechaFinal,
-        Valor: this.otroSeleccionado ? this.costoOtro : costo,
-        UsuarioCreacion: 'Usuario',
-        Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
-        empresa: this.idEmpresa,
-        servicios: serviciosSeleccionados,
-        clienteInfo: result?.celular
-          ? {
+      let json = {};
+
+      if (this.seleccionRecurso) {
+        let alterno = this.serviciosSeleccionados
+          .filter(s => s.alterno)
+          .sort((a, b) => b.tiempo - a.tiempo);
+        let noAlterno = this.serviciosSeleccionados
+          .filter(s => !s.alterno)
+          .sort((a, b) => b.tiempo - a.tiempo);
+
+        let resultadoAlterno = alterno.map(a => ({
+          FechaIni: fechaFinal,
+          recurso: a.recurso,
+          Valor: a.valor,
+          Hora: a.tiempo,
+          servicios: [
+            {
+              servicio: a.id
+            }
+          ]
+        }));
+        let baseFecha = fechaFinal;
+        let horaAlterno = 0;
+
+        if (alterno.length > 0) {
+          baseFecha = resultadoAlterno[0].FechaIni;
+          horaAlterno = alterno[0].tiempo
+        }
+
+        const formatearFechaLocal = (fecha: Date) => {
+          return fecha.getFullYear() + '-' +
+            String(fecha.getMonth() + 1).padStart(2, '0') + '-' +
+            String(fecha.getDate()).padStart(2, '0') + 'T' +
+            String(fecha.getHours()).padStart(2, '0') + ':' +
+            String(fecha.getMinutes()).padStart(2, '0') + ':' +
+            String(fecha.getSeconds()).padStart(2, '0');
+        };
+
+        let base = new Date(baseFecha);
+
+        if (isNaN(base.getTime())) {
+          throw new Error("baseFecha inválida: " + baseFecha);
+        }
+
+        // arrancan después del tiempo de alternos
+        base.setMinutes(base.getMinutes() + horaAlterno);
+
+        let resultadoNoAlterno = noAlterno.map(a => {
+          const fechaInicio = new Date(base);
+
+          const item = {
+            FechaIni: formatearFechaLocal(fechaInicio),
+            recurso: a.recurso,
+            Valor: a.valor,
+            Hora: a.tiempo,
+            servicios: [
+              {
+                servicio: a.id
+              }
+            ]
+          };
+
+          base.setMinutes(base.getMinutes() + a.tiempo);
+
+          return item;
+        });
+
+        resultadoNoAlterno.forEach(element => {
+          resultadoAlterno.push(element)
+        });
+
+        json = {
+          FechaIni: fechaFinal,
+          empresa: this.idEmpresa,
+          UsuarioCreacion: 'Usuario',
+          fechaCreacion: fechaLocal,
+          clienteInfo: {
             Nombre: result.nombre,
             Telefono: result.celular,
             Correo: result.correo,
             FechaNacimiento: result.fechaNacimiento,
-          }
-          : null,
-        fechaCreacion: fechaLocal,
-        Bono: bono
-      };
+          },
+          citas: resultadoAlterno
+        }
+        return json;
+      } else {
 
-      return json;
+        json = {
+          recurso: result.celular ? 0 : this.user.id,
+          FechaIni: fechaFinal,
+          Valor: this.otroSeleccionado ? this.costoOtro : costo,
+          UsuarioCreacion: 'Usuario',
+          Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
+          empresa: this.idEmpresa,
+          servicios: serviciosSeleccionados,
+          clienteInfo: result?.celular
+            ? {
+              Nombre: result.nombre,
+              Telefono: result.celular,
+              Correo: result.correo,
+              FechaNacimiento: result.fechaNacimiento,
+            }
+            : null,
+          fechaCreacion: fechaLocal,
+          Bono: bono
+        };
+
+        return json;
+      }
     } else {
       return;
     }

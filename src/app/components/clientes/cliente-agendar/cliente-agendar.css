@@ -1,11 +1,9 @@
 .agendar-wrapper {
-  max-width: 860px;
-  width: 100%;
+  width: 100vw;
+  min-height: 100vh;
   padding: 1.5rem;
-  background: #fefefe; /* 👈 este se mantiene blanco */
-  border-radius: 12px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
   font-family: "Segoe UI", sans-serif;
+  box-sizing: border-box;
 }
 
 .agendar-background {
@@ -13,7 +11,7 @@
   justify-content: center;
   padding: 2rem;
   min-height: 100vh;
-  background: #f0f2f5 url('https://www.transparenttextures.com/patterns/black-linen.png');
+  background: #f7f7f7;
   background-size: cover; /* asegura que la textura cubra */
 }
 
@@ -206,12 +204,13 @@ button.hora-no-disponible {
 .servicio-info {
   display: flex;
   flex-direction: column;
+  flex: 1;        /* 🔥 ocupa el espacio disponible */
+  min-width: 0;   /* 🔥 evita que el texto rompa el layout */
 }
 
 .servicio-nombre {
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: #374151;
+  display: -webkit-box;
+  overflow: hidden;
 }
 
 .servicio-precio {
@@ -248,6 +247,7 @@ button.hora-no-disponible {
 
 .boton-add {
   margin-left: 1rem;
+   flex-shrink: 0;
 }
 
 /* ---------- Botón flotante ---------- */

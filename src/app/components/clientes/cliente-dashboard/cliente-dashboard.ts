@@ -53,7 +53,7 @@ export class ClienteDashboard {
     this.route.queryParams.subscribe((params) => {
       this.idEmpresa = +params['em'];
     });
-    this.obtenerSedes();
+    this.obtenerEmpresas();
   }
 
   public misCitas(): void {
@@ -75,6 +75,8 @@ export class ClienteDashboard {
             this.btnRefresh = !this.mostrarSede;
             this.obtenerRecursos();
             this.encontrarSedesAsociadas();
+            this.loading = false;
+            this.cdr.detectChanges();
           }
         },
       });
@@ -99,9 +101,8 @@ export class ClienteDashboard {
               queryParams: { emp: this.idEmpresa, rcr: 0 },
             });
           }
-          this.loading = false;
+          this.obtenerSedes();
           localStorage.setItem('empresa', JSON.stringify(empresa));
-          this.cdr.detectChanges();
         } else {
           this.inactiva = true;
         }
@@ -152,7 +153,6 @@ export class ClienteDashboard {
         '';
       this.recursos[i].nombreSede = 'Sede - ' + sede;
     }
-    this.obtenerEmpresas();
   }
 
   irAReservar(usuario: any) {

@@ -42,16 +42,22 @@
                 <span><mat-icon>account_circle</mat-icon>
                   {{ cita.nombreCliente | titlecase }}</span>
                 <span><mat-icon>access_time</mat-icon>
-                  {{ cita.fechaInicio | date : "shortTime" }}</span>
+                  {{ seleccionRecurso ? cita.hora : cita.fechaInicio | date : "shortTime" }}</span>
                 <span><mat-icon>monetization_on</mat-icon>
                   {{
                   cita.totalServicios | currency : "COP" : "symbol" : "1.0-0"
                   }}</span>
                 <span>
                   <mat-icon>assignment</mat-icon>
-                  <ng-container *ngFor="let s of cita.servicios; let last = last">
-                    {{ s.nombre }}<span *ngIf="!last">, </span>
+                  <ng-container *ngIf="seleccionRecurso; else normalServicios">
+                    {{ cita.nombre }}
                   </ng-container>
+
+                  <ng-template #normalServicios>
+                    <ng-container *ngFor="let s of cita.servicios; let last = last">
+                      {{ s.nombre }}<span *ngIf="!last">, </span>
+                    </ng-container>
+                  </ng-template>
                 </span>
               </div>
               <div class="acciones-cita">
@@ -63,6 +69,9 @@
                 </button>
                 <button *ngIf="seleccionRecurso" class="btn-confirmar" (click)="recordatorioWssp(cita)">
                   Confirmar
+                </button>
+                <button *ngIf="seleccionRecurso" class="btn-finalizar">
+                  Finalizar
                 </button>
               </div>
             </div>
