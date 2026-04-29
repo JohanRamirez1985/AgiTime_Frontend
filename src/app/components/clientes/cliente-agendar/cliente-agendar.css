@@ -17,6 +17,15 @@
   background-size: cover; /* asegura que la textura cubra */
 }
 
+.imagen-banner {
+  width: 200px;
+  height: auto;
+  border-radius: 8px;
+  margin: 1rem auto;
+  object-fit: cover;
+  display: block;
+}
+
 /* ---------- Título ---------- */
 .agendar-wrapper h2 {
   text-align: center;

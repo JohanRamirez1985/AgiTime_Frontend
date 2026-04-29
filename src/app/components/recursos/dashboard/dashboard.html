@@ -1,20 +1,10 @@
 <!-- <app-toolbar></app-toolbar> -->
-<div class="tabs-header">
-  <button
-    *ngIf="btnActivar"
-    mat-raised-button
-    color="warn"
-    (click)="activarUsuario()"
-  >
+<div *ngIf="!seleccionRecurso" class="tabs-header">
+  <button *ngIf="btnActivar" mat-raised-button color="warn" (click)="activarUsuario()">
     <mat-icon>block</mat-icon>
     Activarme
   </button>
-  <button
-    *ngIf="!btnActivar"
-    mat-raised-button
-    color="warn"
-    (click)="inactivarUsuario()"
-  >
+  <button *ngIf="!btnActivar" mat-raised-button color="warn" (click)="inactivarUsuario()">
     <mat-icon>block</mat-icon>
     Inactivarme
   </button>
@@ -28,23 +18,13 @@
         {{ day | date : "fullDate" }}
       </span>
       <div class="navegacion-botones">
-        <button
-          mat-icon-button
-          class="boton-navegacion"
-          (click)="previus(true)"
-          aria-label="Día anterior"
-        >
+        <button mat-icon-button class="boton-navegacion" (click)="previus(true)" aria-label="Día anterior">
           <mat-icon>chevron_left</mat-icon>
         </button>
         <button mat-stroked-button color="primary" (click)="today(true)">
           <mat-icon class="boton-icono">today</mat-icon> Hoy
         </button>
-        <button
-          mat-icon-button
-          class="boton-navegacion"
-          (click)="nextPeriod(true)"
-          aria-label="Día siguiente"
-        >
+        <button mat-icon-button class="boton-navegacion" (click)="nextPeriod(true)" aria-label="Día siguiente">
           <mat-icon>chevron_right</mat-icon>
         </button>
       </div>
@@ -59,25 +39,17 @@
             <div class="card-content">
               <div class="info-cita">
                 <strong>{{ cita.servicio }}</strong>
-                <span
-                  ><mat-icon>account_circle</mat-icon>
-                  {{ cita.nombreCliente | titlecase }}</span
-                >
-                <span
-                  ><mat-icon>access_time</mat-icon>
-                  {{ cita.fechaInicio | date : "shortTime" }}</span
-                >
-                <span
-                  ><mat-icon>monetization_on</mat-icon>
+                <span><mat-icon>account_circle</mat-icon>
+                  {{ cita.nombreCliente | titlecase }}</span>
+                <span><mat-icon>access_time</mat-icon>
+                  {{ cita.fechaInicio | date : "shortTime" }}</span>
+                <span><mat-icon>monetization_on</mat-icon>
                   {{
-                    cita.totalServicios | currency : "COP" : "symbol" : "1.0-0"
-                  }}</span
-                >
+                  cita.totalServicios | currency : "COP" : "symbol" : "1.0-0"
+                  }}</span>
                 <span>
                   <mat-icon>assignment</mat-icon>
-                  <ng-container
-                    *ngFor="let s of cita.servicios; let last = last"
-                  >
+                  <ng-container *ngFor="let s of cita.servicios; let last = last">
                     {{ s.nombre }}<span *ngIf="!last">, </span>
                   </ng-container>
                 </span>
@@ -86,11 +58,10 @@
                 <button class="btn-cancelar" (click)="cancelarCita(cita)">
                   Cancelar
                 </button>
-                <button
-                  *ngIf="cita.estado === 'Activo'"
-                  class="btn-confirmar"
-                  (click)="confirmarCita(cita)"
-                >
+                <button *ngIf="cita.estado === 'Activo'" class="btn-confirmar" (click)="confirmarCita(cita)">
+                  Confirmar
+                </button>
+                <button *ngIf="seleccionRecurso" class="btn-confirmar" (click)="recordatorioWssp(cita)">
                   Confirmar
                 </button>
               </div>
@@ -100,8 +71,7 @@
 
         <ng-template #sinCitas>
           <div class="sin-citas">
-            <mat-icon fontIcon="event_busy" style="font-size: 48px"></mat-icon
-            ><br />
+            <mat-icon fontIcon="event_busy" style="font-size: 48px"></mat-icon><br />
             No tienes citas programadas para hoy.
           </div>
         </ng-template>
@@ -121,10 +91,7 @@
         <div *ngIf="!loading">
           <h2 style="text-align-last: center" class="titulo">Servicios</h2>
           <div class="servicios-container">
-            <mat-card
-              class="servicio-card"
-              *ngFor="let servicio of serviciosFiltrados"
-            >
+            <mat-card class="servicio-card" *ngFor="let servicio of serviciosFiltrados">
               <div class="contenido-servicio">
                 <div class="servicio-info">
                   <div class="servicio-nombre">
@@ -134,34 +101,21 @@
                     ${{ servicio.valor | number : "1.0-0" : "es-CO" }}
                   </div>
                 </div>
-                <button
-                  mat-mini-fab
-                  color="primary"
-                  class="boton-add"
-                  (click)="toggleSeleccionServicio(servicio)"
+                <button mat-mini-fab color="primary" class="boton-add" (click)="toggleSeleccionServicio(servicio)"
                   [disabled]="
                     otroSeleccionado && servicio.nombre.toLowerCase() !== 'otro'
-                  "
-                >
+                  ">
                   <mat-icon>{{
                     estaSeleccionado(servicio) ? "check" : "add"
-                  }}</mat-icon>
+                    }}</mat-icon>
                 </button>
               </div>
             </mat-card>
           </div>
 
           <!-- Botón flotante visible solo si hay servicios seleccionados -->
-          <div
-            class="boton-flotante-wrapper"
-            *ngIf="serviciosSeleccionados.length > 0"
-          >
-            <button
-              mat-flat-button
-              color="primary"
-              class="boton-flotante-mejorado"
-              (click)="reservar()"
-            >
+          <div class="boton-flotante-wrapper" *ngIf="serviciosSeleccionados.length > 0">
+            <button mat-flat-button color="primary" class="boton-flotante-mejorado" (click)="reservar()">
               Reservar ({{ serviciosSeleccionados.length }})
             </button>
           </div>
@@ -174,23 +128,13 @@
           {{ day | date : "fullDate" }}
         </span>
         <div class="navegacion-botones">
-          <button
-            mat-icon-button
-            class="boton-navegacion"
-            (click)="previus(false)"
-            aria-label="Día anterior"
-          >
+          <button mat-icon-button class="boton-navegacion" (click)="previus(false)" aria-label="Día anterior">
             <mat-icon>chevron_left</mat-icon>
           </button>
           <button mat-stroked-button color="primary" (click)="today(false)">
             <mat-icon class="boton-icono">today</mat-icon> Hoy
           </button>
-          <button
-            mat-icon-button
-            class="boton-navegacion"
-            (click)="nextPeriod(false)"
-            aria-label="Día siguiente"
-          >
+          <button mat-icon-button class="boton-navegacion" (click)="nextPeriod(false)" aria-label="Día siguiente">
             <mat-icon>chevron_right</mat-icon>
           </button>
         </div>
@@ -206,20 +150,11 @@
             <div class="seccion-titulo">
               <mat-icon>light_mode</mat-icon> Mañana (AM)
             </div>
-            <div
-              class="horas-grid"
-              *ngIf="horasAM.length > 0; else sinHorarios"
-            >
-              <button
-                mat-flat-button
-                *ngFor="let hora of horasAM"
-                [disabled]="!hora.disponible"
-                [ngClass]="{
+            <div class="horas-grid" *ngIf="horasAM.length > 0; else sinHorarios">
+              <button mat-flat-button *ngFor="let hora of horasAM" [disabled]="!hora.disponible" [ngClass]="{
                   'hora-disponible': hora.disponible,
                   'hora-no-disponible': !hora.disponible
-                }"
-                (click)="seleccionarHora(hora)"
-              >
+                }" (click)="seleccionarHora(hora)">
                 {{ hora.hora }}
               </button>
             </div>
@@ -236,20 +171,11 @@
             <div class="seccion-titulo">
               <mat-icon>nights_stay</mat-icon> Tarde (PM)
             </div>
-            <div
-              class="horas-grid"
-              *ngIf="horasPM.length > 0; else sinHorarios"
-            >
-              <button
-                mat-flat-button
-                *ngFor="let hora of horasPM"
-                [disabled]="!hora.disponible"
-                [ngClass]="{
+            <div class="horas-grid" *ngIf="horasPM.length > 0; else sinHorarios">
+              <button mat-flat-button *ngFor="let hora of horasPM" [disabled]="!hora.disponible" [ngClass]="{
                   'hora-disponible': hora.disponible,
                   'hora-no-disponible': !hora.disponible
-                }"
-                (click)="seleccionarHora(hora)"
-              >
+                }" (click)="seleccionarHora(hora)">
                 {{ hora.hora }}
               </button>
             </div>
@@ -265,7 +191,7 @@
   </mat-tab>
 
   <!-- ➕ Pestaña 3: Bloqueos -->
-  <mat-tab label="Bloqueo Horario">
+  <mat-tab *ngIf="!seleccionRecurso" label="Bloqueo Horario">
     <div class="p-4">
       <div *ngIf="!mostrarBloqueo">
         <button mat-raised-button color="primary" (click)="bloqueo()">
@@ -285,9 +211,9 @@
                   <p>
                     <strong>Día:</strong>
                     {{
-                      bloqueo.tipoBloqueo === "1" || bloqueo.tipoBloqueo === "3"
-                        ? bloqueo.dia
-                        : (bloqueo.fechaInicio | date : "fullDate" : "" : "es")
+                    bloqueo.tipoBloqueo === "1" || bloqueo.tipoBloqueo === "3"
+                    ? bloqueo.dia
+                    : (bloqueo.fechaInicio | date : "fullDate" : "" : "es")
                     }}
                   </p>
                   <p><strong>Hora:</strong> {{ bloqueo.hora }}</p>
@@ -298,20 +224,12 @@
                 </mat-card-content>
               </div>
               <div class="bloqueo-acciones">
-                <button
-                  *ngIf="bloqueo.estado === 'Inactivo'"
-                  mat-raised-button
-                  color="primary"
-                  (click)="irABloqueo(bloqueo, true)"
-                >
+                <button *ngIf="bloqueo.estado === 'Inactivo'" mat-raised-button color="primary"
+                  (click)="irABloqueo(bloqueo, true)">
                   Activar
                 </button>
-                <button
-                  *ngIf="bloqueo.estado === 'Activo'"
-                  mat-raised-button
-                  color="primary"
-                  (click)="irABloqueo(bloqueo, false)"
-                >
+                <button *ngIf="bloqueo.estado === 'Activo'" mat-raised-button color="primary"
+                  (click)="irABloqueo(bloqueo, false)">
                   Inactivar
                 </button>
               </div>
@@ -342,10 +260,7 @@
           <div class="tipoBloqueos" *ngIf="mostrarTipoBloqueos">
             <mat-form-field appearance="fill">
               <mat-label>Tipo de bloqueo</mat-label>
-              <mat-select
-                [(ngModel)]="tipoBloqueo"
-                (selectionChange)="onTipoBloqueoChange($event.value)"
-              >
+              <mat-select [(ngModel)]="tipoBloqueo" (selectionChange)="onTipoBloqueoChange($event.value)">
                 <mat-option value="1">Bloqueo por día</mat-option>
                 <mat-option value="2">Bloqueo puntual</mat-option>
                 <mat-option value="3">Bloqueo descanso</mat-option>
@@ -366,15 +281,8 @@
           <div class="date" *ngIf="tipoBloqueo === '2'">
             <mat-form-field appearance="fill">
               <mat-label>Fecha</mat-label>
-              <input
-                matInput
-                [matDatepicker]="picker"
-                [(ngModel)]="fechaBloqueo"
-              />
-              <mat-datepicker-toggle
-                matSuffix
-                [for]="picker"
-              ></mat-datepicker-toggle>
+              <input matInput [matDatepicker]="picker" [(ngModel)]="fechaBloqueo" />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
           </div>
@@ -383,15 +291,8 @@
           <div class="date" *ngIf="tipoBloqueo === '4'">
             <mat-form-field appearance="fill">
               <mat-label>Fecha Inicial</mat-label>
-              <input
-                matInput
-                [matDatepicker]="picker"
-                [(ngModel)]="fechaInicioVacaciones"
-              />
-              <mat-datepicker-toggle
-                matSuffix
-                [for]="picker"
-              ></mat-datepicker-toggle>
+              <input matInput [matDatepicker]="picker" [(ngModel)]="fechaInicioVacaciones" />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
           </div>
@@ -399,15 +300,8 @@
           <div class="date" *ngIf="tipoBloqueo === '4'">
             <mat-form-field appearance="fill">
               <mat-label>Fecha Final</mat-label>
-              <input
-                matInput
-                [matDatepicker]="pickerFin"
-                [(ngModel)]="fechaFinVacaciones"
-              />
-              <mat-datepicker-toggle
-                matSuffix
-                [for]="pickerFin"
-              ></mat-datepicker-toggle>
+              <input matInput [matDatepicker]="pickerFin" [(ngModel)]="fechaFinVacaciones" />
+              <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
               <mat-datepicker #pickerFin></mat-datepicker>
             </mat-form-field>
           </div>
@@ -415,41 +309,22 @@
           <div class="horas" *ngIf="tipoBloqueo !== '4'">
             <mat-form-field appearance="outline">
               <mat-label>Hora inicial</mat-label>
-              <input
-                matInput
-                type="time"
-                [(ngModel)]="horaInicio"
-                [disabled]="estaDeshabilitado"
-              />
+              <input matInput type="time" [(ngModel)]="horaInicio" [disabled]="estaDeshabilitado" />
             </mat-form-field>
 
             <mat-form-field appearance="outline">
               <mat-label>Hora final</mat-label>
-              <input
-                matInput
-                type="time"
-                [(ngModel)]="horaFin"
-                [disabled]="estaDeshabilitado"
-              />
+              <input matInput type="time" [(ngModel)]="horaFin" [disabled]="estaDeshabilitado" />
             </mat-form-field>
 
             <mat-form-field appearance="outline">
               <mat-label>Motivo</mat-label>
-              <input
-                matInput
-                type="text"
-                [(ngModel)]="motivo"
-                [disabled]="estaDeshabilitado"
-              />
+              <input matInput type="text" [(ngModel)]="motivo" [disabled]="estaDeshabilitado" />
             </mat-form-field>
           </div>
 
           <div class="acciones">
-            <button
-              mat-flat-button
-              color="primary"
-              (click)="inhabilitarHorarios()"
-            >
+            <button mat-flat-button color="primary" (click)="inhabilitarHorarios()">
               Crear Bloqueo
             </button>
           </div>

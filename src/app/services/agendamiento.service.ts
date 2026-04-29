@@ -7,7 +7,7 @@ import { HttpParams } from '@angular/common/http';
 export class AgendamientoService {
   private baseUrl = `${environment.apiBaseUrl}/Agendamiento`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   consultarAgendamientos(request: any) {
     const params = new HttpParams({ fromObject: request });
@@ -25,6 +25,10 @@ export class AgendamientoService {
 
   registrarCita(request: any) {
     return this.http.post<any>(`${this.baseUrl}/registrarCita`, request);
+  }
+
+  guardarCita(request: any) {
+    return this.http.post<any>(`${this.baseUrl}/guardarCita`, request);
   }
 
   consultarCitasRecurso(request: any) {

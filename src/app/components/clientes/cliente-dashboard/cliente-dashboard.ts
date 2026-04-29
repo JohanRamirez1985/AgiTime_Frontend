@@ -40,13 +40,14 @@ export class ClienteDashboard {
   mostrarSede: boolean = false;
   sedeSeleccionada: string = '';
   btnRefresh: boolean = false;
+  seleccionRubro: boolean = false;
 
   constructor(
     private router: Router,
     private sharenServices: SharedService,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -89,9 +90,15 @@ export class ClienteDashboard {
     this.sharenServices.obtenerEmpresasApp().subscribe({
       next: (rest) => {
         if (rest.exito) {
-          const empresa = rest.datos.find((em) => em.id === this.idEmpresa);
+          const empresa: any = rest.datos.find((em) => em.id === this.idEmpresa);
           this.nombreEmpresa = empresa?.nombre ?? '';
           this.img = 'assets/img/' + empresa?.logo;
+          this.seleccionRubro = empresa.servicio;
+          if (this.seleccionRubro) {
+            this.router.navigate(['/cliente/reservar'], {
+              queryParams: { emp: this.idEmpresa, rcr: 0 },
+            });
+          }
           this.loading = false;
           localStorage.setItem('empresa', JSON.stringify(empresa));
           this.cdr.detectChanges();
