@@ -61,13 +61,18 @@
                 </span>
               </div>
               <div class="acciones-cita">
-                <button class="btn-cancelar" (click)="cancelarCita(cita)">
+                <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" class="btn-cancelar" (click)="cancelarCita(cita)">
                   Cancelar
                 </button>
-                <button *ngIf="cita.estado === 'Activo'" class="btn-confirmar" (click)="confirmarCita(cita)">
+                <button *ngIf="!seleccionRecurso" class="btn-cancelar" (click)="cancelarCita(cita)">
+                  Cancelar
+                </button>
+                <button *ngIf="!seleccionRecurso && cita.estado === 'Activo'" class="btn-confirmar"
+                  (click)="confirmarCita(cita)">
                   Confirmar
                 </button>
-                <button *ngIf="seleccionRecurso" class="btn-confirmar" (click)="recordatorioWssp(cita)">
+                <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" class="btn-confirmar"
+                  (click)="recordatorioWssp(cita)">
                   Confirmar
                 </button>
                 <button *ngIf="seleccionRecurso" class="btn-finalizar">

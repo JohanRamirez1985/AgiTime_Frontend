@@ -876,11 +876,12 @@ export class DashboardRecurso {
           padre: item.padre,
           nombreCliente: cliente,
           hora,
-          fechaOrden: fecha.getTime(), // 👈 clave para ordenar
+          fechaOrden: fecha.getTime(),
           nombre: nombresServicios,
           total: totalServicios,
           cliente: nombreCliente,
-          telefono: telefono
+          telefono: telefono,
+          estado: item.citas[0].estado
         };
       })
       .sort((a, b) => a.fechaOrden - b.fechaOrden);
@@ -1102,23 +1103,22 @@ export class DashboardRecurso {
         ? nombresServicios.slice(0, -1).join(', ') + ' y ' + nombresServicios[nombresServicios.length - 1]
         : nombresServicios[0];
 
-    const abono = (this.serviciosSeleccionados
-      .reduce((acc, s) => acc + (s.valor || 0), 0)) / 2;
+    const mensaje = `¡Hola ${nombre}!
 
-    const telefonoBreB = '3137938061'
+      Tu cita ha sido agendada exitosamente en KC NAILS COFFE BAR.
 
+      * Fecha: ${fechaFormateada}  
+      * Hora: ${horaFormateada}  
+      * Servicio: ${servicio}
 
-    const mensaje = `¡Hola ${nombre}! 
+      Te recomendamos llegar puntual para brindarte la mejor atención y cumplir con tu horario.
 
-    Queremos recordarte que tu servicio de ${servicio} está programado para el ${fechaFormateada} a las ${horaFormateada}.
-    Para confirmar la cita se debe realizar un abono de $${abono.toLocaleString("es-CO")}, para mayor comodidad, te ofrecemos la opción de pagar de manera rápida y segura a través de la llave Bre-b ${telefonoBreB}.  
-    Por favor envía el comprobante al WhatsApp. Se aclara que si no se realiza el abono, el sistema libera la cita y puede ser ocupada por otro cliente.
-    Si necesitas asistencia con el proceso de pago, no dudes en contactarnos.
+      En caso de que necesites reprogramar tu cita, puedes comunicarte con nosotros con anticipación.
 
-    ¡Nos vemos pronto!
+      ¡Será un gusto atenderte!
 
-    Saludos,  
-    El equipo de KC NAILS COFFE BAR`;
+      Saludos,  
+      El equipo de KC NAILS COFFE BAR`;
 
     if (this.seleccionRecurso) {
       this.agendamientoServices.guardarCita(request).subscribe({
