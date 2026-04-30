@@ -48,6 +48,7 @@ export class ClienteAgendar {
   viewDate: Date = new Date();
   nombreDelRecurso: string = '';
   serviciosFiltrados: any[] = [];
+  servicios: any[] = [];
   serviciosSeleccionados: any[] = [];
   idEmpresa: number = 0;
   horaInicioServicios: number = 0;
@@ -77,6 +78,7 @@ export class ClienteAgendar {
   rangoTiempo: string = '';
   tipoRangoTiempo: string = 'Tiempo_Agenda';
   seleccionRubro: boolean = false;
+  busqueda: string = '';
 
   constructor(
     private sharedServices: SharedService,
@@ -110,6 +112,15 @@ export class ClienteAgendar {
         }
       },
     });
+  }
+
+  filtrarServicios() {
+    const texto = this.busqueda.toLowerCase();
+
+    this.serviciosFiltrados = this.servicios.filter(servicio =>
+      servicio.nombre.toLowerCase().includes(texto)
+    );
+    this.cdr.detectChanges();
   }
 
   reservarServicios(): void {
@@ -677,6 +688,7 @@ export class ClienteAgendar {
                 s.cliente === true
             );
           this.mostrarServicios = true;
+          this.servicios = this.serviciosFiltrados;
           this.obtenerHorarios();
         } else {
           this.inactiva = true;

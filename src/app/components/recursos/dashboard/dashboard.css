@@ -8,6 +8,7 @@
 .dashboard-container {
   max-width: 1000px;
   margin: 0 auto;
+  margin-top: 10px;
 }
 
 .titulo-dashboard {
@@ -16,6 +17,7 @@
   color: #2c3e50;
   margin-bottom: 1.5rem;
   text-align: center;
+  margin-top: auto;
 }
 
 .card-cita {
@@ -63,6 +65,14 @@
   background-color: white;
 }
 
+.input-busqueda {
+  width: 95%;
+  padding: 10px;
+  margin: 10px 0 20px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
 
 
 mat-tab-group {

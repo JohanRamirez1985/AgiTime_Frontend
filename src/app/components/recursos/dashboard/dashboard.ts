@@ -63,6 +63,7 @@ export class DashboardRecurso {
   idEmpresa: number = 0;
   mostrarAgenda: boolean = false;
   serviciosFiltrados: any[] = [];
+  servicios: any[] = [];
   serviciosSeleccionados: any[] = [];
   dias = [
     { nombre: 'L', checked: false, value: 1 },
@@ -115,6 +116,7 @@ export class DashboardRecurso {
   seleccionRecurso: boolean = false;
   viewDate: Date = new Date();
   clientesEmpresa: any[] = [];
+  busqueda: string = '';
 
   constructor(
     private router: Router,
@@ -613,6 +615,7 @@ export class DashboardRecurso {
         this.serviciosFiltrados = this.serviciosFiltrados.filter(
           (s) => s.sede === this.user.sede,
         );
+        this.servicios = this.serviciosFiltrados;
         this.loading = false;
       },
     });
@@ -1067,6 +1070,20 @@ export class DashboardRecurso {
       this.loading = true;
       this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
     }
+    this.cdr.detectChanges();
+  }
+
+  public mostrarServicios(): void {
+    this.mostrarAgenda = false
+    this.cdr.detectChanges();
+  }
+
+  filtrarServicios() {
+    const texto = this.busqueda.toLowerCase();
+  
+    this.serviciosFiltrados = this.servicios.filter(servicio =>
+      servicio.nombre.toLowerCase().includes(texto)
+    );
     this.cdr.detectChanges();
   }
 
