@@ -1,11 +1,8 @@
 .agendar-wrapper {
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 1.5rem;
-  background: #fefefe;
-  border-radius: 12px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
-  font-family: 'Segoe UI', sans-serif;
+  width: 100vw;
+  min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+  box-sizing: border-box;
 }
 
 .agendar-wrapper h2 {
@@ -198,7 +195,7 @@
   justify-content: center;
   padding: 2rem;
   min-height: 100vh;
-  background: #f0f2f5 url('https://www.transparenttextures.com/patterns/black-linen.png');
+  background: #f7f7f7;
   background-size: cover; /* asegura que la textura cubra */
 }
 

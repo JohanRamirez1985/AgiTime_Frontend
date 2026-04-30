@@ -17,6 +17,10 @@
         <mat-icon>event</mat-icon>
         Agendar cita
       </h2>
+      <button *ngIf="seleccionRubro" mat-stroked-button color="primary" class="fab-citas" (click)="misCitas()">
+        <mat-icon>event</mat-icon>
+        Mis citas
+      </button>
       <div *ngIf="loading" class="loading-container">
         <mat-spinner diameter="50"></mat-spinner>
         <p class="loading-text">Cargando disponibilidad...</p>
