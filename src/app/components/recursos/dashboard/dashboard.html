@@ -61,7 +61,8 @@
                 </span>
               </div>
               <div class="acciones-cita">
-                <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" class="btn-cancelar" (click)="cancelarCita(cita)">
+                <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" class="btn-cancelar"
+                  (click)="cancelarCita(cita)">
                   Cancelar
                 </button>
                 <button *ngIf="!seleccionRecurso" class="btn-cancelar" (click)="cancelarCita(cita)">
@@ -104,6 +105,10 @@
 
         <div *ngIf="!loading">
           <h2 style="text-align-last: center" class="titulo">Servicios</h2>
+
+          <input type="text" [(ngModel)]="busqueda" (input)="filtrarServicios()" placeholder="Buscar servicio..."
+            class="input-busqueda" />
+
           <div class="servicios-container">
             <mat-card class="servicio-card" *ngFor="let servicio of serviciosFiltrados">
               <div class="contenido-servicio">
@@ -137,6 +142,9 @@
       </div>
 
       <div *ngIf="mostrarAgenda">
+        <button mat-icon-button color="primary" (click)="mostrarServicios()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
         <h2 class="titulo-dashboard">Agendar Citas</h2>
         <span class="fecha-actual">
           {{ day | date : "fullDate" }}

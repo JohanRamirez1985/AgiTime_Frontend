@@ -42,7 +42,8 @@
         <!-- Servicios -->
         <div class="servicios-wrapper" *ngIf="mostrarServicios">
           <h2 class="titulo">Servicios</h2>
-
+          <input type="text" [(ngModel)]="busqueda" (input)="filtrarServicios()" placeholder="Buscar servicio..."
+            class="input-busqueda" />
           <ng-container *ngIf="
               serviciosFiltrados && serviciosFiltrados.length > 0;
               else noRecursos
