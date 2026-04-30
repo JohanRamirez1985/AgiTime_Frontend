@@ -40,19 +40,20 @@ export class ClienteDashboard {
   mostrarSede: boolean = false;
   sedeSeleccionada: string = '';
   btnRefresh: boolean = false;
+  seleccionRubro: boolean = false;
 
   constructor(
     private router: Router,
     private sharenServices: SharedService,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       this.idEmpresa = +params['em'];
     });
-    this.obtenerSedes();
+    this.obtenerEmpresas();
   }
 
   public misCitas(): void {
@@ -74,6 +75,8 @@ export class ClienteDashboard {
             this.btnRefresh = !this.mostrarSede;
             this.obtenerRecursos();
             this.encontrarSedesAsociadas();
+            this.loading = false;
+            this.cdr.detectChanges();
           }
         },
       });
@@ -89,12 +92,17 @@ export class ClienteDashboard {
     this.sharenServices.obtenerEmpresasApp().subscribe({
       next: (rest) => {
         if (rest.exito) {
-          const empresa = rest.datos.find((em) => em.id === this.idEmpresa);
+          const empresa: any = rest.datos.find((em) => em.id === this.idEmpresa);
           this.nombreEmpresa = empresa?.nombre ?? '';
           this.img = 'assets/img/' + empresa?.logo;
-          this.loading = false;
+          this.seleccionRubro = empresa.servicio;
+          if (this.seleccionRubro) {
+            this.router.navigate(['/cliente/reservar'], {
+              queryParams: { emp: this.idEmpresa, rcr: 0 },
+            });
+          }
+          this.obtenerSedes();
           localStorage.setItem('empresa', JSON.stringify(empresa));
-          this.cdr.detectChanges();
         } else {
           this.inactiva = true;
         }
@@ -145,7 +153,6 @@ export class ClienteDashboard {
         '';
       this.recursos[i].nombreSede = 'Sede - ' + sede;
     }
-    this.obtenerEmpresas();
   }
 
   irAReservar(usuario: any) {

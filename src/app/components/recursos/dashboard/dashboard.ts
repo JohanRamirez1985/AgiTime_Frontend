@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import Swal from 'sweetalert2';
 import { AgendamientoService } from '../../../services/agendamiento.service';
@@ -21,6 +21,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { RolesContent } from '../../../shared/libs/roles';
 import { switchMap, tap } from 'rxjs/operators';
 import { Modal } from '../../../shared/services/modal';
+import { ReservaDialog } from '../../reserva-dialog/reserva-dialog';
+import { ClienteService } from '../../../services/cliente.service';
 
 @Component({
   selector: 'app-dashboardR',
@@ -110,13 +112,18 @@ export class DashboardRecurso {
   rangoTiempo: string = '';
   tipoRangoTiempo: string = 'Tiempo_Agenda';
   estaDeshabilitado: boolean = false;
+  seleccionRecurso: boolean = false;
+  viewDate: Date = new Date();
+  clientesEmpresa: any[] = [];
 
   constructor(
     private router: Router,
     private agendamientoServices: AgendamientoService,
     private sharedServices: SharedService,
     private cdr: ChangeDetectorRef,
-    private modalService: Modal
+    private modalService: Modal,
+    private dialog: MatDialog,
+    private clienteService: ClienteService,
   ) { }
 
   onTipoBloqueoChange(valor: string) {
@@ -143,15 +150,17 @@ export class DashboardRecurso {
   ngOnInit() {
     this.user = JSON.parse(localStorage.getItem('usuario') || '');
     this.empresa = JSON.parse(localStorage.getItem('empresa') || '');
-    this.consultarCitas(this.user, this.empresa, this.day);
     this.idEmpresa = this.empresa.id;
+    this.seleccionRecurso = this.empresa.servicio;
     this.rol = this.user.rol;
+    this.consultarCitas(this.user, this.empresa, this.day);
     this.estadoActivoInactivo();
     this.obtenerRangoParametrizado();
     this.obtenerServicios(this.idEmpresa);
     this.rolesPermitidos = [RolesContent.Empleado, RolesContent.Administrador];
     this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
     this.obtenerBloqueos();
+    this.consultarInfoCliente();
   }
 
   private obtenerRangoParametrizado(): void {
@@ -587,6 +596,7 @@ export class DashboardRecurso {
         }
       });
     } else {
+      this.seleccionarRecursoEmpleado(this.day);
       this.mostrarAgenda = true;
       this.cdr.detectChanges();
     }
@@ -630,6 +640,9 @@ export class DashboardRecurso {
         });
 
         if (rolPermitido) {
+          if (this.seleccionRecurso) {
+            this.loading = false;
+          }
           this.seleccionarRecursoEmpleado(this.day);
         } else {
           this.seleccionarRecurso(this.day);
@@ -639,41 +652,65 @@ export class DashboardRecurso {
   }
 
   seleccionarRecursoEmpleado(fecha: Date): void {
-    const request = {
-      empresa: this.idEmpresa,
-      FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
-      fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
-      recurso: this.user.id,
-    };
 
-    this.agendamientoServices
-      .consultarAgendamientosEmpleado(request)
-      .subscribe({
-        next: (rest) => {
-          if (rest.exito) {
-            for (let i = 0; i < this.horas.length; i++) {
-              let disponible = true;
-              disponible = rest.horasOcupadas.find(
-                (h: any) => h === this.horas[i].hora,
-              );
-              if (disponible) {
-                this.horas[i].disponible = false;
+    let request: any = {}
+
+    if (this.seleccionRecurso) {
+      request = {
+        empresa: this.idEmpresa,
+        FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
+        fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
+        profesional: [...new Set(
+          this.serviciosSeleccionados
+            .filter(s => s.recurso != null)
+            .map(s => s.recurso)
+        )].join(',')
+      };
+    } else {
+      request = {
+        empresa: this.idEmpresa,
+        FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
+        fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
+        recurso: this.user.id,
+      };
+    }
+
+    if (this.seleccionRecurso && !request.profesional) {
+      this.loading = false;
+      this.cdr.detectChanges();
+    } else {
+      this.agendamientoServices
+        .consultarAgendamientosEmpleado(request)
+        .subscribe({
+          next: (rest) => {
+            if (rest.exito) {
+              for (let i = 0; i < this.horas.length; i++) {
+                let disponible = true;
+                disponible = rest.horasOcupadas.find(
+                  (h: any) => h === this.horas[i].hora,
+                );
+                if (disponible) {
+                  this.horas[i].disponible = false;
+                }
               }
+              this.horas = this.horas.filter((h) => h.disponible);
             }
-            this.horas = this.horas.filter((h) => h.disponible);
-          }
-          this.verificarHoras();
-        },
-      });
+            this.verificarHoras();
+          },
+        });
+    }
   }
 
   public seleccionarRecurso(fecha: Date): void {
-    const request = {
+    const request: any = {
       empresa: this.idEmpresa,
       FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
       fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
-      recurso: this.user.id,
     };
+
+    if (!this.seleccionRecurso) {
+      request.recurso = this.user.id;
+    }
 
     this.agendamientoServices.consultarAgendamientos(request).subscribe({
       next: (rest) => {
@@ -761,22 +798,32 @@ export class DashboardRecurso {
 
   private consultarCitas(user: any, empresa: any, fecha: Date): void {
     this.loading = true;
-    const request = {
+
+    const request: any = {
       empresa: empresa.id,
       FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
       FechaFin: this.formatearFechaLocal(fecha, '23:59:00'),
-      recurso: user.id,
     };
+
+    if (!this.seleccionRecurso) {
+      request.recurso = user.id;
+    }
 
     this.agendamientoServices.consultarCitasRecurso(request).subscribe({
       next: (rest) => {
         if (rest.exito) {
-          this.citasHoy = rest.datos;
+          this.ordenCitas(rest.datos);
           const citasConTotales = this.citasHoy.map((cita) => {
-            const totalServicios = cita.servicios.reduce(
-              (acum: any, servicio: any) => acum + servicio.valor,
-              0,
-            );
+            let totalServicios
+            if (this.seleccionRecurso) {
+              totalServicios = cita.total;
+            } else {
+              totalServicios = cita.servicios.reduce(
+                (acum: any, servicio: any) => acum + servicio.valor,
+                0,
+              );
+            }
+
             return {
               ...cita,
               totalServicios,
@@ -792,19 +839,107 @@ export class DashboardRecurso {
     });
   }
 
+  private ordenCitas(citas: any) {
+    if (this.seleccionRecurso) {
+      this.agruparPorRecurso(citas);
+    } else {
+      this.citasHoy = citas;
+    }
+  }
+
+  private agruparPorRecurso(citas: any[]) {
+    const resultado = citas
+      .map(item => {
+        const clienteInfo = item.citas[0]?.cliente;
+        const cliente = `${clienteInfo?.nombreCliente ?? ''} - ${clienteInfo?.telefonoCliente ?? ''}`;
+        const nombreCliente = item.citas[0]?.cliente?.nombreCliente ?? '';
+        const telefono = item.citas[0]?.cliente?.telefonoCliente ?? '';
+
+        const todasLasCitas = item.citas.flatMap((c: any) => c.servicios || []);
+
+        const nombresServicios = todasLasCitas
+          .map((s: any) => s.nombre)
+          .join(', ');
+
+        const totalServicios = todasLasCitas
+          .reduce((sum: number, s: any) => sum + (s.valor || 0), 0);
+
+        const citaMasAntigua = item.citas
+          .slice()
+          .sort((a: any, b: any) =>
+            new Date(a.fechaInicio).getTime() - new Date(b.fechaInicio).getTime()
+          )[0];
+
+        const fecha = new Date(citaMasAntigua.fechaInicio);
+
+        const hora = fecha.toLocaleTimeString('es-CO', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        });
+
+        return {
+          padre: item.padre,
+          nombreCliente: cliente,
+          hora,
+          fechaOrden: fecha.getTime(),
+          nombre: nombresServicios,
+          total: totalServicios,
+          cliente: nombreCliente,
+          telefono: telefono,
+          estado: item.citas[0].estado
+        };
+      })
+      .sort((a, b) => a.fechaOrden - b.fechaOrden);
+
+    this.citasHoy = resultado
+  }
+
+  public recordatorioWssp(cliente: any) {
+    const fecha = new Date(cliente.fechaOrden);
+
+    const fechaFormateada = fecha.toLocaleDateString('es-CO');
+    const horaFormateada = fecha.toLocaleTimeString('es-CO', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    const telefonoBreB = '3137938061'
+    const abono = cliente.total / 2;
+
+
+    const mensaje = `¡Hola ${cliente.cliente}! 
+
+    Queremos recordarte que tu servicio de ${cliente.nombre} está programado para el ${fechaFormateada} a las ${horaFormateada}.
+    Para confirmar la cita se debe realizar un abono de $${abono.toLocaleString("es-CO")}, para mayor comodidad, te ofrecemos la opción de pagar de manera rápida y segura a través de la llave Bre-b ${telefonoBreB}.  
+    Por favor envía el comprobante al WhatsApp. Se aclara que si no se realiza el abono, el sistema libera la cita y puede ser ocupada por otro cliente.
+    Si necesitas asistencia con el proceso de pago, no dudes en contactarnos.
+
+    ¡Nos vemos pronto!
+
+    Saludos,  
+    El equipo de KC NAILS COFFE BAR`;
+
+
+    // 👉 Redirección a WhatsApp
+    const numero = '57' + cliente.telefono;
+
+    const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, '_blank');
+  }
+
   public confirmarCita(cita: any) {
     Swal.fire({
       title: 'Confirmar Asistencia',
       html: `
         <div style="margin-top: 15px; display: flex; justify-content: center; align-items: center;">
-    <label style="font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-      <input type="checkbox" id="usoBonoCheckbox">
-      ¿El servicio incluye bono?
-    </label>
-  </div>
-  <p>¿El cliente <strong>${cita.nombreCliente}</strong> asistió a la cita?</p>
-
-`,
+          <label style="font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="usoBonoCheckbox">
+            ¿El servicio incluye bono?
+          </label>
+        </div>
+        <p>¿El cliente <strong>${cita.nombreCliente}</strong> asistió a la cita?</p>`,
       icon: 'success',
       showCancelButton: true,
       showCloseButton: true,
@@ -948,29 +1083,106 @@ export class DashboardRecurso {
     this.cdr.detectChanges();
   }
 
-  private agendar(hora: any, bono: boolean) {
-    const request = this.createJson(hora, bono);
-    this.agendamientoServices.registrarCita(request).subscribe({
-      next: (rest) => {
-        if (rest.exito) {
+  private agendar(hora: any, bono: boolean, result: any) {
+    const request: any = this.createJson(hora, bono, result);
+    // Si request.FechaIni viene como ISO: 2026-04-07T15:00:00
+    const fecha = new Date(request?.FechaIni);
+
+    // Formato fecha: 07-04-26
+    const fechaFormateada = fecha.toLocaleDateString("es-CO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    });
+
+    // Hora: 15:00
+    const horaFormateada = fecha.toLocaleTimeString("es-CO", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    const numero = '57' + result.celular;
+    const nombre = result.nombre;
+    const nombresServicios = this.serviciosSeleccionados.map(s => s.nombre);
+    const servicio =
+      nombresServicios.length > 1
+        ? nombresServicios.slice(0, -1).join(', ') + ' y ' + nombresServicios[nombresServicios.length - 1]
+        : nombresServicios[0];
+
+    const mensaje = `¡Hola ${nombre}!
+
+      Tu cita ha sido agendada exitosamente en KC NAILS COFFE BAR.
+
+      * Fecha: ${fechaFormateada}  
+      * Hora: ${horaFormateada}  
+      * Servicio: ${servicio}
+
+      Te recomendamos llegar puntual para brindarte la mejor atención y cumplir con tu horario.
+
+      En caso de que necesites reprogramar tu cita, puedes comunicarte con nosotros con anticipación.
+
+      ¡Será un gusto atenderte!
+
+      Saludos,  
+      El equipo de KC NAILS COFFE BAR`;
+
+    if (this.seleccionRecurso) {
+      this.agendamientoServices.guardarCita(request).subscribe({
+        next: (rest) => {
           this.modalService.success(
-            rest.mensaje || 'La cita fue creado exitosamente',
+            rest.mensaje || 'La cita fue creada exitosamente',
             () => {
               this.serviciosSeleccionados = [];
               this.mostrarAgenda = false;
               this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
             }
           );
-        } else {
-          this.modalService.error(rest.mensaje || 'Error de servidor')
-        }
-        this.loading = false;
-      },
-      error: (err) => {
-        this.modalService.error(err.statusText);
-        this.loading = false;
-      },
-    });
+          this.loading = false;
+
+          const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+          window.open(url, '_blank');
+        },
+        error: (err) => {
+          this.modalService.error(err.statusText);
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+      });
+    } else {
+      this.agendamientoServices.registrarCita(request).subscribe({
+        next: (rest) => {
+          if (rest.exito) {
+            this.modalService.success(
+              rest.mensaje || 'La cita fue creado exitosamente',
+              () => {
+                this.serviciosSeleccionados = [];
+                this.mostrarAgenda = false;
+                this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
+              }
+            );
+          } else {
+            this.modalService.error(rest.mensaje || 'Error de servidor')
+          }
+          this.loading = false;
+        },
+        error: (err) => {
+          this.modalService.error(err.statusText);
+          this.loading = false;
+        },
+      });
+    }
+  }
+
+  private consultarInfoCliente(): void {
+    this.clienteService
+      .obtenerInfoCliente(this.idEmpresa.toString())
+      .subscribe({
+        next: (rest) => {
+          if (rest.exito) {
+            this.clientesEmpresa = rest.datos;
+          }
+        },
+      });
   }
 
   public seleccionarHora(hora: any): void {
@@ -980,34 +1192,78 @@ export class DashboardRecurso {
     horaDiponible = this.validarHoraDisponible(hora.hora);
 
     if (horaDiponible) {
-      Swal.fire({
-        title: 'Cita',
-        html: `
-        <div style="margin-top: 15px; display: flex; justify-content: center; align-items: center;">
-    <label style="font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-      <input type="checkbox" id="usoBonoCheckbox">
-      ¿El servicio incluye bono?
-    </label>
-  </div>
+      if (this.seleccionRecurso) {
+        const fechaFormateada = this.viewDate.toLocaleDateString('es-CO', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
 
-`,
-        icon: 'success',
-        showCloseButton: true,
-        confirmButtonColor: '#3085d6',
-        preConfirm: () => {
-          const usoBono = (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked;
-          return { usoBono };
-        }
-      }).then((result) => {
-        if (result.dismiss === Swal.DismissReason.close) {
-          this.loading = false;
-          this.cdr.detectChanges();
-        } else {
-          const usoBono = result.value?.usoBono || false;
-          this.loading = true;
-          this.agendar(hora.hora, usoBono);
-        }
-      });
+        const valor = this.serviciosSeleccionados.map((s) => s.valor);
+        let costo = valor.reduce((a, b) => a + b, 0);
+        const costoFormateado = new Intl.NumberFormat('es-CO', {
+          style: 'currency',
+          currency: 'COP',
+          minimumFractionDigits: 0,
+        }).format(costo);
+
+        const dialogRef = this.dialog.open(ReservaDialog, {
+          width: '400px',
+          data: {
+            fecha: fechaFormateada,
+            hora: hora.hora,
+            costo: costoFormateado,
+          },
+        });
+        // 👂 Accedemos a la instancia del modal para escuchar el evento
+        const instance = dialogRef.componentInstance;
+
+        instance.celularIngresado.subscribe((celular: string) => {
+          const cliente = this.clientesEmpresa.find(
+            (c) => c.telefono === celular || c.celular === celular
+          );
+
+          if (cliente) {
+            instance.poblarDatos(cliente); // ✅ rellenar datos en el modal
+          }
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+          if (result) {
+            this.loading = true;
+            this.agendar(hora.hora, false, result);
+          } else {
+            this.loading = false;
+          }
+        });
+      } else {
+        Swal.fire({
+          title: 'Cita',
+          html: `<div style="margin-top: 15px; display: flex; justify-content: center; align-items: center;">
+                    <label style="font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                      <input type="checkbox" id="usoBonoCheckbox">
+                      ¿El servicio incluye bono?
+                    </label>
+                  </div>`,
+          icon: 'success',
+          showCloseButton: true,
+          confirmButtonColor: '#3085d6',
+          preConfirm: () => {
+            const usoBono = (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked;
+            return { usoBono };
+          }
+        }).then((result) => {
+          if (result.dismiss === Swal.DismissReason.close) {
+            this.loading = false;
+            this.cdr.detectChanges();
+          } else {
+            const usoBono = result.value?.usoBono || false;
+            this.loading = true;
+            this.agendar(hora.hora, usoBono, '');
+          }
+        });
+      }
     } else {
       Swal.fire({
         icon: 'warning',
@@ -1067,7 +1323,7 @@ export class DashboardRecurso {
     return true;
   }
 
-  private createJson(hora: string, bono: boolean) {
+  private createJson(hora: string, bono: boolean, result: any) {
     const match = hora.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
     //const fechaBase = this.day.toISOString().split('T')[0];
     const year = this.day.getFullYear();
@@ -1101,19 +1357,115 @@ export class DashboardRecurso {
 
       const costo = valor.reduce((a, b) => a + b, 0);
 
-      const json = {
-        FechaIni: fechaFinal,
-        recurso: this.user.id,
-        Valor: this.otroSeleccionado ? this.costoOtro : costo,
-        UsuarioCreacion: 'Usuario',
-        Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
-        empresa: this.idEmpresa,
-        servicios: serviciosSeleccionados,
-        clienteInfo: null,
-        fechaCreacion: fechaLocal,
-        Bono: bono
-      };
-      return json;
+      let json = {};
+
+      if (this.seleccionRecurso) {
+        let alterno = this.serviciosSeleccionados
+          .filter(s => s.alterno)
+          .sort((a, b) => b.tiempo - a.tiempo);
+        let noAlterno = this.serviciosSeleccionados
+          .filter(s => !s.alterno)
+          .sort((a, b) => b.tiempo - a.tiempo);
+
+        let resultadoAlterno = alterno.map(a => ({
+          FechaIni: fechaFinal,
+          recurso: a.recurso,
+          Valor: a.valor,
+          Hora: a.tiempo,
+          servicios: [
+            {
+              servicio: a.id
+            }
+          ]
+        }));
+        let baseFecha = fechaFinal;
+        let horaAlterno = 0;
+
+        if (alterno.length > 0) {
+          baseFecha = resultadoAlterno[0].FechaIni;
+          horaAlterno = alterno[0].tiempo
+        }
+
+        const formatearFechaLocal = (fecha: Date) => {
+          return fecha.getFullYear() + '-' +
+            String(fecha.getMonth() + 1).padStart(2, '0') + '-' +
+            String(fecha.getDate()).padStart(2, '0') + 'T' +
+            String(fecha.getHours()).padStart(2, '0') + ':' +
+            String(fecha.getMinutes()).padStart(2, '0') + ':' +
+            String(fecha.getSeconds()).padStart(2, '0');
+        };
+
+        let base = new Date(baseFecha);
+
+        if (isNaN(base.getTime())) {
+          throw new Error("baseFecha inválida: " + baseFecha);
+        }
+
+        // arrancan después del tiempo de alternos
+        base.setMinutes(base.getMinutes() + horaAlterno);
+
+        let resultadoNoAlterno = noAlterno.map(a => {
+          const fechaInicio = new Date(base);
+
+          const item = {
+            FechaIni: formatearFechaLocal(fechaInicio),
+            recurso: a.recurso,
+            Valor: a.valor,
+            Hora: a.tiempo,
+            servicios: [
+              {
+                servicio: a.id
+              }
+            ]
+          };
+
+          base.setMinutes(base.getMinutes() + a.tiempo);
+
+          return item;
+        });
+
+        resultadoNoAlterno.forEach(element => {
+          resultadoAlterno.push(element)
+        });
+
+        json = {
+          FechaIni: fechaFinal,
+          empresa: this.idEmpresa,
+          UsuarioCreacion: 'Usuario',
+          fechaCreacion: fechaLocal,
+          clienteInfo: {
+            Nombre: result.nombre,
+            Telefono: result.celular,
+            Correo: result.correo,
+            FechaNacimiento: result.fechaNacimiento,
+          },
+          citas: resultadoAlterno
+        }
+        return json;
+      } else {
+
+        json = {
+          recurso: result.celular ? 0 : this.user.id,
+          FechaIni: fechaFinal,
+          Valor: this.otroSeleccionado ? this.costoOtro : costo,
+          UsuarioCreacion: 'Usuario',
+          Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
+          empresa: this.idEmpresa,
+          servicios: serviciosSeleccionados,
+          clienteInfo: result?.celular
+            ? {
+              Nombre: result.nombre,
+              Telefono: result.celular,
+              Correo: result.correo,
+              FechaNacimiento: result.fechaNacimiento,
+            }
+            : null,
+          fechaCreacion: fechaLocal,
+          Bono: bono
+        };
+
+        return json;
+      }
     } else {
       return;
     }
