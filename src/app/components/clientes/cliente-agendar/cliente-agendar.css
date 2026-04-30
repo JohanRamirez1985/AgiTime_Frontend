@@ -408,3 +408,10 @@ button.hora-no-disponible {
   margin: 0 0 16px 0;
   margin-top: 20px;
 }
+
+.fab-citas {
+  position: fixed;
+  bottom: 20px;
+  left: 20px; /* 👈 lo mandas al lado izquierdo */
+  z-index: 1000;
+}

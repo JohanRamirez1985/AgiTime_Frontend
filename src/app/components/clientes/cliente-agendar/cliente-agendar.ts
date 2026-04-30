@@ -123,6 +123,14 @@ export class ClienteAgendar {
     this.cdr.detectChanges();
   }
 
+  public misCitas(): void {
+    this.router.navigate(['/cliente/misCitas'], {
+      queryParams: {
+        emp: this.idEmpresa,
+      },
+    });
+  }
+
   reservarServicios(): void {
     if (this.seleccionRubro) {
       this.loading = true;
