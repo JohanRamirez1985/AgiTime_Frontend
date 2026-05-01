@@ -1308,7 +1308,7 @@ export class DashboardRecurso {
 
     if (horaDiponible) {
       if (this.seleccionRecurso) {
-        const fechaFormateada = this.viewDate.toLocaleDateString('es-CO', {
+        const fechaFormateada = this.day.toLocaleDateString('es-CO', {
           weekday: 'long',
           year: 'numeric',
           month: 'long',
