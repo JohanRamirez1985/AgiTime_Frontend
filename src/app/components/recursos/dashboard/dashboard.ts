@@ -592,10 +592,71 @@ export class DashboardRecurso {
         }
       });
     } else {
-      this.seleccionarRecursoEmpleado(this.day);
-      this.mostrarAgenda = true;
-      this.cdr.detectChanges();
+      let serviciosSinCosto = this.serviciosSeleccionados
+        .filter(s => s.valor === 0 && s.id !== 2);
+
+      if (serviciosSinCosto.length > 0) {
+
+        const htmlInputs = serviciosSinCosto.map((servicio, index) => `
+          <div style="margin-bottom:10px; text-align:left;">
+            <label><b>${servicio.nombre}</b></label>
+            <input 
+              type="number" 
+              id="costo-${index}" 
+              class="swal2-input" 
+              placeholder="Ej: 25000"
+              min="0"
+              step="1000"
+            >
+          </div>
+        `).join('');
+
+        Swal.fire({
+          title: 'Ingrese los costos de los servicios',
+          html: htmlInputs,
+          confirmButtonText: 'Guardar',
+          showCancelButton: true,
+          cancelButtonText: 'Cancelar',
+          allowOutsideClick: false,
+
+          preConfirm: () => {
+            const costos: number[] = [];
+
+            for (let i = 0; i < serviciosSinCosto.length; i++) {
+              const input = document.getElementById(`costo-${i}`) as HTMLInputElement;
+              const valor = Number(input.value);
+
+              if (!valor || isNaN(valor) || valor <= 0) {
+                Swal.showValidationMessage(`Ingrese un valor válido para ${serviciosSinCosto[i].nombre}`);
+                return;
+              }
+
+              costos.push(valor);
+            }
+
+            return costos;
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+
+            result.value.forEach((valor: number, index: number) => {
+              serviciosSinCosto[index].valor = valor;
+            });
+
+            this.finalizarAgenda();
+          }
+        });
+
+      } else {
+        this.finalizarAgenda();
+      }
     }
+  }
+
+  finalizarAgenda() {
+    this.seleccionarRecursoEmpleado(this.day);
+    this.mostrarAgenda = true;
+    this.cdr.detectChanges();
   }
 
   estaSeleccionado(servicio: any): boolean {
@@ -876,7 +937,7 @@ export class DashboardRecurso {
         });
 
         return {
-          padre: item.padre,
+          id: item.padre,
           nombreCliente: cliente,
           hora,
           fechaOrden: fecha.getTime(),
@@ -884,7 +945,8 @@ export class DashboardRecurso {
           total: totalServicios,
           cliente: nombreCliente,
           telefono: telefono,
-          estado: item.citas[0].estado
+          estado: item.citas[0].estado,
+          fechaInicio: fecha
         };
       })
       .sort((a, b) => a.fechaOrden - b.fechaOrden);
@@ -927,16 +989,24 @@ export class DashboardRecurso {
   }
 
   public confirmarCita(cita: any) {
+    const nombreMostrar = this.seleccionRecurso
+      ? cita.nombreCliente.split('-')[0].trim()
+      : cita.nombreCliente;
+    const checkboxHtml = this.seleccionRecurso ? '' : `
+      <div style="margin-top: 15px; display: flex; justify-content: center; align-items: center;">
+        <label style="font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" id="usoBonoCheckbox">
+          ¿El servicio incluye bono?
+        </label>
+      </div>
+    `;
+
     Swal.fire({
       title: 'Confirmar Asistencia',
       html: `
-        <div style="margin-top: 15px; display: flex; justify-content: center; align-items: center;">
-          <label style="font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" id="usoBonoCheckbox">
-            ¿El servicio incluye bono?
-          </label>
-        </div>
-        <p>¿El cliente <strong>${cita.nombreCliente}</strong> asistió a la cita?</p>`,
+        ${checkboxHtml}
+        <p>¿El cliente <strong>${nombreMostrar}</strong> asistió a la cita?</p>
+      `,
       icon: 'success',
       showCancelButton: true,
       showCloseButton: true,
@@ -948,7 +1018,7 @@ export class DashboardRecurso {
         popup: 'swal-reserva-responsive',
       },
       preConfirm: () => {
-        const usoBono = (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked;
+        const usoBono = this.seleccionRecurso ? false : (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked;
         return { usoBono };
       }
     }).then((result) => {
@@ -958,20 +1028,54 @@ export class DashboardRecurso {
         const now = new Date(this.day);
         const fechaLocal = this.formatearFechaManual(now);
 
-        const request = {
+        const request: any = {
           empresa: JSON.parse(localStorage.getItem('empresa') || '{}').id,
           Id: cita.id,
           Asistencia: result.isConfirmed,
           Bono: result.value?.usoBono || false
         };
 
+        if (this.seleccionRecurso) {
+          request.usuarioCreacion = this.user.id.toString()
+          request.fechaCreacion = this.formatearFechaActual()
+        }
+
         this.agendamientoServices.ConfirmarAsitenciaCita(request).subscribe({
           next: (rest) => {
             this.consultarCitas(this.user, this.empresa, new Date(fechaLocal));
           },
+          error: (err) => {
+            this.modalService.error(err.error.mensaje)
+            this.loading = false;
+            this.cdr.detectChanges();
+          }
         });
       }
     });
+  }
+
+  private pad(n: number): string {
+    return n < 10 ? '0' + n : '' + n;
+  }
+
+  formatearFechaActual(): string {
+    const now = new Date();
+
+    return `${now.getFullYear()}-${this.pad(now.getMonth() + 1)}-${this.pad(now.getDate())}` +
+      `T${this.pad(now.getHours())}:${this.pad(now.getMinutes())}:${this.pad(now.getSeconds())}`;
+  }
+
+  getEstadoClase(estado: string): string {
+    switch (estado?.toLowerCase()) {
+      case 'activo':
+        return 'estado-pendiente';
+      case 'asistio':
+        return 'estado-confirmada';
+      case 'cancelada':
+        return 'estado-cancelada';
+      default:
+        return '';
+    }
   }
 
   abrirAgendar() {
@@ -1074,7 +1178,7 @@ export class DashboardRecurso {
 
   filtrarServicios() {
     const texto = this.busqueda.toLowerCase();
-  
+
     this.serviciosFiltrados = this.servicios.filter(servicio =>
       servicio.nombre.toLowerCase().includes(texto)
     );

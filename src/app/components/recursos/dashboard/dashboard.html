@@ -42,11 +42,13 @@
                 <span><mat-icon>account_circle</mat-icon>
                   {{ cita.nombreCliente | titlecase }}</span>
                 <span><mat-icon>access_time</mat-icon>
-                  {{ seleccionRecurso ? cita.hora : cita.fechaInicio | date : "shortTime" }}</span>
+                  {{ seleccionRecurso ? cita.hora : cita.fechaInicio | date : "shortTime" }}
+                </span>
                 <span><mat-icon>monetization_on</mat-icon>
                   {{
                   cita.totalServicios | currency : "COP" : "symbol" : "1.0-0"
-                  }}</span>
+                  }}
+                </span>
                 <span>
                   <mat-icon>assignment</mat-icon>
                   <ng-container *ngIf="seleccionRecurso; else normalServicios">
@@ -59,6 +61,9 @@
                     </ng-container>
                   </ng-template>
                 </span>
+                <span class="estado-badge" [ngClass]="getEstadoClase(cita.estado)">
+                  {{ cita.estado }}
+                </span>
               </div>
               <div class="acciones-cita">
                 <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" class="btn-cancelar"
@@ -68,15 +73,11 @@
                 <button *ngIf="!seleccionRecurso" class="btn-cancelar" (click)="cancelarCita(cita)">
                   Cancelar
                 </button>
-                <button *ngIf="!seleccionRecurso && cita.estado === 'Activo'" class="btn-confirmar"
-                  (click)="confirmarCita(cita)">
-                  Confirmar
-                </button>
                 <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" class="btn-confirmar"
                   (click)="recordatorioWssp(cita)">
                   Confirmar
                 </button>
-                <button *ngIf="seleccionRecurso" class="btn-finalizar">
+                <button *ngIf="cita.estado === 'Activo'" class="btn-finalizar" (click)="confirmarCita(cita)">
                   Finalizar
                 </button>
               </div>
@@ -213,7 +214,7 @@
   </mat-tab>
 
   <!-- ➕ Pestaña 3: Bloqueos -->
-  <mat-tab  label="Bloqueo Horario">
+  <mat-tab label="Bloqueo Horario">
     <div class="p-4">
       <div *ngIf="!mostrarBloqueo">
         <button mat-raised-button color="primary" (click)="bloqueo()">

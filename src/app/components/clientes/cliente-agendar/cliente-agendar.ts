@@ -100,6 +100,7 @@ export class ClienteAgendar {
     });
     this.obtenerRangoParametrizado();
     this.obtenerEmpresas();
+    this.consultarInfoCliente();
   }
 
   private obtenerRangoParametrizado(): void {
@@ -574,6 +575,9 @@ export class ClienteAgendar {
     this.viewDate.setDate(this.viewDate.getDate() + 1);
     this.loading = true;
     this.obtenerHorarios();
+    if (this.seleccionRubro) {
+      this.seleccionarRecurso(this.viewDate, this.seleccionRubro)
+    }
     this.cdr.detectChanges();
   }
 
@@ -595,6 +599,9 @@ export class ClienteAgendar {
       this.viewDate = nuevaFecha;
       this.loading = true;
       this.obtenerHorarios();
+      if (this.seleccionRubro) {
+        this.seleccionarRecurso(this.viewDate, this.seleccionRubro)
+      }
       this.cdr.detectChanges();
     }
   }
@@ -603,6 +610,9 @@ export class ClienteAgendar {
     this.viewDate = new Date();
     this.loading = true;
     this.obtenerHorarios();
+    if (this.seleccionRubro) {
+      this.seleccionarRecurso(this.viewDate, this.seleccionRubro)
+    }
     this.cdr.detectChanges();
   }
 
@@ -651,7 +661,9 @@ export class ClienteAgendar {
 
           this.horas = this.horas.filter((h) => h.disponible);
         }
-        this.consultarInfoCliente();
+        // if (!this.seleccionRubro) {
+        //   this.consultarInfoCliente();
+        // }
         this.verificarHoras();
         this.cdr.detectChanges();
       },
@@ -741,12 +753,10 @@ export class ClienteAgendar {
             }
           );
 
-          // this.seleccionarRecurso(this.viewDate);
-
           if (!this.seleccionRubro) {
             this.seleccionarRecurso(this.viewDate, this.seleccionRubro);
           } else {
-            this.consultarInfoCliente();
+            // this.consultarInfoCliente();
             this.verificarHoras();
           }
         } else {
