@@ -45,6 +45,8 @@ import { ClienteService } from '../../../services/cliente.service';
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatDatepickerModule,
+    MatNativeDateModule
     // ClienteAgendar
   ],
   templateUrl: './dashboard.html',
@@ -1444,6 +1446,21 @@ export class DashboardRecurso {
     return true;
   }
 
+  onDateChange(event: any, cita: any) {
+    const fecha = event.value;
+
+    if (!fecha) return;
+
+    this.day = fecha; // 👈 actualizas tu variable actual
+    if (cita) {
+      this.consultarCitas(this.user, this.empresa, fecha);
+    } else {
+      this.loading = true;
+      this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
+    }
+    this.cdr.detectChanges();
+  }
+
   private createJson(hora: string, bono: boolean, result: any) {
     const match = hora.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
     //const fechaBase = this.day.toISOString().split('T')[0];
@@ -1465,7 +1482,7 @@ export class DashboardRecurso {
       }
       const horasStr = horas.toString().padStart(2, '0');
       const fechaFinal = `${fechaBase}T${horasStr}:${minutos}:00`;
-      const now = new Date(this.day);
+      const now = new Date();
       const fechaLocal = this.formatearFechaManual(now);
 
       const valor = this.serviciosSeleccionados.map((s) => s.valor);

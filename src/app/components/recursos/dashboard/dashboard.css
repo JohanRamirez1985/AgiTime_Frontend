@@ -539,3 +539,18 @@ button mat-icon {
   color: #0c5460;
   width: 100px;
 }
+
+.input-calendario {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mat-datepicker-content {
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.navegacion-botones {
+  position: relative;
+}
