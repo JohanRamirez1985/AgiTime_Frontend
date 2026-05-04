@@ -119,6 +119,7 @@ export class DashboardRecurso {
   viewDate: Date = new Date();
   clientesEmpresa: any[] = [];
   busqueda: string = '';
+  esMobile = window.innerWidth < 768;
 
   constructor(
     private router: Router,

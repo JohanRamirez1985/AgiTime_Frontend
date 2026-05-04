@@ -21,24 +21,20 @@
         <button mat-icon-button class="boton-navegacion" (click)="previus(true)">
           <mat-icon>chevron_left</mat-icon>
         </button>
+        <!-- input oculto -->
+        <input matInput [matDatepicker]="picker" class="input-calendario" (dateChange)="onDateChange($event, true)">
 
-        <button mat-stroked-button color="primary" (click)="today(true)">
-          <mat-icon class="boton-icono">today</mat-icon> Hoy
+        <!-- botón -->
+        <button mat-button (click)="picker.open()" class="btn-calendario">
+          <mat-icon>calendar_today</mat-icon>
+          Fecha
         </button>
 
+        <!-- calendario -->
+        <mat-datepicker #picker [touchUi]="esMobile"></mat-datepicker>
         <button mat-icon-button class="boton-navegacion" (click)="nextPeriod(true)">
           <mat-icon>chevron_right</mat-icon>
         </button>
-
-        <!-- input oculto -->
-        <!-- <input matInput [matDatepicker]="picker" class="input-calendario"> -->
-
-        <!-- botón visible -->
-        <!-- <button mat-icon-button (click)="picker.open()">
-          <mat-icon>calendar_today</mat-icon>
-        </button>
-
-        <mat-datepicker #picker (dateChange)="onDateChange($event, true)"></mat-datepicker> -->
       </div>
       <div *ngIf="loading" class="loading-container">
         <mat-spinner diameter="50"></mat-spinner>
@@ -166,9 +162,17 @@
           <button mat-icon-button class="boton-navegacion" (click)="previus(false)" aria-label="Día anterior">
             <mat-icon>chevron_left</mat-icon>
           </button>
-          <button mat-stroked-button color="primary" (click)="today(false)">
-            <mat-icon class="boton-icono">today</mat-icon> Hoy
+          <!-- input oculto -->
+          <input matInput [matDatepicker]="picker" class="input-calendario" (dateChange)="onDateChange($event, false)">
+
+          <!-- botón -->
+          <button mat-button (click)="picker.open()" class="btn-calendario">
+            <mat-icon>calendar_today</mat-icon>
+            Fecha
           </button>
+
+          <!-- calendario -->
+          <mat-datepicker #picker [touchUi]="esMobile"></mat-datepicker>
           <button mat-icon-button class="boton-navegacion" (click)="nextPeriod(false)" aria-label="Día siguiente">
             <mat-icon>chevron_right</mat-icon>
           </button>

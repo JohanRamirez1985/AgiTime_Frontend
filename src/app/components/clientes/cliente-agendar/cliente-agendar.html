@@ -102,9 +102,18 @@
               <button mat-icon-button class="boton-navegacion" (click)="previusPeriod()" aria-label="Día anterior">
                 <mat-icon>chevron_left</mat-icon>
               </button>
-              <button mat-stroked-button color="primary" (click)="today()">
-                <mat-icon class="boton-icono">today</mat-icon> Hoy
+              <!-- input oculto -->
+              <input matInput [matDatepicker]="picker" class="input-calendario"
+                (dateChange)="onDateChange($event)">
+
+              <!-- botón -->
+              <button mat-button (click)="picker.open()" class="btn-calendario">
+                <mat-icon>calendar_today</mat-icon>
+                Fecha
               </button>
+
+              <!-- calendario -->
+              <mat-datepicker #picker [touchUi]="esMobile"></mat-datepicker>
               <button mat-icon-button class="boton-navegacion" (click)="nextPeriod()" aria-label="Día siguiente">
                 <mat-icon>chevron_right</mat-icon>
               </button>
