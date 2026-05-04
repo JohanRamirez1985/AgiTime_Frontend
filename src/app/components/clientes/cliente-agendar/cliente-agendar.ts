@@ -20,6 +20,8 @@ import { ReservaDialog } from '../../reserva-dialog/reserva-dialog';
 import { ClienteService } from '../../../services/cliente.service';
 import { Modal } from '../../../shared/services/modal';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 registerLocaleData(localeEs);
 
@@ -38,7 +40,9 @@ registerLocaleData(localeEs);
     MatProgressSpinnerModule,
     MatExpansionModule,
     MatCardModule,
-    MatDividerModule
+    MatDividerModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'es' }],
   templateUrl: './cliente-agendar.html',
@@ -79,6 +83,7 @@ export class ClienteAgendar {
   tipoRangoTiempo: string = 'Tiempo_Agenda';
   seleccionRubro: boolean = false;
   busqueda: string = '';
+  esMobile = window.innerWidth < 768;
 
   constructor(
     private sharedServices: SharedService,
@@ -403,6 +408,19 @@ export class ClienteAgendar {
         },
       });
     }
+  }
+
+  onDateChange(event: any) {
+    const fecha = event.value;
+    if (!fecha) return;
+
+    this.viewDate = fecha;
+    this.loading = true;
+    this.obtenerHorarios();
+    if (this.seleccionRubro) {
+      this.seleccionarRecurso(this.viewDate, this.seleccionRubro)
+    }
+    this.cdr.detectChanges();
   }
 
   private createJson(

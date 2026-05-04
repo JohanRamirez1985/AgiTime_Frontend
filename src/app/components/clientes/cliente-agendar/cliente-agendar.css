@@ -415,3 +415,14 @@ button.hora-no-disponible {
   left: 20px; /* 👈 lo mandas al lado izquierdo */
   z-index: 1000;
 }
+
+.input-calendario {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mat-datepicker-content {
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
