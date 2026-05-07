@@ -464,7 +464,7 @@ export class ClienteAgendar {
       const horasStr = horas.toString().padStart(2, '0');
       const fechaFinal = `${fechaBase}T${horasStr}:${minutos}:00`;
 
-      const now = new Date(this.viewDate);
+      const now = new Date();
       const fechaLocal =
         now.getFullYear() +
         '-' +
