@@ -8,7 +8,6 @@ import {
   obtenerSedes,
   obtenerTiposDocumentos,
 } from '../../shared/libs/request-generales';
-import { DashboardRecurso } from '../recursos/dashboard/dashboard';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +16,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { InformesService } from '../../services/informes.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NgApexchartsModule } from 'ng-apexcharts';
+import { Modal } from '../../shared/services/modal';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,6 +32,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatIconModule,
     MatCardModule,
     MatProgressSpinnerModule,
+    NgApexchartsModule
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
@@ -38,43 +40,157 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 export class Dashboard {
   idEmpresa: string | null = null;
   recursos: any[] = [];
-  fechaSeleccionada: Date = new Date();
+  fechaInicial: Date = (() => {
+    const fecha = new Date();
+    fecha.setDate(fecha.getDate() - 7);
+    return fecha;
+  })();
+  fechaFinal: Date = new Date();
   totalCitasNoConfirmadas: number = 0;
   totalCitasConfirmadas: number = 0;
   loading: boolean = true;
+  btnConsultar: boolean = true;
+  ocupado: number = 0;
+  totalIngresos: number = 0;
+  servicioMasVendido: string = '';
+  private intervalId: any;
+  chartIngresos: any = {
+    series: [
+      {
+        name: 'Ingresos',
+        data: [100, 250, 500, 700, 850, 1000]
+      }
+    ],
+
+    chart: {
+      type: 'area',
+      height: 350,
+
+      zoom: {
+        enabled: false
+      },
+
+      toolbar: {
+        show: false
+      }
+    },
+
+    stroke: {
+      curve: 'smooth'
+    },
+
+    dataLabels: {
+      enabled: false
+    },
+
+    xaxis: {
+      categories: [
+        'Lun',
+        'Mar',
+        'Mie',
+        'Jue',
+        'Vie',
+        'Sab'
+      ]
+    },
+
+    tooltip: {
+      theme: 'light'
+    }
+  };
+
+  chartServicios: any = {
+    series: [44, 25, 18, 13],
+
+    chart: {
+      type: 'donut',
+      height: 350
+    },
+
+    labels: [
+      'Barbería',
+      'Uñas',
+      'Cejas',
+      'Masajes'
+    ]
+  };
 
   constructor(
     private sharedServices: SharedService,
-    private informeService: InformesService
-  ) {}
+    private informeService: InformesService,
+    private modalService: Modal
+  ) { }
 
   ngOnInit() {
     const info = JSON.parse(localStorage.getItem('infoEmp') || '{}');
     const id = info?.idEmpresa;
     this.idEmpresa = id;
+    this.startBtnValidation();
     this.obtenerDataLocalStorage();
     this.consultarDash();
   }
 
+  ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+
   public consultarDash(): void {
     this.loading = true;
-    const fecha = new Date(this.fechaSeleccionada);
-    fecha.setHours(0, 0, 0, 0);
+    const fechaIni = new Date(this.fechaInicial);
+    fechaIni.setHours(0, 0, 0, 0);
+
+    const fechaFin = new Date(this.fechaFinal);
+    fechaFin.setHours(23, 59, 59, 999);
 
     const request = {
       emp: this.idEmpresa,
-      fecha: fecha.toISOString(),
+      fechaIni: this.formatearFecha(fechaIni),
+      fechaFin: this.formatearFecha(fechaFin)
     };
 
     this.informeService.infoDashboard(request).subscribe({
       next: (rest) => {
         if (rest.exito) {
           this.recursos = rest.datos;
+          const servicios = rest.datos.servicios;
+
+          this.chartServicios.labels =
+            servicios.map((x: any) => x.nombre);
+
+          this.chartServicios.series =
+            servicios.map((x: any) => x.cantidad);
         } else {
+          this.totalIngresos = 0;
+          this.chartServicios.labels = [];
+          this.chartServicios.series = [];
+          this.chartIngresos.labels = [];
+          this.chartIngresos.series = [];
         }
         this.loading = false;
       },
+      error: (err) => {
+        this.modalService.error(err.statusText);
+        this.totalIngresos = 0;
+        this.chartServicios.labels = [];
+        this.chartServicios.series = [];
+        this.chartIngresos.labels = [];
+        this.chartIngresos.series = [];
+        this.loading = false;
+      }
     });
+  }
+
+  private formatearFecha(fecha: Date): string {
+    const y = fecha.getFullYear();
+    const m = String(fecha.getMonth() + 1).padStart(2, '0');
+    const d = String(fecha.getDate()).padStart(2, '0');
+    const h = String(fecha.getHours()).padStart(2, '0');
+    const min = String(fecha.getMinutes()).padStart(2, '0');
+    const s = String(fecha.getSeconds()).padStart(2, '0');
+
+    return `${y}-${m}-${d}T${h}:${min}:${s}`;
   }
 
   private obtenerDataLocalStorage(): void {
@@ -94,5 +210,11 @@ export class Dashboard {
         });
       }
     });
+  }
+
+  private startBtnValidation() {
+    this.intervalId = setInterval(() => {
+      this.btnConsultar = !(this.fechaInicial && this.fechaFinal);
+    }, 1000);
   }
 }
