@@ -1,0 +1,203 @@
+<div class="modal-editar">
+
+    <!-- HEADER -->
+    <div class="header-modal">
+
+        <div class="titulo">
+            <mat-icon>edit_calendar</mat-icon>
+
+            <div>
+                <h2>Editar cita</h2>
+                <p>Modifica los servicios y el horario de la cita</p>
+            </div>
+        </div>
+
+        <button mat-icon-button mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+
+    </div>
+    <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p class="loading-text">Cargando disponibilidad...</p>
+    </div>
+    <div *ngIf="!loading">
+        <!-- INFORMACIÓN -->
+        <div class="info-cita">
+
+            <div class="info-item">
+                <mat-icon>person</mat-icon>
+
+                <div>
+                    <span>Cliente</span>
+                    <strong>{{ data.cliente }}</strong>
+                </div>
+            </div>
+
+            <div class="info-item fecha-item">
+
+                <mat-icon>calendar_month</mat-icon>
+
+                <div class="fecha-contenido">
+
+                    <span>Fecha</span>
+
+                    <mat-form-field appearance="outline">
+
+                        <input matInput [matDatepicker]="picker" [(ngModel)]="fechaSeleccionada"
+                            (dateChange)="cambioDia()">
+
+                        <mat-datepicker-toggle matIconSuffix [for]="picker">
+                        </mat-datepicker-toggle>
+
+                        <mat-datepicker #picker></mat-datepicker>
+
+                    </mat-form-field>
+
+                </div>
+
+            </div>
+
+            <div class="info-item">
+                <mat-icon>schedule</mat-icon>
+
+                <div>
+                    <span>Hora cita</span>
+                    <strong>{{ data.hora }}</strong>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- CONTENIDO -->
+        <div class="contenedor-servicios">
+
+            <!-- SERVICIOS DISPONIBLES -->
+            <div class="panel-servicios">
+
+                <h3>Servicios disponibles</h3>
+
+                <input type="text" [(ngModel)]="busqueda" (input)="filtrarServicios()" placeholder="Buscar servicio..."
+                    class="input-busqueda" />
+
+
+                <div class="lista-servicios">
+
+                    <div class="servicio-item" *ngFor="let servicio of serviciosFiltrados">
+
+                        <div class="detalle-servicio">
+                            <strong>{{ servicio.nombre }}</strong>
+
+                            <span>{{ servicio.tiempo }}</span>
+                        </div>
+
+                        <div class="acciones-servicio">
+
+                            <span class="precio">
+                                {{ servicio.valor | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}
+                            </span>
+
+                            <button mat-icon-button color="primary" (click)="agregarServicio(servicio)">
+
+                                <mat-icon>add</mat-icon>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- PANEL SELECCIONADOS -->
+            <div class="panel-servicios">
+
+                <h3>Servicios seleccionados</h3>
+
+                <div class="lista-servicios">
+
+                    <div class="servicio-item" *ngFor="let servicio of serviciosSeleccionados">
+
+                        <div class="detalle-servicio">
+
+                            <strong>{{ servicio.nombre }}</strong>
+
+                            <span>{{ servicio.tiempo }}</span>
+
+                        </div>
+
+                        <div class="acciones-servicio">
+
+                            <span class="precio">
+                                {{ servicio.valor | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}
+                            </span>
+
+                            <button mat-icon-button color="warn" (click)="eliminarServicio(servicio)">
+
+                                <mat-icon>remove</mat-icon>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- HORARIOS -->
+        <div class="horarios">
+
+            <div class="horarios-header">
+
+                <h3>Horarios disponibles</h3>
+
+                <button mat-raised-button color="primary" (click)="verHorariosDisponibles()">
+
+                    <mat-icon>schedule</mat-icon>
+                    Ver horarios disponibles
+
+                </button>
+
+            </div>
+            <div *ngIf="loadingHorarios" class="loading-container">
+                <mat-spinner diameter="50"></mat-spinner>
+                <p class="loading-text">Cargando disponibilidad...</p>
+            </div>
+            <div *ngIf="!loadingHorarios">
+
+                <div class="lista-horarios">
+
+                    <button class="hora-btn" *ngFor="let hora of horariosDisponibles"
+                        (click)="seleccionarHora(hora.valorFormateado)"
+                        [class.selected]="horaSeleccionada === hora.valorFormateado">
+
+                        {{ hora.valorFormateado }}
+
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer-modal">
+
+            <button mat-stroked-button mat-dialog-close>
+                Cancelar
+            </button>
+
+            <button mat-raised-button color="primary" (click)="modificarCita()">
+
+                <mat-icon>save</mat-icon>
+                Guardar cambios
+
+            </button>
+
+        </div>
+    </div>
+</div>

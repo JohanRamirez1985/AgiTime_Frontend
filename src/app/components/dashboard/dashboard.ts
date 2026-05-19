@@ -153,14 +153,46 @@ export class Dashboard {
     this.informeService.infoDashboard(request).subscribe({
       next: (rest) => {
         if (rest.exito) {
-          this.recursos = rest.datos;
-          const servicios = rest.datos.servicios;
+          this.recursos = rest.datos.infoCitas;
+          this.ocupado = rest.datos.porcentajeCitas;
+          this.totalIngresos = rest.datos.totalIngresos;
+          const servicios = rest.datos.porcentajeServicios;
+          this.servicioMasVendido = servicios[0].servicio;
+          const topServicios = servicios.slice(0, 6);
+          const valorSemana = rest.datos.valorDiario;
+
+          this.totalCitasConfirmadas = this.recursos.reduce(
+            (total, recurso) => total + (recurso.totalCitasConfirmadas || 0),
+            0
+          );
+
+          this.totalCitasNoConfirmadas = this.recursos.reduce(
+            (total, recurso) => total + (recurso.totalCitasNoConfirmadas || 0),
+            0
+          );
+
+          this.chartIngresos = {
+            ...this.chartIngresos,
+
+            series: [
+              {
+                name: 'Ingresos',
+                data: valorSemana.map((x: any) => x.totalDia)
+              }
+            ],
+
+            xaxis: {
+              categories: valorSemana.map((x: any) =>
+                this.traducirDia(x.dia)
+              )
+            }
+          };
 
           this.chartServicios.labels =
-            servicios.map((x: any) => x.nombre);
+            topServicios.map((x: any) => x.servicio);
 
           this.chartServicios.series =
-            servicios.map((x: any) => x.cantidad);
+            topServicios.map((x: any) => x.cantidad);
         } else {
           this.totalIngresos = 0;
           this.chartServicios.labels = [];
@@ -216,5 +248,20 @@ export class Dashboard {
     this.intervalId = setInterval(() => {
       this.btnConsultar = !(this.fechaInicial && this.fechaFinal);
     }, 1000);
+  }
+
+  private traducirDia(dia: string): string {
+
+    const dias: any = {
+      monday: 'Lun',
+      tuesday: 'Mar',
+      wednesday: 'Mié',
+      thursday: 'Jue',
+      friday: 'Vie',
+      saturday: 'Sáb',
+      sunday: 'Dom'
+    };
+
+    return dias[dia.toLowerCase()] || dia;
   }
 }

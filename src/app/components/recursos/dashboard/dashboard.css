@@ -97,61 +97,56 @@ mat-tab-group {
   font-size: 1rem;
 }
 
-.btn-cancelar {
-  background-color: #546e7a; /* azul acero */
-  color: #ffffff;
-  font-size: 0.8rem;
-  font-weight: 500;
-  border-radius: 4px;
-  padding: 4px 12px;
-  box-shadow: none;
-  border: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  width: 100px;
-}
-
-.btn-cancelar:hover {
-  background-color: #455a64;
-  transform: scale(1.02);
-}
-
-.btn-confirmar {
-  background-color: #1e88e5; /* azul corporativo */
-  color: #ffffff;
-  font-size: 0.8rem;
-  font-weight: 500;
-  border-radius: 4px;
-  padding: 4px 12px;
-  box-shadow: none;
-  border: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  width: 100px;
-}
-
-.btn-finalizar {
-  background-color: #919fac; /* azul corporativo */
-  color: #ffffff;
-  font-size: 0.8rem;
-  font-weight: 500;
-  border-radius: 4px;
-  padding: 4px 12px;
-  box-shadow: none;
-  border: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  width: 100px;
-}
-
-.btn-confirmar:hover {
-  background-color: #1565c0;
-  transform: scale(1.02);
-}
 
 .acciones-cita {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-top: 0.5rem;
-  align-items: flex-end; /* o 'center' si los quieres centrados */
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.btn-accion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  border: none;
+  border-radius: 8px;
+
+  padding: 8px 14px;
+  min-width: 120px;
+
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.btn-accion:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+.btn-whatsapp {
+  background-color: #25D366;
+}
+
+.btn-finalizar {
+  background-color: #1565c0;
+}
+
+.btn-menu {
+  width: 36px;
+  height: 36px;
+}
+
+.btn-accion mat-icon,
+.btn-accion i {
+  font-size: 18px;
 }
 
 .navegacion-botones {
