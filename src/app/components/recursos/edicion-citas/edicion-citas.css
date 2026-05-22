@@ -1,0 +1,324 @@
+.modal-editar {
+
+    padding: 1rem;
+
+    width: 100%;
+
+    box-sizing: border-box;
+}
+
+.input-busqueda {
+    width: 95%;
+    padding: 10px;
+    margin: 10px 0 20px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+/* HEADER */
+
+.header-modal {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.titulo {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.titulo mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: #1565c0;
+}
+
+.titulo h2 {
+    margin: 0;
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.titulo p {
+    margin: 0.2rem 0 0 0;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+/* INFORMACIÓN */
+
+.info-cita {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+
+    padding: 1.2rem;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+
+    margin-bottom: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.info-item mat-icon {
+    color: #1565c0;
+    font-size: 30px;
+    width: 30px;
+    height: 30px;
+}
+
+.info-item span {
+    display: block;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.info-item strong {
+    font-size: 1rem;
+    color: #111827;
+}
+
+/* CONTENIDO */
+
+.contenedor-servicios {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+
+    margin-bottom: 1.5rem;
+}
+
+.panel-servicios {
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+
+    padding: 1rem;
+
+    background: #fff;
+}
+
+.panel-servicios h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* LISTA */
+
+.lista-servicios {
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+/* ITEM */
+
+.servicio-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 1rem;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+
+    transition: all 0.2s ease;
+}
+
+.servicio-item:hover {
+    border-color: #1565c0;
+    transform: translateY(-1px);
+}
+
+.detalle-servicio {
+    display: flex;
+    flex-direction: column;
+}
+
+.detalle-servicio strong {
+    font-size: 0.95rem;
+    color: #111827;
+}
+
+.detalle-servicio span {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 0.2rem;
+}
+
+.acciones-servicio {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.precio {
+    font-weight: 600;
+    color: #111827;
+    font-size: 0.95rem;
+}
+
+/* HORARIOS */
+
+.horarios {
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+
+    padding: 1rem;
+
+    margin-bottom: 1.5rem;
+}
+
+.horarios-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 1rem;
+}
+
+.horarios-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.lista-horarios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.hora-btn {
+    border: 1px solid #d1d5db;
+    background: white;
+
+    border-radius: 10px;
+
+    padding: 0.8rem 1rem;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+
+    min-width: 110px;
+
+    font-weight: 500;
+}
+
+.hora-btn:hover {
+    background: #1565c0;
+    color: white;
+    border-color: #1565c0;
+}
+
+/* FOOTER */
+
+.footer-modal {
+
+    position: sticky;
+    bottom: 0;
+
+    background: white;
+
+    padding-top: 1rem;
+    margin-top: 1rem;
+
+    z-index: 10;
+
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+
+    border-top: 1px solid #e5e7eb;
+}
+
+/* SCROLL */
+
+.lista-servicios::-webkit-scrollbar {
+    width: 6px;
+}
+
+.lista-servicios::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 20px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+
+    .contenedor-servicios {
+        grid-template-columns: 1fr;
+    }
+
+    .info-cita {
+        grid-template-columns: 1fr;
+    }
+
+    .horarios-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .footer-modal {
+        flex-direction: column;
+    }
+
+}
+
+.acciones-servicio button {
+
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+    color: #555;
+}
+
+.hora-btn.selected {
+    background: #1565c0;
+    color: white;
+    border-color: #1565c0;
+}
+
+.fecha-item {
+    align-items: flex-start;
+}
+
+.fecha-contenido {
+    width: 100%;
+}
+
+.fecha-contenido mat-form-field {
+    width: 160px;
+    font-size: 0.9rem;
+}
+
+::ng-deep .fecha-contenido .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+}

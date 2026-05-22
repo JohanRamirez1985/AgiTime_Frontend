@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,6 +23,8 @@ import { switchMap, tap } from 'rxjs/operators';
 import { Modal } from '../../../shared/services/modal';
 import { ReservaDialog } from '../../reserva-dialog/reserva-dialog';
 import { ClienteService } from '../../../services/cliente.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { EdicionCitas } from '../edicion-citas/edicion-citas'
 
 @Component({
   selector: 'app-dashboardR',
@@ -46,7 +48,8 @@ import { ClienteService } from '../../../services/cliente.service';
     MatDatepickerModule,
     MatNativeDateModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatMenuModule
     // ClienteAgendar
   ],
   templateUrl: './dashboard.html',
@@ -955,7 +958,8 @@ export class DashboardRecurso {
           cliente: nombreCliente,
           telefono: telefono,
           estado: item.citas[0].estado,
-          fechaInicio: fecha
+          fechaInicio: fecha,
+          padre: item.padre
         };
       })
       .sort((a, b) => a.fechaOrden - b.fechaOrden);
@@ -1089,6 +1093,23 @@ export class DashboardRecurso {
 
   abrirAgendar() {
     this.router.navigate(['/cliente/agendar']);
+  }
+
+  public editarCita(cita: any) {
+
+    const dialogRef = this.dialog.open(EdicionCitas, {
+      width: '1200px',
+      maxWidth: '95vw',
+      height: '90vh',
+      data: cita
+    });
+
+    dialogRef.afterClosed().subscribe((resp) => {
+      if (resp?.actualizado) {
+        this.loading = true;
+        this.consultarCitas(this.user, this.empresa, this.day);
+      }
+    });
   }
 
   cancelarCita(cita: any) {

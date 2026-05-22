@@ -74,20 +74,40 @@
                 </span>
               </div>
               <div class="acciones-cita">
-                <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" class="btn-cancelar"
-                  (click)="cancelarCita(cita)">
-                  Cancelar
+
+                <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" class="btn-accion btn-whatsapp">
+                  <i class="fab fa-whatsapp"></i>
+                  <span>WhatsApp</span>
                 </button>
-                <button *ngIf="!seleccionRecurso" class="btn-cancelar" (click)="cancelarCita(cita)">
-                  Cancelar
+
+                <button *ngIf="cita.estado === 'Activo'" class="btn-accion btn-finalizar" (click)="confirmarCita(cita)">
+                  <mat-icon>check_circle</mat-icon>
+                  <span>Finalizar</span>
                 </button>
-                <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" class="btn-confirmar"
-                  (click)="recordatorioWssp(cita)">
-                  Confirmar
+
+                <button *ngIf="cita.estado === 'Activo'" mat-icon-button [matMenuTriggerFor]="menuAcciones" class="btn-menu">
+                  <mat-icon>more_vert</mat-icon>
                 </button>
-                <button *ngIf="cita.estado === 'Activo'" class="btn-finalizar" (click)="confirmarCita(cita)">
-                  Finalizar
-                </button>
+
+                <mat-menu #menuAcciones="matMenu">
+
+                  <button *ngIf="seleccionRecurso" mat-menu-item (click)="editarCita(cita)">
+                    <mat-icon>edit</mat-icon>
+                    <span>Editar</span>
+                  </button>
+
+                  <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" mat-menu-item (click)="cancelarCita(cita)">
+                    <mat-icon>cancel</mat-icon>
+                    <span>Cancelar</span>
+                  </button>
+
+                  <button *ngIf="!seleccionRecurso" mat-menu-item (click)="cancelarCita(cita)">
+                    <mat-icon>cancel</mat-icon>
+                    <span>Cancelar</span>
+                  </button>
+
+                </mat-menu>
+
               </div>
             </div>
           </mat-card>
