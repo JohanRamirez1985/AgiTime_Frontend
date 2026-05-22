@@ -91,7 +91,7 @@
 
                 <mat-menu #menuAcciones="matMenu">
 
-                  <button mat-menu-item (click)="editarCita(cita)">
+                  <button *ngIf="seleccionRecurso" mat-menu-item (click)="editarCita(cita)">
                     <mat-icon>edit</mat-icon>
                     <span>Editar</span>
                   </button>
