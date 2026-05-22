@@ -200,10 +200,9 @@
 
     </ng-template>
 
-    <!-- GRAFICAS -->
-    <div class="charts-grid" style="margin-top: 20px;">
+    <!-- GRAFICA PRINCIPAL -->
+    <div class="chart-main">
 
-      <!-- INGRESOS -->
       <mat-card class="chart-card">
 
         <div class="chart-header">
@@ -216,14 +215,20 @@
 
       </mat-card>
 
-      <!-- SERVICIOS -->
-      <mat-card class="chart-card">
+    </div>
+
+    <!-- GRAFICAS SERVICIOS -->
+    <div class="charts-services">
+
+      <mat-card class="chart-card" *ngFor="let grafica of graficasServicios">
 
         <div class="chart-header">
-          <h3>Servicios más vendidos</h3>
+          <h3>
+            Servicios más vendidos - {{ grafica.sede }}
+          </h3>
         </div>
 
-        <apx-chart [series]="chartServicios.series" [chart]="chartServicios.chart" [labels]="chartServicios.labels">
+        <apx-chart [series]="grafica.series" [chart]="grafica.chart" [labels]="grafica.labels">
         </apx-chart>
 
       </mat-card>

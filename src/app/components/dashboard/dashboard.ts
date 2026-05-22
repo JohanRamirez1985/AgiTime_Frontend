@@ -39,6 +39,7 @@ import { Modal } from '../../shared/services/modal';
 })
 export class Dashboard {
   idEmpresa: string | null = null;
+  public graficasServicios: any[] = [];
   recursos: any[] = [];
   fechaInicial: Date = (() => {
     const fecha = new Date();
@@ -137,7 +138,9 @@ export class Dashboard {
   }
 
   public consultarDash(): void {
+
     this.loading = true;
+
     const fechaIni = new Date(this.fechaInicial);
     fechaIni.setHours(0, 0, 0, 0);
 
@@ -151,16 +154,22 @@ export class Dashboard {
     };
 
     this.informeService.infoDashboard(request).subscribe({
+
       next: (rest) => {
+
         if (rest.exito) {
+
           this.recursos = rest.datos.infoCitas;
           this.ocupado = rest.datos.porcentajeCitas;
           this.totalIngresos = rest.datos.totalIngresos;
+
           const servicios = rest.datos.porcentajeServicios;
-          this.servicioMasVendido = servicios[0].servicio;
-          const topServicios = servicios.slice(0, 6);
+
+          this.servicioMasVendido = servicios[0]?.servicio || '';
+
           const valorSemana = rest.datos.valorDiario;
 
+          // TOTAL CITAS
           this.totalCitasConfirmadas = this.recursos.reduce(
             (total, recurso) => total + (recurso.totalCitasConfirmadas || 0),
             0
@@ -171,7 +180,9 @@ export class Dashboard {
             0
           );
 
+          // GRAFICA INGRESOS
           this.chartIngresos = {
+
             ...this.chartIngresos,
 
             series: [
@@ -188,30 +199,76 @@ export class Dashboard {
             }
           };
 
-          this.chartServicios.labels =
-            topServicios.map((x: any) => x.servicio);
+          // =========================
+          // AGRUPAR SERVICIOS POR SEDE
+          // =========================
 
-          this.chartServicios.series =
-            topServicios.map((x: any) => x.cantidad);
+          const serviciosPorSede = servicios.reduce((acc: any, item: any) => {
+
+            const sede = item.sede || 'Sin sede';
+
+            if (!acc[sede]) {
+              acc[sede] = [];
+            }
+
+            acc[sede].push(item);
+
+            return acc;
+
+          }, {});
+
+          // =========================
+          // CREAR GRAFICAS
+          // =========================
+
+          this.graficasServicios = Object.keys(serviciosPorSede).map((sede) => {
+
+            const topServicios = serviciosPorSede[sede]
+              .sort((a: any, b: any) => b.cantidad - a.cantidad)
+              .slice(0, 6);
+
+            return {
+
+              sede,
+
+              chart: {
+                type: 'donut',
+                height: 350
+              },
+
+              labels: topServicios.map((x: any) => x.servicio),
+
+              series: topServicios.map((x: any) => x.cantidad)
+            };
+
+          });
+
         } else {
+
           this.totalIngresos = 0;
-          this.chartServicios.labels = [];
-          this.chartServicios.series = [];
-          this.chartIngresos.labels = [];
+          this.graficasServicios = [];
           this.chartIngresos.series = [];
+
         }
+
         this.loading = false;
+
       },
+
       error: (err) => {
+
         this.modalService.error(err.statusText);
+
         this.totalIngresos = 0;
-        this.chartServicios.labels = [];
-        this.chartServicios.series = [];
-        this.chartIngresos.labels = [];
+        this.graficasServicios = [];
         this.chartIngresos.series = [];
+
         this.loading = false;
+
       }
+
     });
+
   }
 
   private formatearFecha(fecha: Date): string {

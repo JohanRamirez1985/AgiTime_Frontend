@@ -342,3 +342,18 @@ button[mat-flat-button] {
 
   min-height: 42px;
 }
+
+.chart-main {
+  margin-bottom: 24px;
+  margin-top: 25px;
+}
+
+.charts-services {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.chart-card {
+  padding: 16px;
+}
