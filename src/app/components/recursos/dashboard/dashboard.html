@@ -75,17 +75,17 @@
               </div>
               <div class="acciones-cita">
 
-                <button class="btn-accion btn-whatsapp">
+                <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" class="btn-accion btn-whatsapp">
                   <i class="fab fa-whatsapp"></i>
                   <span>WhatsApp</span>
                 </button>
 
-                <button class="btn-accion btn-finalizar">
+                <button *ngIf="cita.estado === 'Activo'" class="btn-accion btn-finalizar">
                   <mat-icon>check_circle</mat-icon>
                   <span>Finalizar</span>
                 </button>
 
-                <button mat-icon-button [matMenuTriggerFor]="menuAcciones" class="btn-menu">
+                <button *ngIf="cita.estado === 'Activo'" mat-icon-button [matMenuTriggerFor]="menuAcciones" class="btn-menu">
                   <mat-icon>more_vert</mat-icon>
                 </button>
 
@@ -96,7 +96,12 @@
                     <span>Editar</span>
                   </button>
 
-                  <button mat-menu-item (click)="cancelarCita(cita)">
+                  <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" mat-menu-item (click)="cancelarCita(cita)">
+                    <mat-icon>cancel</mat-icon>
+                    <span>Cancelar</span>
+                  </button>
+
+                  <button *ngIf="!seleccionRecurso" mat-menu-item (click)="cancelarCita(cita)">
                     <mat-icon>cancel</mat-icon>
                     <span>Cancelar</span>
                   </button>

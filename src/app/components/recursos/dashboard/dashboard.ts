@@ -952,7 +952,8 @@ export class DashboardRecurso {
           cliente: nombreCliente,
           telefono: telefono,
           estado: item.citas[0].estado,
-          fechaInicio: fecha
+          fechaInicio: fecha,
+          padre: item.padre
         };
       })
       .sort((a, b) => a.fechaOrden - b.fechaOrden);

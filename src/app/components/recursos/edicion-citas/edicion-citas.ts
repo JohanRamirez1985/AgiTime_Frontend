@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AgendamientoService } from '../../../services/agendamiento.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { Modal } from '../../../shared/services/modal';
 
 @Component({
   selector: 'app-edicion-citas',
@@ -50,22 +51,138 @@ export class EdicionCitas {
 
   constructor(
     private sharedServices: SharedService,
+    public modalService: Modal,
     private agendamientoService: AgendamientoService
   ) { }
 
   ngOnInit() {
     this.fechaSeleccionada = new Date(this.data.fechaInicio);
+    this.horaSeleccionada = this.data.hora;
     this.empresa = JSON.parse(localStorage.getItem('empresa') || '');
     this.idEmpresa = this.empresa.id;
     this.obtenerServicios(this.idEmpresa);
     this.obtenerHorarios(this.empresa);
   }
 
+  public ordenarFechaCita(): Date {
+    const fecha = new Date(this.fechaSeleccionada);
+
+    const horaTexto = this.horaSeleccionada;
+
+    // Separar hora y periodo
+    const [horaMin, periodo] = horaTexto.split(' ');
+    let [horas, minutos] = horaMin.split(':').map(Number);
+
+    // Convertir a formato 24 horas
+    if (periodo === 'PM' && horas !== 12) {
+      horas += 12;
+    }
+
+    if (periodo === 'AM' && horas === 12) {
+      horas = 0;
+    }
+
+    // Asignar hora
+    fecha.setHours(horas, minutos, 0, 0);
+
+    return fecha;
+  }
+
   public modificarCita() {
     this.loading = true;
-    this.dialogRef.close({
-      actualizado: true
+
+    let alterno = this.serviciosSeleccionados
+      .filter(s => s.alterno)
+      .sort((a, b) => b.tiempo - a.tiempo);
+    let noAlterno = this.serviciosSeleccionados
+      .filter(s => !s.alterno)
+      .sort((a, b) => b.tiempo - a.tiempo);
+
+
+    let resultadoAlterno = alterno.map(a => ({
+      FechaIni: this.formatearFecha(this.ordenarFechaCita()),
+      recurso: a.recurso,
+      Valor: a.valor,
+      Hora: a.tiempo,
+      servicios: [
+        {
+          servicio: a.id
+        }
+      ]
+    }));
+    let baseFecha = this.formatearFecha(this.ordenarFechaCita());
+    let horaAlterno = 0;
+
+    if (alterno.length > 0) {
+      baseFecha = resultadoAlterno[0].FechaIni;
+      horaAlterno = alterno[0].tiempo
+    }
+
+    let base = new Date(baseFecha);
+
+    if (isNaN(base.getTime())) {
+      throw new Error("baseFecha inválida: " + baseFecha);
+    }
+
+    // arrancan después del tiempo de alternos
+    base.setMinutes(base.getMinutes() + horaAlterno);
+
+    let resultadoNoAlterno = noAlterno.map(a => {
+      const fechaInicio = new Date(base);
+
+      const item = {
+        FechaIni: this.formatearFecha(fechaInicio),
+        recurso: a.recurso,
+        Valor: a.valor,
+        Hora: a.tiempo,
+        servicios: [
+          {
+            servicio: a.id
+          }
+        ]
+      };
+
+      base.setMinutes(base.getMinutes() + a.tiempo);
+
+      return item;
     });
+
+    resultadoNoAlterno.forEach(element => {
+      resultadoAlterno.push(element)
+    });
+
+    const request = {
+      FechaIni: this.formatearFecha(this.ordenarFechaCita()),
+      empresa: this.idEmpresa,
+      UsuarioCreacion: 'Usuario',
+      fechaCreacion: this.formatearFecha(new Date()),
+      citas: resultadoAlterno,
+      Id: this.data.padre,
+      clienteInfo: {
+        Telefono: this.data.telefono,
+      },
+    };
+
+    this.agendamientoService.modificarCita(request)
+      .subscribe({
+        next: (rest) => {
+          if (rest.exito) {
+            this.modalService.success(
+              rest.mensaje || 'Cita actualizada exitosamente!',
+              () => { }
+            );
+          } else {
+            this.modalService.error(rest.mensaje);
+          }
+          this.loading = false;
+          this.dialogRef.close({
+            actualizado: true
+          });
+        }, error: (err) => {
+          this.modalService.error(err.mensaje);
+          this.loading = false;
+        }
+      })
   }
 
   seleccionarHora(hora: string) {
@@ -131,7 +248,9 @@ export class EdicionCitas {
         nombre: servicio.nombre,
         tiempo: servicio.tiempo,
         valor: servicio.valor,
-        recurso: servicio.recurso
+        recurso: servicio.recurso,
+        id: servicio.id,
+        alterno: servicio.alterno
       }));
 
     this.loading = false;
@@ -146,6 +265,7 @@ export class EdicionCitas {
     this.serviciosFiltrados = this.serviciosFiltrados.filter(
       (servicio: any) => servicio.id !== s.id
     );
+    this.horariosDisponibles = [];
   }
 
   public eliminarServicio(s: any) {
@@ -153,6 +273,7 @@ export class EdicionCitas {
     this.serviciosSeleccionados = this.serviciosSeleccionados.filter(
       (servicio: any) => servicio.id !== s.id
     );
+    this.horariosDisponibles = [];
   }
 
   public verHorariosDisponibles() {
@@ -185,4 +306,13 @@ export class EdicionCitas {
     const dia = fecha.getDate().toString().padStart(2, '0');
     return `${anio}-${mes}-${dia}T${hora}`;
   }
+
+  formatearFecha = (fecha: Date) => {
+    return fecha.getFullYear() + '-' +
+      String(fecha.getMonth() + 1).padStart(2, '0') + '-' +
+      String(fecha.getDate()).padStart(2, '0') + 'T' +
+      String(fecha.getHours()).padStart(2, '0') + ':' +
+      String(fecha.getMinutes()).padStart(2, '0') + ':' +
+      String(fecha.getSeconds()).padStart(2, '0');
+  };
 }

@@ -72,6 +72,7 @@ export class Informes {
   ngOnInit() {
     const info = JSON.parse(localStorage.getItem('infoEmp') || '{}');
     const infoUser = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const infoEmpresa = JSON.parse(localStorage.getItem('empresa') || '{}');
     this.usuario = infoUser;
     const id = info?.idEmpresa;
     this.idEmpresa = id;
@@ -161,7 +162,7 @@ export class Informes {
       // ⏳ ESPERAR a que createJson termine (modal incluido)
       request = await this.createJsonDiario();
     } else {
-      if (this.usuario.rol !== 3) {
+      if (this.usuario.rol !== 3 && this.idEmpresa === '2') {
         await Swal.fire({
           title: '¿Cómo deseas exportar el reporte?',
           html: `
@@ -278,8 +279,6 @@ export class Informes {
       } else {
         request = await this.createJsonSemanal(true);
       }
-
-
     }
 
     // ❌ Usuario canceló el modal

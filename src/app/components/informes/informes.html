@@ -23,7 +23,7 @@
               (selectionChange)="onTipoChange($event.value)"
             >
               <mat-option value="diario">Diario</mat-option>
-              <mat-option value="semanal">Semanal</mat-option>
+              <mat-option *ngIf="idEmpresa === '2'" value="semanal">Semanal</mat-option>
               <mat-option *ngIf="usuario.rol === 4 || usuario.rol === 2" value="info">Informe</mat-option>
             </mat-select>
           </mat-form-field>

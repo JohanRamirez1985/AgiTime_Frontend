@@ -27,6 +27,10 @@ export class AgendamientoService {
     return this.http.post<any>(`${this.baseUrl}/registrarCita`, request);
   }
 
+  modificarCita(request: any) {
+    return this.http.put<any>(`${this.baseUrl}/editarCita`, request);
+  }
+
   guardarCita(request: any) {
     return this.http.post<any>(`${this.baseUrl}/guardarCita`, request);
   }
