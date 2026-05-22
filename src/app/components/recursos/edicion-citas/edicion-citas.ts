@@ -269,6 +269,9 @@ export class EdicionCitas {
   }
 
   public eliminarServicio(s: any) {
+    if(s.id === 52 || s.id === 51) {
+      s.valor = 0;
+    }
     this.serviciosFiltrados.push(s);
     this.serviciosSeleccionados = this.serviciosSeleccionados.filter(
       (servicio: any) => servicio.id !== s.id

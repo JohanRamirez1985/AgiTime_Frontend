@@ -127,17 +127,27 @@
                             <span>{{ servicio.tiempo }}</span>
 
                         </div>
-
                         <div class="acciones-servicio">
 
-                            <span class="precio">
-                                {{ servicio.valor | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}
-                            </span>
+                            <ng-container *ngIf="servicio.id !== 52 && servicio.id !== 51; else editarValor">
+
+                                <span class="precio">
+                                    {{ servicio.valor | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}
+                                </span>
+
+                            </ng-container>
+
+                            <ng-template #editarValor>
+
+                                <mat-form-field appearance="outline" class="input-valor">
+                                    <input matInput type="number" placeholder="Ingrese valor"
+                                        [(ngModel)]="servicio.valor">
+                                </mat-form-field>
+
+                            </ng-template>
 
                             <button mat-icon-button color="warn" (click)="eliminarServicio(servicio)">
-
                                 <mat-icon>remove</mat-icon>
-
                             </button>
 
                         </div>
