@@ -75,7 +75,7 @@
               </div>
               <div class="acciones-cita">
 
-                <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" class="btn-accion btn-whatsapp">
+                <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" class="btn-accion btn-whatsapp" (click)="recordatorioWssp(cita)">
                   <i class="fab fa-whatsapp"></i>
                   <span>WhatsApp</span>
                 </button>
