@@ -159,7 +159,10 @@ export class Dashboard {
 
         if (rest.exito) {
 
-          this.recursos = rest.datos.infoCitas;
+          this.recursos = rest.datos.infoCitas.sort(
+            (a: any, b: any) =>
+              b.totalCitasConfirmadas - a.totalCitasConfirmadas
+          );
           this.ocupado = rest.datos.porcentajeCitas;
           this.totalIngresos = rest.datos.totalIngresos;
 
@@ -181,19 +184,26 @@ export class Dashboard {
           );
 
           // GRAFICA INGRESOS
+          const semanaActual = rest.datos.valorDiario.semanaActual;
+          const semanaPasada = rest.datos.valorDiario.semanaPasada;
+
           this.chartIngresos = {
 
             ...this.chartIngresos,
 
             series: [
               {
-                name: 'Ingresos',
-                data: valorSemana.map((x: any) => x.totalDia)
+                name: 'Semana actual',
+                data: semanaActual.map((x: any) => x.totalDia)
+              },
+              {
+                name: 'Semana pasada',
+                data: semanaPasada.map((x: any) => x.totalDia)
               }
             ],
 
             xaxis: {
-              categories: valorSemana.map((x: any) =>
+              categories: semanaActual.map((x: any) =>
                 this.traducirDia(x.dia)
               )
             }
@@ -225,7 +235,7 @@ export class Dashboard {
 
             const topServicios = serviciosPorSede[sede]
               .sort((a: any, b: any) => b.cantidad - a.cantidad)
-              .slice(0, 6);
+              .slice(0, 5);
 
             return {
 
