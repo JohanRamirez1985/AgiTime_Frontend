@@ -10,11 +10,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
+import { SharedService } from '../../services/shared.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-   imports: [
+  imports: [
     CommonModule,
     FormsModule,
     ErrorMessageComponent,
@@ -23,7 +26,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatInputModule,
     MatButtonModule,
     MatCardModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatIconModule
   ],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
@@ -36,21 +40,36 @@ export class Login {
   apiErrorMessage: string = '';
   showModal = false;
   loading = false;
-  idEmpresa: string | null = null;
+  idEmpresa: any;
   tipo: string = ''
   uniqueId = Math.floor(Math.random() * 100000);
+  hidePassword = true;
+  empresaLogo: string = '';
+  version: string = '';
 
 
 
 
   constructor(private authService: AuthService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private sharedServices: SharedService,
   ) {
-      this.idEmpresa = this.route.snapshot.queryParamMap.get('em');
-      this.tipo = this.route.snapshot.queryParamMap.get('tipo') || '';
+    this.idEmpresa = this.route.snapshot.queryParamMap.get('em');
+    this.tipo = this.route.snapshot.queryParamMap.get('tipo') || '';
+    this.version = environment.version;
+    this.consultarEmpresa();
   }
-  
+
+  public consultarEmpresa() {
+    this.sharedServices.obtenerEmpresasApp().subscribe({
+      next: (rest) => {
+        const empresa: any = rest.datos.find(e => e.id === parseInt(this.idEmpresa));
+        this.empresaLogo = 'assets/img/' + empresa.logo || '';
+      },
+    });
+  }
+
   public login(): void {
     this.loading = true;
     this.apiErrorMessage = '';
@@ -62,20 +81,20 @@ export class Login {
       next: (res: LoginResponse) => {
         this.loading = false;
         this.btnLogin = true;
-        if(res.exito){
+        if (res.exito) {
           localStorage.setItem('usuario', JSON.stringify(res.datos.usuario));
           localStorage.setItem('empresa', JSON.stringify(res.datos.empresa));
           localStorage.setItem('funcionalidades', JSON.stringify(res.datos.funcionalidades));
           localStorage.setItem('token', res.token);
           localStorage.setItem('infoEmp', JSON.stringify({
-                                                          idEmpresa: this.idEmpresa,
-                                                          tipo: this.tipo
-                                                        }));
+            idEmpresa: this.idEmpresa,
+            tipo: this.tipo
+          }));
           this.redireccion();
-        }else {
+        } else {
           this.apiErrorMessage = res.mensaje || '';
           this.showModal = true;
-        } 
+        }
 
       },
       error: err => {
@@ -95,12 +114,12 @@ export class Login {
 
   private redireccion(): void {
     const usuario = JSON.parse(localStorage.getItem('usuario') || '');
-    if(this.tipo === 'cl') {
+    if (this.tipo === 'cl') {
       this.router.navigate(['/cliente']);
-    }else if(usuario.rol === 3) {
+    } else if (usuario.rol === 3) {
       this.router.navigate(['admin/recurso/dash'])
     }
-    else { 
+    else {
       this.router.navigate(['/admin/dashboard'])
     }
   }

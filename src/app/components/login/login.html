@@ -1,81 +1,84 @@
 <div class="login-wrapper">
+
+  <div class="overlay"></div>
+
   <mat-card class="login-card">
-    <h2>Iniciar sesión</h2>
+
+    <div class="logo-section">
+      <img [src]="empresaLogo" alt="Logo" class="logo">
+      <h2>Bienvenido</h2>
+      <p>Ingresa a tu cuenta</p>
+    </div>
 
     <app-error-message [message]="apiErrorMessage"></app-error-message>
 
     <form (ngSubmit)="login()" #loginForm="ngForm" autocomplete="off">
-      <mat-form-field appearance="fill" class="full-width">
+
+      <!-- EMAIL -->
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>Usuario</mat-label>
-        <input
-          matInput
-          type="email"
-          name="user_email_{{ uniqueId }}"
-          [(ngModel)]="email"
-          required
-          minlength="4"
-          #emailInput="ngModel"
-          autocomplete="off"
-        />
-        <mat-error *ngIf="emailInput.errors?.['required']"
-          >El correo es obligatorio.</mat-error
-        >
-        <mat-error *ngIf="emailInput.errors?.['email']"
-          >Debe ser un correo válido.</mat-error
-        >
-        <mat-error *ngIf="emailInput.errors?.['minlength']"
-          >Debe tener al menos 4 caracteres.</mat-error
-        >
+
+        <input matInput type="email" name="user_email_{{ uniqueId }}" [(ngModel)]="email" required minlength="4"
+          #emailInput="ngModel" autocomplete="off" />
+
+        <mat-icon matPrefix>person</mat-icon>
+
+        <mat-error *ngIf="emailInput.errors?.['required']">
+          El usuario es obligatorio
+        </mat-error>
+
+        <mat-error *ngIf="emailInput.errors?.['email']">
+          Ingresa un usuario válido
+        </mat-error>
+
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="full-width">
+      <!-- PASSWORD -->
+      <mat-form-field appearance="outline" class="full-width">
+
         <mat-label>Contraseña</mat-label>
-        <input
-          matInput
-          type="password"
-          name="user_pass_{{ uniqueId }}"
-          [(ngModel)]="password"
-          required
-          minlength="6"
-          #passwordInput="ngModel"
-          autocomplete="new-password"
-        />
-        <mat-error *ngIf="passwordInput.errors?.['required']"
-          >La contraseña es obligatoria.</mat-error
-        >
-        <mat-error *ngIf="passwordInput.errors?.['minlength']"
-          >Debe tener al menos 6 caracteres.</mat-error
-        >
+
+        <input matInput [type]="hidePassword ? 'password' : 'text'" name="user_pass_{{ uniqueId }}"
+          [(ngModel)]="password" required minlength="6" #passwordInput="ngModel" />
+
+        <mat-icon matPrefix>lock</mat-icon>
+
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <mat-icon>
+            {{ hidePassword ? 'visibility_off' : 'visibility' }}
+          </mat-icon>
+        </button>
+
+        <mat-error *ngIf="passwordInput.errors?.['required']">
+          La contraseña es obligatoria
+        </mat-error>
+
       </mat-form-field>
 
-      <button
-        mat-raised-button
-        color="primary"
-        class="full-width"
-        [disabled]="loginForm.invalid || loading"
-      >
+      <!-- BOTÓN -->
+      <button mat-raised-button color="primary" class="login-button" [disabled]="loginForm.invalid || loading">
+
         <span *ngIf="!loading">Ingresar</span>
-        <mat-spinner
-          *ngIf="loading"
-          diameter="20"
-          strokeWidth="3"
-        ></mat-spinner>
+
+        <mat-spinner *ngIf="loading" diameter="22" strokeWidth="3">
+        </mat-spinner>
+
       </button>
+
     </form>
 
     <div *ngIf="tipo === 'cl'" class="no-account">
       ¿No tienes cuenta?
-      <a
-        [routerLink]="['/register']"
-        [queryParams]="{ em: idEmpresa, tipo: 'cl' }"
-        >Crea una</a
-      >
+
+      <a [routerLink]="['/register']" [queryParams]="{ em: idEmpresa, tipo: 'cl' }">
+        Regístrate
+      </a>
     </div>
 
-    <app-error-message
-      [message]="apiErrorMessage"
-      [show]="showModal"
-      (close)="showModal = false"
-    ></app-error-message>
+    <div class="app-version">
+       Versión {{version}}
+    </div>
+
   </mat-card>
+
 </div>

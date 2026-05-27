@@ -200,23 +200,6 @@
 
     </ng-template>
 
-    <!-- GRAFICA PRINCIPAL -->
-    <div class="chart-main">
-
-      <mat-card class="chart-card">
-
-        <div class="chart-header">
-          <h3>Ingresos semanales</h3>
-        </div>
-
-        <apx-chart [series]="chartIngresos.series" [chart]="chartIngresos.chart" [xaxis]="chartIngresos.xaxis"
-          [stroke]="chartIngresos.stroke" [dataLabels]="chartIngresos.dataLabels" [tooltip]="chartIngresos.tooltip">
-        </apx-chart>
-
-      </mat-card>
-
-    </div>
-
     <!-- GRAFICAS SERVICIOS -->
     <div class="charts-services">
 
@@ -235,5 +218,20 @@
 
     </div>
 
+    <!-- GRAFICA PRINCIPAL -->
+    <div class="chart-main">
+
+      <mat-card class="chart-card">
+
+        <div class="chart-header">
+          <h3>Ingresos semanales</h3>
+        </div>
+
+        <apx-chart [series]="chartIngresos.series" [chart]="chartIngresos.chart" [xaxis]="chartIngresos.xaxis"
+          [stroke]="chartIngresos.stroke" [dataLabels]="chartIngresos.dataLabels" [tooltip]="chartIngresos.tooltip">
+        </apx-chart>
+
+      </mat-card>
+    </div>
   </div>
 </div>
