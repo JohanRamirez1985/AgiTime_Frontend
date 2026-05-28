@@ -120,7 +120,7 @@ export class Login {
       // Esperar un poco para UX
       setTimeout(() => {
         window.location.reload();
-      }, 2500);
+      }, 5000);
 
     } catch (error) {
       console.error('Error actualizando app', error);
