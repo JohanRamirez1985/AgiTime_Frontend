@@ -9,11 +9,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-seleccion-tipo-usuario',
   standalone: true,
-    imports: [
+  imports: [
     CommonModule,
     FormsModule,
     MatCardModule,
@@ -31,16 +32,17 @@ export class SeleccionTipoUsuario {
   tipoSeleccionado: 'empresa' | 'cliente' | null = null;
   filtro: string = '';
   mostrarListado: boolean = false;
-  listado: { id: number, nombre:string}[] = [];
+  listado: { id: number, nombre: string }[] = [];
   idEmpresaSeleccionada: number | null = null;
   inactiva: boolean = false;
   mensajeError: string = '';
+  version: string = '';
 
   constructor(private router: Router,
     private sharedService: SharedService,
-    private route : ActivatedRoute
+    private route: ActivatedRoute
   ) {
-    
+    this.version = environment.version;
   }
 
   ngOnInit() {
@@ -48,33 +50,33 @@ export class SeleccionTipoUsuario {
     this.route.queryParamMap.subscribe(params => {
       const id = params.get('em');
       this.idEmpresaSeleccionada = id ? +id : null;
-    }); 
+    });
   }
 
-  private obtenerEmpresas():void {
+  private obtenerEmpresas(): void {
     this.sharedService.obtenerEmpresasApp()
-    .subscribe({
-      next: res => {
-        if(res.exito) {
-          const empresas = res.datos;
-          for (let i = 0; i < empresas.length; i++) {
-            this.listado.push({
-              id : empresas[i].id,
-              nombre: empresas[i].nombre
-            })          
+      .subscribe({
+        next: res => {
+          if (res.exito) {
+            const empresas = res.datos;
+            for (let i = 0; i < empresas.length; i++) {
+              this.listado.push({
+                id: empresas[i].id,
+                nombre: empresas[i].nombre
+              })
+            }
+            this.listado = res.datos
+          } else {
+            this.inactiva = true;
+            this.mensajeError = res.mensaje;
           }
-          this.listado = res.datos
-        }else {
-          this.inactiva = true;
-          this.mensajeError = res.mensaje;
         }
-      }
-    })
+      })
   }
 
   public buscarNombre(): void {
-    if(this.filtro.length >= 4) this.mostrarListado = true;
-    else this.mostrarListado = false;    
+    if (this.filtro.length >= 4) this.mostrarListado = true;
+    else this.mostrarListado = false;
   }
 
   public seleccionarTipo(tipo: 'empresa' | 'cliente'): void {
@@ -100,7 +102,7 @@ export class SeleccionTipoUsuario {
     );
   }
 
-  public seleccionarEmpresa(item: any):void {
+  public seleccionarEmpresa(item: any): void {
     this.idEmpresaSeleccionada = item.id;
     this.router.navigate(['/seleccionar'], { queryParams: { em: this.idEmpresaSeleccionada } });
   }

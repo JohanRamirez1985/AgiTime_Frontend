@@ -74,4 +74,8 @@ export class SharedService {
       params: { emp: emp.toString() },
     });
   }
+
+  parametrosGenerales() {
+    return this.http.get<EmpresasResponse>(`${this.baseUrlUsuario}/parametrosGenerales`);
+  }
 }
