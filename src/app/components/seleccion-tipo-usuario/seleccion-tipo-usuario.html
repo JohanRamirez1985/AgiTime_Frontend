@@ -1,59 +1,136 @@
 <div class="login-wrapper">
+
+  <div class="background-overlay"></div>
+
   <mat-card class="login-card">
+
+    <div class="header-section">
+
+      <div class="logo-circle">
+        <mat-icon>business</mat-icon>
+      </div>
+
+      <h2>
+        {{ idEmpresaSeleccionada
+          ? 'Selecciona tu tipo de usuario'
+          : 'Selecciona una empresa'
+        }}
+      </h2>
+
+      <p>
+        Bienvenido al sistema AGITIME
+      </p>
+
+    </div>
+
     <ng-container *ngIf="!inactiva; else mensajeNoAutorizado">
-      <!-- Paso 1: Selección de tipo -->
+
+      <!-- PASO 1 -->
       <ng-container *ngIf="idEmpresaSeleccionada">
-        <h2>Selecciona tu tipo de usuario</h2>
+
         <div class="button-group">
+
           <button
             mat-raised-button
             color="primary"
+            class="action-button empresa-btn"
             (click)="seleccionarTipo('empresa')"
           >
+
+            <mat-icon>apartment</mat-icon>
+
             Soy una Empresa
+
           </button>
-          <button mat-raised-button color="accent" (click)="irCliente()">
+
+          <button
+            mat-raised-button
+            class="action-button cliente-btn"
+            (click)="irCliente()"
+          >
+
+            <mat-icon>person</mat-icon>
+
             Soy un Cliente
+
           </button>
+
         </div>
+
       </ng-container>
 
-      <!-- Paso 2: Mostrar listado filtrado -->
+      <!-- PASO 2 -->
       <ng-container *ngIf="!idEmpresaSeleccionada">
-        <h2>Selecciona una empresa</h2>
 
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Buscar por nombre...</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+
+          <mat-label>Buscar empresa</mat-label>
+
+          <mat-icon matPrefix>search</mat-icon>
+
           <input
             matInput
             [(ngModel)]="filtro"
             (ngModelChange)="buscarNombre()"
           />
+
         </mat-form-field>
 
-        <mat-list class="listado" *ngIf="mostrarListado">
-          <mat-list-item
+        <div class="empresa-list" *ngIf="mostrarListado">
+
+          <div
+            class="empresa-item"
             *ngFor="let item of listadoFiltrado()"
             (click)="seleccionarEmpresa(item)"
           >
-            {{ item.nombre }}
-          </mat-list-item>
-          <mat-list-item *ngIf="listadoFiltrado().length === 0">
-            No se encontraron resultados.
-          </mat-list-item>
-        </mat-list>
 
-        <button mat-stroked-button color="warn" (click)="cancelar()">
-          Volver
-        </button>
+            <div class="empresa-avatar">
+              {{ item.nombre[0] }}
+            </div>
+
+            <div class="empresa-info">
+              <span>{{ item.nombre }}</span>
+            </div>
+
+            <mat-icon class="arrow-icon">
+              chevron_right
+            </mat-icon>
+
+          </div>
+
+          <div
+            class="empty-state"
+            *ngIf="listadoFiltrado().length === 0"
+          >
+
+            <mat-icon>search_off</mat-icon>
+
+            <p>No se encontraron resultados</p>
+
+          </div>
+
+        </div>
       </ng-container>
     </ng-container>
 
     <ng-template #mensajeNoAutorizado>
+
       <div class="mensaje-error">
-        <mat-icon color="warn">error</mat-icon>
+
+        <mat-icon color="warn">
+          error
+        </mat-icon>
+
         <p>{{ mensajeError }}</p>
+
       </div>
+
     </ng-template>
+
+    <div class="app-version">
+      v{{ version }}
+    </div>
+
   </mat-card>
+
 </div>

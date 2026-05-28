@@ -13,6 +13,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { SharedService } from '../../services/shared.service';
 import { environment } from '../../../environments/environment';
+import { Modal } from '../../shared/services/modal';
+import { MatDialog } from '@angular/material/dialog';
+import { ModalActualizando } from '../../shared/modal-actualizando/modal-actualizando';
 
 @Component({
   selector: 'app-login',
@@ -46,6 +49,7 @@ export class Login {
   hidePassword = true;
   empresaLogo: string = '';
   version: string = '';
+  loadingInicial: boolean = true;
 
 
 
@@ -54,11 +58,14 @@ export class Login {
     private route: ActivatedRoute,
     private router: Router,
     private sharedServices: SharedService,
+    private modalService: Modal,
+    private dialog: MatDialog
   ) {
     this.idEmpresa = this.route.snapshot.queryParamMap.get('em');
     this.tipo = this.route.snapshot.queryParamMap.get('tipo') || '';
     this.version = environment.version;
     this.consultarEmpresa();
+    this.validarVersionApp();
   }
 
   public consultarEmpresa() {
@@ -68,6 +75,58 @@ export class Login {
         this.empresaLogo = 'assets/img/' + empresa.logo || '';
       },
     });
+  }
+
+  public validarVersionApp() {
+    this.sharedServices.parametrosGenerales().subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          const parametroVersion: any = rest.datos.find(
+            (v: any) => v.tipo === 'version'
+          );
+          const version = parametroVersion.valor || '';
+          this.modalActualizacion(version)
+        }
+      },
+    })
+  }
+
+  private async modalActualizacion(versionBd: string) {
+
+    // Version correcta
+    if (versionBd === this.version) {
+      this.loadingInicial = false;
+      return;
+    }
+
+    // Mostrar modal
+    this.dialog.open(ModalActualizando, {
+      disableClose: true,
+      panelClass: 'update-dialog',
+      backdropClass: 'update-backdrop'
+    });
+
+    try {
+      // Limpiar caches del navegador
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(
+          cacheNames.map(name => caches.delete(name))
+        );
+      }
+
+      // Limpiar storages opcional
+      sessionStorage.clear();
+      // Esperar un poco para UX
+      setTimeout(() => {
+        window.location.reload();
+      }, 2500);
+
+    } catch (error) {
+      console.error('Error actualizando app', error);
+      // fallback
+      window.location.reload();
+    }
   }
 
   public login(): void {
@@ -92,22 +151,18 @@ export class Login {
           }));
           this.redireccion();
         } else {
-          this.apiErrorMessage = res.mensaje || '';
-          this.showModal = true;
+          this.modalService.error(res.mensaje || '')
         }
 
       },
       error: err => {
-        console.error('Error en login', err);
         this.loading = false;
         this.btnLogin = true;
-
         if (err.status === 401) {
-          this.apiErrorMessage = 'Correo o contraseña incorrectos';
+          this.modalService.error('Correo o contraseña incorrectos');
         } else {
-          this.apiErrorMessage = 'Ocurrió un error inesperado. Intenta de nuevo.';
+          this.modalService.error('Ocurrió un error inesperado. Intenta de nuevo.');
         }
-        this.showModal = true;
       }
     });
   }

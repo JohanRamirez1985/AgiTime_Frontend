@@ -1,34 +1,93 @@
 .login-wrapper {
-  height: 100vh;
+  position: relative;
+  min-height: 100vh;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #e6ecf3; /* Fondo claro moderno */
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  padding: 1rem;
+
+  padding: 20px;
+
+  background:
+    linear-gradient(135deg, #ffffff, #ffffff);
+
+  overflow: hidden;
+}
+
+.background-overlay {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(255,255,255,0.04);
+
+  backdrop-filter: blur(6px);
 }
 
 .login-card {
+  position: relative;
+  z-index: 2;
+
   width: 100%;
-  max-width: 420px;
-  padding: 2rem;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  max-width: 460px;
+
+  padding: 2.5rem;
+
+  border-radius: 24px;
+
+  background: rgba(255,255,255,0.96);
+
+  box-shadow:
+    0 12px 40px rgba(0,0,0,0.18);
+
+  animation: fadeIn .4s ease;
 }
 
-.login-card:hover {
-  transform: scale(1.01);
-}
+/* HEADER */
 
-.login-card h2 {
-  margin-bottom: 2rem;
-  color: #1f3c88;
-  font-weight: 600;
-  font-size: 1.6rem;
+.header-section {
   text-align: center;
+  margin-bottom: 2rem;
 }
+
+.logo-circle {
+  width: 80px;
+  height: 80px;
+
+  margin: 0 auto 1rem;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(135deg, #2563eb, #1f3c88);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-circle mat-icon {
+  color: white;
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.header-section h2 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.header-section p {
+  margin-top: 10px;
+
+  color: #6b7280;
+}
+
+/* BOTONES */
 
 .button-group {
   display: flex;
@@ -36,63 +95,184 @@
   gap: 1rem;
 }
 
-/* Botones Material personalizados */
-.mat-raised-button.mat-primary {
-  background-color: #1f3c88;
-  color: #fff;
+.action-button {
+  height: 52px;
+
+  border-radius: 14px !important;
+
+  font-size: 1rem;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.mat-raised-button.mat-primary:hover {
-  background-color: #172c6c;
+.empresa-btn {
+  background: #1f3c88 !important;
+  color: white !important;
 }
 
-.mat-raised-button.mat-accent {
-  background-color: #6c5ce7;
-  color: #fff;
+.cliente-btn {
+  background: #6c5ce7 !important;
+  color: white !important;
 }
 
-.mat-raised-button.mat-accent:hover {
-  background-color: #5a4db8;
-}
+/* INPUT */
 
-/* Buscador y campos */
 .full-width {
   width: 100%;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
-/* Listado */
-mat-list-item {
+/* LISTADO */
+
+.empresa-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.empresa-item {
+  display: flex;
+  align-items: center;
+
+  padding: 14px;
+
+  border-radius: 14px;
+
+  margin-bottom: 10px;
+
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s;
-  border-radius: 6px;
-  padding: 12px;
+
+  transition: all .25s ease;
+
+  border: 1px solid #eef2f7;
 }
 
-mat-list-item:hover {
-  background-color: #f1f3f5;
-  transform: scale(1.01);
+.empresa-item:hover {
+  background: #f8fafc;
+  transform: translateY(-2px);
 }
 
-/* Botón volver */
-button[mat-stroked-button] {
-  margin-top: 1rem;
+.empresa-avatar {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 50%;
+
+  background: #2563eb;
+
+  color: white;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-weight: 700;
+
+  margin-right: 12px;
+}
+
+.empresa-info {
+  flex: 1;
   font-weight: 500;
+  color: #1f2937;
 }
 
+.arrow-icon {
+  color: #9ca3af;
+}
+
+/* EMPTY */
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #9ca3af;
+}
+
+.empty-state mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+/* VOLVER */
+
+.volver-btn {
+  width: 100%;
+  margin-top: 1rem;
+
+  height: 48px;
+
+  border-radius: 12px !important;
+}
+
+/* ERROR */
 
 .mensaje-error {
   display: flex;
-  flex-direction: column; /* Para que icono y texto queden uno encima del otro */
-  justify-content: center; /* Centra verticalmente */
-  align-items: center; /* Centra horizontalmente */
-  height: 100%; /* Ocupa toda la altura disponible */
+  flex-direction: column;
+  align-items: center;
+
   text-align: center;
-  padding: 20px;
+
+  padding: 1rem;
+}
+
+.mensaje-error mat-icon {
+  font-size: 50px;
+  width: 50px;
+  height: 50px;
 }
 
 .mensaje-error p {
-  font-size: 18px;
+  margin-top: 1rem;
+
+  color: #b91c1c;
+
+  font-size: 1rem;
   font-weight: 500;
-  color: #b71c1c; /* rojo corporativo */
+}
+
+/* VERSION */
+
+.app-version {
+  margin-top: 20px;
+
+  text-align: center;
+
+  font-size: 12px;
+
+  color: #9ca3af;
+}
+
+/* ANIMACIÓN */
+
+@keyframes fadeIn {
+
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 480px) {
+
+  .login-card {
+    padding: 2rem 1.4rem;
+  }
+
+  .header-section h2 {
+    font-size: 1.5rem;
+  }
+
 }

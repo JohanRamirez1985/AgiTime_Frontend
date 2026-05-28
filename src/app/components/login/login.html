@@ -1,84 +1,84 @@
 <div class="login-wrapper">
-
   <div class="overlay"></div>
+  <div *ngIf="loadingInicial" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p class="loading-text">Cargando disponibilidad...</p>
+  </div>
+  <div *ngIf="!loadingInicial">
+    <mat-card class="login-card">
+      <div class="logo-section">
+        <img [src]="empresaLogo" alt="Logo" class="logo">
+        <h2>Bienvenido</h2>
+        <p>Ingresa a tu cuenta</p>
+      </div>
+      <app-error-message [message]="apiErrorMessage"></app-error-message>
+      <form (ngSubmit)="login()" #loginForm="ngForm" autocomplete="off">
+        <!-- EMAIL -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Usuario</mat-label>
 
-  <mat-card class="login-card">
+          <input matInput type="email" name="user_email_{{ uniqueId }}" [(ngModel)]="email" required minlength="4"
+            #emailInput="ngModel" autocomplete="off" />
 
-    <div class="logo-section">
-      <img [src]="empresaLogo" alt="Logo" class="logo">
-      <h2>Bienvenido</h2>
-      <p>Ingresa a tu cuenta</p>
-    </div>
+          <mat-icon matPrefix>person</mat-icon>
 
-    <app-error-message [message]="apiErrorMessage"></app-error-message>
+          <mat-error *ngIf="emailInput.errors?.['required']">
+            El usuario es obligatorio
+          </mat-error>
 
-    <form (ngSubmit)="login()" #loginForm="ngForm" autocomplete="off">
+          <mat-error *ngIf="emailInput.errors?.['email']">
+            Ingresa un usuario válido
+          </mat-error>
 
-      <!-- EMAIL -->
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Usuario</mat-label>
+        </mat-form-field>
 
-        <input matInput type="email" name="user_email_{{ uniqueId }}" [(ngModel)]="email" required minlength="4"
-          #emailInput="ngModel" autocomplete="off" />
+        <!-- PASSWORD -->
+        <mat-form-field appearance="outline" class="full-width">
 
-        <mat-icon matPrefix>person</mat-icon>
+          <mat-label>Contraseña</mat-label>
 
-        <mat-error *ngIf="emailInput.errors?.['required']">
-          El usuario es obligatorio
-        </mat-error>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" name="user_pass_{{ uniqueId }}"
+            [(ngModel)]="password" required minlength="6" #passwordInput="ngModel" />
 
-        <mat-error *ngIf="emailInput.errors?.['email']">
-          Ingresa un usuario válido
-        </mat-error>
+          <mat-icon matPrefix>lock</mat-icon>
 
-      </mat-form-field>
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+            <mat-icon>
+              {{ hidePassword ? 'visibility_off' : 'visibility' }}
+            </mat-icon>
+          </button>
 
-      <!-- PASSWORD -->
-      <mat-form-field appearance="outline" class="full-width">
+          <mat-error *ngIf="passwordInput.errors?.['required']">
+            La contraseña es obligatoria
+          </mat-error>
 
-        <mat-label>Contraseña</mat-label>
+        </mat-form-field>
 
-        <input matInput [type]="hidePassword ? 'password' : 'text'" name="user_pass_{{ uniqueId }}"
-          [(ngModel)]="password" required minlength="6" #passwordInput="ngModel" />
+        <!-- BOTÓN -->
+        <button mat-raised-button color="primary" class="login-button" [disabled]="loginForm.invalid || loading">
 
-        <mat-icon matPrefix>lock</mat-icon>
+          <span *ngIf="!loading">Ingresar</span>
 
-        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
-          <mat-icon>
-            {{ hidePassword ? 'visibility_off' : 'visibility' }}
-          </mat-icon>
+          <mat-spinner *ngIf="loading" diameter="22" strokeWidth="3">
+          </mat-spinner>
+
         </button>
 
-        <mat-error *ngIf="passwordInput.errors?.['required']">
-          La contraseña es obligatoria
-        </mat-error>
+      </form>
 
-      </mat-form-field>
+      <div *ngIf="tipo === 'cl'" class="no-account">
+        ¿No tienes cuenta?
 
-      <!-- BOTÓN -->
-      <button mat-raised-button color="primary" class="login-button" [disabled]="loginForm.invalid || loading">
+        <a [routerLink]="['/register']" [queryParams]="{ em: idEmpresa, tipo: 'cl' }">
+          Regístrate
+        </a>
+      </div>
 
-        <span *ngIf="!loading">Ingresar</span>
+      <div class="app-version">
+        Versión {{version}}
+      </div>
 
-        <mat-spinner *ngIf="loading" diameter="22" strokeWidth="3">
-        </mat-spinner>
-
-      </button>
-
-    </form>
-
-    <div *ngIf="tipo === 'cl'" class="no-account">
-      ¿No tienes cuenta?
-
-      <a [routerLink]="['/register']" [queryParams]="{ em: idEmpresa, tipo: 'cl' }">
-        Regístrate
-      </a>
-    </div>
-
-    <div class="app-version">
-       Versión {{version}}
-    </div>
-
-  </mat-card>
+    </mat-card>
+  </div>
 
 </div>
