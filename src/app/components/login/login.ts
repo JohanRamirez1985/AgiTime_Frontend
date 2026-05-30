@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -59,7 +59,8 @@ export class Login {
     private router: Router,
     private sharedServices: SharedService,
     private modalService: Modal,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef,
   ) {
     this.idEmpresa = this.route.snapshot.queryParamMap.get('em');
     this.tipo = this.route.snapshot.queryParamMap.get('tipo') || '';
@@ -96,6 +97,7 @@ export class Login {
     // Version correcta
     if (versionBd === this.version) {
       this.loadingInicial = false;
+      this.cdr.detectChanges();
       return;
     }
 
@@ -120,7 +122,7 @@ export class Login {
       // Esperar un poco para UX
       setTimeout(() => {
         window.location.reload();
-      }, 2500);
+      }, 5000);
 
     } catch (error) {
       console.error('Error actualizando app', error);
