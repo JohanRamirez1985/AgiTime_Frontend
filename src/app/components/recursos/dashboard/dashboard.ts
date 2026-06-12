@@ -123,6 +123,7 @@ export class DashboardRecurso {
   clientesEmpresa: any[] = [];
   busqueda: string = '';
   esMobile = window.innerWidth < 768;
+  cruzeHorario: boolean = true;
 
   constructor(
     private router: Router,
@@ -1329,90 +1330,113 @@ export class DashboardRecurso {
     let horaDiponible = false;
 
     horaDiponible = this.validarHoraDisponible(hora.hora);
+    this.cruzeHorario = horaDiponible;
 
     if (horaDiponible) {
+      this.agendarCita(hora);
+    } else {
       if (this.seleccionRecurso) {
-        const fechaFormateada = this.day.toLocaleDateString('es-CO', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-
-        const valor = this.serviciosSeleccionados.map((s) => s.valor);
-        let costo = valor.reduce((a, b) => a + b, 0);
-        const costoFormateado = new Intl.NumberFormat('es-CO', {
-          style: 'currency',
-          currency: 'COP',
-          minimumFractionDigits: 0,
-        }).format(costo);
-
-        const dialogRef = this.dialog.open(ReservaDialog, {
-          width: '400px',
-          data: {
-            fecha: fechaFormateada,
-            hora: hora.hora,
-            costo: costoFormateado,
-          },
-        });
-        // 👂 Accedemos a la instancia del modal para escuchar el evento
-        const instance = dialogRef.componentInstance;
-
-        instance.celularIngresado.subscribe((celular: string) => {
-          const cliente = this.clientesEmpresa.find(
-            (c) => c.telefono === celular || c.celular === celular
-          );
-
-          if (cliente) {
-            instance.poblarDatos(cliente); // ✅ rellenar datos en el modal
-          }
-        });
-
-        dialogRef.afterClosed().subscribe((result) => {
-          if (result) {
-            this.loading = true;
-            this.agendar(hora.hora, false, result);
+        Swal.fire({
+          icon: 'warning',
+          title: 'Conflicto de horario',
+          text: 'Ya tienes un servicio agendado en este rango de tiempo y el nuevo agendamiento se cruza con dicho horario. ¿Estás seguro que deseas continuar?',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, continuar',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.agendarCita(hora)
           } else {
             this.loading = false;
+            this.cdr.detectChanges();
           }
         });
       } else {
         Swal.fire({
-          title: 'Cita',
-          html: `<div style="margin-top: 15px; display: flex; justify-content: center; align-items: center;">
+          icon: 'warning',
+          title: 'Mensaje',
+          text: 'No puedes realizar el agendamiento ya que el tiempo de la cita sobrepasa al rango de horas disponibles.',
+        });
+        this.loading = false;
+      }
+    }
+  }
+
+  private agendarCita(hora: any): void {
+    if (this.seleccionRecurso) {
+      const fechaFormateada = this.day.toLocaleDateString('es-CO', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+
+      const valor = this.serviciosSeleccionados.map((s) => s.valor);
+      let costo = valor.reduce((a, b) => a + b, 0);
+      const costoFormateado = new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0,
+      }).format(costo);
+
+      const dialogRef = this.dialog.open(ReservaDialog, {
+        width: '400px',
+        data: {
+          fecha: fechaFormateada,
+          hora: hora.hora,
+          costo: costoFormateado,
+        },
+      });
+      // 👂 Accedemos a la instancia del modal para escuchar el evento
+      const instance = dialogRef.componentInstance;
+
+      instance.celularIngresado.subscribe((celular: string) => {
+        const cliente = this.clientesEmpresa.find(
+          (c) => c.telefono === celular || c.celular === celular
+        );
+
+        if (cliente) {
+          instance.poblarDatos(cliente); // ✅ rellenar datos en el modal
+        }
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this.loading = true;
+          this.agendar(hora.hora, false, result);
+        } else {
+          this.loading = false;
+        }
+      });
+    } else {
+      Swal.fire({
+        title: 'Cita',
+        html: `<div style="margin-top: 15px; display: flex; justify-content: center; align-items: center;">
                     <label style="font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                       <input type="checkbox" id="usoBonoCheckbox">
                       ¿El servicio incluye bono?
                     </label>
                   </div>`,
-          icon: 'success',
-          showCloseButton: true,
-          confirmButtonColor: '#3085d6',
-          preConfirm: () => {
-            const usoBono = (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked;
-            return { usoBono };
-          }
-        }).then((result) => {
-          if (result.dismiss === Swal.DismissReason.close) {
-            this.loading = false;
-            this.cdr.detectChanges();
-          } else {
-            const usoBono = result.value?.usoBono || false;
-            this.loading = true;
-            this.agendar(hora.hora, usoBono, '');
-          }
-        });
-      }
-    } else {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Mensaje',
-        text: 'No puedes realizar el agendamiento ya que el tiempo de la cita sobrepasa al rango de horas disponibles.',
+        icon: 'success',
+        showCloseButton: true,
+        confirmButtonColor: '#3085d6',
+        preConfirm: () => {
+          const usoBono = (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked;
+          return { usoBono };
+        }
+      }).then((result) => {
+        if (result.dismiss === Swal.DismissReason.close) {
+          this.loading = false;
+          this.cdr.detectChanges();
+        } else {
+          const usoBono = result.value?.usoBono || false;
+          this.loading = true;
+          this.agendar(hora.hora, usoBono, '');
+        }
       });
-      this.loading = false;
     }
-
-    this.cdr.detectChanges();
   }
 
   private validarHoraDisponible(hora: string): boolean {
@@ -1593,7 +1617,8 @@ export class DashboardRecurso {
             Correo: result.correo,
             FechaNacimiento: result.fechaNacimiento,
           },
-          citas: resultadoAlterno
+          citas: resultadoAlterno,
+          validaHorario: this.cruzeHorario
         }
         return json;
       } else {
