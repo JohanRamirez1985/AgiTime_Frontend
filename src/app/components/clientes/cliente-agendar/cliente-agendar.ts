@@ -562,7 +562,8 @@ export class ClienteAgendar {
             Correo: datos.correo,
             FechaNacimiento: datos.fechaNacimiento,
           },
-          citas: resultadoAlterno
+          citas: resultadoAlterno,
+          validaHorario: true
         }
       } else {
         json = {
