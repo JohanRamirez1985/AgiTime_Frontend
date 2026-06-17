@@ -39,7 +39,6 @@ import { ModalActualizando } from '../../shared/modal-actualizando/modal-actuali
 export class Login {
   email = '';
   password = '';
-  btnLogin: boolean = false;
   apiErrorMessage: string = '';
   showModal = false;
   loading = false;
@@ -141,7 +140,6 @@ export class Login {
     ).subscribe({
       next: (res: LoginResponse) => {
         this.loading = false;
-        this.btnLogin = true;
         if (res.exito) {
           localStorage.setItem('usuario', JSON.stringify(res.datos.usuario));
           localStorage.setItem('empresa', JSON.stringify(res.datos.empresa));
@@ -155,16 +153,17 @@ export class Login {
         } else {
           this.modalService.error(res.mensaje || '')
         }
+        this.cdr.detectChanges();
 
       },
       error: err => {
         this.loading = false;
-        this.btnLogin = true;
         if (err.status === 401) {
           this.modalService.error('Correo o contraseña incorrectos');
         } else {
           this.modalService.error('Ocurrió un error inesperado. Intenta de nuevo.');
         }
+        this.cdr.detectChanges();
       }
     });
   }
