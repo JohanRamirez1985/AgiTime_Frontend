@@ -91,7 +91,7 @@
                   <span>Cancelar</span>
                 </button>
 
-                <button *ngIf="cita.estado === 'Activo'" mat-icon-button [matMenuTriggerFor]="menuAcciones"
+                <button *ngIf="cita.estado === 'Activo' && seleccionRecurso" mat-icon-button [matMenuTriggerFor]="menuAcciones"
                   class="btn-menu">
                   <mat-icon>more_vert</mat-icon>
                 </button>
