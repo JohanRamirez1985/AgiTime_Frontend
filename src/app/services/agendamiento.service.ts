@@ -90,4 +90,11 @@ export class AgendamientoService {
       params,
     });
   }
+
+  consultarAgendaCitas(request: any) {
+    const params = new HttpParams({ fromObject: request });
+    return this.http.get<any>(`${this.baseUrl}/consultarAgendaCitas`, {
+      params,
+    });
+  }
 }

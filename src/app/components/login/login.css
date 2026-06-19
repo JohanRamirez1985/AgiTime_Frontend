@@ -133,3 +133,18 @@
   padding: 40px 0;
   color: #555;
 }
+
+.link-agenda {
+  display: inline-block;
+  margin-top: 12px;
+
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.link-agenda:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,92 @@
+<div class="pantalla">
+
+    <!-- HEADER -->
+    <div class="header">
+
+        <div class="logo">
+            <img *ngIf="empresaLogo" [src]="empresaLogo" alt="logo" />
+            <h1>{{ empresaNombre }}</h1>
+        </div>
+
+        <div class="header-info">
+
+            <a class="btn-login" [routerLink]="['/login']" [queryParams]="{
+    em: idEmpresa,
+    tipo: 'em'
+  }">
+                Iniciar sesión
+            </a>
+
+            <div class="reloj">
+                {{ fechaActual | date:'dd/MM/yyyy HH:mm:ss' }}
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="navegacion-botones">
+        <button mat-icon-button class="boton-navegacion" aria-label="Día anterior" (click)="previusPeriod()">
+            <mat-icon>chevron_left</mat-icon>
+        </button>
+        <!-- input oculto -->
+        <input matInput [matDatepicker]="picker" class="input-calendario" (dateChange)="onDateChange($event)">
+
+        <!-- botón -->
+        <button mat-button (click)="picker.open()" class="btn-calendario">
+            <mat-icon>calendar_today</mat-icon>
+            Fecha
+        </button>
+
+        <!-- calendario -->
+        <mat-datepicker #picker [touchUi]="esMobile"></mat-datepicker>
+        <button mat-icon-button class="boton-navegacion" aria-label="Día siguiente" (click)="nextPeriod()">
+            <mat-icon>chevron_right</mat-icon>
+        </button>
+    </div>
+
+    <!-- CONTENIDO POR SEDES -->
+    <div class="sedes">
+
+        <div class="sede" *ngFor="let sede of sedes">
+
+            <h2 class="titulo-sede">
+                {{ sede.nombre }}
+            </h2>
+
+            <div class="recursos">
+
+                <div class="recurso" *ngFor="let r of sede.recursos">
+
+                    <div class="recurso-header">
+                        {{ r.nombre }}
+                    </div>
+
+                    <div class="citas">
+
+                        <div class="cita" *ngFor="let c of r.citas" [ngClass]="c.estado">
+
+                            <span class="hora">{{ c.hora }}</span>
+
+                            <div class="info">
+                                <span class="cliente">{{ c.cliente }}</span>
+                                <span class="servicio">{{ c.servicio }}</span>
+                            </div>
+
+                            <span class="estado">
+                                {{ c.estado }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

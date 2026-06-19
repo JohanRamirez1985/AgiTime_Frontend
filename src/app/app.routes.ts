@@ -26,6 +26,13 @@ export const routes: Routes = [
         (m) => m.SeleccionTipoUsuario
       ),
   },
+  {
+    path: 'infoScreen/:empresaId',
+    loadComponent: () =>
+      import('./components/pantalla-info/pantalla-info').then(
+        (m) => m.PantallaInfo
+      ),
+  },
 
   // ✅ Ruta protegida solo para administradores
   {
