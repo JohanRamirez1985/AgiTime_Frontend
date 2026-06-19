@@ -27,7 +27,7 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'infoScreen/:empresaId',
+    path: 'monitorAgenda/:empresaId',
     loadComponent: () =>
       import('./components/pantalla-info/pantalla-info').then(
         (m) => m.PantallaInfo

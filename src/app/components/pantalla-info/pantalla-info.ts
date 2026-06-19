@@ -9,6 +9,7 @@ import { Modal } from '../../shared/services/modal';
 import Swal from 'sweetalert2';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { SharedService } from '../../services/shared.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 interface Cita {
   hora: string;
@@ -37,7 +38,8 @@ interface Sede {
     MatIconModule,
     MatDatepickerModule,
     MatButtonModule,
-    RouterModule 
+    RouterModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './pantalla-info.html',
   styleUrls: ['./pantalla-info.css']
@@ -53,6 +55,8 @@ export class PantallaInfo implements OnInit {
   sedes: Sede[] = [];
   empresaLogo: string = '';
   empresaNombre: string = '';
+  loading: boolean = true;
+  private intervalId: any;
 
   constructor(
     private agendaService: AgendamientoService,
@@ -82,7 +86,7 @@ export class PantallaInfo implements OnInit {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
     nuevaFecha.setHours(0, 0, 0, 0);
-
+    this.loading = true;
     this.viewDate = nuevaFecha;
     this.consultarAgenda(this.viewDate);
   }
@@ -95,6 +99,10 @@ export class PantallaInfo implements OnInit {
     setInterval(() => {
       this.fechaActual = new Date();
     }, 1000);
+
+    this.intervalId = setInterval(() => {
+      this.consultarAgenda(this.viewDate);
+    }, 5 * 60 * 1000);
 
     this.idEmpresa = Number(
       this.route.snapshot.paramMap.get('empresaId') ?? 0
@@ -119,7 +127,7 @@ export class PantallaInfo implements OnInit {
   onDateChange(event: any) {
     const fecha = event.value;
     if (!fecha) return;
-
+    this.loading = true;
     this.viewDate = fecha;
     this.consultarAgenda(this.viewDate);
   }
@@ -140,8 +148,10 @@ export class PantallaInfo implements OnInit {
           } else {
             this.modalService.error(rest.mensaje)
           }
+          this.loading = false;
         }, error: (err) => {
           this.modalService.error(err.statusText);
+          this.loading = false;
         }
       })
   }
@@ -150,13 +160,6 @@ export class PantallaInfo implements OnInit {
     this.esMobile = window.innerWidth < 768;
   }
 
-  cambiarRangoFechas() {
-    console.log('Filtrando desde:', this.fechaInicio);
-    console.log('hasta:', this.fechaFin);
-
-    // Aquí luego llamas tu API:
-    // this.cargarDatos(this.fechaInicio, this.fechaFin);
-  }
   retrocederDia() {
     const d = new Date(this.fechaActual);
     d.setDate(d.getDate() - 1);
@@ -180,5 +183,9 @@ export class PantallaInfo implements OnInit {
     const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
     const dia = fecha.getDate().toString().padStart(2, '0');
     return `${anio}-${mes}-${dia}T${hora}`;
+  }
+
+  ngOnDestroy(): void {
+    clearInterval(this.intervalId);
   }
 }
