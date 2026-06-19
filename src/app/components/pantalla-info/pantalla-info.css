@@ -1,0 +1,224 @@
+.pantalla {
+  min-height: 100vh;
+  background: #f4f6f8; /* tu fondo global */
+  color: #1e293b;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 18px 30px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo img {
+  width: 55px;
+  height: 55px;
+  border-radius: 12px;
+  object-fit: cover;
+
+  border: 1px solid #e5e7eb;
+}
+
+.logo h1 {
+  font-size: 24px;
+  margin: 0;
+  color: #2563eb; /* azul principal de tu app */
+  font-weight: 700;
+}
+
+.reloj {
+  font-size: 18px;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* SEDES */
+.sedes {
+  padding: 20px;
+}
+
+.sede {
+  margin-bottom: 40px;
+}
+
+.titulo-sede {
+  font-size: 22px;
+  margin-bottom: 16px;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+/* RECURSOS */
+.recursos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.recurso {
+  background: #ffffff;
+
+  border-radius: 16px;
+
+  padding: 16px;
+
+  border: 1px solid #eef2f7;
+
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+
+  transition: all 0.2s ease;
+}
+
+.recurso:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.10);
+}
+
+.recurso-header {
+  font-size: 18px;
+  font-weight: 700;
+
+  margin-bottom: 14px;
+
+  color: #2563eb;
+}
+
+/* CITAS */
+.citas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* CITA BASE */
+.cita {
+  display: grid;
+  grid-template-columns: 70px 1fr auto;
+
+  padding: 10px 12px;
+
+  border-radius: 10px;
+
+  font-size: 14px;
+
+  border: 1px solid transparent;
+}
+
+/* PENDIENTE */
+.cita.PENDIENTE {
+  background: #f8fafc;
+  border-left: 4px solid #64748b;
+  color: #334155;
+}
+
+/* EN CURSO */
+.cita.EN_CURSO {
+  background: #ecfeff;
+  border-left: 4px solid #2563eb;
+  color: #0f172a;
+
+  font-weight: 600;
+}
+
+/* FINALIZADA */
+.cita.FINALIZADA {
+  background: #f0fdf4;
+  border-left: 4px solid #22c55e;
+  color: #14532d;
+}
+
+/* columnas */
+.hora {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.estado {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.8;
+  text-transform: uppercase;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cliente {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.servicio {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.fecha-control {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.fecha-control {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+
+
+  .navegacion-botones {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .input-calendario {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mat-datepicker-content {
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fecha {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.hora {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+}
