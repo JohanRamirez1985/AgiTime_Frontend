@@ -1,6 +1,7 @@
 .pantalla {
   min-height: 100vh;
-  background: #f4f6f8; /* tu fondo global */
+  background: #f4f6f8;
+  /* tu fondo global */
   color: #1e293b;
   font-family: 'Segoe UI', Roboto, sans-serif;
 }
@@ -38,7 +39,8 @@
 .logo h1 {
   font-size: 24px;
   margin: 0;
-  color: #2563eb; /* azul principal de tu app */
+  color: #2563eb;
+  /* azul principal de tu app */
   font-weight: 700;
 }
 
@@ -120,24 +122,13 @@
   border: 1px solid transparent;
 }
 
-/* PENDIENTE */
-.cita.PENDIENTE {
+.cita.Activo {
   background: #f8fafc;
   border-left: 4px solid #64748b;
   color: #334155;
 }
 
-/* EN CURSO */
-.cita.EN_CURSO {
-  background: #ecfeff;
-  border-left: 4px solid #2563eb;
-  color: #0f172a;
-
-  font-weight: 600;
-}
-
-/* FINALIZADA */
-.cita.FINALIZADA {
+.cita.Asistio {
   background: #f0fdf4;
   border-left: 4px solid #22c55e;
   color: #14532d;
@@ -186,15 +177,34 @@
 
 
 
-  .navegacion-botones {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
+.navegacion-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  .input-calendario {
+.navegacion-botones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fecha-seleccionada {
+  margin-top: 8px;
+
+  font-size: 18px;
+  font-weight: 600;
+
+  color: #131925;
+
+  padding: 6px 16px;
+
+  border-radius: 20px;
+
+  background: #eef4ff;
+}
+
+.input-calendario {
   position: absolute;
   opacity: 0;
   pointer-events: none;
@@ -202,7 +212,7 @@
 
 .mat-datepicker-content {
   border-radius: 14px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .header-info {
@@ -221,4 +231,13 @@
   font-size: 20px;
   font-weight: 700;
   color: #1e293b;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 50px 0;
 }

@@ -25,28 +25,45 @@
 
     </div>
 
-    <div class="navegacion-botones">
-        <button mat-icon-button class="boton-navegacion" aria-label="Día anterior" (click)="previusPeriod()">
-            <mat-icon>chevron_left</mat-icon>
-        </button>
-        <!-- input oculto -->
-        <input matInput [matDatepicker]="picker" class="input-calendario" (dateChange)="onDateChange($event)">
+    <div class="navegacion-container">
 
-        <!-- botón -->
-        <button mat-button (click)="picker.open()" class="btn-calendario">
-            <mat-icon>calendar_today</mat-icon>
-            Fecha
-        </button>
+        <div class="navegacion-botones">
 
-        <!-- calendario -->
-        <mat-datepicker #picker [touchUi]="esMobile"></mat-datepicker>
-        <button mat-icon-button class="boton-navegacion" aria-label="Día siguiente" (click)="nextPeriod()">
-            <mat-icon>chevron_right</mat-icon>
-        </button>
+            <button mat-icon-button class="boton-navegacion" aria-label="Día anterior" (click)="previusPeriod()">
+                <mat-icon>chevron_left</mat-icon>
+            </button>
+
+            <input matInput [matDatepicker]="picker" class="input-calendario" (dateChange)="onDateChange($event)">
+
+            <button mat-button (click)="picker.open()" class="btn-calendario">
+                <mat-icon>calendar_today</mat-icon>
+                Fecha
+            </button>
+
+            <mat-datepicker #picker [touchUi]="esMobile"></mat-datepicker>
+
+            <button mat-icon-button class="boton-navegacion" aria-label="Día siguiente" (click)="nextPeriod()">
+                <mat-icon>chevron_right</mat-icon>
+            </button>
+
+        </div>
+
+        <div class="fecha-seleccionada">
+            {{ viewDate | date:'dd/MM/yyyy' }}
+        </div>
+
     </div>
 
+
+    <!-- LOADING -->
+    <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p class="loading-text">Cargando información...</p>
+    </div>
+
+
     <!-- CONTENIDO POR SEDES -->
-    <div class="sedes">
+    <div *ngIf="!loading" class="sedes">
 
         <div class="sede" *ngFor="let sede of sedes">
 
