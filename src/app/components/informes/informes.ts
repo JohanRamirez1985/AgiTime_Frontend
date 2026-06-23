@@ -149,197 +149,19 @@ export class Informes {
     };
   }
 
-  private async reporteInv() {
-    // 🔄 Ya puedes generar
-    Swal.fire({
-      title: 'Generando reporte...',
-      text: 'Por favor espera unos segundos',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-
-    let request = await this.createJsonSemanal(true);
-
-    this.informeServie.informacionInventarioVenta(request).subscribe({
-      next: (blob: Blob) => {
-        Swal.close();
-
-        if (blob && blob.size > 0) {
-          const fileURL = URL.createObjectURL(blob);
-
-          if (blob.size !== 80) {
-            window.open(fileURL);
-            Swal.fire({
-              icon: 'success',
-              title: 'Reporte generado',
-              text: 'El reporte se ha abierto en una nueva pestaña.',
-              confirmButtonColor: '#3085d6',
-            });
-          } else {
-            Swal.fire({
-              icon: 'warning',
-              title: 'Sin datos',
-              text: 'No se generó ningún archivo para este rango.',
-              confirmButtonColor: '#0d47a1',
-            });
-          }
-        } else {
-          Swal.fire({
-            icon: 'warning',
-            title: 'Sin datos',
-            text: 'No se generó ningún archivo para este rango.',
-            confirmButtonColor: '#0d47a1',
-          });
-        }
-      },
-      error: (err) => {
-        Swal.close();
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: err.error?.mensaje || 'Error inesperado al generar el reporte.',
-          confirmButtonColor: '#d33',
-        });
-      },
-    });
-  }
+  
 
   async generarReporte() {
     if (!this.form.valid) {
       return;
     }
 
-    if (this.tipoReporte === 'inv') {
-      this.reporteInv();
-      return
+    if (this.tipoReporte === 'diario') {
+      this.aFuegoBarberDiario();    
     }
 
-    this.generate = false;
-    const tipoDiario = this.tipoReporte === 'diario';
-    let request: any;
-
-    if (tipoDiario) {
-      request = await this.createJsonDiario();
-    } else {
-      if (this.usuario.rol !== 3 && this.idEmpresa === '2') {
-        await Swal.fire({
-          title: '¿Cómo deseas exportar el reporte?',
-          html: `
-          <div style="text-align:left">
-            <label>
-              <input type="radio" name="tipoExport" value="individual" checked>
-              Exportar Individual
-            </label>
-            <br><br>
-            <label>
-              <input type="radio" name="tipoExport" value="grupal">
-              Exportar Grupal
-            </label>
-
-            <div id="personasContainer" style="margin-top:15px; display:none;">
-              ${this.personas
-              .map(
-                (p) => `
-                  <label>
-                    <input type="checkbox" value="${p.id}" class="personaChk">
-                    ${p.nombre}
-                  </label><br>
-                `
-              )
-              .join('')}
-            </div>
-          </div>
-        `,
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'Aceptar',
-          cancelButtonText: 'Cancelar',
-          preConfirm: async () => {
-            const tipo = (
-              document.querySelector(
-                'input[name="tipoExport"]:checked'
-              ) as HTMLInputElement
-            ).value;
-
-            const tipoIndividual = tipo === 'individual';
-
-            if (tipoIndividual) {
-              const result = await Swal.fire({
-                title: 'Seleccione un barbero',
-                html: `
-                <div style="text-align:left">
-
-                  <b>Barbero:</b><br>
-                  ${this.personas.map((p) => `
-                      <label>
-                        <input type="radio" name="barbero" value="${p.id}" class="personaRadio">
-                        ${p.nombre}
-                      </label><br>
-                    `).join('')}
-
-                  ${this.tipoReporte !== 'info' ? `
-                      <br><br>
-                      <b>¿El barbero cumplió con el horario semanal?</b><br>
-                      <label>
-                        <input type="radio" name="cumplioHorario" value="true"> Sí
-                      </label><br>
-                      <label>
-                        <input type="radio" name="cumplioHorario" value="false"> No
-                      </label>
-                    ` : ''
-                  }
-
-                </div>
-                `,
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'Aceptar',
-                cancelButtonText: 'Cancelar',
-
-                preConfirm: () => {
-                  const barbero = (
-                    document.querySelector(
-                      'input[name="barbero"]:checked'
-                    ) as HTMLInputElement
-                  )?.value;
-
-                  const cumplio = (
-                    document.querySelector(
-                      'input[name="cumplioHorario"]:checked'
-                    ) as HTMLInputElement
-                  )?.value;
-
-                  this.cumplioHorario = cumplio === 'true';
-                  this.barberoSeleccionado = parseInt(barbero);
-
-                  if (!barbero) {
-                    Swal.showValidationMessage('Debe seleccionar un barbero');
-                    return;
-                  }
-
-                  if (this.tipoReporte !== 'info' && cumplio === undefined) {
-                    Swal.showValidationMessage('Debe indicar si cumplió el horario');
-                    return;
-                  }
-
-                  return {
-                    barberoId: barbero,
-                    cumplioHorario: cumplio === 'true',
-                  };
-                },
-              });
-              request = await this.createJsonSemanal(false);
-
-            } else {
-              request = await this.createJsonSemanal(true);
-            }
-          },
-        });
-      } else {
-        request = await this.createJsonSemanal(true);
-      }
+    if (this.tipoReporte === 'semanal' && ) {
+      this.aFuegoBarberSemanalEmpleado();    
     }
 
     // ❌ Usuario canceló el modal
@@ -491,6 +313,148 @@ export class Informes {
         fechaFin: finString,
         usuario: this.usuario.id,
       };
+    }
+  }
+
+  private async aFuegoBarberDiario(){
+    let request: any;
+    request = await this.createJsonDiario();
+
+    Swal.fire({
+      title: 'Generando reporte...',
+      text: 'Por favor espera unos segundos',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  }
+
+  private async aFuegoBarberSemanalEmpleado(){
+    let request: any;
+    request = await this.createJsonSemanal(true);
+  }
+
+  private async aFuegoBarberSemanal (){
+    let request: any;
+    await Swal.fire({
+          title: '¿Cómo deseas exportar el reporte?',
+          html: `
+          <div style="text-align:left">
+            <label>
+              <input type="radio" name="tipoExport" value="individual" checked>
+              Exportar Individual
+            </label>
+            <br><br>
+            <label>
+              <input type="radio" name="tipoExport" value="grupal">
+              Exportar Grupal
+            </label>
+
+            <div id="personasContainer" style="margin-top:15px; display:none;">
+              ${this.personas
+              .map(
+                (p) => `
+                  <label>
+                    <input type="checkbox" value="${p.id}" class="personaChk">
+                    ${p.nombre}
+                  </label><br>
+                `
+              )
+              .join('')}
+            </div>
+          </div>
+        `,
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Aceptar',
+          cancelButtonText: 'Cancelar',
+          preConfirm: async () => {
+            const tipo = (
+              document.querySelector(
+                'input[name="tipoExport"]:checked'
+              ) as HTMLInputElement
+            ).value;
+
+            const tipoIndividual = tipo === 'individual';
+
+            if (tipoIndividual) {
+              const result = await Swal.fire({
+                title: 'Seleccione un barbero',
+                html: `
+                <div style="text-align:left">
+
+                  <b>Barbero:</b><br>
+                  ${this.personas.map((p) => `
+                      <label>
+                        <input type="radio" name="barbero" value="${p.id}" class="personaRadio">
+                        ${p.nombre}
+                      </label><br>
+                    `).join('')}
+
+                  ${this.tipoReporte !== 'info' ? `
+                      <br><br>
+                      <b>¿El barbero cumplió con el horario semanal?</b><br>
+                      <label>
+                        <input type="radio" name="cumplioHorario" value="true"> Sí
+                      </label><br>
+                      <label>
+                        <input type="radio" name="cumplioHorario" value="false"> No
+                      </label>
+                    ` : ''
+                  }
+
+                </div>
+                `,
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Aceptar',
+                cancelButtonText: 'Cancelar',
+
+                preConfirm: () => {
+                  const barbero = (
+                    document.querySelector(
+                      'input[name="barbero"]:checked'
+                    ) as HTMLInputElement
+                  )?.value;
+
+                  const cumplio = (
+                    document.querySelector(
+                      'input[name="cumplioHorario"]:checked'
+                    ) as HTMLInputElement
+                  )?.value;
+
+                  this.cumplioHorario = cumplio === 'true';
+                  this.barberoSeleccionado = parseInt(barbero);
+
+                  if (!barbero) {
+                    Swal.showValidationMessage('Debe seleccionar un barbero');
+                    return;
+                  }
+
+                  if (this.tipoReporte !== 'info' && cumplio === undefined) {
+                    Swal.showValidationMessage('Debe indicar si cumplió el horario');
+                    return;
+                  }
+
+                  return {
+                    barberoId: barbero,
+                    cumplioHorario: cumplio === 'true',
+                  };
+                },
+              });
+              request = await this.createJsonSemanal(false);
+              } else {
+              request = await this.createJsonSemanal(true);
+            }
+          },
+        });
+  }
+
+  private afuegobarberInventario(){
+    if (this.tipoReporte === 'inv') {
+      this.reporteInv();
+      return
     }
   }
 }
