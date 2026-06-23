@@ -43,7 +43,7 @@ import { SharedService } from '../../services/shared.service';
 })
 export class Informes {
   form: FormGroup;
-  tipoReporte: 'diario' | 'semanal' | 'info' | null = null;
+  tipoReporte: 'diario' | 'semanal' | 'info' | 'inv' | null = null;
   idEmpresa: string | null = null;
   permitirSeleccion: boolean = true;
   loading: boolean = true;
@@ -149,9 +149,71 @@ export class Informes {
     };
   }
 
+  private async reporteInv() {
+    // 🔄 Ya puedes generar
+    Swal.fire({
+      title: 'Generando reporte...',
+      text: 'Por favor espera unos segundos',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    let request = await this.createJsonSemanal(true);
+
+    this.informeServie.informacionInventarioVenta(request).subscribe({
+      next: (blob: Blob) => {
+        Swal.close();
+
+        if (blob && blob.size > 0) {
+          const fileURL = URL.createObjectURL(blob);
+
+          if (blob.size !== 80) {
+            window.open(fileURL);
+            Swal.fire({
+              icon: 'success',
+              title: 'Reporte generado',
+              text: 'El reporte se ha abierto en una nueva pestaña.',
+              confirmButtonColor: '#3085d6',
+            });
+          } else {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Sin datos',
+              text: 'No se generó ningún archivo para este rango.',
+              confirmButtonColor: '#0d47a1',
+            });
+          }
+        } else {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Sin datos',
+            text: 'No se generó ningún archivo para este rango.',
+            confirmButtonColor: '#0d47a1',
+          });
+        }
+      },
+      error: (err) => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err.error?.mensaje || 'Error inesperado al generar el reporte.',
+          confirmButtonColor: '#d33',
+        });
+      },
+    });
+  }
+
   async generarReporte() {
     if (!this.form.valid) {
       return;
+    }
+
+    if (this.tipoReporte === 'inv') {
+      this.reporteInv();
+      return
     }
 
     this.generate = false;
@@ -159,7 +221,6 @@ export class Informes {
     let request: any;
 
     if (tipoDiario) {
-      // ⏳ ESPERAR a que createJson termine (modal incluido)
       request = await this.createJsonDiario();
     } else {
       if (this.usuario.rol !== 3 && this.idEmpresa === '2') {

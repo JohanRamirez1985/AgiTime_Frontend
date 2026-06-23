@@ -22,6 +22,7 @@ import { Modal } from '../../../shared/services/modal';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 registerLocaleData(localeEs);
 
@@ -42,7 +43,8 @@ registerLocaleData(localeEs);
     MatCardModule,
     MatDividerModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatTooltipModule
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'es' }],
   templateUrl: './cliente-agendar.html',
@@ -176,7 +178,7 @@ export class ClienteAgendar {
     });
   }
 
-  private obtenerRecursos(): void {
+ private obtenerRecursos(): void {
     this.sharedServices.obtenerRecursosAgenda(this.idEmpresa).subscribe({
       next: (rest) => {
         if (rest.exito) {

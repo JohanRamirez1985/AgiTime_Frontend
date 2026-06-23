@@ -39,7 +39,15 @@ export class InformesService {
   liquidacionSemanal(payload: any): Observable<any> {
     return this.http.post(
       `${this.baseUrl}/liquidacionSemanal`,
-      payload
+      payload,
     );
+  }
+
+  informacionInventarioVenta(request: any) {
+    const params = new HttpParams({ fromObject: request });
+    return this.http.get(`${this.baseUrl}/informacionInventarioVenta`, {
+      params,
+      responseType: 'blob', 
+    })
   }
 }

@@ -14,54 +14,32 @@
       <div class="filtros-grid">
         <mat-form-field appearance="outline">
           <mat-label>Buscar por nombre</mat-label>
-          <input
-            matInput
-            [(ngModel)]="filtro"
-            name="filtro"
-            placeholder="Nombre producto"
-            (ngModelChange)="filtrarProducto($event)"
-          />
+          <input matInput [(ngModel)]="filtro" name="filtro" placeholder="Nombre producto"
+            (ngModelChange)="filtrarProducto($event)" />
         </mat-form-field>
       </div>
     </form>
     <!-- Contenedor de la tabla -->
-    <app-table
-      *ngIf="!isMobileView"
-      [data]="dataSource.data"
-      [columns]="columnas"
-      [actions]="acciones"
-      [loading]="loading"
-    >
+    <app-table *ngIf="!isMobileView" [data]="dataSource.data" [columns]="columnas" [actions]="acciones"
+      [loading]="loading">
     </app-table>
 
     <!-- Vista tipo tarjetas en móvil -->
     <div *ngIf="isMobileView" class="productos-cards">
-      <mat-card
-        *ngFor="let producto of dataSource.data"
-        class="producto-card mat-elevation-z4"
-      >
+      <mat-card *ngFor="let producto of dataSource.data" class="producto-card mat-elevation-z4">
         <h3>{{ producto.nombre }}</h3>
         <p><strong>Codigo:</strong> {{ producto.codigo }}</p>
         <p>
-          <strong>Precio:</strong> {{ "$" }}
-          {{ producto.precio | number : "1.0-0" }}
+          <strong>Precio Venta:</strong> {{ "$" }}
+          {{ producto.precioVenta | number : "1.0-0" }}
         </p>
+        <p><strong>Comisión:</strong> {{ producto.porcentaje }}</p>
         <p><strong>Stock (Und):</strong> {{ producto.stock }}</p>
         <div class="acciones-cell">
-          <button
-            mat-icon-button
-            color="accent"
-            (click)="agregarInventario(producto)"
-            matTooltip="Agregar inventario"
-          >
+          <button mat-icon-button color="accent" (click)="agregarInventario(producto)" matTooltip="Agregar inventario">
             <mat-icon>add_circle</mat-icon>
           </button>
-          <button
-            mat-icon-button
-            color="accent"
-            (click)="editarProducto(producto)"
-            matTooltip="Editar producto"
-          >
+          <button mat-icon-button color="accent" (click)="editarProducto(producto)" matTooltip="Editar producto">
             <mat-icon>edit</mat-icon>
           </button>
         </div>

@@ -25,6 +25,7 @@
               <mat-option value="diario">Diario</mat-option>
               <mat-option *ngIf="idEmpresa === '2'" value="semanal">Semanal</mat-option>
               <mat-option *ngIf="usuario.rol === 4 || usuario.rol === 2 || usuario.rol === 3" value="info">Informe</mat-option>
+              <mat-option *ngIf="usuario.rol === 4 || usuario.rol === 2 && idEmpresa === '1'" value="inv">Inventario</mat-option>
             </mat-select>
           </mat-form-field>
         </ng-container>
@@ -47,7 +48,7 @@
         </div>
 
         <!-- Si es semanal -->
-        <div *ngIf="tipoReporte === 'semanal' || tipoReporte === 'info'" class="rango-fechas">
+        <div *ngIf="tipoReporte === 'semanal' || tipoReporte === 'info' || tipoReporte === 'inv'" class="rango-fechas">
           <mat-form-field appearance="outline" class="half-width">
             <mat-label>Fecha Inicial</mat-label>
             <input

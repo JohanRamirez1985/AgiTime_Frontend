@@ -1,107 +1,127 @@
 .toolbar {
   display: flex;
   align-items: center;
-  padding: 0 16px;
-  background-color: #0d47a1; /* Color corporativo principal */
-  color: white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   height: 64px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.menu-button {
-  margin-right: 12px;
-  color: white !important;
-  display: none; /* Se muestra solo en móvil */
-}
-
-.toolbar-title {
-  font-weight: 600;
-  font-size: 1.4rem;
+  padding: 0 16px;
+  background: #0d47a1;
   color: white;
+  overflow: hidden;
 }
 
 .spacer {
   flex: 1 1 auto;
 }
 
-.logout-button {
-  color: white;
-  font-weight: 500;
-  text-transform: none;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+/* ==========================
+   USUARIO
+========================== */
 
-.logout-button mat-icon {
-  color: white;
-}
-
-.logout-button:hover {
-  background-color: #e3eafc;
-}
-
-.toolbar-buttons {
+.user-info {
   display: flex;
-  justify-content: flex-start;
-  /* gap: 10px; */
-}
-
-.toolbar-buttons button {
-  color: white !important;
-}
-
-.toolbar-buttons mat-icon {
-  margin-right: 6px;
-}
-
-/* Ocultar hamburguesa en pantallas grandes */
-.mobile-only {
-  display: none; /* Por defecto no se muestra */
-}
-
-/* 📱 Mostrar hamburguesa solo en pantallas pequeñas */
-@media (max-width: 768px) {
-  .toolbar-buttons.desktop-only {
-    display: none; /* Oculta los botones grandes */
-  }
-
-  .mobile-only {
-    display: inline-flex; /* Muestra el menú hamburguesa */
-    color: white !important;
-  }
-
-  .mobile-only mat-icon {
-    color: white !important;
-  }
-}
-
-.menu-button mat-icon {
-  color: white !important;/* Ícono blanco */
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .user-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  cursor: pointer;
   object-fit: cover;
   border: 2px solid white;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 8px; /* espacio entre elementos */
+  flex-shrink: 0;
 }
 
 .user-text {
-  font-size: 1rem;       /* tamaño más pequeño */
-  font-weight: 500;      /* un poco resaltado */
-  color: #f8f4f4;           /* gris oscuro elegante */
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .user-subtext {
-  font-size: 0.9rem;     /* más discreto */
-  font-weight: 400;
-  color: #bbb6b6;           /* gris claro */
+  font-size: 12px;
+  color: rgba(255, 255, 255, .8);
+
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================
+   BOTONES
+========================== */
+
+.toolbar-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toolbar-buttons button {
+  color: white !important;
+  font-size: 13px;
+  min-width: auto;
+  padding: 0 10px;
+}
+
+.toolbar-buttons mat-icon {
+  margin-right: 4px;
+  font-size: 18px;
+}
+
+/* Hover */
+
+.toolbar-buttons button:hover,
+.logout-button:hover {
+  background: rgba(255,255,255,.12);
+}
+
+/* ==========================
+   MÓVIL
+========================== */
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 1200px) {
+
+  .toolbar-buttons button {
+    font-size: 12px;
+    padding: 0 6px;
+  }
+
+  .toolbar-buttons mat-icon {
+    margin-right: 2px;
+  }
+}
+
+@media (max-width: 992px) {
+
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: flex;
+    color: white !important;
+  }
+
+  .mobile-only mat-icon {
+    color: white !important;
+  }
+
+  .user-text {
+    max-width: 120px;
+  }
+
+  .user-subtext {
+    display: none;
+  }
 }

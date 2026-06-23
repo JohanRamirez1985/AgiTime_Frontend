@@ -13,7 +13,7 @@ export class inventarioProductosService {
 
     consultarProductos(request: any) {
         const params = new HttpParams({ fromObject: request });
-        return this.http.get<any>(`${this.baseUrlPar}/productos`, { params });
+        return this.http.get<any>(`${this.baseUrlPro}/productos`, { params });
     }
 
     crearProducto(request: any) {
