@@ -149,34 +149,33 @@ export class Informes {
     };
   }
 
-  private async reporteInv() {
-    // 🔄 Ya puedes generar
-    Swal.fire({
-      title: 'Generando reporte...',
-      text: 'Por favor espera unos segundos',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-
+  async reporteInventario() {
     let request = await this.createJsonSemanal(true);
 
-    this.informeServie.informacionInventarioVenta(request).subscribe({
-      next: (blob: Blob) => {
-        Swal.close();
+    this.informeServie.informacionInventarioVenta(request)
+      .subscribe({
+        next: (blob: Blob) => {
+          Swal.close();
 
-        if (blob && blob.size > 0) {
-          const fileURL = URL.createObjectURL(blob);
+          if (blob && blob.size > 0) {
+            const fileURL = URL.createObjectURL(blob);
 
-          if (blob.size !== 80) {
-            window.open(fileURL);
-            Swal.fire({
-              icon: 'success',
-              title: 'Reporte generado',
-              text: 'El reporte se ha abierto en una nueva pestaña.',
-              confirmButtonColor: '#3085d6',
-            });
+            if (blob.size !== 80) {
+              window.open(fileURL);
+              Swal.fire({
+                icon: 'success',
+                title: 'Reporte generado',
+                text: 'El reporte se ha abierto en una nueva pestaña.',
+                confirmButtonColor: '#3085d6',
+              });
+            } else {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Sin datos',
+                text: 'No se generó ningún archivo para este rango.',
+                confirmButtonColor: '#0d47a1',
+              });
+            }
           } else {
             Swal.fire({
               icon: 'warning',
@@ -185,35 +184,22 @@ export class Informes {
               confirmButtonColor: '#0d47a1',
             });
           }
-        } else {
+        },
+        error: (err) => {
+          Swal.close();
           Swal.fire({
-            icon: 'warning',
-            title: 'Sin datos',
-            text: 'No se generó ningún archivo para este rango.',
-            confirmButtonColor: '#0d47a1',
+            icon: 'error',
+            title: 'Error',
+            text: err.error?.mensaje || 'Error inesperado al generar el reporte.',
+            confirmButtonColor: '#d33',
           });
-        }
-      },
-      error: (err) => {
-        Swal.close();
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: err.error?.mensaje || 'Error inesperado al generar el reporte.',
-          confirmButtonColor: '#d33',
-        });
-      },
-    });
+        },
+      })
   }
 
   async generarReporte() {
     if (!this.form.valid) {
       return;
-    }
-
-    if (this.tipoReporte === 'inv') {
-      this.reporteInv();
-      return
     }
 
     this.generate = false;
@@ -223,7 +209,7 @@ export class Informes {
     if (tipoDiario) {
       request = await this.createJsonDiario();
     } else {
-      if (this.usuario.rol !== 3 && this.idEmpresa === '2') {
+      if (this.usuario.rol !== 3 && this.idEmpresa === '2' && this.tipoReporte !== 'inv') {
         await Swal.fire({
           title: '¿Cómo deseas exportar el reporte?',
           html: `
@@ -279,7 +265,7 @@ export class Informes {
                       </label><br>
                     `).join('')}
 
-                  ${this.tipoReporte !== 'info' ? `
+                  ${this.tipoReporte !== 'info' && this.tipoReporte !== 'inv' ? `
                       <br><br>
                       <b>¿El barbero cumplió con el horario semanal?</b><br>
                       <label>
@@ -319,7 +305,7 @@ export class Informes {
                     return;
                   }
 
-                  if (this.tipoReporte !== 'info' && cumplio === undefined) {
+                  if (this.tipoReporte !== 'info' && this.tipoReporte !== 'inv' && cumplio === undefined) {
                     Swal.showValidationMessage('Debe indicar si cumplió el horario');
                     return;
                   }
@@ -357,7 +343,16 @@ export class Informes {
       },
     });
 
-    this.informeServie.generarInforme(request, tipoDiario, this.tipoReporte).subscribe({
+    const reporte$ =
+      this.tipoReporte === 'inv'
+        ? this.informeServie.informacionInventarioVenta(request)
+        : this.informeServie.generarInforme(
+          request,
+          tipoDiario,
+          this.tipoReporte
+        );
+
+    reporte$.subscribe({
       next: (blob: Blob) => {
         Swal.close();
 
@@ -423,7 +418,7 @@ export class Informes {
 
       let resp: any;
 
-      if (this.tipoReporte !== 'info') {
+      if (this.tipoReporte !== 'info' && this.tipoReporte !== 'inv') {
         const result = await Swal.fire({
           title: 'Seleccione los barberos que no cumplieron con su horario',
           html: `
@@ -462,7 +457,7 @@ export class Informes {
         emp: this.idEmpresa,
         fechaInicio: inicioString,
         fechaFin: finString,
-        barberos: this.tipoReporte !== 'info' ? resp.value.join(',') : '',
+        barberos: this.tipoReporte !== 'info' && this.tipoReporte !== 'inv' ? resp.value.join(',') : '',
       };
     }
 
@@ -478,7 +473,7 @@ export class Informes {
         personal: true
       }
 
-      if (this.tipoReporte !== 'info') {
+      if (this.tipoReporte !== 'info' && this.tipoReporte !== 'inv') {
         request.barberos = this.cumplioHorario ? '' : this.barberoSeleccionado;
       }
 
