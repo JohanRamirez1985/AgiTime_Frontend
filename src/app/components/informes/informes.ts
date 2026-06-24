@@ -132,6 +132,71 @@ export class Informes {
     this.form.patchValue({ fecha: null, fechaInicio: null, fechaFin: null });
   }
 
+  private async createJsonDiario(): Promise<any | null> {
+    const fecha = new Date(this.form.value.fecha);
+    fecha.setHours(0, 0, 0, 0);
+
+    const fechaString = `${fecha.getFullYear()}-${String(
+      fecha.getMonth() + 1
+    ).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}T00:00:00`;
+
+    this.generate = true;
+
+    return {
+      emp: this.idEmpresa,
+      fecha: fechaString,
+      ...(this.usuario?.rol === 3 && { usuario: this.usuario.id }),
+    };
+  }
+
+  async reporteInventario() {
+    let request = await this.createJsonSemanal(true);
+
+    this.informeServie.informacionInventarioVenta(request)
+      .subscribe({
+        next: (blob: Blob) => {
+          Swal.close();
+
+          if (blob && blob.size > 0) {
+            const fileURL = URL.createObjectURL(blob);
+
+            if (blob.size !== 80) {
+              window.open(fileURL);
+              Swal.fire({
+                icon: 'success',
+                title: 'Reporte generado',
+                text: 'El reporte se ha abierto en una nueva pestaña.',
+                confirmButtonColor: '#3085d6',
+              });
+            } else {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Sin datos',
+                text: 'No se generó ningún archivo para este rango.',
+                confirmButtonColor: '#0d47a1',
+              });
+            }
+          } else {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Sin datos',
+              text: 'No se generó ningún archivo para este rango.',
+              confirmButtonColor: '#0d47a1',
+            });
+          }
+        },
+        error: (err) => {
+          Swal.close();
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: err.error?.mensaje || 'Error inesperado al generar el reporte.',
+            confirmButtonColor: '#d33',
+          });
+        },
+      })
+  }
+
   async generarReporte() {
     if (!this.form.valid) {
       return;
@@ -145,21 +210,21 @@ export class Informes {
     }
 
     if ((this.tipoReporte === 'semanal' || this.tipoReporte === 'info') && this.usuario.rol == 3 && this.idEmpresa === '2') {
-      request = await this.semanalEmpleado();    
+      request = await this.semanalEmpleado();
     }
 
-    if (this.tipoReporte === 'semanal' || this.tipoReporte === 'info'){
+    if (this.tipoReporte === 'semanal' || this.tipoReporte === 'info') {
       request = await this.semanal();
     }
 
-    if (this.tipoReporte === 'inv'){
+    if (this.tipoReporte === 'inv') {
       request = await this.inventarioVentas();
     }
 
     // ❌ Usuario canceló el modal
-    // if (!request) {
-    //   return;
-    // }
+    if (!request) {
+      return;
+    }
 
     // 🔄 Ya puedes generar
     Swal.fire({
@@ -171,7 +236,16 @@ export class Informes {
       },
     });
 
-    this.informeServie.generarInforme(request, tipoDiario, this.tipoReporte).subscribe({
+    const reporte$ =
+      this.tipoReporte === 'inv'
+        ? this.informeServie.informacionInventarioVenta(request)
+        : this.informeServie.generarInforme(
+          request,
+          tipoDiario,
+          this.tipoReporte
+        );
+
+    reporte$.subscribe({
       next: (blob: Blob) => {
         Swal.close();
 
@@ -215,23 +289,6 @@ export class Informes {
     });
   }
 
-  private async createJsonDiario(): Promise<any | null> {
-    const fecha = new Date(this.form.value.fecha);
-    fecha.setHours(0, 0, 0, 0);
-
-    const fechaString = `${fecha.getFullYear()}-${String(
-      fecha.getMonth() + 1
-    ).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}T00:00:00`;
-
-    //this.generate = true;
-
-    return {
-      emp: this.idEmpresa,
-      fecha: fechaString,
-      ...(this.usuario?.rol === 3 && { usuario: this.usuario.id }),
-    };
-  }
-
   private async createJsonSemanal(tipoIndividual: boolean): Promise<any | null> {
 
     // ===== NO DIARIO =====
@@ -250,11 +307,11 @@ export class Informes {
 
     // 👉 USUARIO DISTINTO DE 3 → MODAL
     if (this.usuario.rol !== 3 && tipoIndividual) {
-      //this.generate = false;
+      this.generate = false;
 
       let resp: any;
 
-      if (this.tipoReporte !== 'info') {
+      if (this.tipoReporte !== 'info' && this.tipoReporte !== 'inv') {
         const result = await Swal.fire({
           title: 'Seleccione los barberos que no cumplieron con su horario',
           html: `
@@ -287,17 +344,18 @@ export class Informes {
           return null; // canceló
         }
       }
-      //this.generate = true;
+      this.generate = true;
 
       return {
         emp: this.idEmpresa,
         fechaInicio: inicioString,
         fechaFin: finString,
-        barberos: this.tipoReporte !== 'info' ? resp.value.join(',') : '',
+        barberos: this.tipoReporte !== 'info' && this.tipoReporte !== 'inv' ? resp.value.join(',') : '',
       };
     }
 
-    //this.generate = true;
+    // 👉 USUARIO 3 → SIN MODAL
+    this.generate = true;
 
     if (!tipoIndividual) {
       const request: any = {
@@ -308,7 +366,7 @@ export class Informes {
         personal: true
       }
 
-      if (this.tipoReporte !== 'info') {
+      if (this.tipoReporte !== 'info' && this.tipoReporte !== 'inv') {
         request.barberos = this.cumplioHorario ? '' : this.barberoSeleccionado;
       }
 
@@ -336,13 +394,13 @@ export class Informes {
     const finString = `${fin.getFullYear()}-${String(
       fin.getMonth() + 1
     ).padStart(2, '0')}-${String(fin.getDate()).padStart(2, '0')}T23:59:59`;
-    
+
     return {
-        emp: this.idEmpresa,
-        fechaInicio: inicioString,
-        fechaFin: finString,
-        usuario: this.usuario.id,
-      };
+      emp: this.idEmpresa,
+      fechaInicio: inicioString,
+      fechaFin: finString,
+      usuario: this.usuario.id,
+    };
   }
 
   private async createJsonInventarioVentas(): Promise<any | null> {
@@ -357,12 +415,12 @@ export class Informes {
     const finString = `${fin.getFullYear()}-${String(
       fin.getMonth() + 1
     ).padStart(2, '0')}-${String(fin.getDate()).padStart(2, '0')}T23:59:59`;
-    
+
     return {
-        emp: this.idEmpresa,
-        fechaInicio: inicioString,
-        fechaFin: finString
-      };
+      emp: this.idEmpresa,
+      fechaInicio: inicioString,
+      fechaFin: finString
+    };
   }
 
   private async diario(): Promise<any> {
@@ -373,10 +431,10 @@ export class Informes {
     return await this.createJsonSemanalEmpleado();
   }
 
-  private async semanal (): Promise<any> {
-     const result = await Swal.fire({
-          title: '¿Cómo deseas exportar el reporte?',
-          html: `
+  private async semanal(): Promise<any> {
+    const result = await Swal.fire({
+      title: '¿Cómo deseas exportar el reporte?',
+      html: `
           <div style="text-align:left">
             <label>
               <input type="radio" name="tipoExport" value="individual" checked>
@@ -390,35 +448,35 @@ export class Informes {
 
             <div id="personasContainer" style="margin-top:15px; display:none;">
               ${this.personas
-              .map(
-                (p) => `
+          .map(
+            (p) => `
                   <label>
                     <input type="checkbox" value="${p.id}" class="personaChk">
                     ${p.nombre}
                   </label><br>
                 `
-              )
-              .join('')}
+          )
+          .join('')}
             </div>
           </div>
         `,
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'Aceptar',
-          cancelButtonText: 'Cancelar',
-          preConfirm: async () => {
-            const tipo = (
-              document.querySelector(
-                'input[name="tipoExport"]:checked'
-              ) as HTMLInputElement
-            ).value;
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Aceptar',
+      cancelButtonText: 'Cancelar',
+      preConfirm: async () => {
+        const tipo = (
+          document.querySelector(
+            'input[name="tipoExport"]:checked'
+          ) as HTMLInputElement
+        ).value;
 
-            const tipoIndividual = tipo === 'individual';
+        const tipoIndividual = tipo === 'individual';
 
-            if (tipoIndividual) {
-              const result = await Swal.fire({
-                title: 'Seleccione un barbero',
-                html: `
+        if (tipoIndividual) {
+          const result = await Swal.fire({
+            title: 'Seleccione un barbero',
+            html: `
                 <div style="text-align:left">
 
                   <b>Barbero:</b><br>
@@ -439,55 +497,55 @@ export class Informes {
                         <input type="radio" name="cumplioHorario" value="false"> No
                       </label>
                     ` : ''
-                  }
+              }
 
                 </div>
                 `,
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'Aceptar',
-                cancelButtonText: 'Cancelar',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Aceptar',
+            cancelButtonText: 'Cancelar',
 
-                preConfirm: () => {
-                  const barbero = (
-                    document.querySelector(
-                      'input[name="barbero"]:checked'
-                    ) as HTMLInputElement
-                  )?.value;
+            preConfirm: () => {
+              const barbero = (
+                document.querySelector(
+                  'input[name="barbero"]:checked'
+                ) as HTMLInputElement
+              )?.value;
 
-                  const cumplio = (
-                    document.querySelector(
-                      'input[name="cumplioHorario"]:checked'
-                    ) as HTMLInputElement
-                  )?.value;
+              const cumplio = (
+                document.querySelector(
+                  'input[name="cumplioHorario"]:checked'
+                ) as HTMLInputElement
+              )?.value;
 
-                  this.cumplioHorario = cumplio === 'true';
-                  this.barberoSeleccionado = parseInt(barbero);
+              this.cumplioHorario = cumplio === 'true';
+              this.barberoSeleccionado = parseInt(barbero);
 
-                  if (!barbero) {
-                    Swal.showValidationMessage('Debe seleccionar un barbero');
-                    return;
-                  }
+              if (!barbero) {
+                Swal.showValidationMessage('Debe seleccionar un barbero');
+                return;
+              }
 
-                  if (this.tipoReporte !== 'info' && cumplio === undefined) {
-                    Swal.showValidationMessage('Debe indicar si cumplió el horario');
-                    return;
-                  }
+              if (this.tipoReporte !== 'info' && cumplio === undefined) {
+                Swal.showValidationMessage('Debe indicar si cumplió el horario');
+                return;
+              }
 
-                  return {
-                    barberoId: barbero,
-                    cumplioHorario: cumplio === 'true',
-                  };
-                },
-              });
-              return await  this.createJsonSemanal(false);
-              } else {
-              return await  this.createJsonSemanal(true);
-            }
-          },
-        });
+              return {
+                barberoId: barbero,
+                cumplioHorario: cumplio === 'true',
+              };
+            },
+          });
+          return await this.createJsonSemanal(false);
+        } else {
+          return await this.createJsonSemanal(true);
+        }
+      },
+    });
 
-        return result.value;
+    return result.value;
   }
 
   private async inventarioVentas(): Promise<any> {

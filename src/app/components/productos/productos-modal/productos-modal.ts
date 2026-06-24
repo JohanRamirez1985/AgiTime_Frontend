@@ -18,7 +18,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { CurrencyPipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { inventarioProductosService } from '../../../services/inventario-productos.service';
 
 @Component({
