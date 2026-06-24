@@ -63,9 +63,12 @@
                     <div class="servicio-precio">
                       ${{ servicio.valor | number : "1.0-0" : "es-CO" }}
                     </div>
-                    <div class="servicio-descripcion" *ngIf="servicio.observaciones">
-                      {{ servicio.observaciones }}
-                    </div>
+<div
+  class="servicio-descripcion"
+  [matTooltip]="servicio.observaciones"
+>
+  {{ servicio.observaciones | slice:0:80 }}...
+</div>
                   </div>
 
                   <button mat-mini-fab color="primary" class="boton-add" (click)="toggleSeleccionServicio(servicio)">
@@ -103,8 +106,7 @@
                 <mat-icon>chevron_left</mat-icon>
               </button>
               <!-- input oculto -->
-              <input matInput [matDatepicker]="picker" class="input-calendario"
-                (dateChange)="onDateChange($event)">
+              <input matInput [matDatepicker]="picker" class="input-calendario" (dateChange)="onDateChange($event)">
 
               <!-- botón -->
               <button mat-button (click)="picker.open()" class="btn-calendario">

@@ -74,8 +74,10 @@ export class CrearProducto {
 
     this.productoForm = this.fb.group({
       Nombre: ['', Validators.required],
-      Codigo: ['', Validators.required],
-      Precio: [null, [Validators.required, Validators.min(0)]],
+      Codigo: [''],
+      PrecioVenta: [null, [Validators.required, Validators.min(0)]],
+      Porcentaje: [null, [Validators.required, Validators.min(0)]],
+      PrecioCosto: [null, [Validators.required, Validators.min(0)]],
       Cantidad: [null, [Validators.required, Validators.min(0)]],
       empresa: idEmpresa,
       UsuarioCreacion: idUsuario,

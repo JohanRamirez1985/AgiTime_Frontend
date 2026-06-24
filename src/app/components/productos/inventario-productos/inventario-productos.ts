@@ -47,7 +47,8 @@ export class InventarioProductos {
   columnas = [
     { key: 'nombre', label: 'Nombre' },
     { key: 'codigo', label: 'Código' },
-    { key: 'precio', label: 'Precio' },
+    { key: 'precioVenta', label: 'Precio Venta' },
+    { key: 'porcentaje', label: 'Comisión' },
     { key: 'stock', label: 'Stock (Und)' },
   ];
 
@@ -55,7 +56,8 @@ export class InventarioProductos {
   displayedColumns: string[] = [
     'nombre',
     'codigo',
-    'precio',
+    'precioVenta',
+    'porcentaje',
     'stock',
     'acciones',
   ];

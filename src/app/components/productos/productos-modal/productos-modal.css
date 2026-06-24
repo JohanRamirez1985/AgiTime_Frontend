@@ -1,0 +1,85 @@
+.full-width {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.contenedor-tabla {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.tabla-productos {
+  width: 100%;
+  min-width: 700px;
+}
+
+table {
+  width: 100%;
+}
+
+.mat-mdc-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: white;
+}
+
+.mat-mdc-header-cell {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.mat-mdc-cell {
+  font-size: 13px;
+}
+
+.mat-mdc-row:hover {
+  background: #f5f7fa;
+  cursor: pointer;
+}
+
+.mat-column-id {
+  width: 80px;
+}
+
+.mat-column-stock {
+  width: 100px;
+  text-align: center;
+}
+
+.mat-column-precio {
+  width: 130px;
+  text-align: right;
+}
+
+.mat-column-comision {
+  width: 120px;
+  text-align: center;
+}
+
+.mat-mdc-paginator {
+  margin-top: 10px;
+}
+
+.mat-mdc-dialog-content {
+  max-height: 65vh;
+  overflow: auto;
+}
+
+.mat-mdc-dialog-actions {
+  padding-top: 15px;
+}
+
+@media (max-width: 768px) {
+
+  .tabla-productos {
+    min-width: 900px;
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: 60vh;
+  }
+}

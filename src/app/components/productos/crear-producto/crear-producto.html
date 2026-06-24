@@ -7,20 +7,11 @@
     <mat-spinner diameter="50"></mat-spinner>
   </div>
   <!-- Formulario -->
-  <form
-    [formGroup]="productoForm"
-    (ngSubmit)="guardarProducto()"
-    class="form-container"
-  >
+  <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()" class="form-container">
     <!-- Nombre -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Nombre</mat-label>
-      <input
-        matInput
-        placeholder="Ingrese el nombre"
-        formControlName="Nombre"
-        required
-      />
+      <input matInput placeholder="Ingrese el nombre" formControlName="Nombre" required />
       <mat-error *ngIf="productoForm.get('Nombre')?.hasError('required')">
         El nombre es obligatorio
       </mat-error>
@@ -29,42 +20,42 @@
     <!-- Código -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Código</mat-label>
-      <input
-        matInput
-        placeholder="Ingrese el código"
-        formControlName="Codigo"
-        required
-      />
-      <mat-error *ngIf="productoForm.get('Codigo')?.hasError('required')">
-        El código es obligatorio
-      </mat-error>
+      <input matInput placeholder="Ingrese el código" formControlName="Codigo" />
     </mat-form-field>
 
     <!-- Precio -->
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Precio</mat-label>
-      <input
-        matInput
-        type="number"
-        placeholder="Ingrese el precio"
-        formControlName="Precio"
-        required
-      />
-      <mat-error *ngIf="productoForm.get('Precio')?.hasError('required')">
-        El precio es obligatorio
+      <mat-label>Precio Venta</mat-label>
+      <input matInput type="number" placeholder="Ingrese el precio de venta" formControlName="PrecioVenta" required />
+      <mat-error *ngIf="productoForm.get('PrecioVenta')?.hasError('required')">
+        El precio de venta es obligatorio
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Precio costo-->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Precio Costo</mat-label>
+      <input matInput type="number" placeholder="Ingrese el precio costo" formControlName="PrecioCosto" required />
+      <mat-error *ngIf="productoForm.get('PrecioCosto')?.hasError('required')">
+        El precio costo es obligatorio
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Comisión</mat-label>
+
+      <input matInput type="number" placeholder="Ingrese el porcentaje de comisión" formControlName="Porcentaje"
+        required />
+
+      <mat-error *ngIf="productoForm.get('Porcentaje')?.hasError('required')">
+        El porcentaje de comisión es obligatorio.
       </mat-error>
     </mat-form-field>
 
     <!-- Cantidad -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Cantidad</mat-label>
-      <input
-        matInput
-        type="number"
-        placeholder="Ingrese la cantidad"
-        formControlName="Cantidad"
-        required
-      />
+      <input matInput type="number" placeholder="Ingrese la cantidad" formControlName="Cantidad" required />
       <mat-error *ngIf="productoForm.get('Cantidad')?.hasError('required')">
         El cantidad es obligatorio
       </mat-error>
@@ -72,12 +63,7 @@
 
     <!-- Botones -->
     <div class="acciones-header">
-      <button
-        mat-raised-button
-        color="primary"
-        type="submit"
-        [disabled]="productoForm.invalid"
-      >
+      <button mat-raised-button color="primary" type="submit" [disabled]="productoForm.invalid">
         <mat-icon>save</mat-icon>
         Guardar
       </button>

@@ -8,20 +8,28 @@
   </div>
   <!-- Formulario -->
   <form [formGroup]="productoForm" (ngSubmit)="guardar()" class="form-container">
-    
+
     <!-- Nombre (solo visual) -->
     <mat-label>Nombre</mat-label>
     <div class="campo-valor">{{ producto?.nombre }}</div>
 
     <!-- Código (solo visual) -->
-    <mat-label>Código</mat-label>
-    <div class="campo-valor">{{ producto?.codigo }}</div>
+    <mat-label *ngIf="producto.codigo !== ''">Código</mat-label>
+    <div *ngIf="producto.codigo !== ''" class="campo-valor">{{ producto?.codigo }}</div>
 
     <!-- Precio (solo visual) -->
-    <mat-label>Precio</mat-label>
+    <mat-label>Precio Venta</mat-label>
     <div class="campo-valor">
-      {{ producto?.precio | currency:'COP':'symbol':'1.0-0' }}
+      {{ producto?.precioVenta | currency:'COP':'symbol':'1.0-0' }}
     </div>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Precio Costo</mat-label>
+      <input matInput type="number" placeholder="Ingrese el precio" formControlName="PrecioCosto" required>
+      <mat-error *ngIf="productoForm.get('PrecioCosto')?.hasError('required')">
+        El precio es obligatorio
+      </mat-error>
+    </mat-form-field>
 
     <!-- Cantidad -->
     <mat-form-field appearance="fill" class="full-width">

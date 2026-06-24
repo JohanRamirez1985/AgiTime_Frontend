@@ -18,6 +18,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { inventarioProductosService } from '../../../services/inventario-productos.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog } from '@angular/material/dialog';
+import { ProductosModal } from '../productos-modal/productos-modal';
 
 @Component({
   selector: 'app-venta-producto',
@@ -55,8 +57,10 @@ export class VentaProducto {
   columnasTabla: string[] = [
     'nombre',
     'cantidad',
+    'comision',
     'valor',
     'total',
+    'descuento',
     'acciones',
   ];
   productosVenta = new MatTableDataSource<any>([]);
@@ -64,8 +68,9 @@ export class VentaProducto {
 
   constructor(
     private breakpointObserver: BreakpointObserver,
-    private inventarioService: inventarioProductosService
-  ) {}
+    private inventarioService: inventarioProductosService,
+    private dialog: MatDialog
+  ) { }
 
   ngOnInit(): void {
     const infoEmpresa = JSON.parse(localStorage.getItem('infoEmp') || '{}');
@@ -155,55 +160,136 @@ export class VentaProducto {
         this.ventanaMensaje('error', 'Error', err.mensaje, false);
       },
     });
-    // } else {
-    //   this.ventanaMensaje(
-    //     'warning',
-    //     'Mensaje',
-    //     'El campo número de factura es obligatorio',
-    //     false
-    //   );
-    // }
   }
 
-  agregarProducto(): void {
+
+
+  async agregarProducto(): Promise<void> {
+
+    if (!this.productoSeleccionado) {
+      return
+    }
+
+    let descuento = 0;
+    let porcentaje = 0;
+
+    const respuesta = await Swal.fire({
+      title: '¿Aplicar descuento?',
+      text: '¿Desea aplicar un descuento a este producto?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No'
+    });
+
+    if (respuesta.isConfirmed) {
+
+      const resultadoDescuento = await Swal.fire({
+        title: 'Descuento',
+        input: 'number',
+        inputLabel: 'Ingrese el valor del descuento',
+        inputPlaceholder: 'Ej: 5000',
+        inputAttributes: {
+          min: '0'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Aplicar'
+      });
+
+      if (resultadoDescuento.isConfirmed) {
+        descuento = Number(resultadoDescuento.value) || 0;
+        porcentaje = this.cantidadProducto *  this.productoSeleccionado.porcentaje;
+        if (porcentaje >= descuento) {
+          porcentaje = porcentaje - descuento;
+        }else {
+          porcentaje = 0;
+        }
+      } else {
+        return
+      }
+    }else {
+      porcentaje = this.cantidadProducto *  this.productoSeleccionado.porcentaje;
+    }
+
     if (
       this.productoSeleccionado &&
       this.cantidadProducto > 0 &&
       this.cantidadProducto <= this.productoSeleccionado.stock
     ) {
+
       const existe = this.productosPre.find(
-        (p) => p.id === this.productoSeleccionado.id
+        p => p.id === this.productoSeleccionado.id
       );
+
+      const totalSinDescuento =
+        this.cantidadProducto * this.productoSeleccionado.precioVenta;
+
+      const totalConDescuento =
+        totalSinDescuento - descuento;
+
+      if (descuento >= totalSinDescuento) {
+
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Descuento inválido',
+          text: `El descuento debe ser menor a $${totalSinDescuento.toLocaleString()}`
+        });
+
+        return;
+      }
+
       if (existe) {
+
         existe.cantidad += this.cantidadProducto;
-        existe.total = existe.cantidad * existe.valor;
+
+        existe.total =
+          (existe.cantidad * existe.precioVenta) - descuento;
+
+        existe.descuento = descuento;
+
       } else {
+
         this.productosPre.push({
           id: this.productoSeleccionado.id,
           producto: this.productoSeleccionado.id,
           nombre: this.productoSeleccionado.nombre,
           cantidad: this.cantidadProducto,
-          valor: this.productoSeleccionado.precio,
-          total: this.cantidadProducto * this.productoSeleccionado.precio,
+          porcentaje: porcentaje,
+          precioVenta: this.productoSeleccionado.precioVenta,
+          descuento: descuento,
+          total: totalConDescuento
         });
+
       }
+
       this.productoNombre = '';
       this.productoSeleccionado = null;
       this.cantidadProducto = 1;
       this.productosVenta.data = [...this.productosPre];
+
     } else {
+
       this.ventanaMensaje(
         'warning',
         'Stock insuficiente',
-        `Solo hay ${this.productoSeleccionado.stock} unidades disponibles.`,
-        true
+        `Solo hay ${this.productoSeleccionado?.stock} unidades disponibles.`,
+        false
       );
+
     }
   }
 
   eliminarProducto(producto: any): void {
     this.productosPre = this.productosPre.filter((p) => p.id !== producto.id);
     this.productosVenta.data = [...this.productosPre];
+  }
+
+  public verProductos() {
+    this.dialog.open(ProductosModal, {
+      width: '90%',
+      maxWidth: '1200px',
+      height: '80vh'
+    });
   }
 
   ventanaMensaje(

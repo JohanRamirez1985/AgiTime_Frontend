@@ -78,7 +78,8 @@ export class EditarProducto {
 
     this.productoForm = this.fb.group({
       Nombre: ['', Validators.required],
-      Precio: [null, [Validators.required, Validators.min(0)]],
+      precioVenta: [null, [Validators.required, Validators.min(0)]],
+      porcentaje: [null, [Validators.required, Validators.min(0)]],
       empresa: idEmpresa,
       UsuarioCreacion: idUsuario,
       FechaCreacion: fechaLocal,
@@ -87,7 +88,8 @@ export class EditarProducto {
 
     this.productoForm.patchValue({
       Nombre: this.producto.nombre,
-      Precio: this.producto.precio,
+      precioVenta: this.producto.precioVenta,
+      porcentaje: this.producto.porcentaje,
     });
 
     this.loading = false;
@@ -99,7 +101,8 @@ export class EditarProducto {
       const nuevoProducto = this.productoForm.value;
       if (
         nuevoProducto.Nombre != this.producto.nombre ||
-        nuevoProducto.Precio != this.producto.precio
+        nuevoProducto.precioVenta != this.producto.precioVenta ||
+        nuevoProducto.porcentaje != this.producto.porcentaje
       ) {
         this.inventarioService.editarProducto(nuevoProducto).subscribe({
           next: (res) => {

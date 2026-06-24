@@ -1,8 +1,11 @@
 <mat-toolbar color="primary" class="toolbar">
   <div class="user-info">
     <img [src]="img" alt="Foto de usuario" class="user-avatar" />
-    <span class="user-text">{{ nombreEmpresa }}</span>
-    <span class="user-subtext">{{ usuarioLogueado.nombre }}</span>
+
+    <div class="user-data">
+      <div class="user-text">{{ nombreEmpresa }}</div>
+      <div class="user-subtext">{{ usuarioLogueado.nombre }}</div>
+    </div>
   </div>
   <!-- Spacer -->
   <span class="spacer"></span>
@@ -10,41 +13,50 @@
   <!-- Botones en pantallas grandes -->
   <div class="toolbar-buttons desktop-only">
     <button *ngIf="validate('das')" mat-button routerLink="/admin/dashboard">
-      <mat-icon>dashboard</mat-icon>
+      <mat-icon>analytics</mat-icon>
       Ir al Dashboard
     </button>
+
     <button *ngIf="validate('ser')" mat-button routerLink="/admin/servicios">
-      <mat-icon>home_repair_service</mat-icon>
+      <mat-icon>build</mat-icon>
       Servicios
     </button>
+
     <button *ngIf="validate('age')" mat-button routerLink="/admin/recurso/dash">
-      <mat-icon>date_range</mat-icon>
+      <mat-icon>event_note</mat-icon>
       Agendamientos
     </button>
+
     <button *ngIf="validate('usu')" mat-button routerLink="/admin/usuarios">
-      <mat-icon>people</mat-icon>
+      <mat-icon>group</mat-icon>
       Usuarios
     </button>
+
     <button *ngIf="validate('edu')" mat-button routerLink="/admin/usuarioPorcentaje/gestionar">
-      <mat-icon>people</mat-icon>
+      <mat-icon>school</mat-icon>
       Usuarios
     </button>
+
     <button *ngIf="validate('pro')" mat-button routerLink="/admin/inventario">
-      <mat-icon>store</mat-icon>
+      <mat-icon>inventory_2</mat-icon>
       Inventario
     </button>
+
     <button *ngIf="validate('ven')" mat-button routerLink="/admin/venta">
-      <mat-icon>attach_money</mat-icon>
+      <mat-icon>point_of_sale</mat-icon>
       Venta
     </button>
+
     <button *ngIf="validate('inf')" mat-button routerLink="/admin/informes">
-      <mat-icon>bar_chart</mat-icon>
+      <mat-icon>assessment</mat-icon>
       Informes
     </button>
+
     <button *ngIf="validate('liq')" mat-button routerLink="/admin/liquidacion">
-      <mat-icon>bar_chart</mat-icon>
+      <mat-icon>payments</mat-icon>
       Liquidación
     </button>
+
     <button mat-button class="logout-button" (click)="cerrarSesion()">
       <mat-icon>logout</mat-icon>
       Cerrar sesión
