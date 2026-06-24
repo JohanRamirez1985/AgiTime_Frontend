@@ -25,7 +25,6 @@ import { inventarioProductosService } from '../../../services/inventario-product
   selector: 'app-productos-modal',
   standalone: true,
   imports: [
-    CurrencyPipe,
     DecimalPipe,
     MatDialogModule,
     MatTableModule,

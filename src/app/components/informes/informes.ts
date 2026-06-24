@@ -132,42 +132,34 @@ export class Informes {
     this.form.patchValue({ fecha: null, fechaInicio: null, fechaFin: null });
   }
 
-  private async createJsonDiario(): Promise<any | null> {
-    const fecha = new Date(this.form.value.fecha);
-    fecha.setHours(0, 0, 0, 0);
-
-    const fechaString = `${fecha.getFullYear()}-${String(
-      fecha.getMonth() + 1
-    ).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}T00:00:00`;
-
-    this.generate = true;
-
-    return {
-      emp: this.idEmpresa,
-      fecha: fechaString,
-      ...(this.usuario?.rol === 3 && { usuario: this.usuario.id }),
-    };
-  }
-
-  
-
   async generarReporte() {
     if (!this.form.valid) {
       return;
     }
 
+    let request: any;
+    const tipoDiario = this.tipoReporte === 'diario';
+
     if (this.tipoReporte === 'diario') {
-      this.aFuegoBarberDiario();    
+      request = await this.diario();
     }
 
-    if (this.tipoReporte === 'semanal' && ) {
-      this.aFuegoBarberSemanalEmpleado();    
+    if ((this.tipoReporte === 'semanal' || this.tipoReporte === 'info') && this.usuario.rol == 3 && this.idEmpresa === '2') {
+      request = await this.semanalEmpleado();    
+    }
+
+    if (this.tipoReporte === 'semanal' || this.tipoReporte === 'info'){
+      request = await this.semanal();
+    }
+
+    if (this.tipoReporte === 'inv'){
+      request = await this.inventarioVentas();
     }
 
     // ❌ Usuario canceló el modal
-    if (!request) {
-      return;
-    }
+    // if (!request) {
+    //   return;
+    // }
 
     // 🔄 Ya puedes generar
     Swal.fire({
@@ -223,6 +215,23 @@ export class Informes {
     });
   }
 
+  private async createJsonDiario(): Promise<any | null> {
+    const fecha = new Date(this.form.value.fecha);
+    fecha.setHours(0, 0, 0, 0);
+
+    const fechaString = `${fecha.getFullYear()}-${String(
+      fecha.getMonth() + 1
+    ).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}T00:00:00`;
+
+    //this.generate = true;
+
+    return {
+      emp: this.idEmpresa,
+      fecha: fechaString,
+      ...(this.usuario?.rol === 3 && { usuario: this.usuario.id }),
+    };
+  }
+
   private async createJsonSemanal(tipoIndividual: boolean): Promise<any | null> {
 
     // ===== NO DIARIO =====
@@ -241,7 +250,7 @@ export class Informes {
 
     // 👉 USUARIO DISTINTO DE 3 → MODAL
     if (this.usuario.rol !== 3 && tipoIndividual) {
-      this.generate = false;
+      //this.generate = false;
 
       let resp: any;
 
@@ -278,7 +287,7 @@ export class Informes {
           return null; // canceló
         }
       }
-      this.generate = true;
+      //this.generate = true;
 
       return {
         emp: this.idEmpresa,
@@ -288,8 +297,7 @@ export class Informes {
       };
     }
 
-    // 👉 USUARIO 3 → SIN MODAL
-    this.generate = true;
+    //this.generate = true;
 
     if (!tipoIndividual) {
       const request: any = {
@@ -316,28 +324,57 @@ export class Informes {
     }
   }
 
-  private async aFuegoBarberDiario(){
-    let request: any;
-    request = await this.createJsonDiario();
+  private async createJsonSemanalEmpleado(): Promise<any | null> {
+    const inicio = new Date(this.form.value.fechaInicio);
+    inicio.setHours(0, 0, 0, 0);
+    const inicioString = `${inicio.getFullYear()}-${String(
+      inicio.getMonth() + 1
+    ).padStart(2, '0')}-${String(inicio.getDate()).padStart(2, '0')}T00:00:00`;
 
-    Swal.fire({
-      title: 'Generando reporte...',
-      text: 'Por favor espera unos segundos',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    const fin = new Date(this.form.value.fechaFin);
+    fin.setHours(23, 59, 59, 999);
+    const finString = `${fin.getFullYear()}-${String(
+      fin.getMonth() + 1
+    ).padStart(2, '0')}-${String(fin.getDate()).padStart(2, '0')}T23:59:59`;
+    
+    return {
+        emp: this.idEmpresa,
+        fechaInicio: inicioString,
+        fechaFin: finString,
+        usuario: this.usuario.id,
+      };
   }
 
-  private async aFuegoBarberSemanalEmpleado(){
-    let request: any;
-    request = await this.createJsonSemanal(true);
+  private async createJsonInventarioVentas(): Promise<any | null> {
+    const inicio = new Date(this.form.value.fechaInicio);
+    inicio.setHours(0, 0, 0, 0);
+    const inicioString = `${inicio.getFullYear()}-${String(
+      inicio.getMonth() + 1
+    ).padStart(2, '0')}-${String(inicio.getDate()).padStart(2, '0')}T00:00:00`;
+
+    const fin = new Date(this.form.value.fechaFin);
+    fin.setHours(23, 59, 59, 999);
+    const finString = `${fin.getFullYear()}-${String(
+      fin.getMonth() + 1
+    ).padStart(2, '0')}-${String(fin.getDate()).padStart(2, '0')}T23:59:59`;
+    
+    return {
+        emp: this.idEmpresa,
+        fechaInicio: inicioString,
+        fechaFin: finString
+      };
   }
 
-  private async aFuegoBarberSemanal (){
-    let request: any;
-    await Swal.fire({
+  private async diario(): Promise<any> {
+    return await this.createJsonDiario();
+  }
+
+  private async semanalEmpleado(): Promise<any> {
+    return await this.createJsonSemanalEmpleado();
+  }
+
+  private async semanal (): Promise<any> {
+     const result = await Swal.fire({
           title: '¿Cómo deseas exportar el reporte?',
           html: `
           <div style="text-align:left">
@@ -443,18 +480,17 @@ export class Informes {
                   };
                 },
               });
-              request = await this.createJsonSemanal(false);
+              return await  this.createJsonSemanal(false);
               } else {
-              request = await this.createJsonSemanal(true);
+              return await  this.createJsonSemanal(true);
             }
           },
         });
+
+        return result.value;
   }
 
-  private afuegobarberInventario(){
-    if (this.tipoReporte === 'inv') {
-      this.reporteInv();
-      return
-    }
+  private async inventarioVentas(): Promise<any> {
+    return await this.createJsonInventarioVentas();
   }
 }
