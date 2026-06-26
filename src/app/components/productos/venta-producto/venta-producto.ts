@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import {
   BreakpointObserver,
   Breakpoints,
@@ -39,7 +39,7 @@ import { ProductosModal } from '../productos-modal/productos-modal';
     MatTableModule,
     MatCardModule,
     MatAutocompleteModule,
-    MatProgressSpinnerModule,
+    MatProgressSpinnerModule
   ],
 })
 export class VentaProducto {
@@ -69,7 +69,8 @@ export class VentaProducto {
   constructor(
     private breakpointObserver: BreakpointObserver,
     private inventarioService: inventarioProductosService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -266,6 +267,7 @@ export class VentaProducto {
       this.productoSeleccionado = null;
       this.cantidadProducto = 1;
       this.productosVenta.data = [...this.productosPre];
+      this.cdr.detectChanges();
 
     } else {
 
@@ -282,6 +284,7 @@ export class VentaProducto {
   eliminarProducto(producto: any): void {
     this.productosPre = this.productosPre.filter((p) => p.id !== producto.id);
     this.productosVenta.data = [...this.productosPre];
+    this.cdr.detectChanges();
   }
 
   public verProductos() {
