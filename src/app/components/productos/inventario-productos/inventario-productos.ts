@@ -47,6 +47,7 @@ export class InventarioProductos {
   columnas = [
     { key: 'nombre', label: 'Nombre' },
     { key: 'codigo', label: 'Código' },
+    { key: 'precioCosto', label: 'Precio Costo' },
     { key: 'precioVenta', label: 'Precio Venta' },
     { key: 'porcentaje', label: 'Comisión' },
     { key: 'stock', label: 'Stock (Und)' },
@@ -57,6 +58,7 @@ export class InventarioProductos {
     'nombre',
     'codigo',
     'precioVenta',
+    'precioCosto',
     'porcentaje',
     'stock',
     'acciones',
@@ -86,12 +88,73 @@ export class InventarioProductos {
   constructor(
     private inventarioService: inventarioProductosService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.checkResponsive();
     window.addEventListener('resize', () => this.checkResponsive());
     this.consultarProductos();
+  }
+
+  public imprimirInventario(): void {
+    Swal.fire({
+      title: 'Generando reporte...',
+      text: 'Por favor espera unos segundos',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    const info = JSON.parse(localStorage.getItem('infoEmp') || '{}');
+    const idEmpresa = info?.idEmpresa;
+
+    const request = {
+      emp: idEmpresa
+    }
+
+    this.inventarioService.reporteInventario(request).subscribe({
+      next: (blob: Blob) => {
+        Swal.close();
+
+        if (blob && blob.size > 0) {
+          const fileURL = URL.createObjectURL(blob);
+
+          if (blob.size !== 80) {
+            window.open(fileURL);
+            Swal.fire({
+              icon: 'success',
+              title: 'Reporte generado',
+              text: 'El reporte se ha abierto en una nueva pestaña.',
+              confirmButtonColor: '#3085d6',
+            });
+          } else {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Sin datos',
+              text: 'No se generó ningún archivo para este rango.',
+              confirmButtonColor: '#0d47a1',
+            });
+          }
+        } else {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Sin datos',
+            text: 'No se generó ningún archivo para este rango.',
+            confirmButtonColor: '#0d47a1',
+          });
+        }
+      },
+      error: (err) => {
+        Swal.close();
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err.error?.mensaje || 'Error inesperado al generar el reporte.',
+          confirmButtonColor: '#d33',
+        });
+      },
+    });
   }
 
   public consultarProductos(): void {

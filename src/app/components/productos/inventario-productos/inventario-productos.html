@@ -3,7 +3,13 @@
     <!-- Encabezado con título y botón -->
     <div class="encabezado-card">
       <h2>Inventario de Productos</h2>
+
       <div class="acciones-header">
+        <button mat-raised-button color="primary" (click)="imprimirInventario()">
+          <mat-icon>print</mat-icon>
+            Imprimir
+        </button>
+
         <button mat-raised-button color="primary" (click)="crearProducto()">
           <mat-icon>add</mat-icon>
           Crear Producto
@@ -32,6 +38,10 @@
         <p>
           <strong>Precio Venta:</strong> {{ "$" }}
           {{ producto.precioVenta | number : "1.0-0" }}
+        </p>
+        <p>
+          <strong>Precio Costo:</strong> {{ "$" }}
+          {{ producto.precioCosto | number : "1.0-0" }}
         </p>
         <p><strong>Comisión:</strong> {{ producto.porcentaje }}</p>
         <p><strong>Stock (Und):</strong> {{ producto.stock }}</p>

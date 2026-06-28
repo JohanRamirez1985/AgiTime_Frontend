@@ -20,6 +20,7 @@ import { inventarioProductosService } from '../../../services/inventario-product
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { ProductosModal } from '../productos-modal/productos-modal';
+import { SharedService } from '../../../services/shared.service';
 
 @Component({
   selector: 'app-venta-producto',
@@ -53,6 +54,7 @@ export class VentaProducto {
   productosPre: any[] = [];
   idEmpresa: any = null;
   idUsuario: any = null;
+  usuariosSinComision: string = '';
 
   columnasTabla: string[] = [
     'nombre',
@@ -70,7 +72,8 @@ export class VentaProducto {
     private breakpointObserver: BreakpointObserver,
     private inventarioService: inventarioProductosService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private sharedServices: SharedService,
   ) { }
 
   ngOnInit(): void {
@@ -84,7 +87,21 @@ export class VentaProducto {
       .subscribe((result) => {
         this.esMovil = result.matches;
       });
+    this.obtenerRangoParametrizado()
     this.consultarProductos();
+  }
+
+  private obtenerRangoParametrizado(): void {
+    this.sharedServices.parametros(this.idEmpresa.toString()).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          const comision = rest.datos.find((t: any) => t.tipo === 'ComisionVenta').valor;
+          this.usuariosSinComision = comision;
+        } else {
+          this.usuariosSinComision = '';
+        }
+      },
+    });
   }
 
   public consultarProductos(): void {
@@ -199,17 +216,17 @@ export class VentaProducto {
 
       if (resultadoDescuento.isConfirmed) {
         descuento = Number(resultadoDescuento.value) || 0;
-        porcentaje = this.cantidadProducto *  this.productoSeleccionado.porcentaje;
+        porcentaje = this.cantidadProducto * this.productoSeleccionado.porcentaje;
         if (porcentaje >= descuento) {
           porcentaje = porcentaje - descuento;
-        }else {
+        } else {
           porcentaje = 0;
         }
       } else {
         return
       }
-    }else {
-      porcentaje = this.cantidadProducto *  this.productoSeleccionado.porcentaje;
+    } else {
+      porcentaje = this.cantidadProducto * this.productoSeleccionado.porcentaje;
     }
 
     if (
@@ -237,6 +254,14 @@ export class VentaProducto {
         });
 
         return;
+      }
+
+      if (this.usuariosSinComision
+        .split(',')
+        .map(Number)
+        .includes(this.idUsuario)) {
+
+        porcentaje = 0;
       }
 
       if (existe) {
