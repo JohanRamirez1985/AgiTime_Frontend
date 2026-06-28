@@ -7,9 +7,9 @@ import { Injectable } from "@angular/core";
 
 export class inventarioProductosService {
     private baseUrlPro = `${environment.apiBaseUrl}/Productos`;
-    private baseUrlPar = `${environment.apiBaseUrl}/Parametros`;
+    private baseUrlinf = `${environment.apiBaseUrl}/Informes`;
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     consultarProductos(request: any) {
         const params = new HttpParams({ fromObject: request });
@@ -30,5 +30,13 @@ export class inventarioProductosService {
 
     ventaProducto(request: any) {
         return this.http.post<any>(`${this.baseUrlPro}/ventaProducto`, request)
+    }
+
+    reporteInventario(request: any) {
+        const params = new HttpParams({ fromObject: request });
+        return this.http.get(`${this.baseUrlinf}/inventarioProductos`, {
+            params,
+            responseType: 'blob',
+        })
     }
 }

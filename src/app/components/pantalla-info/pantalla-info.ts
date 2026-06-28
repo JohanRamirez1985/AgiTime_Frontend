@@ -73,10 +73,10 @@ export class PantallaInfo implements OnInit {
   }
 
   public nextPeriod(): void {
+    this.loading = true;
     this.viewDate = new Date(this.viewDate);
     this.viewDate.setDate(this.viewDate.getDate() + 1);
     this.consultarAgenda(this.viewDate);
-
   }
 
   public previusPeriod(): void {
@@ -144,16 +144,52 @@ export class PantallaInfo implements OnInit {
       .subscribe({
         next: (rest) => {
           if (rest.exito) {
-            this.sedes = rest.datos;
+
+            this.sedes = rest.datos.map((sede: any) => ({
+              ...sede,
+              recursos: sede.recursos.map((recurso: any) => ({
+                ...recurso,
+                citas: this.agruparCitas(recurso.citas)
+              }))
+            }));
+
           } else {
-            this.modalService.error(rest.mensaje)
+            this.sedes = [];
+            this.modalService.error(rest.mensaje);
           }
+
           this.loading = false;
-        }, error: (err) => {
+        },
+        error: (err) => {
+          this.sedes = [];
           this.modalService.error(err.statusText);
           this.loading = false;
         }
-      })
+      });
+  }
+
+  private agruparCitas(citas: any[]): any[] {
+
+    const mapa = new Map<string, any>();
+
+    citas.forEach(cita => {
+
+      const key = `${cita.cliente}-${cita.hora}`;
+
+      if (!mapa.has(key)) {
+        mapa.set(key, {
+          ...cita
+        });
+      } else {
+        const existente = mapa.get(key);
+
+        existente.servicio += `, ${cita.servicio}`;
+      }
+
+    });
+
+    return Array.from(mapa.values());
+
   }
 
   checkScreen() {

@@ -211,10 +211,10 @@ export class Informes {
 
     if ((this.tipoReporte === 'semanal' || this.tipoReporte === 'info') && this.usuario.rol == 3 && this.idEmpresa === '2') {
       request = await this.semanalEmpleado();
-    }
-
-    if (this.tipoReporte === 'semanal' || this.tipoReporte === 'info') {
-      request = await this.semanal();
+    } else {
+      if (this.tipoReporte === 'semanal' || this.tipoReporte === 'info') {
+        request = await this.semanal();
+      }
     }
 
     if (this.tipoReporte === 'inv') {

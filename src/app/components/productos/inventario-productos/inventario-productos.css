@@ -155,3 +155,9 @@ mat-card p {
 .filtros-grid mat-form-field {
   width: 50%;
 }
+
+.acciones-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
