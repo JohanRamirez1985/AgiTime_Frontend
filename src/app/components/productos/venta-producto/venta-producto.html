@@ -34,6 +34,7 @@
     <button mat-raised-button color="primary" (click)="agregarProducto()">
       Agregar producto
     </button>
+
     <button mat-raised-button color="primary" (click)="verProductos()">
       Ver productos
     </button>
@@ -113,14 +114,16 @@
     <mat-card *ngFor="let producto of productosVenta.data" class="producto-card">
       <h3>{{ producto.nombre }}</h3>
       <p><strong>Cantidad:</strong> {{ producto.cantidad }}</p>
+      <p><strong>Comisión:</strong> {{ producto.porcentaje }}</p>
       <p>
         <strong>Valor:</strong>
-        {{ producto.valor | currency : "COP" : "symbol" : "1.0-0" }}
+        {{ producto.precioVenta | currency : "COP" : "symbol" : "1.0-0" }}
       </p>
       <p>
         <strong>Total</strong>
         {{ producto.total | currency : "COP" : "symbol" : "1.0-0" }}
       </p>
+      <p><strong>descuento:</strong> {{ producto.descuento | currency : "COP" : "symbol" : "1.0-0" }}</p>
       <div class="acciones-cell">
         <button mat-icon-button color="warn" (click)="eliminarProducto(producto)">
           <mat-icon>delete</mat-icon>

@@ -116,10 +116,14 @@ mat-card p {
 
 .mensaje-error {
   display: flex;
-  flex-direction: column; /* Para que icono y texto queden uno encima del otro */
-  justify-content: center; /* Centra verticalmente */
-  align-items: center; /* Centra horizontalmente */
-  height: 100%; /* Ocupa toda la altura disponible */
+  flex-direction: column;
+  /* Para que icono y texto queden uno encima del otro */
+  justify-content: center;
+  /* Centra verticalmente */
+  align-items: center;
+  /* Centra horizontalmente */
+  height: 100%;
+  /* Ocupa toda la altura disponible */
   text-align: center;
   padding: 20px;
   margin-top: 170px;
@@ -128,7 +132,8 @@ mat-card p {
 .mensaje-error p {
   font-size: 18px;
   font-weight: 500;
-  color: #b71c1c; /* rojo corporativo */
+  color: #b71c1c;
+  /* rojo corporativo */
 }
 
 .spinner-overlay {
@@ -159,6 +164,23 @@ mat-card p {
 }
 
 .aling-boton {
-    text-align-last: right;
-    margin-top: 16px;
+  text-align: right;
+}
+
+.aling-boton button {
+  margin-top: 10px;
+}
+
+/* Solo en móviles */
+@media (max-width: 768px) {
+  .aling-boton button {
+    display: block;
+    margin-left: auto;
+    /* Mantiene los botones alineados a la derecha */
+  }
+
+  .aling-boton button+button {
+    margin-top: 20px;
+    /* Espacio entre Agregar producto y Ver productos */
+  }
 }
