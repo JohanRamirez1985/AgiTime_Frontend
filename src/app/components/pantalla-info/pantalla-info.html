@@ -27,7 +27,7 @@
 
     <div class="navegacion-container">
 
-        <div class="navegacion-botones">
+        <div *ngIf="mostrarBtnNav" class="navegacion-botones">
 
             <button mat-icon-button class="boton-navegacion" aria-label="Día anterior" (click)="previusPeriod()">
                 <mat-icon>chevron_left</mat-icon>

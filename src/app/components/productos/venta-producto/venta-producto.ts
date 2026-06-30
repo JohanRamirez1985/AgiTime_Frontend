@@ -155,7 +155,6 @@ export class VentaProducto {
   }
 
   guardarVenta(): void {
-    // if (this.numeroFactura && this.numeroFactura.trim() !== '') {
     this.loading = true;
     const venta = {
       empresa: this.idEmpresa,
@@ -363,5 +362,6 @@ export class VentaProducto {
     this.productosFiltrados = [];
     this.productosPre = [];
     this.productosVenta.data = [];
+    this.cdr.detectChanges();
   }
 }

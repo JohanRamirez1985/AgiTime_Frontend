@@ -57,6 +57,8 @@ export class PantallaInfo implements OnInit {
   empresaNombre: string = '';
   loading: boolean = true;
   private intervalId: any;
+  mostrarBtnNav: boolean = false;
+  mustraTodoAgenda: boolean = false;
 
   constructor(
     private agendaService: AgendamientoService,
@@ -107,6 +109,7 @@ export class PantallaInfo implements OnInit {
     this.idEmpresa = Number(
       this.route.snapshot.paramMap.get('empresaId') ?? 0
     );
+    this.obtenerRangoParametrizado();
     this.obtenerEmpresas();
   }
 
@@ -144,15 +147,24 @@ export class PantallaInfo implements OnInit {
       .subscribe({
         next: (rest) => {
           if (rest.exito) {
-
             this.sedes = rest.datos.map((sede: any) => ({
               ...sede,
               recursos: sede.recursos.map((recurso: any) => ({
                 ...recurso,
-                citas: this.agruparCitas(recurso.citas)
+                citas: this.agruparCitas(
+                  recurso.citas
+                    .filter((cita: any) =>
+                      !this.mustraTodoAgenda ? cita.estado === 'Activo' : true
+                    )
+                    .sort((a: any, b: any) => {
+                      const [ha, ma] = a.hora.split(':').map(Number);
+                      const [hb, mb] = b.hora.split(':').map(Number);
+
+                      return (ha * 60 + ma) - (hb * 60 + mb);
+                    })
+                )
               }))
             }));
-
           } else {
             this.sedes = [];
             this.modalService.error(rest.mensaje);
@@ -219,6 +231,24 @@ export class PantallaInfo implements OnInit {
     const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
     const dia = fecha.getDate().toString().padStart(2, '0');
     return `${anio}-${mes}-${dia}T${hora}`;
+  }
+
+  private obtenerRangoParametrizado(): void {
+    this.sharedServices.parametros(this.idEmpresa.toString()).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          const mostrarFecha = rest.datos.find(
+            (t: any) => t.tipo === 'FechaMonitorAgenda'
+          )?.valor ?? 'true';
+
+          const muestraTodo = rest.datos.find(
+            (t: any) => t.tipo === 'MostrarTodoMonitorAgenda'
+          )?.valor ?? 'true';
+          this.mostrarBtnNav = mostrarFecha?.toLowerCase() === 'true';
+          this.mustraTodoAgenda = muestraTodo?.toLowerCase() === 'true';
+        }
+      },
+    });
   }
 
   ngOnDestroy(): void {
