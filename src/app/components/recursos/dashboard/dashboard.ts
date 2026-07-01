@@ -124,6 +124,9 @@ export class DashboardRecurso {
   busqueda: string = '';
   esMobile = window.innerWidth < 768;
   cruzeHorario: boolean = true;
+  enviarMjsWssp: boolean = false;
+  mostrarInfoCliente: boolean = false;
+  usoBono: boolean = false;
 
   constructor(
     private router: Router,
@@ -179,6 +182,17 @@ export class DashboardRecurso {
           this.rangoTiempo = rest.datos.find(
             (h: any) => h.tipo === this.tipoRangoTiempo,
           ).valor;
+          this.enviarMjsWssp =
+            rest.datos.find((h: any) => h.tipo === 'WhatsappRecurso')
+              ?.valor?.toLowerCase() === 'true';
+
+          this.mostrarInfoCliente =
+            rest.datos.find((h: any) => h.tipo === 'MostrarInfoCliente')
+              ?.valor?.toLowerCase() === 'true';
+
+          this.usoBono =
+            rest.datos.find((h: any) => h.tipo === 'UsoBono')
+              ?.valor?.toLowerCase() === 'true';
         }
       },
     });
@@ -1227,90 +1241,77 @@ export class DashboardRecurso {
     const request: any = this.createJson(hora, bono, result);
     // Si request.FechaIni viene como ISO: 2026-04-07T15:00:00
     const fecha = new Date(request?.FechaIni);
-
-    // Formato fecha: 07-04-26
     const fechaFormateada = fecha.toLocaleDateString("es-CO", {
       day: "2-digit",
       month: "2-digit",
       year: "2-digit",
     });
 
-    // Hora: 15:00
     const horaFormateada = fecha.toLocaleTimeString("es-CO", {
       hour: "2-digit",
       minute: "2-digit",
       hour12: false,
     });
-    const numero = '57' + result.celular;
-    const nombre = result.nombre;
-    const nombresServicios = this.serviciosSeleccionados.map(s => s.nombre);
-    const servicio =
-      nombresServicios.length > 1
-        ? nombresServicios.slice(0, -1).join(', ') + ' y ' + nombresServicios[nombresServicios.length - 1]
-        : nombresServicios[0];
 
-    const mensaje = `¡Hola ${nombre}!
+    const numero = `57${result.celular}`;
 
-      Tu cita ha sido agendada exitosamente en KC NAILS COFFE BAR.
+    const servicio = this.serviciosSeleccionados
+      .map(s => s.nombre)
+      .join(", ")
+      .replace(/,([^,]*)$/, " y$1");
 
-      * Fecha: ${fechaFormateada}  
-      * Hora: ${horaFormateada}  
-      * Servicio: ${servicio}
+    const mensaje = `¡Hola ${result.nombre}!
 
-      Te recomendamos llegar puntual para brindarte la mejor atención y cumplir con tu horario.
+        Tu cita ha sido agendada exitosamente en ${this.empresa.nombre}.
 
-      En caso de que necesites reprogramar tu cita, puedes comunicarte con nosotros con anticipación.
+        Fecha: ${fechaFormateada}
+        Hora: ${horaFormateada}
+        Servicio: ${servicio}
 
-      ¡Será un gusto atenderte!
+        Te recomendamos llegar puntual para brindarte la mejor atención y cumplir con tu horario.
 
-      Saludos,  
-      El equipo de KC NAILS COFFE BAR`;
+        En caso de que necesites reprogramar tu cita, puedes comunicarte con nosotros con anticipación.
 
-    if (this.seleccionRecurso) {
-      this.agendamientoServices.guardarCita(request).subscribe({
-        next: (rest) => {
-          this.modalService.success(
-            rest.mensaje || 'La cita fue creada exitosamente',
-            () => {
-              this.serviciosSeleccionados = [];
-              this.mostrarAgenda = false;
-              this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
-            }
-          );
-          this.loading = false;
+        ¡Será un gusto atenderte!
 
-          const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
-          window.open(url, '_blank');
-        },
-        error: (err) => {
-          this.modalService.error(err.statusText);
-          this.loading = false;
-          this.cdr.detectChanges();
-        },
-      });
-    } else {
-      this.agendamientoServices.registrarCita(request).subscribe({
-        next: (rest) => {
-          if (rest.exito) {
-            this.modalService.success(
-              rest.mensaje || 'La cita fue creado exitosamente',
-              () => {
-                this.serviciosSeleccionados = [];
-                this.mostrarAgenda = false;
-                this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
-              }
-            );
-          } else {
-            this.modalService.error(rest.mensaje || 'Error de servidor')
+        Saludos,
+        El equipo de ${this.empresa.nombre}`;
+
+    const observable = this.seleccionRecurso
+      ? this.agendamientoServices.guardarCita(request)
+      : this.agendamientoServices.registrarCita(request);
+
+    observable.subscribe({
+      next: (rest) => {
+        if (!rest.exito && !this.seleccionRecurso) {
+          this.modalService.error(rest.mensaje || "Error de servidor");
+          return;
+        }
+
+        this.modalService.success(
+          rest.mensaje || "La cita fue creada exitosamente",
+          () => {
+            this.serviciosSeleccionados = [];
+            this.mostrarAgenda = false;
+            this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
           }
-          this.loading = false;
-        },
-        error: (err) => {
-          this.modalService.error(err.statusText);
-          this.loading = false;
-        },
-      });
-    }
+        );
+
+        if (this.enviarMjsWssp && request !== '') {
+          window.open(
+            `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`,
+            "_blank"
+          );
+        }
+
+        this.loading = false;
+      },
+      error: (err) => {
+        this.modalService.error(err.statusText);
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   private consultarInfoCliente(): void {
@@ -1364,78 +1365,106 @@ export class DashboardRecurso {
     }
   }
 
+  private solicitarCliente(hora: any, Bono: boolean): void {
+    const fechaFormateada = this.day.toLocaleDateString('es-CO', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    const valor = this.serviciosSeleccionados.map((s) => s.valor);
+    let costo = valor.reduce((a, b) => a + b, 0);
+    const costoFormateado = new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+    }).format(costo);
+
+    const dialogRef = this.dialog.open(ReservaDialog, {
+      width: '400px',
+      data: {
+        fecha: fechaFormateada,
+        hora: hora.hora,
+        costo: costoFormateado,
+      },
+    });
+    // 👂 Accedemos a la instancia del modal para escuchar el evento
+    const instance = dialogRef.componentInstance;
+
+    instance.celularIngresado.subscribe((celular: string) => {
+      const cliente = this.clientesEmpresa.find(
+        (c) => c.telefono === celular || c.celular === celular
+      );
+
+      if (cliente) {
+        instance.poblarDatos(cliente); // ✅ rellenar datos en el modal
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loading = true;
+        this.agendar(hora.hora, Bono, result);
+      } else {
+        this.loading = false;
+      }
+    });
+  }
+
+  private solicitarUsoBono(hora: any): void {
+    Swal.fire({
+      title: 'Cita',
+      html: `
+      <div style="margin-top:15px;display:flex;justify-content:center;align-items:center;">
+        <label style="font-size:16px;cursor:pointer;display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" id="usoBonoCheckbox">
+          ¿El servicio incluye bono?
+        </label>
+      </div>
+    `,
+      icon: 'success',
+      showCloseButton: true,
+      confirmButtonColor: '#3085d6',
+      preConfirm: () => ({
+        usoBono: (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked
+      })
+    }).then((result) => {
+      if (result.dismiss === Swal.DismissReason.close) {
+        this.loading = false;
+        this.cdr.detectChanges();
+        return;
+      }
+
+      this.loading = true;
+      if (this.mostrarInfoCliente) {
+        this.solicitarCliente(hora, result.value?.usoBono ?? false);
+      } else {
+        this.agendar(hora.hora, result.value?.usoBono ?? false, '');
+      }
+    });
+  }
+
   private agendarCita(hora: any): void {
     if (this.seleccionRecurso) {
-      const fechaFormateada = this.day.toLocaleDateString('es-CO', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-
-      const valor = this.serviciosSeleccionados.map((s) => s.valor);
-      let costo = valor.reduce((a, b) => a + b, 0);
-      const costoFormateado = new Intl.NumberFormat('es-CO', {
-        style: 'currency',
-        currency: 'COP',
-        minimumFractionDigits: 0,
-      }).format(costo);
-
-      const dialogRef = this.dialog.open(ReservaDialog, {
-        width: '400px',
-        data: {
-          fecha: fechaFormateada,
-          hora: hora.hora,
-          costo: costoFormateado,
-        },
-      });
-      // 👂 Accedemos a la instancia del modal para escuchar el evento
-      const instance = dialogRef.componentInstance;
-
-      instance.celularIngresado.subscribe((celular: string) => {
-        const cliente = this.clientesEmpresa.find(
-          (c) => c.telefono === celular || c.celular === celular
-        );
-
-        if (cliente) {
-          instance.poblarDatos(cliente); // ✅ rellenar datos en el modal
-        }
-      });
-
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.loading = true;
-          this.agendar(hora.hora, false, result);
-        } else {
-          this.loading = false;
-        }
-      });
+      if (this.mostrarInfoCliente) {
+        this.solicitarCliente(hora, false);
+        return;
+      } else {
+        this.loading = true;
+        this.agendar(hora.hora, false, '');
+      }
     } else {
-      Swal.fire({
-        title: 'Cita',
-        html: `<div style="margin-top: 15px; display: flex; justify-content: center; align-items: center;">
-                    <label style="font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                      <input type="checkbox" id="usoBonoCheckbox">
-                      ¿El servicio incluye bono?
-                    </label>
-                  </div>`,
-        icon: 'success',
-        showCloseButton: true,
-        confirmButtonColor: '#3085d6',
-        preConfirm: () => {
-          const usoBono = (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked;
-          return { usoBono };
-        }
-      }).then((result) => {
-        if (result.dismiss === Swal.DismissReason.close) {
-          this.loading = false;
-          this.cdr.detectChanges();
-        } else {
-          const usoBono = result.value?.usoBono || false;
-          this.loading = true;
-          this.agendar(hora.hora, usoBono, '');
-        }
-      });
+      if (this.usoBono) {
+        this.solicitarUsoBono(hora);
+        return;
+      }
+      if (this.mostrarInfoCliente) {
+        this.solicitarCliente(hora, false);
+      } else {
+        this.loading = true;
+        this.agendar(hora.hora, false, '');
+      }
     }
   }
 

@@ -88,6 +88,7 @@ export class ClienteAgendar {
   esMobile = window.innerWidth < 768;
   enviarMjsWssp: boolean = false;
   telefonoRecurso: string = '';
+  telefonoEmpresa: string = '';
 
   constructor(
     private sharedServices: SharedService,
@@ -174,6 +175,7 @@ export class ClienteAgendar {
           this.empresaLogo = 'assets/img/' + empresa?.logo;
           this.empresaNombre = empresa?.nombre;
           this.seleccionRubro = empresa.servicio;
+          this.telefonoEmpresa = empresa.telefono;
           localStorage.setItem('empresa', JSON.stringify(empresa));
           this.obtenerRecursos();
         } else {
@@ -199,6 +201,7 @@ export class ClienteAgendar {
             this.telefonoRecurso = recursoActual.telefono;
           } else {
             this.recursoSede = recursoActual;
+            this.telefonoRecurso = this.telefonoEmpresa;
           }
           localStorage.setItem('recurso', JSON.stringify(recursoActual));
           this.obtenerServicios(this.idEmpresa);
