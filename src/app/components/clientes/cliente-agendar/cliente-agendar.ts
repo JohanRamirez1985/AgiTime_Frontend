@@ -86,6 +86,9 @@ export class ClienteAgendar {
   seleccionRubro: boolean = false;
   busqueda: string = '';
   esMobile = window.innerWidth < 768;
+  enviarMjsWssp: boolean = false;
+  telefonoRecurso: string = '';
+  telefonoEmpresa: string = '';
 
   constructor(
     private sharedServices: SharedService,
@@ -117,6 +120,9 @@ export class ClienteAgendar {
           this.rangoTiempo = rest.datos.find(
             (h: any) => h.tipo === this.tipoRangoTiempo
           ).valor;
+          this.enviarMjsWssp =
+            rest.datos.find((h: any) => h.tipo === 'WhatsappCliente')
+              ?.valor?.toLowerCase() === 'true';
         }
       },
     });
@@ -169,6 +175,7 @@ export class ClienteAgendar {
           this.empresaLogo = 'assets/img/' + empresa?.logo;
           this.empresaNombre = empresa?.nombre;
           this.seleccionRubro = empresa.servicio;
+          this.telefonoEmpresa = empresa.telefono;
           localStorage.setItem('empresa', JSON.stringify(empresa));
           this.obtenerRecursos();
         } else {
@@ -178,7 +185,7 @@ export class ClienteAgendar {
     });
   }
 
- private obtenerRecursos(): void {
+  private obtenerRecursos(): void {
     this.sharedServices.obtenerRecursosAgenda(this.idEmpresa).subscribe({
       next: (rest) => {
         if (rest.exito) {
@@ -190,9 +197,11 @@ export class ClienteAgendar {
             this.fotoRecurso = recursoActual.foto;
             this.nombreDelRecurso = recursoActual.nombre;
             this.recursoId = recursoActual.id;
-            this.recursoSede = recursoActual.sede
+            this.recursoSede = recursoActual.sede;
+            this.telefonoRecurso = recursoActual.telefono;
           } else {
             this.recursoSede = recursoActual;
+            this.telefonoRecurso = this.telefonoEmpresa;
           }
           localStorage.setItem('recurso', JSON.stringify(recursoActual));
           this.obtenerServicios(this.idEmpresa);
@@ -361,6 +370,37 @@ export class ClienteAgendar {
     });
   }
 
+  private mensajeWssp(request: any, datos: any): void {
+    const fecha = new Date(request.FechaIni);
+    const nombresServicios = this.serviciosSeleccionados
+      .map((s: any) => s.nombre)
+      .join(', ');
+
+    const fechaFormateada = fecha.toLocaleDateString('es-CO');
+    const horaFormateada = fecha.toLocaleTimeString('es-CO', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    const mensaje = `¡Hola ${this.empresaNombre}!
+
+      Te informo que acabo de agendar una cita contigo en ${this.empresaNombre}.
+
+      Fecha: ${fechaFormateada}
+      Hora: ${horaFormateada}
+      Servicios: ${nombresServicios}
+      Cliente: ${datos.nombre}
+
+      Nos vemos ese día. ¡Muchas gracias!`;
+
+    const numero = '57' + this.telefonoRecurso;
+
+    const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+
+    window.open(url, '_blank');
+  }
+
   private reservarCita(
     datos: {
       celular: string;
@@ -377,6 +417,9 @@ export class ClienteAgendar {
       this.agendaService.guardarCita(request).subscribe({
         next: (rest) => {
           if (rest.exito) {
+            if (this.enviarMjsWssp) {
+              this.mensajeWssp(request, datos);
+            }
             this.modalService.success(
               rest.mensaje || 'La cita fue creada exitosamente',
               () => this.volver()
@@ -397,6 +440,9 @@ export class ClienteAgendar {
     } else {
       this.agendaService.registrarCita(request).subscribe({
         next: (rest) => {
+          if (this.enviarMjsWssp) {
+            this.mensajeWssp(request, datos);
+          }
           this.modalService.success(
             rest.mensaje || 'La cita fue creada exitosamente',
             () => this.volver()
