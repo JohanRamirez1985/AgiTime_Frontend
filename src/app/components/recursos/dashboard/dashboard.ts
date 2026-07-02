@@ -1653,7 +1653,7 @@ export class DashboardRecurso {
       } else {
 
         json = {
-          recurso: result.celular ? 0 : this.user.id,
+          recurso: this.user.id,
           FechaIni: fechaFinal,
           Valor: this.otroSeleccionado ? this.costoOtro : costo,
           UsuarioCreacion: 'Usuario',
