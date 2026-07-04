@@ -87,6 +87,7 @@ export class ClienteAgendar {
   busqueda: string = '';
   esMobile = window.innerWidth < 768;
   enviarMjsWssp: boolean = false;
+  EnvioMensajeEmpresa: boolean = false;
   telefonoRecurso: string = '';
   telefonoEmpresa: string = '';
 
@@ -123,6 +124,12 @@ export class ClienteAgendar {
           this.enviarMjsWssp =
             rest.datos.find((h: any) => h.tipo === 'WhatsappCliente')
               ?.valor?.toLowerCase() === 'true';
+
+          this.EnvioMensajeEmpresa =
+            rest.datos.find((h: any) => h.tipo === 'EnvioMensajeEmpresa')
+              ?.valor?.toLowerCase() === 'true';
+
+
         }
       },
     });
@@ -198,18 +205,16 @@ export class ClienteAgendar {
             this.nombreDelRecurso = recursoActual.nombre;
             this.recursoId = recursoActual.id;
             this.recursoSede = recursoActual.sede;
-            this.telefonoRecurso = recursoActual.telefono;
           } else {
             this.recursoSede = recursoActual;
+          }
+          if (this.EnvioMensajeEmpresa) {
             this.telefonoRecurso = this.telefonoEmpresa;
+          } else {
+            this.telefonoRecurso = recursoActual.telefono;
           }
           localStorage.setItem('recurso', JSON.stringify(recursoActual));
           this.obtenerServicios(this.idEmpresa);
-        } else {
-          // this.modalService.error(rest.mensaje)
-          // this.inactiva = true;
-          // this.mensajeError = rest.mensaje;
-          // this.cdr.detectChanges();
         }
       },
     });
@@ -383,9 +388,15 @@ export class ClienteAgendar {
       hour12: true
     });
 
+    const recurso = this.idEmpresa === 8
+      ? this.empresaNombre
+      : JSON.parse(localStorage.getItem('recurso') || '{}').nombre;
+   
+    const destinatario = this.EnvioMensajeEmpresa ? recurso : 'contigo';
+
     const mensaje = `¡Hola ${this.empresaNombre}!
 
-      Te informo que acabo de agendar una cita contigo en ${this.empresaNombre}.
+      Te informo que acabo de agendar una cita con ${this.seleccionRubro ? `con ${destinatario}` : destinatario} en ${this.empresaNombre}.
 
       Fecha: ${fechaFormateada}
       Hora: ${horaFormateada}
