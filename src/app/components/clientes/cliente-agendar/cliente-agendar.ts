@@ -90,6 +90,7 @@ export class ClienteAgendar {
   EnvioMensajeEmpresa: boolean = false;
   telefonoRecurso: string = '';
   telefonoEmpresa: string = '';
+  ultimoHorarioJornada: any;
 
   constructor(
     private sharedServices: SharedService,
@@ -284,10 +285,19 @@ export class ClienteAgendar {
         }
       });
     } else {
+      const tiempoServicios = this.serviciosSeleccionados.reduce(
+        (total, servicio) => total + servicio.tiempo,
+        0
+      );
       Swal.fire({
-        icon: 'warning',
-        title: 'Mensaje',
-        text: 'No puedes realizar el agendamiento ya que el tiempo de la cita sobrepasa al rango de horas disponibles.',
+        icon: 'info',
+        title: `No es posible agendar a las ${hora.hora}`,
+        html: `
+          El servicio seleccionado requiere <b> ${tiempoServicios} minutos continuos</b>.<br><br>
+          Desde las <b>${hora.hora}</b> no hay tiempo suficiente para completar el servicio antes de la siguiente cita.<br><br>
+          <b>Por favor selecciona un horario anterior.</b>
+        `,
+        confirmButtonText: 'Entendido'
       });
     }
   }
@@ -328,8 +338,7 @@ export class ClienteAgendar {
       horasGeneradas.push(formatHora(nuevaHora));
     }
 
-    let ultimoId =
-      this.horas.findIndex((h) => h.hora === hora) === this.horas.length - 1;
+    let ultimoId = this.ultimoHorarioJornada === hora;
 
     if (ultimoId) {
       return true;
@@ -391,7 +400,7 @@ export class ClienteAgendar {
     const recurso = this.idEmpresa === 8
       ? this.empresaNombre
       : JSON.parse(localStorage.getItem('recurso') || '{}').nombre;
-   
+
     const destinatario = this.EnvioMensajeEmpresa ? recurso : 'contigo';
 
     const mensaje = `¡Hola ${this.empresaNombre}!
@@ -739,9 +748,7 @@ export class ClienteAgendar {
 
           this.horas = this.horas.filter((h) => h.disponible);
         }
-        // if (!this.seleccionRubro) {
-        //   this.consultarInfoCliente();
-        // }
+
         this.verificarHoras();
         this.cdr.detectChanges();
       },
@@ -764,9 +771,26 @@ export class ClienteAgendar {
     // Ordenar
     horasFuturas.sort((a, b) => a.fecha.getTime() - b.fecha.getTime());
 
+    const horasValidas = horasFuturas.filter((horaActual, index, array) => {
+      const anterior = array[index - 1];
+      const siguiente = array[index + 1];
+
+      const tieneAnterior =
+        anterior &&
+        horaActual.fecha.getTime() - anterior.fecha.getTime() ===
+        parseInt(this.rangoTiempo) * 60000;
+
+      const tieneSiguiente =
+        siguiente &&
+        siguiente.fecha.getTime() - horaActual.fecha.getTime() ===
+        parseInt(this.rangoTiempo) * 60000;
+
+      return tieneAnterior || tieneSiguiente;
+    });
+
     // Separar
-    this.horasAM = horasFuturas.filter((h) => h.hora.includes('AM'));
-    this.horasPM = horasFuturas.filter((h) => h.hora.includes('PM'));
+    this.horasAM = horasValidas.filter((h) => h.hora.includes('AM'));
+    this.horasPM = horasValidas.filter((h) => h.hora.includes('PM'));
     this.loading = false;
     this.cdr.detectChanges();
   }
@@ -830,6 +854,7 @@ export class ClienteAgendar {
               };
             }
           );
+          this.ultimoHorarioJornada = this.horas[this.horas.length - 1].hora;
 
           if (!this.seleccionRubro) {
             this.seleccionarRecurso(this.viewDate, this.seleccionRubro);
