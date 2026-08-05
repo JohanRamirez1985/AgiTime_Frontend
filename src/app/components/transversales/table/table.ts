@@ -43,6 +43,9 @@ export class Table implements OnChanges, AfterViewInit {
   @Input() columns: Column[] = [];
   @Input() actions: Action[] = [];
   @Input() loading: boolean = false;
+  @Input() pageSize = 10;
+  @Input() pageSizeOptions = [5, 10, 20, 50];
+  @Input() showPaginator = true;
 
   dataSource = new MatTableDataSource<any>();
   displayedColumns: string[] = [];
@@ -51,16 +54,19 @@ export class Table implements OnChanges, AfterViewInit {
 
   /** 🔹 Se ejecuta cuando cambian inputs */
   ngOnChanges() {
-    // Actualizamos los datos
-    this.dataSource.data = this.data;
 
-    // Columnas dinámicas
+    this.dataSource.data = this.data ?? [];
+
     this.displayedColumns = this.columns.map(c => c.key);
 
-    // Agregamos la columna de acciones si existen
-    if (this.actions && this.actions.length) {
+    if (this.actions?.length) {
       this.displayedColumns.push('acciones');
     }
+
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+
   }
 
   /** 🔹 Después de inicializar las vistas, conectamos el paginador */
