@@ -1,60 +1,135 @@
 <mat-card>
-    <!-- Encabezado: botón crear -->
+
+    <!-- Encabezado -->
     <div class="encabezado-card">
-        <h2>Gestión de ventas</h2>
+
+        <div class="titulo-contenedor">
+
+            <button
+                mat-icon-button
+                color="primary"
+                matTooltip="Volver"
+                (click)="volver()">
+
+                <mat-icon>arrow_back</mat-icon>
+
+            </button>
+
+            <div>
+
+                <h2>Gestión de ventas</h2>
+
+                <span class="subtitulo">
+                    Consulta, edición y eliminación de ventas
+                </span>
+
+            </div>
+
+        </div>
+
     </div>
 
     <!-- Formulario de filtros -->
     <form class="filtros" (ngSubmit)="consultarVentas()">
+
         <div class="filtros-container">
 
             <div class="filtros-izquierda">
 
                 <mat-form-field appearance="outline" class="campo-nombre">
                     <mat-label>Buscar por nombre</mat-label>
-                    <input matInput [(ngModel)]="filtro" name="filtro" placeholder="Nombre o correo">
+                    <input
+                        matInput
+                        [(ngModel)]="filtro"
+                        name="filtro"
+                        placeholder="Nombre o correo">
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="campo-fecha">
                     <mat-label>Fecha inicial</mat-label>
-                    <input matInput [matDatepicker]="pickerInicio" [(ngModel)]="fechaInicial" name="fechaInicial">
-                    <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+
+                    <input
+                        matInput
+                        [matDatepicker]="pickerInicio"
+                        [(ngModel)]="fechaInicial"
+                        name="fechaInicial">
+
+                    <mat-datepicker-toggle
+                        matSuffix
+                        [for]="pickerInicio">
+                    </mat-datepicker-toggle>
+
                     <mat-datepicker #pickerInicio></mat-datepicker>
+
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="campo-fecha">
+
                     <mat-label>Fecha final</mat-label>
-                    <input matInput [matDatepicker]="pickerFin" [(ngModel)]="fechaFinal" name="fechaFinal">
-                    <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+
+                    <input
+                        matInput
+                        [matDatepicker]="pickerFin"
+                        [(ngModel)]="fechaFinal"
+                        name="fechaFinal">
+
+                    <mat-datepicker-toggle
+                        matSuffix
+                        [for]="pickerFin">
+                    </mat-datepicker-toggle>
+
                     <mat-datepicker #pickerFin></mat-datepicker>
+
                 </mat-form-field>
 
             </div>
 
-            <button mat-raised-button color="primary" type="submit" [disabled]="!puedeConsultar()">
+            <button
+                mat-raised-button
+                color="primary"
+                type="submit"
+                [disabled]="!puedeConsultar()">
+
                 <mat-icon>search</mat-icon>
+
                 Consultar
+
             </button>
 
         </div>
+
     </form>
 
+    <!-- Tabla escritorio -->
     <div class="tabla-container" *ngIf="!isMobileView">
-        <!-- Contenedor de la tabla -->
-        <app-table *ngIf="!isMobileView" [data]="ventasFiltradas" [columns]="displayedColumns" [actions]="acciones"
+
+        <app-table
+            [data]="ventasFiltradas"
+            [columns]="displayedColumns"
+            [actions]="acciones"
             [loading]="loading && ventasFiltradas.length > 0">
         </app-table>
+
     </div>
 
-    <!-- Vista tipo tarjetas en móvil -->
+    <!-- Tarjetas móvil -->
     <div *ngIf="isMobileView" class="productos-cards">
-        <!-- Overlay con spinner -->
+
         <div *ngIf="loading" class="loading-container">
+
             <mat-spinner diameter="50"></mat-spinner>
-            <p class="loading-text">Cargando disponibilidad...</p>
+
+            <p class="loading-text">
+                Cargando ventas...
+            </p>
+
         </div>
+
         <div *ngIf="!loading">
-            <mat-card *ngFor="let venta of ventasFiltradas" class="producto-card">
+
+            <mat-card
+                *ngFor="let venta of ventasFiltradas"
+                class="producto-card">
 
                 <h3>{{ venta.producto }}</h3>
 
@@ -75,13 +150,22 @@
                 <p><strong>Ganancia:</strong> {{ venta.ganancia }}</p>
 
                 <div class="acciones-cell">
-                    <button mat-icon-button color="accent" (click)="editarVenta(venta)">
+
+                    <button
+                        mat-icon-button
+                        color="accent"
+                        (click)="editarVenta(venta)">
+
                         <mat-icon>edit</mat-icon>
+
                     </button>
+
                 </div>
 
             </mat-card>
+
         </div>
 
     </div>
+
 </mat-card>

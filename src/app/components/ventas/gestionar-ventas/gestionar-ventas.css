@@ -133,3 +133,28 @@
   margin-top: 8px;
   font-size: 14px;
 }
+
+.encabezado-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.titulo-contenedor {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.titulo-contenedor h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.subtitulo {
+    display: block;
+    color: #757575;
+    font-size: 13px;
+    margin-top: 2px;
+}

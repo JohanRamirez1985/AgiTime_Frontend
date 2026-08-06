@@ -25,6 +25,7 @@ import { ReservaDialog } from '../../reserva-dialog/reserva-dialog';
 import { ClienteService } from '../../../services/cliente.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { EdicionCitas } from '../edicion-citas/edicion-citas'
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-dashboardR',
@@ -148,6 +149,59 @@ export class DashboardRecurso {
       this.motivo = 'Descanso';
       this.estaDeshabilitado = true;
     }
+  }
+
+  async eliminarBloqueo(element: any): Promise<void> {
+    await Swal.fire({
+      title: '¿Eliminar bloqueo?',
+      html: `
+        ¿Está seguro de eliminar el bloqueo?
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#a0aab4ff',
+
+      // 🔹 Muestra el loading
+      showLoaderOnConfirm: true,
+
+      allowOutsideClick: () => !Swal.isLoading(),
+
+      preConfirm: async () => {
+        try {
+
+          await firstValueFrom(
+            this.agendamientoServices.eliminarBloqueo(this.idEmpresa, element.id)
+          );
+
+        } catch (error) {
+
+          Swal.showValidationMessage(
+            'Ocurrió un error al eliminar el bloqueo.'
+          );
+
+        }
+      }
+    }).then((result) => {
+
+      if (result.isConfirmed) {
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Bloqueo eliminado',
+          text: 'La bloqueo fue eliminado correctamente.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+
+        this.obtenerBloqueos();
+      }
+
+    });
+
   }
 
   public cambiarTipo(): void {

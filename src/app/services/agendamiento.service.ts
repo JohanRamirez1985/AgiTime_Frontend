@@ -97,4 +97,16 @@ export class AgendamientoService {
       params,
     });
   }
+
+  eliminarBloqueo(empresa: number, Id: number) {
+    const request = {
+      empresa,
+      Id
+    };
+
+    return this.http.post<any>(
+      `${this.baseUrl}/eliminarBloqueo`,
+      request
+    );
+  }
 }

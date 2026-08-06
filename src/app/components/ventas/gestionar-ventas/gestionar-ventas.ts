@@ -12,7 +12,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { inventarioProductosService } from '../../../services/inventario-productos.service';
 import { Column, Table } from '../../transversales/table/table';
 import Swal from 'sweetalert2';
@@ -70,6 +70,7 @@ export class GestionarVentas {
     private gestionService: inventarioProductosService,
     private dialog: MatDialog,
     private modalService: Modal,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {
     this.inicializarVariables()
@@ -180,6 +181,10 @@ export class GestionarVentas {
 
     });
 
+  }
+
+  public volver(): void {
+    this.router.navigate(['/admin/venta']);
   }
 
   public editarVenta(element: any): void {
