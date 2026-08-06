@@ -19,8 +19,9 @@ import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { inventarioProductosService } from '../../../services/inventario-productos.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
-import { ProductosModal } from '../productos-modal/productos-modal';
+import { ProductosModal } from '../../productos/productos-modal/productos-modal';
 import { SharedService } from '../../../services/shared.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-venta-producto',
@@ -40,7 +41,8 @@ import { SharedService } from '../../../services/shared.service';
     MatTableModule,
     MatCardModule,
     MatAutocompleteModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    RouterLink
   ],
 })
 export class VentaProducto {
@@ -311,12 +313,16 @@ export class VentaProducto {
     this.cdr.detectChanges();
   }
 
-  public verProductos() {
+  public verProductos(): void {
+
+    const esMovil = window.innerWidth < 768;
+
     this.dialog.open(ProductosModal, {
-      width: '90%',
-      maxWidth: '1200px',
-      height: '80vh'
+      width: esMovil ? '98vw' : '90%',
+      maxWidth: esMovil ? '98vw' : '1200px',
+      height: esMovil ? '90vh' : '80vh'
     });
+
   }
 
   ventanaMensaje(

@@ -1,85 +1,139 @@
 .full-width {
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .contenedor-tabla {
   width: 100%;
   overflow-x: auto;
-  border-radius: 8px;
   border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
 }
 
 .tabla-productos {
   width: 100%;
-  min-width: 700px;
+  min-width: 600px;
 }
 
-table {
-  width: 100%;
-}
-
-.mat-mdc-header-row {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: white;
-}
-
+/* Encabezados */
 .mat-mdc-header-cell {
   font-weight: 600;
-  color: #333;
+  color: #424242;
   font-size: 14px;
+  white-space: nowrap;
 }
 
+/* Celdas */
 .mat-mdc-cell {
   font-size: 13px;
+  white-space: nowrap;
 }
 
+/* Hover */
 .mat-mdc-row:hover {
-  background: #f5f7fa;
+  background: #f5f5f5;
   cursor: pointer;
 }
 
-.mat-column-id {
-  width: 80px;
+/* Nombre */
+.mat-column-nombre {
+  min-width: 250px;
 }
 
-.mat-column-stock {
-  width: 100px;
-  text-align: center;
+/* Precio */
+.mat-column-precioVenta {
+  justify-content: center;
+  min-width: 120px;
 }
 
-.mat-column-precio {
-  width: 130px;
-  text-align: right;
-}
-
+/* Comisión */
 .mat-column-comision {
-  width: 120px;
-  text-align: center;
+  justify-content: center;
+  min-width: 120px;
 }
 
+/* Stock */
+.mat-column-stock {
+  justify-content: center;
+  min-width: 90px;
+}
+
+/* Paginador */
 .mat-mdc-paginator {
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
+/* Contenido del modal */
 .mat-mdc-dialog-content {
-  max-height: 65vh;
+  max-height: 70vh;
   overflow: auto;
 }
 
-.mat-mdc-dialog-actions {
-  padding-top: 15px;
-}
-
+/* ===========================
+   TABLET
+   =========================== */
 @media (max-width: 768px) {
 
   .tabla-productos {
-    min-width: 900px;
+    min-width: 520px;
+  }
+
+  .full-width {
+    margin-bottom: 8px;
+  }
+
+  .mat-mdc-header-cell,
+  .mat-mdc-cell {
+    font-size: 12px;
+    padding: 8px;
   }
 
   .mat-mdc-dialog-content {
-    max-height: 60vh;
+    max-height: 75vh;
+    padding: 8px;
   }
+
+}
+
+/* ===========================
+   CELULAR
+   =========================== */
+@media (max-width: 480px) {
+
+  .tabla-productos {
+    min-width: 450px;
+  }
+
+  .mat-mdc-header-cell,
+  .mat-mdc-cell {
+    font-size: 11px;
+    padding: 6px;
+  }
+
+  .mat-column-nombre {
+    min-width: 180px;
+  }
+
+  .mat-column-precioVenta {
+    min-width: 90px;
+  }
+
+  .mat-column-comision {
+    min-width: 90px;
+  }
+
+  .mat-column-stock {
+    min-width: 70px;
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: 80vh;
+    padding: 6px;
+  }
+
+  .mat-mdc-paginator {
+    font-size: 12px;
+  }
+
 }

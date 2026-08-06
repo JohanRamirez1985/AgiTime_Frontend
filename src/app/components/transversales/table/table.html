@@ -1,48 +1,73 @@
 <div class="tabla-container">
-  <!-- 🔹 Loading -->
+
+  <!-- Loading -->
   <div *ngIf="loading" class="loading-container">
     <mat-spinner diameter="50"></mat-spinner>
-    <p class="loading-text">Cargando disponibilidad...</p>
+    <p class="loading-text">Cargando información...</p>
   </div>
 
-  <!-- 🔹 Tabla -->
+  <!-- Contenido -->
   <div *ngIf="!loading">
-    <table mat-table [dataSource]="dataSource" class="custom-table">
 
-      <!-- Generamos dinámicamente las columnas -->
-      <ng-container *ngFor="let col of columns" [matColumnDef]="col.key">
-        <th mat-header-cell *matHeaderCellDef> {{ col.label }} </th>
-        <td mat-cell *matCellDef="let element"> {{ element[col.key] }} </td>
-      </ng-container>
+    <!-- Si existen datos -->
+    <ng-container *ngIf="dataSource.data.length > 0; else sinDatos">
 
-      <!-- Columna de acciones -->
-      <ng-container matColumnDef="acciones">
-        <th mat-header-cell *matHeaderCellDef> Acciones </th>
-        <td mat-cell *matCellDef="let element">
-          <ng-container *ngFor="let action of actions">
-            <button mat-icon-button 
-                    [color]="action.color || 'primary'"
-                    [matTooltip]="action.tooltip || action.label"
-                    (click)="action.action(element)">
-              <mat-icon>{{ action.icon }}</mat-icon>
-            </button>
-          </ng-container>
-        </td>
-      </ng-container>
+      <table mat-table [dataSource]="dataSource" class="custom-table">
 
-      <!-- Encabezados -->
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <!-- Columnas -->
+        <ng-container *ngFor="let col of columns" [matColumnDef]="col.key">
+          <th mat-header-cell *matHeaderCellDef>{{ col.label }}</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element[col.key] }}
+          </td>
+        </ng-container>
 
-      <!-- Filas -->
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
+        <!-- Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let element">
+            <ng-container *ngFor="let action of actions">
+              <button
+                mat-icon-button
+                [color]="action.color || 'primary'"
+                [matTooltip]="action.tooltip || action.label"
+                (click)="action.action(element)">
 
-    <!-- Paginador (opcional) -->
-    <!-- 
-    <mat-paginator 
-      [pageSizeOptions]="[5, 10, 20]" 
-      showFirstLastButtons>
-    </mat-paginator> 
-    -->
+                <mat-icon>{{ action.icon }}</mat-icon>
+
+              </button>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      </table>
+
+      <!-- Paginador -->
+      <!-- <mat-paginator
+        [pageSize]="10"
+        [pageSizeOptions]="[5,10,20,50]"
+        showFirstLastButtons>
+      </mat-paginator> -->
+
+    </ng-container>
+
+    <!-- Sin datos -->
+    <ng-template #sinDatos>
+      <div class="empty-state">
+        <mat-icon>inbox</mat-icon>
+
+        <h3>No hay información para mostrar</h3>
+
+        <p>
+          No se encontraron registros con los filtros seleccionados.
+        </p>
+      </div>
+    </ng-template>
+
   </div>
+
 </div>

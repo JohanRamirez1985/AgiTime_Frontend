@@ -103,8 +103,15 @@ export const routes: Routes = [
       {
         path: 'venta',
         loadComponent: () =>
-          import('./components/productos/venta-producto/venta-producto').then(
+          import('./components/ventas/venta-producto/venta-producto').then(
             (m) => m.VentaProducto
+          ),
+      }, 
+      {
+        path: 'ventas/gestionar',
+        loadComponent: () =>
+          import('./components/ventas/gestionar-ventas/gestionar-ventas').then(
+            (m) => m.GestionarVentas
           ),
       },
       {

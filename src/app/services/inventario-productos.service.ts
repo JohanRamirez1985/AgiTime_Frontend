@@ -39,4 +39,29 @@ export class inventarioProductosService {
             responseType: 'blob',
         })
     }
+
+    consultarVentas(request: any) {
+        const params = new HttpParams({ fromObject: request });
+
+        return this.http.get<any>(
+            `${this.baseUrlPro}/gestionarVenta`,
+            { params }
+        );
+    }
+
+    eliminarVenta(empresa: number, id: number) {
+        const request = {
+            empresa,
+            id
+        };
+
+        return this.http.post<any>(
+            `${this.baseUrlPro}/eliminarVenta`,
+            request
+        );
+    }
+
+    editarVenta(request: any) {
+        return this.http.post<any>(`${this.baseUrlPro}/editarVenta`, request)
+    }
 }

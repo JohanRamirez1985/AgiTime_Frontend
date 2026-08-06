@@ -91,8 +91,8 @@
                   <span>Cancelar</span>
                 </button>
 
-                <button *ngIf="cita.estado === 'Activo' && seleccionRecurso" mat-icon-button [matMenuTriggerFor]="menuAcciones"
-                  class="btn-menu">
+                <button *ngIf="cita.estado === 'Activo' && seleccionRecurso" mat-icon-button
+                  [matMenuTriggerFor]="menuAcciones" class="btn-menu">
                   <mat-icon>more_vert</mat-icon>
                 </button>
 
@@ -286,14 +286,21 @@
                 </mat-card-content>
               </div>
               <div class="bloqueo-acciones">
+
                 <button *ngIf="bloqueo.estado === 'Inactivo'" mat-raised-button color="primary"
                   (click)="irABloqueo(bloqueo, true)">
                   Activar
                 </button>
+
                 <button *ngIf="bloqueo.estado === 'Activo'" mat-raised-button color="primary"
                   (click)="irABloqueo(bloqueo, false)">
                   Inactivar
                 </button>
+
+                <button mat-raised-button color="warn" (click)="eliminarBloqueo(bloqueo)">
+                  Eliminar
+                </button>
+
               </div>
             </div>
           </mat-card>
