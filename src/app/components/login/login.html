@@ -69,11 +69,11 @@
 
       </form>
 
-      <div *ngIf="tipo === 'cl'" class="no-account">
-        ¿No tienes cuenta?
+      <div *ngIf="idEmpresa === '1'" class="no-account">
+        Registrar cliente
 
         <a [routerLink]="['/register']" [queryParams]="{ em: idEmpresa, tipo: 'cl' }">
-          Regístrate
+          Aqui!
         </a>
       </div>
 

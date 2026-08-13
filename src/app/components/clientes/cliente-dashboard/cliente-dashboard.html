@@ -1,109 +1,777 @@
 <div class="dashboard-wrapper">
+
+  <!-- ========================================================= -->
+  <!-- EMPRESA ACTIVA -->
+  <!-- ========================================================= -->
+
   <ng-container *ngIf="!inactiva; else mensajeNoAutorizado">
-    <mat-card class="dashboard-card mat-elevation-z8">
-      <div class="header-card">
-        <a class="link-login" (click)="irALogin()">Iniciar Sesión</a>
-      </div>
-      <!-- Loading -->
-      <div *ngIf="loading" class="loading-container">
-        <mat-spinner diameter="50"></mat-spinner>
-        <p class="loading-text">Cargando disponibilidad...</p>
-      </div>
 
-      <!-- Contenido -->
-      <div *ngIf="!loading">
-        <h2 class="title">{{ nombreEmpresa }}</h2>
-        <mat-divider></mat-divider>
-        <img [src]="img" alt="Imagen barbería" class="imagen-banner" />
+    <mat-card class="dashboard-card">
 
-        <!-- Selección de sede -->
-        <div *ngIf="!mostrarSede" class="recurso-lista">
-          <p class="mensaje-sede">
-            Por favor, selecciona la <strong>sede</strong> en la que deseas
-            agendar tu cita para continuar.
-          </p>
+      <!-- ===================================================== -->
+      <!-- HEADER -->
+      <!-- ===================================================== -->
 
-          <mat-card
-            *ngFor="let sede of sedes"
-            class="recurso-card mat-elevation-z2"
-            (click)="seleccionarSede(sede)"
-          >
-            <div class="recurso-content">
-              <div class="recurso-info">
-                <h3>{{ sede.nombre }}</h3>
-              </div>
-            </div>
-          </mat-card>
-        </div>
+      <header class="dashboard-header">
 
-        <!-- Recursos de la sede -->
-        <div *ngIf="mostrarSede" class="recurso-lista">
-          <div class="sede-header">
-            <h3>
-              <span>{{ sedeSeleccionada }}</span>
-            </h3>
-            <div
-              *ngIf="btnRefresh"
-              class="cambiar-sede-link"
-              (click)="cambiarSede()"
-            >
-              <mat-icon>refresh</mat-icon> Cambiar sede
-            </div>
+        <div class="brand-area">
+
+          <img *ngIf="img" [src]="img" [alt]="nombreEmpresa" class="logo-empresa" />
+
+          <div class="brand-info">
+
+            <span class="brand-label">
+              AGENDA TU CITA
+            </span>
+
+            <h1>
+              {{ nombreEmpresa }}
+            </h1>
+
           </div>
 
-          <ng-container
-            *ngIf="recursosList && recursosList.length > 0; else noRecursos"
-          >
-            <mat-card
-              *ngFor="let usuario of recursosList"
-              class="recurso-card mat-elevation-z2"
-              (click)="irAReservar(usuario)"
-            >
-              <div class="recurso-content">
-                <div class="recurso-info">
-                  <h3>{{ usuario.nombre }}</h3>
-                  <p><mat-icon>phone</mat-icon> {{ usuario.telefono }}</p>
-                  <p><mat-icon>badge</mat-icon> {{ sedeSeleccionada }}</p>
-                </div>
-                <div class="recurso-imagen">
-                  <img
-                    [src]="usuario.foto"
-                    alt="Foto de {{ usuario.nombre }}"
-                  />
-                </div>
-              </div>
-            </mat-card>
-          </ng-container>
-
-          <!-- Sin recursos -->
-          <ng-template #noRecursos>
-            <div class="mensaje-vacio">
-              <mat-icon>info</mat-icon>
-              No hay recursos disponibles para esta sede.
-            </div>
-          </ng-template>
         </div>
+
+
+        <button type="button" class="login-button" (click)="irALogin()">
+
+          <mat-icon>
+            login
+          </mat-icon>
+
+          Iniciar sesión
+
+        </button>
+
+      </header>
+
+
+      <!-- ===================================================== -->
+      <!-- LOADING -->
+      <!-- ===================================================== -->
+
+      <div *ngIf="loading" class="loading-container">
+
+        <div class="loading-icon">
+          <mat-icon>
+            calendar_month
+          </mat-icon>
+        </div>
+
+        <mat-spinner diameter="45"></mat-spinner>
+
+        <h3>
+          Cargando disponibilidad
+        </h3>
+
+        <p>
+          Estamos preparando tus opciones...
+        </p>
+
       </div>
+
+
+      <!-- ===================================================== -->
+      <!-- CONTENIDO -->
+      <!-- ===================================================== -->
+
+      <main *ngIf="!loading" class="dashboard-content">
+
+
+        <!-- =================================================== -->
+        <!-- INTRODUCCIÓN -->
+        <!-- =================================================== -->
+
+        <section class="hero-section">
+
+          <div class="hero-content">
+
+            <div class="hero-text">
+
+              <span class="hero-badge">
+
+                <mat-icon>
+                  event_available
+                </mat-icon>
+
+                RESERVAS ONLINE
+
+              </span>
+
+
+              <h2>
+                Elige tu
+                <strong>sede</strong>
+              </h2>
+
+
+              <p>
+                Selecciona el centro donde deseas realizar tu cita
+                y descubre los profesionales disponibles.
+              </p>
+
+            </div>
+
+
+            <div *ngIf="img" class="hero-image">
+
+              <img [src]="img" [alt]="nombreEmpresa" />
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- =================================================== -->
+        <!-- =================================================== -->
+        <!-- VISTA DE SEDES -->
+        <!-- =================================================== -->
+        <!-- =================================================== -->
+
+        <section *ngIf="!mostrarSede" class="sedes-map-layout">
+
+
+          <!-- ================================================= -->
+          <!-- COLUMNA IZQUIERDA -->
+          <!-- ================================================= -->
+
+          <div class="sedes-column">
+
+
+            <!-- =============================================== -->
+            <!-- CABECERA -->
+            <!-- =============================================== -->
+
+            <div class="sedes-header">
+
+              <div>
+
+                <span class="section-eyebrow">
+                  NUESTRAS SEDES
+                </span>
+
+                <h2>
+                  Elige una sede
+                </h2>
+
+                <p>
+                  Selecciona la sede donde deseas agendar tu cita.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <!-- =============================================== -->
+            <!-- BUSCADOR -->
+            <!-- =============================================== -->
+
+            <div class="search-container">
+
+              <mat-icon>
+                search
+              </mat-icon>
+
+              <input type="text" placeholder="Buscar centro" [(ngModel)]="textoBusquedaSede" (input)="buscarSede()" />
+              <button *ngIf="textoBusquedaSede" type="button" class="clear-search" (click)="textoBusquedaSede = ''">
+                <mat-icon>
+                  close
+                </mat-icon>
+              </button>
+
+            </div>
+
+
+            <!-- =============================================== -->
+            <!-- BOTÓN MAPA EN MÓVIL -->
+            <!-- =============================================== -->
+
+            <button type="button" class="mobile-map-button" (click)="toggleMapaMobile()">
+
+              <mat-icon>
+                {{ mostrarMapaMobile ? 'close' : 'map' }}
+              </mat-icon>
+
+              <span>
+                {{ mostrarMapaMobile ? 'Ocultar mapa' : 'Ver mapa' }}
+              </span>
+
+            </button>
+
+
+            <!-- =============================================== -->
+            <!-- MAPA MOBILE -->
+            <!-- =============================================== -->
+
+            <div *ngIf="mostrarMapaMobile" class="mobile-map-container">
+
+              <google-map width="100%" height="100%" [center]="center" [zoom]="zoom" [options]="mapOptions">
+
+                <map-marker *ngFor="let sede of sedes" [position]="{
+                    lat: sede.latitud,
+                    lng: sede.longitud
+                  }" [title]="sede.nombre" (mapClick)="seleccionarSede(sede)">
+                </map-marker>
+
+              </google-map>
+
+            </div>
+
+
+            <!-- =============================================== -->
+            <!-- LISTADO -->
+            <!-- =============================================== -->
+
+            <div class="sedes-list">
+
+              <mat-card *ngFor="let sede of sedesFiltradas" class="sede-card" (click)="seleccionarSede(sede)">
+
+                <!-- IMAGEN / ICONO -->
+
+                <div class="sede-image-container">
+
+                  <img *ngIf="sede.foto" [src]="sede.foto" [alt]="sede.nombre" class="sede-image" />
+
+                  <div *ngIf="!sede.foto" class="sede-image-placeholder">
+
+                    <mat-icon>
+                      business
+                    </mat-icon>
+
+                  </div>
+
+
+                  <button type="button" class="favorite-button" (click)="$event.stopPropagation()">
+
+                    <mat-icon>
+                      favorite_border
+                    </mat-icon>
+
+                  </button>
+
+                </div>
+
+
+                <!-- INFORMACIÓN -->
+
+                <div class="sede-card-content">
+
+                  <div class="sede-title-row">
+
+                    <h3>
+                      {{ sede.nombre }}
+                    </h3>
+
+                    <div *ngIf="sede.calificacion" class="rating">
+
+                      <mat-icon>
+                        star
+                      </mat-icon>
+
+                      {{ sede.calificacion }}
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- DIRECCIÓN -->
+
+                  <p *ngIf="sede.direccion" class="sede-address">
+
+                    <mat-icon>
+                      location_on
+                    </mat-icon>
+
+                    {{ sede.direccion }}
+
+                  </p>
+
+
+                  <!-- CIUDAD -->
+
+                  <p *ngIf="sede.ciudad" class="sede-location">
+
+                    {{ sede.ciudad }}
+
+                  </p>
+
+
+                  <!-- ESTADO -->
+
+                  <p class="sede-status">
+
+                    <span class="status-dot"></span>
+
+                    Disponible para reservas
+
+                  </p>
+
+
+                  <!-- ACCIÓN -->
+
+                  <div class="sede-action">
+
+                    <span>
+                      Ver profesionales
+                    </span>
+
+                    <mat-icon>
+                      arrow_forward
+                    </mat-icon>
+
+                  </div>
+
+                </div>
+
+              </mat-card>
+
+
+              <!-- ============================================= -->
+              <!-- SIN RESULTADOS -->
+              <!-- ============================================= -->
+
+              <div *ngIf="
+                  sedesFiltradas.length === 0
+                  && textoBusquedaSede
+                " class="empty-search">
+
+                <mat-icon>
+                  search_off
+                </mat-icon>
+
+                <h3>
+                  No encontramos esa sede
+                </h3>
+
+                <p>
+                  Intenta con otro nombre.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- ================================================= -->
+          <!-- ================================================= -->
+          <!-- MAPA DESKTOP -->
+          <!-- ================================================= -->
+          <!-- ================================================= -->
+
+          <aside class="map-column">
+
+            <div class="map-floating">
+
+
+              <!-- MAPA -->
+
+              <google-map width="100%" height="100%" [center]="center" [zoom]="zoom" [options]="mapOptions">
+
+                <map-marker *ngFor="let sede of sedesFiltradas" [position]="{
+                    lat: sede.latitud,
+                    lng: sede.longitud
+                  }" [title]="sede.nombre" (mapClick)="seleccionarSede(sede)">
+                </map-marker>
+
+              </google-map>
+
+
+              <!-- OVERLAY SUPERIOR -->
+
+              <div class="map-floating-header">
+
+                <div>
+
+                  <span>
+                    NUESTRAS UBICACIONES
+                  </span>
+
+                  <strong>
+                    Encuentra tu sede
+                  </strong>
+
+                </div>
+
+
+                <div class="map-location-count">
+
+                  <mat-icon>
+                    location_on
+                  </mat-icon>
+
+                  {{ sedes.length }}
+
+                </div>
+
+              </div>
+
+
+              <!-- LEYENDA -->
+
+              <div class="map-bottom-card">
+
+                <div class="map-bottom-icon">
+
+                  <mat-icon>
+                    touch_app
+                  </mat-icon>
+
+                </div>
+
+                <div>
+
+                  <strong>
+                    Selecciona una sede
+                  </strong>
+
+                  <span>
+                    Haz clic sobre una ubicación
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </aside>
+
+        </section>
+
+
+        <!-- =================================================== -->
+        <!-- =================================================== -->
+        <!-- SEDE SELECCIONADA -->
+        <!-- =================================================== -->
+        <!-- =================================================== -->
+
+        <section *ngIf="mostrarSede" class="selected-sede-section">
+
+
+          <!-- ================================================= -->
+          <!-- HEADER -->
+          <!-- ================================================= -->
+
+          <div class="selected-sede-header">
+
+            <div class="selected-sede-title">
+
+              <button *ngIf="btnRefresh" mat-icon-button class="back-button" matTooltip="Cambiar sede"
+                (click)="cambiarSede()">
+
+                <mat-icon>
+                  arrow_back
+                </mat-icon>
+
+              </button>
+
+
+              <div class="selected-location-icon">
+
+                <mat-icon>
+                  location_on
+                </mat-icon>
+
+              </div>
+
+
+              <div>
+
+                <span class="section-eyebrow">
+                  SEDE SELECCIONADA
+                </span>
+
+                <h2>
+                  {{ sedeSeleccionada }}
+                </h2>
+
+              </div>
+
+            </div>
+
+
+            <button *ngIf="btnRefresh" mat-stroked-button class="change-sede-button" (click)="cambiarSede()">
+
+              <mat-icon>
+                swap_horiz
+              </mat-icon>
+
+              Cambiar sede
+
+            </button>
+
+          </div>
+
+
+          <!-- ================================================= -->
+          <!-- INFORMACIÓN -->
+          <!-- ================================================= -->
+
+          <div class="selected-sede-info">
+
+            <div>
+
+              <mat-icon>
+                business
+              </mat-icon>
+
+              <div>
+
+                <span>
+                  Centro seleccionado
+                </span>
+
+                <strong>
+                  {{ sedeSeleccionada }}
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div class="available-status">
+
+              <span class="status-dot"></span>
+
+              Disponible para reservas
+
+            </div>
+
+          </div>
+
+
+          <!-- ================================================= -->
+          <!-- PROFESIONALES -->
+          <!-- ================================================= -->
+
+          <section class="profesionales-section">
+
+            <div class="profesionales-header">
+
+              <div>
+
+                <span class="section-eyebrow">
+                  DISPONIBILIDAD
+                </span>
+
+                <h2>
+                  Profesionales disponibles
+                </h2>
+
+                <p>
+                  Selecciona el profesional con quien deseas
+                  agendar tu cita.
+                </p>
+
+              </div>
+
+
+              <div class="professional-count">
+
+                <strong>
+                  {{ recursosList.length }}
+                </strong>
+
+                <span>
+                  disponibles
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- PROFESIONALES -->
+            <!-- ================================================= -->
+
+            <ng-container *ngIf="
+                recursosList &&
+                recursosList.length > 0;
+                else noRecursos
+              ">
+
+              <div class="profesionales-grid">
+
+                <mat-card *ngFor="let usuario of recursosList" class="profesional-card" (click)="irAReservar(usuario)">
+
+                  <div class="profesional-image">
+
+                    <img [src]="usuario.foto" [alt]="'Foto de ' + usuario.nombre" />
+
+                    <span class="online-indicator"></span>
+
+                  </div>
+
+
+                  <div class="profesional-info">
+
+                    <span class="professional-label">
+                      PROFESIONAL
+                    </span>
+
+                    <h3>
+                      {{ usuario.nombre }}
+                    </h3>
+
+
+                    <p *ngIf="usuario.telefono">
+
+                      <mat-icon>
+                        phone
+                      </mat-icon>
+
+                      {{ usuario.telefono }}
+
+                    </p>
+
+
+                    <p>
+
+                      <mat-icon>
+                        location_on
+                      </mat-icon>
+
+                      {{ sedeSeleccionada }}
+
+                    </p>
+
+                  </div>
+
+
+                  <div class="professional-arrow">
+
+                    <mat-icon>
+                      arrow_forward
+                    </mat-icon>
+
+                  </div>
+
+                </mat-card>
+
+              </div>
+
+            </ng-container>
+
+
+            <!-- ================================================= -->
+            <!-- SIN PROFESIONALES -->
+            <!-- ================================================= -->
+
+            <ng-template #noRecursos>
+
+              <div class="mensaje-vacio">
+
+                <div class="empty-icon">
+
+                  <mat-icon>
+                    person_off
+                  </mat-icon>
+
+                </div>
+
+                <h3>
+                  No hay profesionales disponibles
+                </h3>
+
+                <p>
+                  Actualmente no encontramos profesionales
+                  disponibles para esta sede.
+                </p>
+
+                <button mat-stroked-button (click)="cambiarSede()">
+
+                  <mat-icon>
+                    swap_horiz
+                  </mat-icon>
+
+                  Ver otras sedes
+
+                </button>
+
+              </div>
+
+            </ng-template>
+
+          </section>
+
+        </section>
+
+      </main>
+
     </mat-card>
 
-    <!-- Botón flotante -->
+
+    <!-- ======================================================= -->
+    <!-- MIS CITAS -->
+    <!-- ======================================================= -->
+
     <div class="boton-flotante-wrapper">
-      <button
-        mat-flat-button
-        color="primary"
-        class="boton-flotante-mejorado"
-        (click)="misCitas()"
-      >
-        Mis Citas
+
+      <button mat-flat-button class="boton-mis-citas" (click)="misCitas()">
+
+        <mat-icon>
+          calendar_month
+        </mat-icon>
+
+        <span>
+          Mis citas
+        </span>
+
       </button>
+
     </div>
+
   </ng-container>
 
-  <!-- Mensaje de error -->
+
+  <!-- ========================================================= -->
+  <!-- EMPRESA INACTIVA -->
+  <!-- ========================================================= -->
+
   <ng-template #mensajeNoAutorizado>
+
     <div class="mensaje-error">
-      <mat-icon color="warn">error</mat-icon>
-      <p>{{ mensajeError }}</p>
+
+      <div class="error-icon">
+
+        <mat-icon>
+          error_outline
+        </mat-icon>
+
+      </div>
+
+      <span class="error-label">
+        ACCESO NO DISPONIBLE
+      </span>
+
+      <h2>
+        Servicio temporalmente no disponible
+      </h2>
+
+      <p>
+        {{ mensajeError }}
+      </p>
+
+      <button mat-flat-button color="primary" (click)="irALogin()">
+
+        <mat-icon>
+          login
+        </mat-icon>
+
+        Iniciar sesión
+
+      </button>
+
     </div>
+
   </ng-template>
+
 </div>
