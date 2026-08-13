@@ -1,123 +1,136 @@
-<mat-toolbar color="primary" class="toolbar">
-  <div class="user-info">
-    <img [src]="img" alt="Foto de usuario" class="user-avatar" />
+<mat-sidenav-container class="sidenav-container">
 
-    <div class="user-data">
-      <div class="user-text">{{ nombreEmpresa }}</div>
-      <div class="user-subtext">{{ usuarioLogueado.nombre }}</div>
+  <!-- =====================================================
+       MENÚ LATERAL
+  ====================================================== -->
+
+  <mat-sidenav #sidenav class="sidenav" [mode]="isMobileView ? 'over' : 'side'" [opened]="!isMobileView">
+
+    <!-- Encabezado azul -->
+    <div class="sidenav-header">
+
+      <img [src]="img" alt="Foto de usuario" class="sidenav-avatar" />
+
+      <div class="sidenav-user">
+
+        <div class="empresa">
+          {{ nombreEmpresa }}
+        </div>
+
+        <div class="usuario">
+          {{ usuarioLogueado.nombre }}
+        </div>
+
+      </div>
+
     </div>
-  </div>
-  <!-- Spacer -->
-  <span class="spacer"></span>
 
-  <!-- Botones en pantallas grandes -->
-  <div class="toolbar-buttons desktop-only">
-    <button *ngIf="validate('das')" mat-button routerLink="/admin/dashboard">
-      <mat-icon>analytics</mat-icon>
-      Ir al Dashboard
-    </button>
 
-    <button *ngIf="validate('ser')" mat-button routerLink="/admin/servicios">
-      <mat-icon>build</mat-icon>
-      Servicios
-    </button>
+    <!-- =====================================================
+         OPCIONES DEL MENÚ
+    ====================================================== -->
 
-    <button *ngIf="validate('age')" mat-button routerLink="/admin/recurso/dash">
-      <mat-icon>event_note</mat-icon>
-      Agendamientos
-    </button>
+    <mat-nav-list>
 
-    <button *ngIf="validate('usu')" mat-button routerLink="/admin/usuarios">
-      <mat-icon>group</mat-icon>
-      Usuarios
-    </button>
+      <ng-container *ngFor="let item of menuItems">
 
-    <button *ngIf="validate('edu')" mat-button routerLink="/admin/usuarioPorcentaje/gestionar">
-      <mat-icon>school</mat-icon>
-      Usuarios
-    </button>
+        <a mat-list-item *ngIf="validate(item.codigo)" [routerLink]="item.route" routerLinkActive="active-menu"
+          [routerLinkActiveOptions]="{ exact: true }" (click)="isMobileView && sidenav.close()">
 
-    <button *ngIf="validate('pro')" mat-button routerLink="/admin/inventario">
-      <mat-icon>inventory_2</mat-icon>
-      Inventario
-    </button>
+          <mat-icon matListItemIcon>
+            {{ item.icon }}
+          </mat-icon>
 
-    <button *ngIf="validate('ven')" mat-button routerLink="/admin/venta">
-      <mat-icon>point_of_sale</mat-icon>
-      Venta
-    </button>
+          <span matListItemTitle>
+            {{ item.label }}
+          </span>
 
-    <button *ngIf="validate('inf')" mat-button routerLink="/admin/informes">
-      <mat-icon>assessment</mat-icon>
-      Informes
-    </button>
+        </a>
 
-    <button *ngIf="validate('liq')" mat-button routerLink="/admin/liquidacion">
-      <mat-icon>payments</mat-icon>
-      Liquidación
-    </button>
+      </ng-container>
 
-    <button mat-button class="logout-button" (click)="cerrarSesion()">
-      <mat-icon>logout</mat-icon>
-      Cerrar sesión
-    </button>
+    </mat-nav-list>
 
-    <mat-menu #userMenu="matMenu">
-      <div style="padding: 8px 16px; font-weight: bold">
-        {{ usuarioLogueado.nombre }}
+  </mat-sidenav>
+
+
+  <!-- =====================================================
+       CONTENIDO PRINCIPAL
+  ====================================================== -->
+
+  <mat-sidenav-content>
+
+
+    <!-- =====================================================
+         TOOLBAR
+    ====================================================== -->
+
+    <mat-toolbar class="toolbar">
+
+      <!-- Botón menú -->
+      <button mat-icon-button class="menu-button" (click)="toggleMenu(sidenav)" aria-label="Abrir menú">
+
+        <mat-icon>
+          menu
+        </mat-icon>
+
+      </button>
+
+
+      <!-- Empresa + usuario -->
+
+      <div class="toolbar-company" *ngIf="!sidenav.opened">
+
+        <img [src]="img" alt="Logo empresa" class="toolbar-logo" />
+
+        <div class="toolbar-company-data">
+
+          <span class="toolbar-company-name">
+            {{ nombreEmpresa }}
+          </span>
+
+          <span class="toolbar-user-name">
+            {{ usuarioLogueado?.nombre }}
+          </span>
+
+        </div>
+
       </div>
-      <mat-divider></mat-divider>
-      <div style="padding: 8px 16px; font-weight: bold">
-        {{ usuarioLogueado?.nombreRol || "Rol" }}
-      </div>
-    </mat-menu>
-  </div>
 
-  <!-- Menú hamburguesa en móviles -->
-  <button mat-icon-button class="mobile-only" [matMenuTriggerFor]="menu">
-    <mat-icon>menu</mat-icon>
-  </button>
 
-  <mat-menu #menu="matMenu">
-    <button *ngIf="validate('das')" mat-menu-item routerLink="/admin/dashboard">
-      <mat-icon>dashboard</mat-icon>
-      Ir al Dashboard
-    </button>
-    <button *ngIf="validate('ser')" mat-menu-item routerLink="/admin/servicios">
-      <mat-icon>home_repair_service</mat-icon>
-      Servicos
-    </button>
-    <button *ngIf="validate('age')" mat-menu-item routerLink="/admin/recurso/dash">
-      <mat-icon>date_range</mat-icon>
-      Agendamientos
-    </button>
-    <button *ngIf="validate('usu')" mat-menu-item routerLink="/admin/usuarios">
-      <mat-icon>people</mat-icon>
-      Usuarios
-    </button>
-    <button *ngIf="validate('edu')" mat-menu-item routerLink="/admin/usuarioPorcentaje/gestionar">
-      <mat-icon>people</mat-icon>
-      Usuarios
-    </button>
-    <button *ngIf="validate('pro')" mat-menu-item routerLink="/admin/inventario">
-      <mat-icon>store</mat-icon>
-      Inventario
-    </button>
-    <button *ngIf="validate('ven')" mat-menu-item routerLink="/admin/venta">
-      <mat-icon>attach_money</mat-icon>
-      Venta
-    </button>
-    <button *ngIf="validate('inf')" mat-menu-item routerLink="/admin/informes">
-      <mat-icon>bar_chart</mat-icon>
-      Informes
-    </button>
-    <button *ngIf="validate('liq')" mat-menu-item routerLink="/admin/liquidacion">
-      <mat-icon>bar_chart</mat-icon>
-      Liquidación
-    </button>
-    <button mat-menu-item (click)="cerrarSesion()">
-      <mat-icon>logout</mat-icon>
-      Cerrar sesión
-    </button>
-  </mat-menu>
-</mat-toolbar>
+      <!-- Espacio -->
+
+      <span class="spacer"></span>
+
+
+      <!-- Cerrar sesión -->
+
+      <button mat-button class="logout-toolbar" (click)="cerrarSesion()">
+
+        <mat-icon>
+          logout
+        </mat-icon>
+
+        <span class="logout-text">
+          Cerrar sesión
+        </span>
+
+      </button>
+
+    </mat-toolbar>
+
+
+    <!-- =====================================================
+         CONTENIDO DE LAS RUTAS
+    ====================================================== -->
+
+    <div class="content">
+
+      <router-outlet></router-outlet>
+
+    </div>
+
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

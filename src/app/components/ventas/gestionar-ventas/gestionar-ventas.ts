@@ -20,6 +20,8 @@ import { firstValueFrom } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalEditarVenta } from '../modal-editar-venta/modal-editar-venta';
 import { Modal } from '../../../shared/services/modal';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-gestionar-ventas',
@@ -38,7 +40,9 @@ import { Modal } from '../../../shared/services/modal';
     MatNativeDateModule,
     MatProgressSpinnerModule,
     RouterModule,
-    Table
+    Table,
+    MatTooltipModule,
+    MatDividerModule
   ],
   standalone: true,
   templateUrl: './gestionar-ventas.html',
