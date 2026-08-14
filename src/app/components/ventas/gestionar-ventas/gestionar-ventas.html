@@ -5,11 +5,7 @@
 
         <div class="titulo-contenedor">
 
-            <button
-                mat-icon-button
-                color="primary"
-                matTooltip="Volver"
-                (click)="volver()">
+            <button mat-icon-button color="primary" matTooltip="Volver" (click)="volver()">
 
                 <mat-icon>arrow_back</mat-icon>
 
@@ -38,25 +34,15 @@
 
                 <mat-form-field appearance="outline" class="campo-nombre">
                     <mat-label>Buscar por nombre</mat-label>
-                    <input
-                        matInput
-                        [(ngModel)]="filtro"
-                        name="filtro"
-                        placeholder="Nombre o correo">
+                    <input matInput [(ngModel)]="filtro" name="filtro" placeholder="Nombre o correo">
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="campo-fecha">
                     <mat-label>Fecha inicial</mat-label>
 
-                    <input
-                        matInput
-                        [matDatepicker]="pickerInicio"
-                        [(ngModel)]="fechaInicial"
-                        name="fechaInicial">
+                    <input matInput [matDatepicker]="pickerInicio" [(ngModel)]="fechaInicial" name="fechaInicial">
 
-                    <mat-datepicker-toggle
-                        matSuffix
-                        [for]="pickerInicio">
+                    <mat-datepicker-toggle matSuffix [for]="pickerInicio">
                     </mat-datepicker-toggle>
 
                     <mat-datepicker #pickerInicio></mat-datepicker>
@@ -67,15 +53,9 @@
 
                     <mat-label>Fecha final</mat-label>
 
-                    <input
-                        matInput
-                        [matDatepicker]="pickerFin"
-                        [(ngModel)]="fechaFinal"
-                        name="fechaFinal">
+                    <input matInput [matDatepicker]="pickerFin" [(ngModel)]="fechaFinal" name="fechaFinal">
 
-                    <mat-datepicker-toggle
-                        matSuffix
-                        [for]="pickerFin">
+                    <mat-datepicker-toggle matSuffix [for]="pickerFin">
                     </mat-datepicker-toggle>
 
                     <mat-datepicker #pickerFin></mat-datepicker>
@@ -84,11 +64,7 @@
 
             </div>
 
-            <button
-                mat-raised-button
-                color="primary"
-                type="submit"
-                [disabled]="!puedeConsultar()">
+            <button mat-raised-button color="primary" type="submit" [disabled]="!puedeConsultar()">
 
                 <mat-icon>search</mat-icon>
 
@@ -103,60 +79,115 @@
     <!-- Tabla escritorio -->
     <div class="tabla-container" *ngIf="!isMobileView">
 
-        <app-table
-            [data]="ventasFiltradas"
-            [columns]="displayedColumns"
-            [actions]="acciones"
+        <app-table [data]="ventasFiltradas" [columns]="displayedColumns" [actions]="acciones"
             [loading]="loading && ventasFiltradas.length > 0">
         </app-table>
 
     </div>
 
     <!-- Tarjetas móvil -->
+    <!-- Tarjetas móvil -->
     <div *ngIf="isMobileView" class="productos-cards">
 
+        <!-- Cargando -->
         <div *ngIf="loading" class="loading-container">
-
             <mat-spinner diameter="50"></mat-spinner>
 
             <p class="loading-text">
                 Cargando ventas...
             </p>
+        </div>
+
+        <!-- Sin información -->
+        <div *ngIf="!loading && ventasFiltradas.length === 0" class="empty-container">
+
+            <mat-icon>inventory_2</mat-icon>
+
+            <h3>No hay información</h3>
+
+            <p>
+                No se encontraron ventas con los filtros seleccionados.
+            </p>
 
         </div>
 
-        <div *ngIf="!loading">
+        <!-- Ventas -->
+        <div *ngIf="!loading && ventasFiltradas.length > 0">
 
-            <mat-card
-                *ngFor="let venta of ventasFiltradas"
-                class="producto-card">
+            <mat-card *ngFor="let venta of ventasFiltradas" class="producto-card">
 
-                <h3>{{ venta.producto }}</h3>
+                <!-- Encabezado -->
+                <div class="card-header">
 
-                <p><strong>Vendedor:</strong> {{ venta.vendedor }}</p>
+                    <div>
+                        <h3>{{ venta.producto }}</h3>
+                        <span class="fecha">
+                            {{ venta.fechaVenta }}
+                        </span>
+                    </div>
 
-                <p><strong>Fecha:</strong> {{ venta.fechaVenta }}</p>
+                    <div class="cantidad">
+                        x{{ venta.cantidad }}
+                    </div>
 
-                <p><strong>Cantidad:</strong> {{ venta.cantidad }}</p>
+                </div>
 
-                <p><strong>Venta:</strong> {{ venta.venta }}</p>
+                <mat-divider></mat-divider>
 
-                <p><strong>Costo:</strong> {{ venta.costo }}</p>
+                <!-- Información -->
+                <div class="card-info">
 
-                <p><strong>Descuento:</strong> {{ venta.descuento }}</p>
+                    <div class="info-item">
+                        <span class="label">Vendedor</span>
+                        <span class="value">{{ venta.vendedor }}</span>
+                    </div>
 
-                <p><strong>Comisión:</strong> {{ venta.comision }}</p>
+                    <div class="info-item">
+                        <span class="label">Venta</span>
+                        <span class="value venta">
+                            {{ venta.venta }}
+                        </span>
+                    </div>
 
-                <p><strong>Ganancia:</strong> {{ venta.ganancia }}</p>
+                    <div class="info-item" *ngIf="rol !== 3">
+                        <span class="label">Costo</span>
+                        <span class="value">
+                            {{ venta.costo }}
+                        </span>
+                    </div>
 
-                <div class="acciones-cell">
+                    <div class="info-item">
+                        <span class="label">Descuento</span>
+                        <span class="value">
+                            {{ venta.descuento }}
+                        </span>
+                    </div>
 
-                    <button
-                        mat-icon-button
-                        color="accent"
-                        (click)="editarVenta(venta)">
+                    <div class="info-item">
+                        <span class="label">Comisión</span>
+                        <span class="value">
+                            {{ venta.comision }}
+                        </span>
+                    </div>
 
-                        <mat-icon>edit</mat-icon>
+                    <div class="info-item" *ngIf="rol !== 3">
+                        <span class="label">Ganancia</span>
+                        <span class="value ganancia">
+                            {{ venta.ganancia }}
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- Acciones -->
+                <div class="acciones-cell" *ngIf="acciones.length > 0">
+
+                    <button *ngFor="let accion of acciones" mat-icon-button [color]="accion.color || 'accent'"
+                        [matTooltip]="accion.label" (click)="accion.action(venta)">
+
+                        <mat-icon>
+                            {{ accion.icon }}
+                        </mat-icon>
 
                     </button>
 

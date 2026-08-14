@@ -1,127 +1,528 @@
-.toolbar {
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+========================================================= */
+
+.sidenav-container {
+  width: 100%;
+  height: 100vh;
+  background: #f5f6f8;
+}
+
+
+/* =========================================================
+   MENÚ LATERAL
+========================================================= */
+
+.sidenav {
+  width: 250px;
+
+  background: #ffffff;
+
+  border-right: 1px solid #e0e0e0;
+
+  overflow-x: hidden;
+}
+
+
+/* =========================================================
+   ENCABEZADO DEL MENÚ LATERAL
+========================================================= */
+
+.sidenav-header {
+  height: 64px;
+
   display: flex;
   align-items: center;
-  height: 64px;
-  padding: 0 16px;
+
+  padding: 0 15px;
+
+  gap: 12px;
+
   background: #0d47a1;
+
   color: white;
-  overflow: hidden;
+
+  box-sizing: border-box;
 }
+
+
+/* Imagen */
+
+.sidenav-avatar {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 2px solid white;
+
+  flex-shrink: 0;
+}
+
+
+/* Información */
+
+.sidenav-user {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+}
+
+
+/* Empresa */
+
+.empresa {
+  font-size: 14px;
+  font-weight: 600;
+
+  color: white;
+
+  max-width: 170px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* Usuario */
+
+.usuario {
+  margin-top: 2px;
+
+  font-size: 12px;
+
+  color: rgba(255, 255, 255, 0.8);
+
+  max-width: 170px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   LISTA DEL MENÚ
+========================================================= */
+
+mat-nav-list {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+
+/* Elementos */
+
+mat-nav-list a {
+  height: 46px;
+
+  margin: 3px 8px;
+
+  border-radius: 8px;
+
+  color: #444;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+
+/* Iconos */
+
+mat-nav-list a mat-icon {
+  color: #555;
+
+  transition: color 0.2s ease;
+}
+
+
+/* Hover */
+
+mat-nav-list a:hover {
+  background: #f1f4f9;
+}
+
+
+/* =========================================================
+   OPCIÓN ACTIVA
+========================================================= */
+
+.active-menu {
+  background: #e3f2fd !important;
+
+  color: #0d47a1 !important;
+}
+
+
+.active-menu mat-icon {
+  color: #0d47a1 !important;
+}
+
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.toolbar {
+  height: 64px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 16px;
+
+  background: #0d47a1;
+
+  color: white;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   BOTÓN HAMBURGUESA
+========================================================= */
+
+.menu-button {
+  color: white !important;
+
+  flex-shrink: 0;
+}
+
+
+.menu-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+
+/* =========================================================
+   EMPRESA + USUARIO DEL TOOLBAR
+========================================================= */
+
+.toolbar-company {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-left: 8px;
+
+  min-width: 0;
+}
+
+
+/* Logo */
+
+.toolbar-logo {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 2px solid white;
+
+  flex-shrink: 0;
+}
+
+
+/* Contenedor empresa / usuario */
+
+.toolbar-company-data {
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+
+  min-width: 0;
+}
+
+
+/* Nombre empresa */
+
+.toolbar-company-name {
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  max-width: 220px;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* Usuario */
+
+.toolbar-user-name {
+  margin-top: -8px;
+
+  color: rgba(255, 255, 255, 0.8);
+
+  font-size: 12px;
+
+  max-width: 220px;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   ESPACIADOR
+========================================================= */
 
 .spacer {
   flex: 1 1 auto;
 }
 
-/* ==========================
-   USUARIO
-========================== */
 
-.user-info {
+/* =========================================================
+   CERRAR SESIÓN
+========================================================= */
+
+.logout-toolbar {
   display: flex;
+
   align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
 
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid white;
-  flex-shrink: 0;
-}
-
-.user-text {
-  font-size: 14px;
-  font-weight: 600;
-  color: white;
-
-  max-width: 180px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.user-subtext {
-  font-size: 12px;
-  color: rgba(255, 255, 255, .8);
-
-  max-width: 120px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ==========================
-   BOTONES
-========================== */
-
-.toolbar-buttons {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.toolbar-buttons button {
   color: white !important;
-  font-size: 13px;
-  min-width: auto;
-  padding: 0 10px;
+
+  font-size: 14px;
+
+  padding: 0 12px;
+
+  border-radius: 6px;
+
+  transition: background-color 0.2s ease;
 }
 
-.toolbar-buttons mat-icon {
-  margin-right: 4px;
-  font-size: 18px;
+
+.logout-toolbar mat-icon {
+  margin-right: 6px;
 }
 
-/* Hover */
 
-.toolbar-buttons button:hover,
-.logout-button:hover {
-  background: rgba(255,255,255,.12);
+.logout-toolbar:hover {
+  background: rgba(255, 255, 255, 0.12);
 }
 
-/* ==========================
-   MÓVIL
-========================== */
 
-.mobile-only {
-  display: none;
+/* =========================================================
+   CONTENIDO PRINCIPAL
+========================================================= */
+
+.content {
+  width: 100%;
+
+  min-height: calc(100vh - 64px);
+
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  background: #f5f6f8;
 }
 
-@media (max-width: 1200px) {
 
-  .toolbar-buttons button {
-    font-size: 12px;
-    padding: 0 6px;
-  }
-
-  .toolbar-buttons mat-icon {
-    margin-right: 2px;
-  }
-}
+/* =========================================================
+   TABLET
+========================================================= */
 
 @media (max-width: 992px) {
 
-  .desktop-only {
+  .sidenav {
+    width: 230px;
+  }
+
+
+  .content {
+    padding: 16px;
+  }
+
+
+  .toolbar-company-name {
+    max-width: 180px;
+  }
+
+
+  .toolbar-user-name {
+    max-width: 180px;
+  }
+
+
+  .logout-toolbar {
+    font-size: 13px;
+
+    padding: 0 10px;
+  }
+
+}
+
+
+/* =========================================================
+   MÓVIL
+========================================================= */
+
+@media (max-width: 768px) {
+
+  /* -------------------------
+     SIDENAV
+  ------------------------- */
+
+  .sidenav {
+    width: 280px;
+  }
+
+
+  /* -------------------------
+     TOOLBAR
+  ------------------------- */
+
+  .toolbar {
+    height: 56px;
+
+    padding: 0 8px;
+  }
+
+
+  /* -------------------------
+     HEADER SIDENAV
+  ------------------------- */
+
+  .sidenav-header {
+    height: 56px;
+
+    padding: 0 15px;
+  }
+
+
+  /* -------------------------
+     LOGO TOOLBAR
+  ------------------------- */
+
+  .toolbar-logo {
+    width: 34px;
+    height: 34px;
+  }
+
+
+  /* -------------------------
+     EMPRESA
+  ------------------------- */
+
+  .toolbar-company-name {
+    font-size: 13px;
+
+    max-width: 150px;
+  }
+
+
+  /* -------------------------
+     USUARIO
+  ------------------------- */
+
+  .toolbar-user-name {
+    font-size: 11px;
+
+    max-width: 150px;
+  }
+
+
+  /* -------------------------
+     LOGO SIDENAV
+  ------------------------- */
+
+  .sidenav-avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+
+  /* -------------------------
+     CONTENIDO
+  ------------------------- */
+
+  .content {
+    padding: 12px;
+
+    min-height: calc(100vh - 56px);
+  }
+
+
+  /* -------------------------
+     CERRAR SESIÓN
+  ------------------------- */
+
+  .logout-toolbar {
+    padding: 0 8px;
+  }
+
+
+  .logout-toolbar mat-icon {
+    margin-right: 0;
+  }
+
+
+  .logout-text {
     display: none;
   }
 
-  .mobile-only {
-    display: flex;
-    color: white !important;
+}
+
+
+/* =========================================================
+   MÓVILES PEQUEÑOS
+========================================================= */
+
+@media (max-width: 400px) {
+
+  .sidenav {
+    width: 270px;
   }
 
-  .mobile-only mat-icon {
-    color: white !important;
+
+  .content {
+    padding: 10px;
   }
 
-  .user-text {
+
+  .toolbar-company {
+    gap: 7px;
+
+    margin-left: 4px;
+  }
+
+
+  .toolbar-company-name {
     max-width: 120px;
   }
 
-  .user-subtext {
-    display: none;
+
+  .toolbar-user-name {
+    max-width: 120px;
   }
+
+
+  .toolbar-logo {
+    width: 32px;
+    height: 32px;
+  }
+
 }

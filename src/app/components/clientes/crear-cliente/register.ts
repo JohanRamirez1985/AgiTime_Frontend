@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { ClienteService } from '../../../services/cliente.service';
 import Swal from 'sweetalert2';
+import { Modal } from '../../../shared/services/modal';
 
 @Component({
   selector: 'app-register',
@@ -34,118 +35,123 @@ import Swal from 'sweetalert2';
   styleUrl: './register.css'
 })
 
-export class Register {  
+export class Register {
   nombre = '';
   email = '';
-  password = '';
-  confirmPassword = '';
   errorMessage = '';
   successMessage = '';
-  idDocumento: string = '';
-  tipoDocumento: string = '';
-  fechaNacimiento: string = '';
-  genero: string = '';
+  fechaNacimiento: Date | null = null;
   cellphone: string = '';
-  tipoGenero: string = '';
   idEmpresa: string | null = null;
-  tipo: string | null = null;
-  tipoDocumentos: TipoDocumento[] = [];
-  listaGeneros: TipoDocumento[] = [];
   uniqueId = Math.floor(Math.random() * 100000);
   btnRegistrar: boolean = false;
 
   constructor(private route: ActivatedRoute,
-              private router: Router,
-              private sharedService: SharedService,
-              private clientService : ClienteService 
-             ) {}
+    private router: Router,
+    private clientService: ClienteService,
+    private modalService: Modal
+  ) { }
 
 
   ngOnInit(): void {
     this.idEmpresa = this.route.snapshot.queryParamMap.get('em');
-    this.tipo = this.route.snapshot.queryParamMap.get('tipo');
-
-    // Validar que solo los clientes puedan registrar
-    if (this.tipo !== 'cl') {
-      this.router.navigate(['/']); // redirige al inicio
-    }
-
-    if (this.idEmpresa) {
-      obtenerTiposDocumentos(this.sharedService, this.idEmpresa, datos => {
-        this.tipoDocumentos = datos;
-      });
-      obtenerGeneros(this.sharedService, this.idEmpresa, datos => {
-        this.listaGeneros = datos;
-      });
-    }
   }
 
-  public registrar():void {
+  public registrar(): void {
     this.errorMessage = '';
     this.successMessage = '';
     this.btnRegistrar = true;
 
-    if (!this.nombre || !this.email || !this.password || !this.confirmPassword) {
-      this.errorMessage = 'Todos los campos son obligatorios';
-      return;
-    }
-
-    if (this.password !== this.confirmPassword) {
-      this.errorMessage = 'Las contraseñas no coinciden';
-      return;
-    }
-
     const request = this.createJson();
 
     this.clientService.crearCliente(request)
-    .subscribe({
-      next: (rest : ClienteRegistroResponse) => {
-        if (rest.exito) {
-          Swal.fire({
-            icon: 'success',
-            title: '¡Usuario creado!',
-            text: rest.mensaje || 'Cliente creado exitosamente',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Ir al login'
-          }).then(() => {
-            this.router.navigate(['/login'], {
-              queryParams: { em: this.idEmpresa, tipo: this.tipo }
-            });
-          });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: rest.mensaje || 'Error al crear el cliente',
-          });
+      .subscribe({
+        next: (rest: ClienteRegistroResponse) => {
+          if (rest.exito) {
+            this.modalService.success(
+              rest.mensaje || '¡Cliente registrado exitosamente!',
+              () => {
+                this.mensajeWssp(request.telefono);
+                this.router.navigate(['/login'], {
+                  queryParams: { em: this.idEmpresa, tipo: 'em' }
+                });
+              }
+            );
+          } else {
+            this.modalService.error(rest.mensaje);
+          }
+          this.btnRegistrar = false;
+        },
+        error: err => {
+          this.btnRegistrar = false;
+          this.modalService.error(err.error.mensaje);
         }
-        this.btnRegistrar = false;
-      },
-      error: err => {
-        this.btnRegistrar = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Error de servidor',
-          text: 'No se pudo conectar con el backend',
-        });
-      }
-    })
+      })
   }
 
-  private createJson():ClienteRegistro {
-    
+  private mensajeWssp(telefono: string): void {
+
+    const mensaje = `🔥 ¡Hola! Te saluda A Fuego Barber Shop. Fue un gusto atenderte hoy. 💈
+
+          Queremos saber algo importante: ¿qué tal te pareció tu corte y la atención? 👀🔥
+
+          Tu opinión nos ayuda a seguir mejorando y a asegurarnos de que cada visita a A Fuego sea una buena experiencia. 🙌
+
+          Para tu próxima visita puedes elegir la opción que más te convenga:
+
+          📲 Agenda online: https://agitime.com.co/cliente?em=2
+          💬 WhatsApp: Escríbenos directamente.
+          🚶‍♂️ Sin cita: También puedes visitarnos sin cita; atendemos por orden de llegada según disponibilidad.
+
+          📲 Guarda nuestro contacto para que no te pierdas nuestros estados, promociones y novedades.
+
+          🔥¡Te esperamos nuevamente!🔥`;
+
+    const numero = '57' + telefono;
+
+    const url = `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`;
+
+    window.open(url, '_blank');
+  }
+
+  private createJson(): ClienteRegistro {
+
+    const now = new Date();
+    const fechaLocal =
+      now.getFullYear() +
+      '-' +
+      String(now.getMonth() + 1).padStart(2, '0') +
+      '-' +
+      String(now.getDate()).padStart(2, '0') +
+      'T' +
+      String(now.getHours()).padStart(2, '0') +
+      ':' +
+      String(now.getMinutes()).padStart(2, '0') +
+      ':' +
+      String(now.getSeconds()).padStart(2, '0');
+
     const json: ClienteRegistro = {
       nombre: this.nombre,
       correo: this.email,
-      password: this.password,
-      tipoDocumento: parseInt(this.tipoDocumento),
-      documento: this.idDocumento,
-      genero: parseInt(this.genero),
-      fechaNacimiento: this.fechaNacimiento,
+      fechaNacimiento: this.fechaNacimiento
+        ? this.formatearFecha(this.fechaNacimiento)
+        : '',
       telefono: this.cellphone,
       empresa: Number(this.idEmpresa),
+      FechaCreacion: fechaLocal
     };
 
-    return json
+    return json;
+  }
+
+  private formatearFecha(fecha: Date): string {
+
+    const year = fecha.getFullYear();
+
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+
+    const day = String(fecha.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 }
