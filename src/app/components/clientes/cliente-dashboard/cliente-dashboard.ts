@@ -48,17 +48,17 @@ import { FormsModule } from '@angular/forms';
 export class ClienteDashboard {
 
   // ==========================================================
-// BUSCADOR DE SEDES
-// ==========================================================
+  // BUSCADOR DE SEDES
+  // ==========================================================
 
-textoBusquedaSede: string = '';
+  textoBusquedaSede: string = '';
 
 
-// ==========================================================
-// MAPA EN MÓVIL
-// ==========================================================
+  // ==========================================================
+  // MAPA EN MÓVIL
+  // ==========================================================
 
-mostrarMapaMobile: boolean = false;
+  mostrarMapaMobile: boolean = false;
 
 
   // ==========================================================
@@ -163,7 +163,7 @@ mostrarMapaMobile: boolean = false;
 
     private cdr: ChangeDetectorRef
 
-  ) {}
+  ) { }
 
 
 
@@ -187,45 +187,45 @@ mostrarMapaMobile: boolean = false;
 
   get sedesFiltradas(): any[] {
 
-  const texto = this.textoBusquedaSede
-    ?.trim()
-    .toLowerCase();
+    const texto = this.textoBusquedaSede
+      ?.trim()
+      .toLowerCase();
 
-  if (!texto) {
-    return this.sedes;
+    if (!texto) {
+      return this.sedes;
+    }
+
+    return this.sedes.filter((sede: any) => {
+
+      const nombre =
+        sede.nombre?.toLowerCase() || '';
+
+      const direccion =
+        sede.direccion?.toLowerCase() || '';
+
+      const ciudad =
+        sede.ciudad?.toLowerCase() || '';
+
+      return (
+        nombre.includes(texto) ||
+        direccion.includes(texto) ||
+        ciudad.includes(texto)
+      );
+
+    });
+
   }
 
-  return this.sedes.filter((sede: any) => {
+  buscarSede(): void {
+    this.cdr.detectChanges();
+  }
 
-    const nombre =
-      sede.nombre?.toLowerCase() || '';
+  public toggleMapaMobile(): void {
 
-    const direccion =
-      sede.direccion?.toLowerCase() || '';
+    this.mostrarMapaMobile =
+      !this.mostrarMapaMobile;
 
-    const ciudad =
-      sede.ciudad?.toLowerCase() || '';
-
-    return (
-      nombre.includes(texto) ||
-      direccion.includes(texto) ||
-      ciudad.includes(texto)
-    );
-
-  });
-
-}
-
-buscarSede(): void {
-  this.cdr.detectChanges();
-}
-
-public toggleMapaMobile(): void {
-
-  this.mostrarMapaMobile =
-    !this.mostrarMapaMobile;
-
-}
+  }
 
 
 
@@ -436,43 +436,21 @@ public toggleMapaMobile(): void {
             // CONFIGURAR VISUAL
             // ================================================
 
-            this.mostrarSede =
-              this.sedes.length === 1;
+            // Siempre obligar al cliente a seleccionar una sede
+            this.mostrarSede = false;
 
-
-            this.btnRefresh =
-              this.sedes.length > 1;
-
+            // Solo mostrar "Cambiar sede" cuando existen
+            // varias sedes
+            this.btnRefresh = this.sedes.length > 1;
 
 
             // ================================================
-            // UNA SOLA SEDE
+            // CONFIGURAR MAPA
             // ================================================
 
-            if (this.sedes.length === 1) {
+            if (this.sedes.length > 0) {
 
-              const sede =
-                this.sedes[0];
-
-
-              this.sedeSeleccionada =
-                sede.nombre;
-
-
-              this.sedeSeleccionadaObj =
-                sede;
-
-
-              this.center = {
-
-                lat: sede.latitud,
-
-                lng: sede.longitud
-
-              };
-
-
-              this.zoom = 17;
+              this.configurarCentroMapa();
 
             }
 
@@ -630,7 +608,7 @@ public toggleMapaMobile(): void {
 
         const posicion =
           coordenadas[
-            index % coordenadas.length
+          index % coordenadas.length
           ];
 
 
@@ -793,47 +771,6 @@ public toggleMapaMobile(): void {
             // ================================================
 
             this.encontrarSedesAsociadas();
-
-
-
-            // ================================================
-            // UNA SOLA SEDE
-            // ================================================
-
-            if (
-
-              this.mostrarSede &&
-
-              this.sedes.length === 1
-
-            ) {
-
-
-              const sede =
-                this.sedes[0];
-
-
-              this.sedeSeleccionada =
-                sede.nombre;
-
-
-              this.sedeSeleccionadaObj =
-                sede;
-
-
-              this.recursosList =
-
-                this.recursos.filter(
-
-                  (r: any) =>
-                    r.sede === sede.id
-
-                );
-
-            }
-
-
-
             this.cdr.detectChanges();
 
           }
@@ -876,49 +813,49 @@ public toggleMapaMobile(): void {
   // SELECCIONAR SEDE
   // ==========================================================
 
-public seleccionarSede(sede: any): void {
+  public seleccionarSede(sede: any): void {
 
-  if (!sede) {
-    return;
+    if (!sede) {
+      return;
+    }
+
+    this.sedeSeleccionada =
+      sede.nombre;
+
+    this.sedeSeleccionadaObj =
+      sede;
+
+    this.recursosList =
+      this.recursos.filter(
+        (r: any) =>
+          r.sede === sede.id
+      );
+
+    this.mostrarSede = true;
+
+    this.btnRefresh = true;
+
+    // Cerrar mapa móvil
+    this.mostrarMapaMobile = false;
+
+    // Centrar mapa
+    if (
+      sede.latitud != null &&
+      sede.longitud != null
+    ) {
+
+      this.center = {
+        lat: Number(sede.latitud),
+        lng: Number(sede.longitud)
+      };
+
+      this.zoom = 17;
+
+    }
+
+    this.cdr.detectChanges();
+
   }
-
-  this.sedeSeleccionada =
-    sede.nombre;
-
-  this.sedeSeleccionadaObj =
-    sede;
-
-  this.recursosList =
-    this.recursos.filter(
-      (r: any) =>
-        r.sede === sede.id
-    );
-
-  this.mostrarSede = true;
-
-  this.btnRefresh = true;
-
-  // Cerrar mapa móvil
-  this.mostrarMapaMobile = false;
-
-  // Centrar mapa
-  if (
-    sede.latitud != null &&
-    sede.longitud != null
-  ) {
-
-    this.center = {
-      lat: Number(sede.latitud),
-      lng: Number(sede.longitud)
-    };
-
-    this.zoom = 17;
-
-  }
-
-  this.cdr.detectChanges();
-
-}
 
 
 
@@ -926,25 +863,25 @@ public seleccionarSede(sede: any): void {
   // CAMBIAR SEDE
   // ==========================================================
 
-public cambiarSede(): void {
+  public cambiarSede(): void {
 
-  this.mostrarSede = false;
+    this.mostrarSede = false;
 
-  this.btnRefresh = true;
+    this.btnRefresh = true;
 
-  this.sedeSeleccionada = '';
+    this.sedeSeleccionada = '';
 
-  this.sedeSeleccionadaObj = null;
+    this.sedeSeleccionadaObj = null;
 
-  this.recursosList = [];
+    this.recursosList = [];
 
-  this.mostrarMapaMobile = false;
+    this.mostrarMapaMobile = false;
 
-  this.configurarCentroMapa();
+    this.configurarCentroMapa();
 
-  this.cdr.detectChanges();
+    this.cdr.detectChanges();
 
-}
+  }
 
 
 

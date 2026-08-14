@@ -1,31 +1,302 @@
-.form-container {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 2rem;
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+/* =========================================
+   CONTENEDOR PRINCIPAL
+   ========================================= */
+
+.register-page {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding: 40px 24px;
+
+  background: #f5f7fa;
 }
 
-h2 {
-  color: #1f3c88;
-  margin-bottom: 1.5rem;
+
+/* =========================================
+   CARD
+   ========================================= */
+
+.register-card {
+  width: 100%;
+  max-width: 850px;
+
+  padding: 32px;
+
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  box-shadow:
+    0 4px 12px rgba(15, 23, 42, 0.05),
+    0 1px 3px rgba(15, 23, 42, 0.04);
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+.register-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+
+  gap: 16px;
+
+  margin-bottom: 22px;
 }
+
+
+.header-icon {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #eef3ff;
+
+  color: #1f3c88;
+}
+
+
+.header-icon mat-icon {
+  font-size: 25px;
+  width: 25px;
+  height: 25px;
+}
+
+
+.register-header h1 {
+  margin: 0;
+
+  font-size: 23px;
+  font-weight: 600;
+
+  color: #172033;
+}
+
+
+.register-header p {
+  margin: 5px 0 0;
+
+  font-size: 14px;
+
+  color: #6b7280;
+}
+
+
+/* =========================================
+   DIVISOR
+   ========================================= */
+
+.header-divider {
+  width: 100%;
+
+  height: 1px;
+
+  background: #e5e7eb;
+
+  margin-bottom: 28px;
+}
+
+
+/* =========================================
+   FORMULARIO
+   ========================================= */
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 4px 20px;
 }
+
+
+/* Nombre ocupa todo */
+
+.field-full {
+  grid-column: 1 / -1;
+}
+
+
+/* =========================================
+   MATERIAL INPUTS
+   ========================================= */
+
+mat-form-field {
+  width: 100%;
+}
+
+
+/* =========================================
+   BOTONES
+   ========================================= */
 
 .boton-container {
-  gap: 1rem;
-  margin-top: 1.5rem;
-  grid-column: span 2;
-  text-align-last: center
+  grid-column: 1 / -1;
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 20px;
+
+  padding-top: 22px;
+
+  border-top: 1px solid #e5e7eb;
 }
 
 
+.btn-cancelar {
+  height: 44px;
+
+  padding: 0 20px;
+
+  border-radius: 8px;
+
+  color: #4b5563;
+
+  border-color: #d1d5db;
+}
+
+
+.btn-registrar {
+  height: 44px;
+
+  padding: 0 22px;
+
+  border-radius: 8px;
+
+  background: #1f3c88;
+
+  color: white;
+
+  font-weight: 500;
+}
+
+
+.btn-registrar:hover:not(:disabled) {
+  background: #17306d;
+}
+
+
+.btn-registrar:disabled {
+  opacity: 0.55;
+}
+
+
+/* =========================================
+   ACCESO DENEGADO
+   ========================================= */
+
+.access-denied {
+  min-height: 60vh;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  color: #6b7280;
+}
+
+
+.access-denied mat-icon {
+  width: 48px;
+  height: 48px;
+
+  font-size: 48px;
+
+  margin-bottom: 12px;
+
+  color: #9ca3af;
+}
+
+
+.access-denied h2 {
+  margin: 0 0 8px;
+
+  color: #374151;
+
+  font-size: 20px;
+}
+
+
+.access-denied p {
+  margin: 0;
+
+  font-size: 14px;
+}
+
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 700px) {
+
+  .register-page {
+    padding: 20px 14px;
+  }
+
+
+  .register-card {
+    padding: 22px 18px;
+
+    border-radius: 12px;
+  }
+
+
+  .register-header h1 {
+    font-size: 20px;
+  }
+
+
+  .form-grid {
+    grid-template-columns: 1fr;
+
+    gap: 2px;
+  }
+
+
+  .field-full {
+    grid-column: auto;
+  }
+
+
+  .boton-container {
+    grid-column: auto;
+
+    flex-direction: column-reverse;
+
+    align-items: stretch;
+
+    margin-top: 15px;
+  }
+
+
+  .btn-cancelar,
+  .btn-registrar {
+    width: 100%;
+  }
+
+}

@@ -9,7 +9,7 @@
     <mat-card class="dashboard-card">
 
       <!-- ===================================================== -->
-      <!-- HEADER -->
+      <!-- HEADER PRINCIPAL -->
       <!-- ===================================================== -->
 
       <header class="dashboard-header">
@@ -53,9 +53,11 @@
       <div *ngIf="loading" class="loading-container">
 
         <div class="loading-icon">
+
           <mat-icon>
             calendar_month
           </mat-icon>
+
         </div>
 
         <mat-spinner diameter="45"></mat-spinner>
@@ -79,10 +81,11 @@
 
 
         <!-- =================================================== -->
-        <!-- INTRODUCCIÓN -->
+        <!-- INTRODUCCIÓN / HERO -->
+        <!-- SOLO SE MUESTRA AL SELECCIONAR SEDE -->
         <!-- =================================================== -->
 
-        <section class="hero-section">
+        <section *ngIf="!mostrarSede" class="hero-section">
 
           <div class="hero-content">
 
@@ -98,20 +101,19 @@
 
               </span>
 
-
               <h2>
-                Elige tu
-                <strong>sede</strong>
+                Encuentra tu lugar ideal
               </h2>
 
-
               <p>
-                Selecciona el centro donde deseas realizar tu cita
-                y descubre los profesionales disponibles.
+                Selecciona una de nuestras sedes para conocer
+                los profesionales disponibles y agendar tu cita.
               </p>
 
             </div>
 
+
+            <!-- LOGO / IMAGEN -->
 
             <div *ngIf="img" class="hero-image">
 
@@ -176,10 +178,13 @@
               </mat-icon>
 
               <input type="text" placeholder="Buscar centro" [(ngModel)]="textoBusquedaSede" (input)="buscarSede()" />
+
               <button *ngIf="textoBusquedaSede" type="button" class="clear-search" (click)="textoBusquedaSede = ''">
+
                 <mat-icon>
                   close
                 </mat-icon>
+
               </button>
 
             </div>
@@ -192,11 +197,23 @@
             <button type="button" class="mobile-map-button" (click)="toggleMapaMobile()">
 
               <mat-icon>
-                {{ mostrarMapaMobile ? 'close' : 'map' }}
+
+                {{
+                mostrarMapaMobile
+                ? 'close'
+                : 'map'
+                }}
+
               </mat-icon>
 
               <span>
-                {{ mostrarMapaMobile ? 'Ocultar mapa' : 'Ver mapa' }}
+
+                {{
+                mostrarMapaMobile
+                ? 'Ocultar mapa'
+                : 'Ver mapa'
+                }}
+
               </span>
 
             </button>
@@ -210,7 +227,7 @@
 
               <google-map width="100%" height="100%" [center]="center" [zoom]="zoom" [options]="mapOptions">
 
-                <map-marker *ngFor="let sede of sedes" [position]="{
+                <map-marker *ngFor="let sede of sedesFiltradas" [position]="{
                     lat: sede.latitud,
                     lng: sede.longitud
                   }" [title]="sede.nombre" (mapClick)="seleccionarSede(sede)">
@@ -222,18 +239,22 @@
 
 
             <!-- =============================================== -->
-            <!-- LISTADO -->
+            <!-- LISTADO DE SEDES -->
             <!-- =============================================== -->
 
             <div class="sedes-list">
 
               <mat-card *ngFor="let sede of sedesFiltradas" class="sede-card" (click)="seleccionarSede(sede)">
 
+
+                <!-- =========================================== -->
                 <!-- IMAGEN / ICONO -->
+                <!-- =========================================== -->
 
                 <div class="sede-image-container">
 
                   <img *ngIf="sede.foto" [src]="sede.foto" [alt]="sede.nombre" class="sede-image" />
+
 
                   <div *ngIf="!sede.foto" class="sede-image-placeholder">
 
@@ -243,6 +264,8 @@
 
                   </div>
 
+
+                  <!-- FAVORITO -->
 
                   <button type="button" class="favorite-button" (click)="$event.stopPropagation()">
 
@@ -255,15 +278,21 @@
                 </div>
 
 
+                <!-- =========================================== -->
                 <!-- INFORMACIÓN -->
+                <!-- =========================================== -->
 
                 <div class="sede-card-content">
+
+
+                  <!-- TÍTULO -->
 
                   <div class="sede-title-row">
 
                     <h3>
                       {{ sede.nombre }}
                     </h3>
+
 
                     <div *ngIf="sede.calificacion" class="rating">
 
@@ -335,8 +364,8 @@
               <!-- ============================================= -->
 
               <div *ngIf="
-                  sedesFiltradas.length === 0
-                  && textoBusquedaSede
+                  sedesFiltradas.length === 0 &&
+                  textoBusquedaSede
                 " class="empty-search">
 
                 <mat-icon>
@@ -369,7 +398,9 @@
             <div class="map-floating">
 
 
+              <!-- ============================================= -->
               <!-- MAPA -->
+              <!-- ============================================= -->
 
               <google-map width="100%" height="100%" [center]="center" [zoom]="zoom" [options]="mapOptions">
 
@@ -382,7 +413,9 @@
               </google-map>
 
 
+              <!-- ============================================= -->
               <!-- OVERLAY SUPERIOR -->
+              <!-- ============================================= -->
 
               <div class="map-floating-header">
 
@@ -412,7 +445,9 @@
               </div>
 
 
+              <!-- ============================================= -->
               <!-- LEYENDA -->
+              <!-- ============================================= -->
 
               <div class="map-bottom-card">
 
@@ -455,12 +490,16 @@
 
 
           <!-- ================================================= -->
-          <!-- HEADER -->
+          <!-- HEADER SEDE -->
           <!-- ================================================= -->
 
           <div class="selected-sede-header">
 
+
             <div class="selected-sede-title">
+
+
+              <!-- VOLVER -->
 
               <button *ngIf="btnRefresh" mat-icon-button class="back-button" matTooltip="Cambiar sede"
                 (click)="cambiarSede()">
@@ -472,6 +511,8 @@
               </button>
 
 
+              <!-- ICONO -->
+
               <div class="selected-location-icon">
 
                 <mat-icon>
@@ -480,6 +521,8 @@
 
               </div>
 
+
+              <!-- INFORMACIÓN -->
 
               <div>
 
@@ -496,6 +539,8 @@
             </div>
 
 
+            <!-- CAMBIAR SEDE -->
+
             <button *ngIf="btnRefresh" mat-stroked-button class="change-sede-button" (click)="cambiarSede()">
 
               <mat-icon>
@@ -510,10 +555,11 @@
 
 
           <!-- ================================================= -->
-          <!-- INFORMACIÓN -->
+          <!-- INFORMACIÓN SEDE -->
           <!-- ================================================= -->
 
           <div class="selected-sede-info">
+
 
             <div>
 
@@ -553,6 +599,11 @@
 
           <section class="profesionales-section">
 
+
+            <!-- =============================================== -->
+            <!-- CABECERA PROFESIONALES -->
+            <!-- =============================================== -->
+
             <div class="profesionales-header">
 
               <div>
@@ -573,6 +624,8 @@
               </div>
 
 
+              <!-- CONTADOR -->
+
               <div class="professional-count">
 
                 <strong>
@@ -589,7 +642,7 @@
 
 
             <!-- ================================================= -->
-            <!-- PROFESIONALES -->
+            <!-- LISTADO PROFESIONALES -->
             <!-- ================================================= -->
 
             <ng-container *ngIf="
@@ -600,7 +653,11 @@
 
               <div class="profesionales-grid">
 
+
                 <mat-card *ngFor="let usuario of recursosList" class="profesional-card" (click)="irAReservar(usuario)">
+
+
+                  <!-- IMAGEN -->
 
                   <div class="profesional-image">
 
@@ -610,6 +667,8 @@
 
                   </div>
 
+
+                  <!-- INFORMACIÓN -->
 
                   <div class="profesional-info">
 
@@ -622,6 +681,8 @@
                     </h3>
 
 
+                    <!-- TELÉFONO -->
+
                     <p *ngIf="usuario.telefono">
 
                       <mat-icon>
@@ -632,6 +693,8 @@
 
                     </p>
 
+
+                    <!-- SEDE -->
 
                     <p>
 
@@ -645,6 +708,8 @@
 
                   </div>
 
+
+                  <!-- FLECHA -->
 
                   <div class="professional-arrow">
 
@@ -669,6 +734,7 @@
 
               <div class="mensaje-vacio">
 
+
                 <div class="empty-icon">
 
                   <mat-icon>
@@ -677,14 +743,17 @@
 
                 </div>
 
+
                 <h3>
                   No hay profesionales disponibles
                 </h3>
+
 
                 <p>
                   Actualmente no encontramos profesionales
                   disponibles para esta sede.
                 </p>
+
 
                 <button mat-stroked-button (click)="cambiarSede()">
 
@@ -740,6 +809,9 @@
 
     <div class="mensaje-error">
 
+
+      <!-- ICONO -->
+
       <div class="error-icon">
 
         <mat-icon>
@@ -748,17 +820,21 @@
 
       </div>
 
+
       <span class="error-label">
         ACCESO NO DISPONIBLE
       </span>
+
 
       <h2>
         Servicio temporalmente no disponible
       </h2>
 
+
       <p>
         {{ mensajeError }}
       </p>
+
 
       <button mat-flat-button color="primary" (click)="irALogin()">
 

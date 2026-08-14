@@ -1044,23 +1044,34 @@ export class DashboardRecurso {
     const abono = cliente.total / 2;
 
 
-    const mensaje = `¡Hola ${cliente.cliente}! 
+    const mensaje = `💅 ¡Hola ${cliente.cliente}!
 
-    Queremos recordarte que tu servicio de ${cliente.nombre} está programado para el ${fechaFormateada} a las ${horaFormateada}.
-    Para confirmar la cita se debe realizar un abono de $${abono.toLocaleString("es-CO")}, para mayor comodidad, te ofrecemos la opción de pagar de manera rápida y segura a través de la llave Bre-b ${telefonoBreB}.  
-    Por favor envía el comprobante al WhatsApp. Se aclara que si no se realiza el abono, el sistema libera la cita y puede ser ocupada por otro cliente.
-    Si necesitas asistencia con el proceso de pago, no dudes en contactarnos.
+          Te recordamos que tienes un servicio programado en *KC NAILS COFFE BAR*:
 
-    ¡Nos vemos pronto!
+          📅 Fecha: ${fechaFormateada}
+          🕐 Hora: ${horaFormateada}
+          💅 Servicio: ${cliente.nombre}
 
-    Saludos,  
-    El equipo de KC NAILS COFFE BAR`;
+          🔐 *Para confirmar tu cita*, debes realizar un abono de *$${abono.toLocaleString("es-CO")}*.
 
+          💳 Puedes realizar el pago de forma rápida y segura utilizando nuestra llave Bre-B:
 
-    // 👉 Redirección a WhatsApp
+          📲 *Llave Bre-B:* ${telefonoBreB}
+
+          📩 Una vez realizado el pago, por favor envíanos el comprobante por este WhatsApp para confirmar tu cita.
+
+          ⚠️ *Importante:* Si no se realiza el abono dentro del tiempo establecido, la cita será liberada automáticamente y podrá ser asignada a otro cliente.
+
+          Si tienes alguna duda o necesitas ayuda con el proceso de pago, estamos aquí para ayudarte. 💬
+
+          ✨ ¡Esperamos verte pronto!
+
+          💖 Gracias por elegir *KC NAILS COFFE BAR*.`;
+
     const numero = '57' + cliente.telefono;
 
-    const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+    const url = `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`;
+
     window.open(url, '_blank');
   }
 
@@ -1314,22 +1325,22 @@ export class DashboardRecurso {
       .join(", ")
       .replace(/,([^,]*)$/, " y$1");
 
-    const mensaje = `¡Hola ${result.nombre}!
+    const mensaje = `📅 ¡Hola ${result.nombre}!
 
-        Tu cita ha sido agendada exitosamente en ${this.empresa.nombre}.
+      ¡Tu cita ha sido agendada exitosamente en *${this.empresa.nombre}*! 🎉
 
-        Fecha: ${fechaFormateada}
-        Hora: ${horaFormateada}
-        Servicio: ${servicio}
+      📅 *Fecha:* ${fechaFormateada}
+      🕐 *Hora:* ${horaFormateada}
+      💇 *Servicio:* ${servicio}
 
-        Te recomendamos llegar puntual para brindarte la mejor atención y cumplir con tu horario.
+      ⏰ Te recomendamos llegar unos minutos antes para brindarte la mejor atención y aprovechar al máximo tu cita.
 
-        En caso de que necesites reprogramar tu cita, puedes comunicarte con nosotros con anticipación.
+      🔄 Si necesitas reprogramar tu cita, por favor comunícate con nosotros con anticipación para ayudarte a encontrar un nuevo horario.
 
-        ¡Será un gusto atenderte!
+      ✨ ¡Será un gusto atenderte!
 
-        Saludos,
-        El equipo de ${this.empresa.nombre}`;
+      ¡Nos vemos pronto! 🙌
+      💙 *${this.empresa.nombre}*`;
 
     const observable = this.seleccionRecurso
       ? this.agendamientoServices.guardarCita(request)
@@ -1353,8 +1364,8 @@ export class DashboardRecurso {
 
         if (this.enviarMjsWssp && request !== '') {
           window.open(
-            `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`,
-            "_blank"
+            `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`,
+            '_blank'
           );
         }
 

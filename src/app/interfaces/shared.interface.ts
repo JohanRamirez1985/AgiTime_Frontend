@@ -95,13 +95,10 @@ export interface UsuarioRegistroResponse {
 export interface ClienteRegistro {
   nombre: string;
   correo: string;
-  password: string;
   telefono: string;
   fechaNacimiento: string; // ISO string, e.g. "1998-07-11T14:56:23.637Z"
-  genero: number;
-  tipoDocumento: number;
-  documento: string;
   empresa: number;
+  FechaCreacion: string
 }
 
 

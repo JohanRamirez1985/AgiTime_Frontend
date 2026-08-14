@@ -403,20 +403,23 @@ export class ClienteAgendar {
 
     const destinatario = this.EnvioMensajeEmpresa ? recurso : 'contigo';
 
-    const mensaje = `¡Hola ${this.empresaNombre}!
+    const mensaje = `📅 ¡Hola ${this.empresaNombre}!
 
-      Te informo que acabo de agendar una cita con ${this.seleccionRubro ? `con ${destinatario}` : destinatario} en ${this.empresaNombre}.
+          Te informo que acabo de agendar una cita en ${this.empresaNombre}.
 
-      Fecha: ${fechaFormateada}
-      Hora: ${horaFormateada}
-      Servicios: ${nombresServicios}
-      Cliente: ${datos.nombre}
+          👤 Profesional: ${destinatario}
+          📅 Fecha: ${fechaFormateada}
+          🕐 Hora: ${horaFormateada}
+          ✂️ Servicios: ${nombresServicios}
+          🙋 Cliente: ${datos.nombre}
 
-      Nos vemos ese día. ¡Muchas gracias!`;
+          ✅ La cita ha sido registrada correctamente.
+
+          ¡Nos vemos ese día! Muchas gracias por elegir ${this.empresaNombre}. 🙌`;
 
     const numero = '57' + this.telefonoRecurso;
 
-    const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+    const url = `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`;
 
     window.open(url, '_blank');
   }
