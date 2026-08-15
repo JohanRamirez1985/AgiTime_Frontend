@@ -225,6 +225,8 @@ export class ClienteDashboard {
     this.mostrarMapaMobile =
       !this.mostrarMapaMobile;
 
+    this.cdr.detectChanges();
+
   }
 
 
