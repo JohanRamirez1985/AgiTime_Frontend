@@ -109,9 +109,16 @@ export class Register {
 
     const numero = '57' + telefono;
 
-    const url = `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`;
+    const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    window.open(url, '_blank');
+    if (esMovil) {
+      window.location.href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+    } else {
+      window.open(
+        `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`,
+        '_blank'
+      );
+    }
   }
 
   private createJson(): ClienteRegistro {
