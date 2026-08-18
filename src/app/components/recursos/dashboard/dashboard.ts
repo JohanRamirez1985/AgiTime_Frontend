@@ -1037,18 +1037,20 @@ export class DashboardRecurso {
   }
 
   public recordatorioWssp(cliente: any) {
+
     const fecha = new Date(cliente.fechaOrden);
 
     const fechaFormateada = fecha.toLocaleDateString('es-CO');
+
     const horaFormateada = fecha.toLocaleTimeString('es-CO', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true
     });
 
-    const telefonoBreB = '3137938061'
-    const abono = cliente.total / 2;
+    const telefonoBreB = '3137938061';
 
+    const abono = cliente.total / 2;
 
     const mensaje = `💅 ¡Hola ${cliente.cliente}!
 
@@ -1076,9 +1078,16 @@ export class DashboardRecurso {
 
     const numero = '57' + cliente.telefono;
 
-    const url = `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`;
+    const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    window.open(url, '_blank');
+    if (esMovil) {
+      window.location.href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+    } else {
+      window.open(
+        `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`,
+        '_blank'
+      );
+    }
   }
 
   public confirmarCita(cita: any) {
