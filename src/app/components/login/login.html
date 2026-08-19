@@ -1,87 +1,112 @@
+<app-validar-version></app-validar-version>
+
 <div class="login-wrapper">
+
   <div class="overlay"></div>
-  <div *ngIf="loadingInicial" class="loading-container">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p class="loading-text">Cargando disponibilidad...</p>
-  </div>
-  <div *ngIf="!loadingInicial">
-    <mat-card class="login-card">
-      <div class="logo-section">
-        <img [src]="empresaLogo" alt="Logo" class="logo">
-        <h2>Bienvenido</h2>
-        <p>Ingresa a tu cuenta</p>
-        <a [routerLink]="['/monitorAgenda', idEmpresa]" class="link-agenda">
-          Ver agenda
-        </a>
-      </div>
-      <app-error-message [message]="apiErrorMessage"></app-error-message>
-      <form (ngSubmit)="login()" #loginForm="ngForm" autocomplete="off">
-        <!-- EMAIL -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Usuario</mat-label>
 
-          <input matInput type="email" name="user_email_{{ uniqueId }}" [(ngModel)]="email" required minlength="4"
-            #emailInput="ngModel" autocomplete="off" />
+  <mat-card class="login-card">
 
-          <mat-icon matPrefix>person</mat-icon>
+    <div class="logo-section">
 
-          <mat-error *ngIf="emailInput.errors?.['required']">
-            El usuario es obligatorio
-          </mat-error>
+      <img [src]="empresaLogo" alt="Logo" class="logo">
 
-          <mat-error *ngIf="emailInput.errors?.['email']">
-            Ingresa un usuario válido
-          </mat-error>
+      <h2>Bienvenido</h2>
 
-        </mat-form-field>
+      <p>Ingresa a tu cuenta</p>
 
-        <!-- PASSWORD -->
-        <mat-form-field appearance="outline" class="full-width">
+      <a [routerLink]="['/monitorAgenda', idEmpresa]" class="link-agenda">
+        Ver agenda
+      </a>
 
-          <mat-label>Contraseña</mat-label>
+    </div>
 
-          <input matInput [type]="hidePassword ? 'password' : 'text'" name="user_pass_{{ uniqueId }}"
-            [(ngModel)]="password" required minlength="6" #passwordInput="ngModel" />
+    <app-error-message [message]="apiErrorMessage">
+    </app-error-message>
 
-          <mat-icon matPrefix>lock</mat-icon>
+    <form (ngSubmit)="login()" #loginForm="ngForm" autocomplete="off">
 
-          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
-            <mat-icon>
-              {{ hidePassword ? 'visibility_off' : 'visibility' }}
-            </mat-icon>
-          </button>
+      <!-- EMAIL -->
+      <mat-form-field appearance="outline" class="full-width">
 
-          <mat-error *ngIf="passwordInput.errors?.['required']">
-            La contraseña es obligatoria
-          </mat-error>
+        <mat-label>Usuario</mat-label>
 
-        </mat-form-field>
+        <input matInput type="email" name="user_email_{{ uniqueId }}" [(ngModel)]="email" required minlength="4"
+          #emailInput="ngModel" autocomplete="off" />
 
-        <!-- BOTÓN -->
-        <button mat-raised-button color="primary" class="login-button" [disabled]="loginForm.invalid || loading">
+        <mat-icon matPrefix>
+          person
+        </mat-icon>
 
-          <span *ngIf="!loading">Ingresar</span>
+        <mat-error *ngIf="emailInput.errors?.['required']">
+          El usuario es obligatorio
+        </mat-error>
 
-          <mat-spinner *ngIf="loading" diameter="22" strokeWidth="3">
-          </mat-spinner>
+        <mat-error *ngIf="emailInput.errors?.['email']">
+          Ingresa un usuario válido
+        </mat-error>
+
+      </mat-form-field>
+
+
+      <!-- PASSWORD -->
+      <mat-form-field appearance="outline" class="full-width">
+
+        <mat-label>Contraseña</mat-label>
+
+        <input matInput [type]="hidePassword ? 'password' : 'text'" name="user_pass_{{ uniqueId }}"
+          [(ngModel)]="password" required minlength="6" #passwordInput="ngModel" />
+
+        <mat-icon matPrefix>
+          lock
+        </mat-icon>
+
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+
+          <mat-icon>
+            {{ hidePassword ? 'visibility_off' : 'visibility' }}
+          </mat-icon>
 
         </button>
 
-      </form>
+        <mat-error *ngIf="passwordInput.errors?.['required']">
+          La contraseña es obligatoria
+        </mat-error>
 
-      <div *ngIf="idEmpresa === '1'" class="no-account">
-        Registrar cliente
+      </mat-form-field>
 
-        <a [routerLink]="['/register']" [queryParams]="{ em: idEmpresa, tipo: 'cl' }">
-          Aqui!
-        </a>
-      </div>
 
-      <div class="app-version">
-        Versión {{version}}
-      </div>
+      <!-- BOTÓN -->
+      <button mat-raised-button color="primary" class="login-button" [disabled]="loginForm.invalid || loading">
 
-    </mat-card>
-  </div>
+        <span *ngIf="!loading">
+          Ingresar
+        </span>
+
+        <mat-spinner *ngIf="loading" diameter="22" strokeWidth="3">
+        </mat-spinner>
+
+      </button>
+
+    </form>
+
+
+    <!-- REGISTRAR CLIENTE -->
+    <div *ngIf="idEmpresa === '2'" class="no-account">
+
+      Registrar cliente
+
+      <a [routerLink]="['/register']" [queryParams]="{
+          em: idEmpresa,
+          tipo: 'cl'
+        }">
+        Aqui!
+      </a>
+
+    </div>
+    <div class="app-version">
+      Versión {{version}}
+    </div>
+
+  </mat-card>
 
 </div>

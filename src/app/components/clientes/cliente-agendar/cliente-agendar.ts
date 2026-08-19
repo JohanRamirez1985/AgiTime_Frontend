@@ -23,6 +23,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ValidarVersion } from '../../../shared/validar-version/validar-version';
 
 registerLocaleData(localeEs);
 
@@ -44,7 +45,8 @@ registerLocaleData(localeEs);
     MatDividerModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatTooltipModule
+    MatTooltipModule,
+    ValidarVersion
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'es' }],
   templateUrl: './cliente-agendar.html',
@@ -91,6 +93,7 @@ export class ClienteAgendar {
   telefonoRecurso: string = '';
   telefonoEmpresa: string = '';
   ultimoHorarioJornada: any;
+  currentYear: number = new Date().getFullYear();
 
   constructor(
     private sharedServices: SharedService,

@@ -1,3 +1,4 @@
+<app-validar-version></app-validar-version>
 <div class="login-wrapper">
 
   <div class="background-overlay"></div>
@@ -12,8 +13,8 @@
 
       <h2>
         {{ idEmpresaSeleccionada
-          ? 'Selecciona tu tipo de usuario'
-          : 'Selecciona una empresa'
+        ? 'Selecciona tu tipo de usuario'
+        : 'Selecciona una empresa'
         }}
       </h2>
 
@@ -30,12 +31,8 @@
 
         <div class="button-group">
 
-          <button
-            mat-raised-button
-            color="primary"
-            class="action-button empresa-btn"
-            (click)="seleccionarTipo('empresa')"
-          >
+          <button mat-raised-button color="primary" class="action-button empresa-btn"
+            (click)="seleccionarTipo('empresa')">
 
             <mat-icon>apartment</mat-icon>
 
@@ -43,11 +40,7 @@
 
           </button>
 
-          <button
-            mat-raised-button
-            class="action-button cliente-btn"
-            (click)="irCliente()"
-          >
+          <button mat-raised-button class="action-button cliente-btn" (click)="irCliente()">
 
             <mat-icon>person</mat-icon>
 
@@ -68,21 +61,13 @@
 
           <mat-icon matPrefix>search</mat-icon>
 
-          <input
-            matInput
-            [(ngModel)]="filtro"
-            (ngModelChange)="buscarNombre()"
-          />
+          <input matInput [(ngModel)]="filtro" (ngModelChange)="buscarNombre()" />
 
         </mat-form-field>
 
         <div class="empresa-list" *ngIf="mostrarListado">
 
-          <div
-            class="empresa-item"
-            *ngFor="let item of listadoFiltrado()"
-            (click)="seleccionarEmpresa(item)"
-          >
+          <div class="empresa-item" *ngFor="let item of listadoFiltrado()" (click)="seleccionarEmpresa(item)">
 
             <div class="empresa-avatar">
               {{ item.nombre[0] }}
@@ -98,10 +83,7 @@
 
           </div>
 
-          <div
-            class="empty-state"
-            *ngIf="listadoFiltrado().length === 0"
-          >
+          <div class="empty-state" *ngIf="listadoFiltrado().length === 0">
 
             <mat-icon>search_off</mat-icon>
 

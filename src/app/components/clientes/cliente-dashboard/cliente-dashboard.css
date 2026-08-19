@@ -26,13 +26,9 @@
 ============================================================ */
 
 .dashboard-wrapper {
-
   min-height: 100vh;
-
   background: #f5f6fa;
-
   padding: 0;
-
   box-sizing: border-box;
 }
 
@@ -42,23 +38,14 @@
 ============================================================ */
 
 .dashboard-card {
-
   width: 100%;
-
   min-height: 100vh;
-
   margin: 0;
-
   padding: 0;
-
   border-radius: 0 !important;
-
   box-shadow: none !important;
-
   background: var(--white);
-
   overflow: visible;
-
   box-sizing: border-box;
 }
 
@@ -68,40 +55,24 @@
 ============================================================ */
 
 .dashboard-header {
-
   height: 82px;
-
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   padding: 0 32px;
-
   border-bottom: 1px solid var(--border);
-
   background: rgba(255, 255, 255, 0.96);
-
   position: sticky;
-
   top: 0;
-
   z-index: 100;
-
   backdrop-filter: blur(12px);
 }
 
-
 .brand-area {
-
   display: flex;
-
   align-items: center;
-
   gap: 14px;
 }
-
 
 .logo-empresa {
   width: 48px;
@@ -114,31 +85,19 @@
   display: block;
 }
 
-
 .brand-label {
-
   display: block;
-
   font-size: 10px;
-
   font-weight: 700;
-
   letter-spacing: 1.4px;
-
   color: #7c8aa5;
-
   margin-bottom: 3px;
 }
 
-
 .brand-info h1 {
-
   margin: 0;
-
   font-size: 20px;
-
   font-weight: 700;
-
   color: var(--text);
 }
 
@@ -148,47 +107,28 @@
 ============================================================ */
 
 .login-button {
-
   border: 0;
-
   background: transparent;
-
   color: #344054;
-
   display: flex;
-
   align-items: center;
-
   gap: 7px;
-
   font-size: 14px;
-
   font-weight: 500;
-
   cursor: pointer;
-
   padding: 10px 12px;
-
   border-radius: 8px;
-
   transition: all .2s ease;
 }
 
-
 .login-button:hover {
-
   background: var(--primary-light);
-
   color: var(--primary);
 }
 
-
 .login-button mat-icon {
-
   font-size: 19px;
-
   width: 19px;
-
   height: 19px;
 }
 
@@ -198,9 +138,7 @@
 ============================================================ */
 
 .dashboard-content {
-
   width: 100%;
-
   box-sizing: border-box;
 }
 
@@ -210,111 +148,74 @@
 ============================================================ */
 
 .hero-section {
-
   border-bottom: 1px solid var(--border);
-
-  background:
-    linear-gradient(180deg,
-      #ffffff 0%,
-      #fbfcff 100%);
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #fbfcff 100%
+  );
 }
 
-
 .hero-content {
-
   max-width: 1500px;
-
   margin: auto;
-
   min-height: 200px;
-
   padding: 38px 32px;
-
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   box-sizing: border-box;
 }
 
-
 .hero-text {
-
   max-width: 650px;
 }
 
-
 .hero-badge {
-
   display: inline-flex;
-
   align-items: center;
-
+  justify-content: center;
   gap: 7px;
-
   background: var(--primary-light);
-
   color: var(--primary);
-
   border-radius: 20px;
-
   padding: 7px 12px;
-
   font-size: 10px;
-
   font-weight: 800;
-
   letter-spacing: 1px;
 }
 
-
 .hero-badge mat-icon {
-
   width: 15px;
-
   height: 15px;
-
   font-size: 15px;
 }
 
-
 .hero-text h2 {
-
   margin: 14px 0 6px;
-
   font-size: clamp(34px, 4vw, 48px);
-
   line-height: 1.05;
-
   font-weight: 400;
-
   color: #172033;
 }
 
-
 .hero-text h2 strong {
-
   color: var(--primary);
-
   font-weight: 700;
 }
 
-
 .hero-text p {
-
   margin: 0;
-
   max-width: 600px;
-
   color: var(--text-secondary);
-
   font-size: 15px;
-
   line-height: 1.6;
 }
 
+
+/* ============================================================
+   IMAGEN HEADER SEDES
+============================================================ */
 
 .hero-image {
   width: 130px;
@@ -328,6 +229,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   background: #fff;
 }
 
@@ -345,22 +247,19 @@
 ============================================================ */
 
 .sedes-map-layout {
-
   max-width: 1500px;
-
   margin: auto;
-
   padding: 32px;
 
   display: grid;
 
   grid-template-columns:
-    minmax(480px, 0.85fr) minmax(500px, 1.15fr);
+    minmax(480px, 0.85fr)
+    minmax(500px, 1.15fr);
 
   gap: 34px;
 
   align-items: start;
-
   box-sizing: border-box;
 }
 
@@ -370,103 +269,119 @@
 ============================================================ */
 
 .sedes-column {
-
   min-width: 0;
-
   padding-bottom: 40px;
 }
 
 
+/* ============================================================
+   HEADER SEDES
+============================================================ */
+
 .sedes-header {
+  width: 100%;
 
   display: flex;
+  flex-direction: column;
 
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
 
-  align-items: flex-start;
+  text-align: center;
 
-  gap: 20px;
+  gap: 16px;
 
-  margin-bottom: 22px;
+  margin-bottom: 28px;
 }
 
 
+/* ============================================================
+   BADGE RESERVAS
+============================================================ */
+
+.sedes-header .hero-badge {
+  margin: 0;
+}
+
+
+/* ============================================================
+   IMAGEN EMPRESA
+============================================================ */
+
+.sedes-header .hero-image {
+  width: 125px;
+  height: 105px;
+
+  margin: 2px 0;
+
+  border-radius: 18px;
+}
+
+
+/* ============================================================
+   TÍTULO SEDES
+============================================================ */
+
+.sedes-title {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  text-align: center;
+}
+
 .section-eyebrow {
-
   display: block;
-
   color: #7d8ba5;
-
   font-size: 10px;
-
   font-weight: 800;
-
   letter-spacing: 1.5px;
-
   margin-bottom: 7px;
 }
 
-
 .sedes-header h2 {
-
   margin: 0;
-
   color: var(--text);
-
   font-size: 28px;
-
   font-weight: 700;
 }
 
-
 .sedes-header p {
-
   margin: 7px 0 0;
-
   color: var(--text-secondary);
-
   font-size: 14px;
 }
 
 
+/* ============================================================
+   CONTADOR
+============================================================ */
+
 .sede-count {
-
   min-width: 68px;
-
   padding: 10px 14px;
-
   background: #f5f7ff;
-
   border: 1px solid #e4e8fa;
-
   border-radius: 12px;
 
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
 }
 
-
 .sede-count strong {
-
   color: var(--primary);
-
   font-size: 20px;
-
   line-height: 1;
 }
 
-
 .sede-count span {
-
   color: #7d8ba5;
-
   font-size: 10px;
-
   text-transform: uppercase;
-
   margin-top: 4px;
 }
 
@@ -476,17 +391,13 @@
 ============================================================ */
 
 .search-container {
-
   width: min(100%, 360px);
-
   height: 42px;
 
   border: 1px solid #d9dde5;
-
   border-radius: 22px;
 
   display: flex;
-
   align-items: center;
 
   padding: 0 13px;
@@ -500,75 +411,47 @@
   transition: all .2s ease;
 }
 
-
 .search-container:focus-within {
-
   border-color: var(--primary);
-
   box-shadow: 0 0 0 3px rgba(67, 85, 197, .08);
 }
 
-
-.search-container>mat-icon {
-
+.search-container > mat-icon {
   color: #8b95a7;
-
   width: 20px;
-
   height: 20px;
-
   font-size: 20px;
 }
 
-
 .search-container input {
-
   border: 0;
-
   outline: 0;
-
   flex: 1;
-
   min-width: 0;
-
   margin-left: 8px;
 
   font-size: 13px;
-
   color: var(--text);
-
   background: transparent;
 }
 
-
 .search-container input::placeholder {
-
   color: #a0a8b5;
 }
 
-
 .clear-search {
-
   border: 0;
-
   background: transparent;
-
   cursor: pointer;
-
   color: #8b95a7;
-
   padding: 3px;
 
   display: flex;
 }
 
-
 .clear-search mat-icon {
-
   font-size: 18px;
-
   width: 18px;
-
   height: 18px;
 }
 
@@ -578,11 +461,8 @@
 ============================================================ */
 
 .sedes-list {
-
   display: flex;
-
   flex-direction: column;
-
   gap: 22px;
 }
 
@@ -592,23 +472,19 @@
 ============================================================ */
 
 .sede-card {
-
   display: grid;
-
   grid-template-columns: 210px 1fr;
-
   gap: 18px;
 
   padding: 0;
 
   border-radius: 16px !important;
-
   border: 1px solid #e5e7eb;
 
-  box-shadow: 0 5px 18px rgba(16, 24, 40, .05) !important;
+  box-shadow:
+    0 5px 18px rgba(16, 24, 40, .05) !important;
 
   overflow: hidden;
-
   cursor: pointer;
 
   background: #fff;
@@ -619,11 +495,8 @@
     border-color .2s ease;
 }
 
-
 .sede-card:hover {
-
   transform: translateY(-2px);
-
   border-color: #cdd4f7;
 
   box-shadow:
@@ -636,62 +509,43 @@
 ============================================================ */
 
 .sede-image-container {
-
   height: 190px;
-
   position: relative;
-
   overflow: hidden;
-
   background: #eef1f6;
 }
 
-
 .sede-image {
-
   width: 100%;
-
   height: 100%;
-
   object-fit: cover;
-
   transition: transform .4s ease;
 }
 
-
 .sede-card:hover .sede-image {
-
   transform: scale(1.04);
 }
 
-
 .sede-image-placeholder {
-
   width: 100%;
-
   height: 100%;
 
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 
   background:
-    linear-gradient(135deg,
+    linear-gradient(
+      135deg,
       #eef1ff,
-      #f7f8ff);
+      #f7f8ff
+    );
 }
 
-
 .sede-image-placeholder mat-icon {
-
   width: 48px;
-
   height: 48px;
-
   font-size: 48px;
-
   color: var(--primary);
 }
 
@@ -701,43 +555,32 @@
 ============================================================ */
 
 .favorite-button {
-
   position: absolute;
-
   right: 10px;
-
   top: 10px;
 
   width: 34px;
-
   height: 34px;
 
   border-radius: 50%;
-
   border: 0;
 
   background: rgba(255, 255, 255, .95);
 
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 
   cursor: pointer;
 
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, .12);
 }
 
-
 .favorite-button mat-icon {
-
   font-size: 19px;
-
   width: 19px;
-
   height: 19px;
-
   color: #344054;
 }
 
@@ -747,168 +590,108 @@
 ============================================================ */
 
 .sede-card-content {
-
   padding: 17px 18px 16px 0;
 
   display: flex;
-
   flex-direction: column;
 
   min-width: 0;
 }
 
-
 .sede-title-row {
-
   display: flex;
-
   justify-content: space-between;
-
   align-items: flex-start;
-
   gap: 10px;
 }
 
-
 .sede-title-row h3 {
-
   margin: 0;
-
   font-size: 17px;
-
   font-weight: 700;
-
   color: #101828;
-
   line-height: 1.3;
 }
 
-
 .rating {
-
   display: flex;
-
   align-items: center;
-
   gap: 3px;
 
   font-size: 13px;
-
   font-weight: 700;
-
   color: #344054;
 
   flex-shrink: 0;
 }
 
-
 .rating mat-icon {
-
   width: 17px;
-
   height: 17px;
-
   font-size: 17px;
-
   color: #fbbf24;
 }
 
-
 .sede-address,
 .sede-location {
-
   display: flex;
-
   align-items: center;
-
   gap: 6px;
 
   margin: 8px 0 0;
 
   color: #667085;
-
   font-size: 13px;
 }
 
-
 .sede-address mat-icon {
-
   width: 17px;
-
   height: 17px;
-
   font-size: 17px;
-
   color: #8b95a7;
 }
 
-
 .sede-status {
-
   display: flex;
-
   align-items: center;
-
   gap: 6px;
 
   margin: 10px 0 0;
 
   color: var(--success);
-
   font-size: 12px;
-
   font-weight: 500;
 }
 
-
 .status-dot {
-
   width: 7px;
-
   height: 7px;
-
   border-radius: 50%;
-
   background: var(--success);
-
   display: inline-block;
 }
 
-
 .sede-action {
-
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
 
   margin-top: auto;
-
   padding-top: 14px;
 
   color: var(--primary);
-
   font-size: 12px;
-
   font-weight: 700;
 }
 
-
 .sede-action mat-icon {
-
   width: 18px;
-
   height: 18px;
-
   font-size: 18px;
-
   transition: transform .2s ease;
 }
 
-
 .sede-card:hover .sede-action mat-icon {
-
   transform: translateX(4px);
 }
 
@@ -918,29 +701,20 @@
 ============================================================ */
 
 .map-column {
-
   min-width: 0;
-
   position: sticky;
-
   top: 98px;
 
   height: calc(100vh - 120px);
-
   min-height: 600px;
 }
 
-
 .map-floating {
-
   width: 100%;
-
   height: 100%;
-
   min-height: 600px;
 
   position: relative;
-
   overflow: hidden;
 
   border-radius: 16px;
@@ -953,37 +727,28 @@
     0 10px 35px rgba(16, 24, 40, .12);
 }
 
-
 .map-floating google-map {
-
   display: block;
-
   width: 100%;
-
   height: 100%;
 }
 
 
 /* ============================================================
-   HEADER DEL MAPA
+   HEADER MAPA
 ============================================================ */
 
 .map-floating-header {
-
   position: absolute;
 
   left: 18px;
-
   top: 18px;
-
   right: 18px;
 
   z-index: 10;
 
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
 
   padding: 13px 15px;
@@ -992,90 +757,66 @@
 
   background: rgba(255, 255, 255, .94);
 
-  box-shadow: 0 5px 20px rgba(16, 24, 40, .12);
+  box-shadow:
+    0 5px 20px rgba(16, 24, 40, .12);
 
   backdrop-filter: blur(8px);
 }
 
-
 .map-floating-header span {
-
   display: block;
-
   color: #7d8ba5;
-
   font-size: 9px;
-
   font-weight: 800;
-
   letter-spacing: 1px;
 }
 
-
 .map-floating-header strong {
-
   display: block;
-
   color: #101828;
-
   font-size: 14px;
-
   margin-top: 3px;
 }
 
-
 .map-location-count {
-
   width: 38px;
-
   height: 38px;
 
   border-radius: 10px;
 
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 
   gap: 2px;
 
   background: var(--primary-light);
-
   color: var(--primary);
 
   font-size: 13px;
-
   font-weight: 700;
 }
 
-
 .map-location-count mat-icon {
-
   font-size: 17px;
-
   width: 17px;
-
   height: 17px;
 }
 
 
 /* ============================================================
-   CARD INFERIOR DEL MAPA
+   CARD INFERIOR MAPA
 ============================================================ */
 
 .map-bottom-card {
-
   position: absolute;
 
   left: 18px;
-
   bottom: 18px;
 
   z-index: 10;
 
   display: flex;
-
   align-items: center;
 
   gap: 10px;
@@ -1086,60 +827,42 @@
 
   background: rgba(255, 255, 255, .95);
 
-  box-shadow: 0 5px 20px rgba(16, 24, 40, .13);
+  box-shadow:
+    0 5px 20px rgba(16, 24, 40, .13);
 
   backdrop-filter: blur(8px);
 }
 
-
 .map-bottom-icon {
-
   width: 34px;
-
   height: 34px;
 
   border-radius: 9px;
 
   background: var(--primary-light);
-
   color: var(--primary);
 
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 }
 
-
 .map-bottom-icon mat-icon {
-
   width: 18px;
-
   height: 18px;
-
   font-size: 18px;
 }
 
-
 .map-bottom-card strong {
-
   display: block;
-
   color: #101828;
-
   font-size: 12px;
 }
 
-
 .map-bottom-card span {
-
   display: block;
-
   color: #667085;
-
   font-size: 10px;
-
   margin-top: 2px;
 }
 
@@ -1149,7 +872,6 @@
 ============================================================ */
 
 .mobile-map-button {
-
   display: none;
 }
 
@@ -1159,7 +881,6 @@
 ============================================================ */
 
 .mobile-map-container {
-
   display: none;
 }
 
@@ -1169,39 +890,25 @@
 ============================================================ */
 
 .empty-search {
-
   text-align: center;
-
   padding: 60px 20px;
-
   color: #667085;
 }
 
-
 .empty-search mat-icon {
-
   width: 42px;
-
   height: 42px;
-
   font-size: 42px;
-
   color: #98a2b3;
 }
 
-
 .empty-search h3 {
-
   margin: 12px 0 5px;
-
   color: #344054;
 }
 
-
 .empty-search p {
-
   margin: 0;
-
   font-size: 13px;
 }
 
@@ -1211,107 +918,72 @@
 ============================================================ */
 
 .selected-sede-section {
-
   max-width: 1200px;
-
   margin: auto;
-
   padding: 40px 32px 80px;
 }
 
-
 .selected-sede-header {
-
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 20px;
-
   margin-bottom: 25px;
 }
 
-
 .selected-sede-title {
-
   display: flex;
-
   align-items: center;
-
   gap: 13px;
 }
 
-
 .back-button {
-
   background: #f3f5ff !important;
-
   color: var(--primary) !important;
 }
 
-
 .selected-location-icon {
-
   width: 46px;
-
   height: 46px;
 
   border-radius: 12px;
 
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 
   background: var(--primary-light);
-
   color: var(--primary);
 }
 
-
 .selected-location-icon mat-icon {
-
   font-size: 24px;
 }
 
-
 .selected-sede-title h2 {
-
   margin: 0;
-
   color: var(--text);
-
   font-size: 28px;
 }
 
-
 .change-sede-button {
-
   color: var(--primary) !important;
-
   border-color: #cdd4f7 !important;
 }
 
 
 /* ============================================================
-   INFO SEDE SELECCIONADA
+   INFO SEDE
 ============================================================ */
 
 .selected-sede-info {
-
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
 
   padding: 17px 20px;
 
   border: 1px solid var(--border);
-
   border-radius: 13px;
 
   background: #fafbff;
@@ -1319,53 +991,33 @@
   margin-bottom: 35px;
 }
 
-
-.selected-sede-info>div:first-child {
-
+.selected-sede-info > div:first-child {
   display: flex;
-
   align-items: center;
-
   gap: 12px;
 }
 
-
 .selected-sede-info mat-icon {
-
   color: var(--primary);
 }
 
-
 .selected-sede-info span {
-
   display: block;
-
   font-size: 11px;
-
   color: #98a2b3;
 }
 
-
 .selected-sede-info strong {
-
   display: block;
-
   color: #344054;
-
   margin-top: 3px;
 }
 
-
 .available-status {
-
   display: flex !important;
-
   align-items: center;
-
   gap: 7px;
-
   color: var(--success);
-
   font-size: 12px;
 }
 
@@ -1375,43 +1027,27 @@
 ============================================================ */
 
 .profesionales-header {
-
   display: flex;
-
   justify-content: space-between;
-
   align-items: flex-start;
-
   margin-bottom: 22px;
 }
 
-
 .profesionales-header h2 {
-
   margin: 0;
-
   font-size: 25px;
-
   color: var(--text);
 }
 
-
 .profesionales-header p {
-
   margin: 6px 0 0;
-
   color: var(--text-secondary);
-
   font-size: 13px;
 }
 
-
 .professional-count {
-
   display: flex;
-
   flex-direction: column;
-
   align-items: center;
 
   background: var(--primary-light);
@@ -1421,19 +1057,13 @@
   border-radius: 10px;
 }
 
-
 .professional-count strong {
-
   color: var(--primary);
-
   font-size: 20px;
 }
 
-
 .professional-count span {
-
   color: #7d8ba5;
-
   font-size: 10px;
 }
 
@@ -1443,7 +1073,6 @@
 ============================================================ */
 
 .profesionales-grid {
-
   display: grid;
 
   grid-template-columns:
@@ -1452,13 +1081,10 @@
   gap: 16px;
 }
 
-
 .profesional-card {
-
   position: relative;
 
   display: flex;
-
   align-items: center;
 
   gap: 14px;
@@ -1466,7 +1092,6 @@
   padding: 18px;
 
   border-radius: 14px !important;
-
   border: 1px solid var(--border);
 
   box-shadow: none !important;
@@ -1476,9 +1101,7 @@
   transition: all .2s ease;
 }
 
-
 .profesional-card:hover {
-
   transform: translateY(-2px);
 
   border-color: #cdd4f7;
@@ -1487,19 +1110,13 @@
     0 10px 25px rgba(16, 24, 40, .08) !important;
 }
 
-
 .profesional-image {
-
   position: relative;
-
   flex-shrink: 0;
 }
 
-
 .profesional-image img {
-
   width: 64px;
-
   height: 64px;
 
   border-radius: 50%;
@@ -1507,17 +1124,13 @@
   object-fit: cover;
 }
 
-
 .online-indicator {
-
   position: absolute;
 
   right: 1px;
-
   bottom: 3px;
 
   width: 11px;
-
   height: 11px;
 
   border-radius: 50%;
@@ -1527,33 +1140,24 @@
   border: 2px solid white;
 }
 
-
 .professional-label {
-
   color: #98a2b3;
 
   font-size: 9px;
-
   font-weight: 800;
 
   letter-spacing: 1px;
 }
 
-
 .profesional-info h3 {
-
   margin: 3px 0 6px;
 
   color: #101828;
-
   font-size: 15px;
 }
 
-
 .profesional-info p {
-
   display: flex;
-
   align-items: center;
 
   gap: 5px;
@@ -1561,25 +1165,17 @@
   margin: 3px 0;
 
   color: #667085;
-
   font-size: 11px;
 }
 
-
 .profesional-info p mat-icon {
-
   width: 15px;
-
   height: 15px;
-
   font-size: 15px;
 }
 
-
 .professional-arrow {
-
   margin-left: auto;
-
   color: var(--primary);
 }
 
@@ -1589,112 +1185,69 @@
 ============================================================ */
 
 .mensaje-vacio {
-
   text-align: center;
 
   padding: 55px 20px;
 
   border: 1px dashed #d9dde5;
-
   border-radius: 15px;
 
   background: #fafbfc;
 }
 
-
 .empty-icon {
-
   width: 60px;
-
   height: 60px;
 
   margin: auto;
 
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 
   border-radius: 50%;
 
   background: #f0f2f5;
-
   color: #98a2b3;
 }
 
-
 .empty-icon mat-icon {
-
   font-size: 30px;
-
   width: 30px;
-
   height: 30px;
 }
 
-
 .mensaje-vacio h3 {
-
   margin: 15px 0 5px;
-
   color: #344054;
 }
 
-
 .mensaje-vacio p {
-
   margin: 0 0 20px;
-
   color: #667085;
-
   font-size: 13px;
 }
 
-
-/* ============================================================
-   MIS CITAS
-============================================================ */
-
-.boton-flotante-wrapper {
-
-  position: fixed;
-
-  right: 25px;
-
-  bottom: 25px;
-
-  z-index: 200;
-}
-
-
 .boton-mis-citas {
-
   height: 48px !important;
-
   padding: 0 20px !important;
-
   border-radius: 25px !important;
 
-  background: var(--primary) !important;
+  background: #0d47a1 !important;
+  color: #ffffff !important;
 
-  color: white !important;
-
-  box-shadow:
-    0 8px 25px rgba(67, 85, 197, .35) !important;
+  box-shadow: 
+    0 8px 25px rgba(13, 71, 161, 0.35) !important;
 
   display: flex !important;
-
   align-items: center;
-
   gap: 8px;
+
+  transition: all .2s ease;
 }
 
-
 .boton-mis-citas:hover {
-
-  background: var(--primary-dark) !important;
-
+  background: #083b8a !important;
   transform: translateY(-2px);
 }
 
@@ -1704,55 +1257,39 @@
 ============================================================ */
 
 .loading-container {
-
   min-height: 500px;
 
   display: flex;
-
   flex-direction: column;
 
   justify-content: center;
-
   align-items: center;
 }
 
-
 .loading-icon {
-
   width: 55px;
-
   height: 55px;
 
   border-radius: 15px;
 
   background: var(--primary-light);
-
   color: var(--primary);
 
   display: flex;
-
   justify-content: center;
-
   align-items: center;
 
   margin-bottom: 20px;
 }
 
-
 .loading-container h3 {
-
   margin: 18px 0 5px;
-
   color: #344054;
 }
 
-
 .loading-container p {
-
   margin: 0;
-
   color: #98a2b3;
-
   font-size: 13px;
 }
 
@@ -1762,15 +1299,12 @@
 ============================================================ */
 
 .mensaje-error {
-
   min-height: 100vh;
 
   display: flex;
-
   flex-direction: column;
 
   justify-content: center;
-
   align-items: center;
 
   text-align: center;
@@ -1778,43 +1312,30 @@
   padding: 30px;
 }
 
-
 .error-icon {
-
   width: 70px;
-
   height: 70px;
 
   border-radius: 50%;
 
   display: flex;
-
   justify-content: center;
-
   align-items: center;
 
   background: #fff1f2;
-
   color: #dc2626;
 }
 
-
 .error-icon mat-icon {
-
   font-size: 35px;
-
   width: 35px;
-
   height: 35px;
 }
 
-
 .error-label {
-
   margin-top: 20px;
 
   font-size: 10px;
-
   font-weight: 800;
 
   letter-spacing: 1.5px;
@@ -1822,19 +1343,13 @@
   color: #dc2626;
 }
 
-
 .mensaje-error h2 {
-
   margin: 8px 0;
-
   color: #1f2937;
 }
 
-
 .mensaje-error p {
-
   max-width: 500px;
-
   color: #667085;
 }
 
@@ -1846,24 +1361,20 @@
 @media (max-width: 1100px) {
 
   .sedes-map-layout {
-
     grid-template-columns:
-      minmax(400px, .9fr) minmax(400px, 1fr);
+      minmax(400px, .9fr)
+      minmax(400px, 1fr);
 
     gap: 22px;
 
     padding: 25px;
   }
 
-
   .sede-card {
-
     grid-template-columns: 160px 1fr;
   }
 
-
   .sede-image-container {
-
     height: 175px;
   }
 
@@ -1876,183 +1387,129 @@
 
 @media (max-width: 768px) {
 
-
-  /* -----------------------------------------
-     HEADER
-  ----------------------------------------- */
+  /* HEADER */
 
   .dashboard-header {
-
     height: 68px;
-
     padding: 0 16px;
   }
 
-
   .logo-empresa {
-
     width: 40px;
-
     height: 40px;
   }
 
-
   .brand-label {
-
     font-size: 8px;
   }
 
-
   .brand-info h1 {
-
     font-size: 16px;
   }
 
-
   .login-button {
-
     font-size: 0;
-
     padding: 8px;
   }
 
-
   .login-button mat-icon {
-
     font-size: 20px;
-
     width: 20px;
-
     height: 20px;
   }
 
 
-  /* -----------------------------------------
-     HERO
-  ----------------------------------------- */
+  /* HERO */
 
   .hero-content {
-
     min-height: auto;
-
     padding: 28px 18px;
   }
 
-
   .hero-text h2 {
-
     font-size: 34px;
   }
 
-
   .hero-text p {
-
     font-size: 13px;
+    line-height: 1.5;
+  }
 
+  .hero-image {
+    display: none;
+  }
+
+
+  /* LAYOUT */
+
+  .sedes-map-layout {
+    display: block;
+    padding: 25px 16px 60px;
+  }
+
+  .map-column {
+    display: none;
+  }
+
+
+  /* HEADER SEDES */
+
+  .sedes-header {
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .sedes-header .hero-badge {
+    font-size: 9px;
+    padding: 6px 11px;
+  }
+
+  .sedes-header .hero-image {
+    display: flex;
+
+    width: 100px;
+    height: 85px;
+
+    border-radius: 15px;
+  }
+
+  .sedes-header h2 {
+    font-size: 24px;
+  }
+
+  .sedes-header p {
+    font-size: 12px;
     line-height: 1.5;
   }
 
 
-  .hero-image {
-
-    display: none;
-  }
-
-
-  /* -----------------------------------------
-     LAYOUT
-  ----------------------------------------- */
-
-  .sedes-map-layout {
-
-    display: block;
-
-    padding: 25px 16px 60px;
-  }
-
-
-  /* -----------------------------------------
-     MAPA DESKTOP OCULTO
-  ----------------------------------------- */
-
-  .map-column {
-
-    display: none;
-  }
-
-
-  /* -----------------------------------------
-     HEADER SEDES
-  ----------------------------------------- */
-
-  .sedes-header {
-
-    align-items: center;
-
-    margin-bottom: 18px;
-  }
-
-
-  .sedes-header h2 {
-
-    font-size: 24px;
-  }
-
-
-  .sedes-header p {
-
-    font-size: 12px;
-  }
-
-
-  .sede-count {
-
-    min-width: 55px;
-
-    padding: 8px 10px;
-  }
-
-
-  /* -----------------------------------------
-     BUSCADOR
-  ----------------------------------------- */
+  /* BUSCADOR */
 
   .search-container {
-
     width: 100%;
-
     margin-bottom: 12px;
   }
 
 
-  /* -----------------------------------------
-     BOTÓN MAPA
-  ----------------------------------------- */
+  /* BOTÓN MAPA */
 
   .mobile-map-button {
-
     width: 100%;
-
     height: 44px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     gap: 7px;
 
     border: 1px solid #d9def5;
-
     border-radius: 10px;
 
     background: var(--primary-light);
-
     color: var(--primary);
 
     font-size: 13px;
-
     font-weight: 700;
 
     cursor: pointer;
@@ -2060,27 +1517,19 @@
     margin-bottom: 15px;
   }
 
-
   .mobile-map-button mat-icon {
-
     width: 19px;
-
     height: 19px;
-
     font-size: 19px;
   }
 
 
-  /* -----------------------------------------
-     MAPA MOBILE
-  ----------------------------------------- */
+  /* MAPA MOBILE */
 
   .mobile-map-container {
-
     display: block;
 
     height: 320px;
-
     width: 100%;
 
     border-radius: 14px;
@@ -2095,131 +1544,87 @@
       0 8px 20px rgba(16, 24, 40, .10);
   }
 
-
   .mobile-map-container google-map {
-
     width: 100%;
-
     height: 100%;
   }
 
 
-  /* -----------------------------------------
-     TARJETAS
-  ----------------------------------------- */
+  /* TARJETAS */
 
   .sedes-list {
-
     gap: 16px;
   }
 
-
   .sede-card {
-
     display: block;
-
     border-radius: 14px !important;
   }
 
-
   .sede-image-container {
-
     height: 180px;
-
     width: 100%;
   }
 
-
   .sede-card-content {
-
     padding: 14px 15px 16px;
   }
 
-
   .sede-title-row h3 {
-
     font-size: 16px;
   }
 
 
-  /* -----------------------------------------
-     MIS CITAS
-  ----------------------------------------- */
+  /* MIS CITAS */
 
   .boton-flotante-wrapper {
-
     right: 14px;
-
     bottom: 14px;
   }
 
-
   .boton-mis-citas {
-
     height: 46px !important;
-
     padding: 0 17px !important;
   }
 
 
-  /* -----------------------------------------
-     SEDE SELECCIONADA
-  ----------------------------------------- */
+  /* SEDE SELECCIONADA */
 
   .selected-sede-section {
-
     padding: 25px 16px 80px;
   }
 
-
   .selected-sede-header {
-
     align-items: flex-start;
   }
 
-
   .selected-sede-title h2 {
-
     font-size: 21px;
   }
 
-
   .change-sede-button {
-
     display: none;
   }
 
-
   .selected-sede-info {
-
     flex-direction: column;
-
     align-items: flex-start;
-
     gap: 12px;
   }
 
-
   .profesionales-header {
-
     align-items: center;
   }
 
-
   .profesionales-header h2 {
-
     font-size: 21px;
   }
 
-
   .professional-count {
-
     flex-shrink: 0;
   }
 
-
   .profesionales-grid {
-
     grid-template-columns: 1fr;
   }
 
@@ -2233,36 +1638,76 @@
 @media (max-width: 450px) {
 
   .hero-text h2 {
-
     font-size: 30px;
   }
 
-
   .sede-count {
-
     display: none;
   }
 
-
   .sede-image-container {
-
     height: 160px;
   }
 
-
   .boton-mis-citas span {
-
     display: none;
   }
 
-
   .boton-mis-citas {
-
     width: 48px;
-
     padding: 0 !important;
-
     justify-content: center;
   }
 
+  /* HEADER SEDES */
+
+  .sedes-header {
+    gap: 12px;
+  }
+
+  .sedes-header .hero-image {
+    width: 90px;
+    height: 75px;
+  }
+
+  .sedes-header h2 {
+    font-size: 22px;
+  }
+
+  .sedes-header p {
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+}
+
+.app-footer {
+  background-color: #0d47a1; /* azul corporativo como el header */
+  color: #fff; /* texto blanco */
+  border-top: none; /* quitamos línea de división */
+  padding: 12px 20px;
+  text-align: center;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.boton-flotante-wrapper {
+  position: fixed;
+  right: 25px;
+  bottom: 25px;
+  z-index: 200;
+}
+
+.fab-citas {
+  position: fixed;
+  bottom: 20px;
+  left: 20px; /* 👈 lo mandas al lado izquierdo */
+  z-index: 1000;
 }

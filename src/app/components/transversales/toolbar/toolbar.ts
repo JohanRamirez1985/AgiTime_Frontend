@@ -32,17 +32,9 @@ import { Router, RouterModule } from '@angular/router';
 export class Toolbar implements OnInit {
 
   usuarioLogueado: any;
-
   img: string = '';
-
   nombreEmpresa: string = '';
-
   isMobileView = false;
-
-
-  // =====================================================
-  // OPCIONES DEL MENÚ
-  // =====================================================
 
   menuItems = [
 
@@ -107,120 +99,73 @@ export class Toolbar implements OnInit {
       label: 'Liquidación',
       icon: 'payments',
       route: '/admin/liquidacion'
+    },
+
+    {
+      codigo: 'ibp',
+      label: 'Período de prueba',
+      icon: 'person_search',
+      route: '/admin/periodo-prueba'
     }
 
   ];
-
-
-  // =====================================================
-  // CONSTRUCTOR
-  // =====================================================
 
   constructor(
     private router: Router
   ) { }
 
 
-  // =====================================================
-  // INICIO
-  // =====================================================
 
   ngOnInit(): void {
-
     this.cargarUsuario();
-
     this.cargarEmpresa();
-
     this.detectarPantalla();
-
   }
-
-
-  // =====================================================
-  // USUARIO
-  // =====================================================
 
   private cargarUsuario(): void {
 
     const usuario = localStorage.getItem('usuario');
 
     if (usuario) {
-
       try {
-
         this.usuarioLogueado = JSON.parse(usuario);
-
       } catch (error) {
-
         console.error(
           'Error al leer usuario:',
           error
         );
-
       }
-
     }
 
   }
-
-
-  // =====================================================
-  // EMPRESA
-  // =====================================================
 
   private cargarEmpresa(): void {
 
     const infoempresa = localStorage.getItem('empresa');
 
     if (infoempresa) {
-
       try {
-
         const empresa = JSON.parse(infoempresa);
-
         this.img = 'assets/img/' + empresa?.logo;
-
         this.nombreEmpresa = empresa?.nombre || '';
-
       } catch (error) {
-
         console.error(
           'Error al leer empresa:',
           error
         );
-
       }
-
     }
-
   }
-
-
-  // =====================================================
-  // DETECTAR TAMAÑO DE PANTALLA
-  // =====================================================
 
   private detectarPantalla(): void {
-
     this.isMobileView = window.innerWidth <= 768;
-
   }
-
-
-  // =====================================================
-  // ABRIR / CERRAR MENÚ
-  // =====================================================
 
   toggleMenu(sidenav: MatSidenav): void {
 
     sidenav.toggle();
 
   }
-
-
-  // =====================================================
-  // CERRAR SESIÓN
-  // =====================================================
 
   cerrarSesion(): void {
 
@@ -248,11 +193,6 @@ export class Toolbar implements OnInit {
     );
 
   }
-
-
-  // =====================================================
-  // VALIDAR PERMISOS
-  // =====================================================
 
   validate(codigo: string): boolean {
 
