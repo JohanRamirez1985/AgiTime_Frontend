@@ -1,3 +1,5 @@
+<app-validar-version></app-validar-version>
+
 <div class="dashboard-wrapper">
 
   <!-- ========================================================= -->
@@ -9,7 +11,7 @@
     <mat-card class="dashboard-card">
 
       <!-- ===================================================== -->
-      <!-- HEADER PRINCIPAL -->
+      <!-- HEADER -->
       <!-- ===================================================== -->
 
       <header class="dashboard-header">
@@ -32,14 +34,15 @@
 
         </div>
 
-
         <button type="button" class="login-button" (click)="irALogin()">
 
           <mat-icon>
             login
           </mat-icon>
 
-          Iniciar sesión
+          <span>
+            Iniciar sesión
+          </span>
 
         </button>
 
@@ -79,17 +82,33 @@
 
       <main *ngIf="!loading" class="dashboard-content">
 
-
         <!-- =================================================== -->
-        <!-- INTRODUCCIÓN / HERO -->
-        <!-- SOLO SE MUESTRA AL SELECCIONAR SEDE -->
+        <!-- HERO -->
         <!-- =================================================== -->
 
         <section *ngIf="!mostrarSede" class="hero-section">
+        </section>
 
-          <div class="hero-content">
 
-            <div class="hero-text">
+        <!-- =================================================== -->
+        <!-- SEDES + MAPA -->
+        <!-- =================================================== -->
+
+        <section *ngIf="!mostrarSede" class="sedes-map-layout">
+
+          <!-- ================================================= -->
+          <!-- COLUMNA SEDES -->
+          <!-- ================================================= -->
+
+          <div class="sedes-column">
+
+            <!-- =============================================== -->
+            <!-- HEADER SEDES -->
+            <!-- =============================================== -->
+
+            <div class="sedes-header">
+
+              <!-- BADGE -->
 
               <span class="hero-badge">
 
@@ -101,54 +120,19 @@
 
               </span>
 
-              <h2>
-                Encuentra tu lugar ideal
-              </h2>
 
-              <p>
-                Selecciona una de nuestras sedes para conocer
-                los profesionales disponibles y agendar tu cita.
-              </p>
+              <!-- IMAGEN EMPRESA -->
 
-            </div>
+              <div *ngIf="img" class="hero-image">
+
+                <img [src]="img" [alt]="nombreEmpresa" />
+
+              </div>
 
 
-            <!-- LOGO / IMAGEN -->
+              <!-- TÍTULO -->
 
-            <div *ngIf="img" class="hero-image">
-
-              <img [src]="img" [alt]="nombreEmpresa" />
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        <!-- =================================================== -->
-        <!-- =================================================== -->
-        <!-- VISTA DE SEDES -->
-        <!-- =================================================== -->
-        <!-- =================================================== -->
-
-        <section *ngIf="!mostrarSede" class="sedes-map-layout">
-
-
-          <!-- ================================================= -->
-          <!-- COLUMNA IZQUIERDA -->
-          <!-- ================================================= -->
-
-          <div class="sedes-column">
-
-
-            <!-- =============================================== -->
-            <!-- CABECERA -->
-            <!-- =============================================== -->
-
-            <div class="sedes-header">
-
-              <div>
+              <div class="sedes-title">
 
                 <span class="section-eyebrow">
                   NUESTRAS SEDES
@@ -191,29 +175,17 @@
 
 
             <!-- =============================================== -->
-            <!-- BOTÓN MAPA EN MÓVIL -->
+            <!-- BOTÓN MAPA MOBILE -->
             <!-- =============================================== -->
 
             <button type="button" class="mobile-map-button" (click)="toggleMapaMobile()">
 
               <mat-icon>
-
-                {{
-                mostrarMapaMobile
-                ? 'close'
-                : 'map'
-                }}
-
+                {{ mostrarMapaMobile ? 'close' : 'map' }}
               </mat-icon>
 
               <span>
-
-                {{
-                mostrarMapaMobile
-                ? 'Ocultar mapa'
-                : 'Ver mapa'
-                }}
-
+                {{ mostrarMapaMobile ? 'Ocultar mapa' : 'Ver mapa' }}
               </span>
 
             </button>
@@ -246,15 +218,11 @@
 
               <mat-card *ngFor="let sede of sedesFiltradas" class="sede-card" (click)="seleccionarSede(sede)">
 
-
-                <!-- =========================================== -->
-                <!-- IMAGEN / ICONO -->
-                <!-- =========================================== -->
+                <!-- IMAGEN -->
 
                 <div class="sede-image-container">
 
                   <img *ngIf="sede.foto" [src]="sede.foto" [alt]="sede.nombre" class="sede-image" />
-
 
                   <div *ngIf="!sede.foto" class="sede-image-placeholder">
 
@@ -278,21 +246,15 @@
                 </div>
 
 
-                <!-- =========================================== -->
                 <!-- INFORMACIÓN -->
-                <!-- =========================================== -->
 
                 <div class="sede-card-content">
-
-
-                  <!-- TÍTULO -->
 
                   <div class="sede-title-row">
 
                     <h3>
                       {{ sede.nombre }}
                     </h3>
-
 
                     <div *ngIf="sede.calificacion" class="rating">
 
@@ -307,8 +269,6 @@
                   </div>
 
 
-                  <!-- DIRECCIÓN -->
-
                   <p *ngIf="sede.direccion" class="sede-address">
 
                     <mat-icon>
@@ -320,16 +280,10 @@
                   </p>
 
 
-                  <!-- CIUDAD -->
-
                   <p *ngIf="sede.ciudad" class="sede-location">
-
                     {{ sede.ciudad }}
-
                   </p>
 
-
-                  <!-- ESTADO -->
 
                   <p class="sede-status">
 
@@ -340,12 +294,10 @@
                   </p>
 
 
-                  <!-- ACCIÓN -->
-
                   <div class="sede-action">
 
                     <span>
-                      Ver profesionales
+                      {{ idEmpresa === 8 ? 'Ver servicios' : 'Ver profesionales' }}
                     </span>
 
                     <mat-icon>
@@ -388,19 +340,12 @@
 
 
           <!-- ================================================= -->
-          <!-- ================================================= -->
           <!-- MAPA DESKTOP -->
-          <!-- ================================================= -->
           <!-- ================================================= -->
 
           <aside class="map-column">
 
             <div class="map-floating">
-
-
-              <!-- ============================================= -->
-              <!-- MAPA -->
-              <!-- ============================================= -->
 
               <google-map width="100%" height="100%" [center]="center" [zoom]="zoom" [options]="mapOptions">
 
@@ -413,9 +358,7 @@
               </google-map>
 
 
-              <!-- ============================================= -->
-              <!-- OVERLAY SUPERIOR -->
-              <!-- ============================================= -->
+              <!-- HEADER MAPA -->
 
               <div class="map-floating-header">
 
@@ -431,7 +374,6 @@
 
                 </div>
 
-
                 <div class="map-location-count">
 
                   <mat-icon>
@@ -445,9 +387,7 @@
               </div>
 
 
-              <!-- ============================================= -->
               <!-- LEYENDA -->
-              <!-- ============================================= -->
 
               <div class="map-bottom-card">
 
@@ -481,25 +421,16 @@
 
 
         <!-- =================================================== -->
-        <!-- =================================================== -->
         <!-- SEDE SELECCIONADA -->
-        <!-- =================================================== -->
         <!-- =================================================== -->
 
         <section *ngIf="mostrarSede" class="selected-sede-section">
 
-
-          <!-- ================================================= -->
-          <!-- HEADER SEDE -->
-          <!-- ================================================= -->
+          <!-- HEADER -->
 
           <div class="selected-sede-header">
 
-
             <div class="selected-sede-title">
-
-
-              <!-- VOLVER -->
 
               <button *ngIf="btnRefresh" mat-icon-button class="back-button" matTooltip="Cambiar sede"
                 (click)="cambiarSede()">
@@ -511,8 +442,6 @@
               </button>
 
 
-              <!-- ICONO -->
-
               <div class="selected-location-icon">
 
                 <mat-icon>
@@ -521,8 +450,6 @@
 
               </div>
 
-
-              <!-- INFORMACIÓN -->
 
               <div>
 
@@ -539,8 +466,6 @@
             </div>
 
 
-            <!-- CAMBIAR SEDE -->
-
             <button *ngIf="btnRefresh" mat-stroked-button class="change-sede-button" (click)="cambiarSede()">
 
               <mat-icon>
@@ -554,12 +479,9 @@
           </div>
 
 
-          <!-- ================================================= -->
-          <!-- INFORMACIÓN SEDE -->
-          <!-- ================================================= -->
+          <!-- INFO SEDE -->
 
           <div class="selected-sede-info">
-
 
             <div>
 
@@ -581,7 +503,6 @@
 
             </div>
 
-
             <div class="available-status">
 
               <span class="status-dot"></span>
@@ -598,11 +519,6 @@
           <!-- ================================================= -->
 
           <section class="profesionales-section">
-
-
-            <!-- =============================================== -->
-            <!-- CABECERA PROFESIONALES -->
-            <!-- =============================================== -->
 
             <div class="profesionales-header">
 
@@ -624,8 +540,6 @@
               </div>
 
 
-              <!-- CONTADOR -->
-
               <div class="professional-count">
 
                 <strong>
@@ -641,10 +555,6 @@
             </div>
 
 
-            <!-- ================================================= -->
-            <!-- LISTADO PROFESIONALES -->
-            <!-- ================================================= -->
-
             <ng-container *ngIf="
                 recursosList &&
                 recursosList.length > 0;
@@ -653,11 +563,7 @@
 
               <div class="profesionales-grid">
 
-
                 <mat-card *ngFor="let usuario of recursosList" class="profesional-card" (click)="irAReservar(usuario)">
-
-
-                  <!-- IMAGEN -->
 
                   <div class="profesional-image">
 
@@ -667,8 +573,6 @@
 
                   </div>
 
-
-                  <!-- INFORMACIÓN -->
 
                   <div class="profesional-info">
 
@@ -681,8 +585,6 @@
                     </h3>
 
 
-                    <!-- TELÉFONO -->
-
                     <p *ngIf="usuario.telefono">
 
                       <mat-icon>
@@ -693,8 +595,6 @@
 
                     </p>
 
-
-                    <!-- SEDE -->
 
                     <p>
 
@@ -708,8 +608,6 @@
 
                   </div>
 
-
-                  <!-- FLECHA -->
 
                   <div class="professional-arrow">
 
@@ -726,14 +624,11 @@
             </ng-container>
 
 
-            <!-- ================================================= -->
             <!-- SIN PROFESIONALES -->
-            <!-- ================================================= -->
 
             <ng-template #noRecursos>
 
               <div class="mensaje-vacio">
-
 
                 <div class="empty-icon">
 
@@ -743,17 +638,14 @@
 
                 </div>
 
-
                 <h3>
                   No hay profesionales disponibles
                 </h3>
-
 
                 <p>
                   Actualmente no encontramos profesionales
                   disponibles para esta sede.
                 </p>
-
 
                 <button mat-stroked-button (click)="cambiarSede()">
 
@@ -776,65 +668,31 @@
       </main>
 
     </mat-card>
-
-
-    <!-- ======================================================= -->
-    <!-- MIS CITAS -->
-    <!-- ======================================================= -->
-
-    <div class="boton-flotante-wrapper">
-
-      <button mat-flat-button class="boton-mis-citas" (click)="misCitas()">
-
-        <mat-icon>
-          calendar_month
-        </mat-icon>
-
-        <span>
-          Mis citas
-        </span>
-
-      </button>
-
-    </div>
-
+    <button mat-stroked-button color="primary" class="fab-citas" (click)="misCitas()">
+      <mat-icon>event</mat-icon>
+      Mis citas
+    </button>
   </ng-container>
 
-
-  <!-- ========================================================= -->
-  <!-- EMPRESA INACTIVA -->
-  <!-- ========================================================= -->
-
   <ng-template #mensajeNoAutorizado>
-
     <div class="mensaje-error">
-
-
-      <!-- ICONO -->
-
       <div class="error-icon">
-
         <mat-icon>
           error_outline
         </mat-icon>
-
       </div>
-
 
       <span class="error-label">
         ACCESO NO DISPONIBLE
       </span>
 
-
       <h2>
         Servicio temporalmente no disponible
       </h2>
 
-
       <p>
         {{ mensajeError }}
       </p>
-
 
       <button mat-flat-button color="primary" (click)="irALogin()">
 
@@ -851,3 +709,10 @@
   </ng-template>
 
 </div>
+<!-- Footer -->
+<footer class="app-footer">
+  <div class="footer-content">
+    <span>&copy; {{ currentYear }} www.agitime.com.co Todos los derechos
+      reservados.</span>
+  </div>
+</footer>

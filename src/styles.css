@@ -44,3 +44,26 @@ body {
   text-align: center !important;
   width: 60% !important;
 }
+
+.update-backdrop {
+  background: rgba(0, 0, 0, 0.65) !important;
+}
+
+.update-dialog {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.update-dialog .mat-mdc-dialog-surface {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}

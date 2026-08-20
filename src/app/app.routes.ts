@@ -106,7 +106,7 @@ export const routes: Routes = [
           import('./components/ventas/venta-producto/venta-producto').then(
             (m) => m.VentaProducto
           ),
-      }, 
+      },
       {
         path: 'ventas/gestionar',
         loadComponent: () =>
@@ -159,6 +159,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./components/liquidar-citas/liquidar-citas').then((m) => m.LiquidarCitas),
       },
+      {
+        path: 'periodo-prueba',
+        loadComponent: () =>
+          import('./components/periodo-prueba/periodo-prueba').then((m) => m.PeriodoPrueba),
+      }
     ],
   },
 

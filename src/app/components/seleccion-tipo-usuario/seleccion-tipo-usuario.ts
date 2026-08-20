@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { environment } from '../../../environments/environment';
+import { ValidarVersion } from '../../shared/validar-version/validar-version';
 
 @Component({
   selector: 'app-seleccion-tipo-usuario',
@@ -22,7 +23,8 @@ import { environment } from '../../../environments/environment';
     MatInputModule,
     MatFormFieldModule,
     MatListModule,
-    MatIconModule
+    MatIconModule,
+    ValidarVersion
   ],
   templateUrl: './seleccion-tipo-usuario.html',
   styleUrls: ['./seleccion-tipo-usuario.css']

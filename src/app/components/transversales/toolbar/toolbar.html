@@ -1,9 +1,5 @@
 <mat-sidenav-container class="sidenav-container">
 
-  <!-- =====================================================
-       MENÚ LATERAL
-  ====================================================== -->
-
   <mat-sidenav #sidenav class="sidenav" [mode]="isMobileView ? 'over' : 'side'" [opened]="!isMobileView">
 
     <!-- Encabezado azul -->
@@ -24,11 +20,6 @@
       </div>
 
     </div>
-
-
-    <!-- =====================================================
-         OPCIONES DEL MENÚ
-    ====================================================== -->
 
     <mat-nav-list>
 
@@ -53,20 +44,8 @@
 
   </mat-sidenav>
 
-
-  <!-- =====================================================
-       CONTENIDO PRINCIPAL
-  ====================================================== -->
-
   <mat-sidenav-content>
-
-
-    <!-- =====================================================
-         TOOLBAR
-    ====================================================== -->
-
     <mat-toolbar class="toolbar">
-
       <!-- Botón menú -->
       <button mat-icon-button class="menu-button" (click)="toggleMenu(sidenav)" aria-label="Abrir menú">
 
@@ -75,9 +54,6 @@
         </mat-icon>
 
       </button>
-
-
-      <!-- Empresa + usuario -->
 
       <div class="toolbar-company" *ngIf="!sidenav.opened">
 
@@ -97,13 +73,7 @@
 
       </div>
 
-
-      <!-- Espacio -->
-
       <span class="spacer"></span>
-
-
-      <!-- Cerrar sesión -->
 
       <button mat-button class="logout-toolbar" (click)="cerrarSesion()">
 
@@ -118,11 +88,6 @@
       </button>
 
     </mat-toolbar>
-
-
-    <!-- =====================================================
-         CONTENIDO DE LAS RUTAS
-    ====================================================== -->
 
     <div class="content">
 

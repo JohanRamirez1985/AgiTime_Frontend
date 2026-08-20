@@ -1,0 +1,392 @@
+<div class="periodo-prueba-container">
+
+    <div class="card">
+
+        <!-- ===================================================== -->
+        <!-- ENCABEZADO -->
+        <!-- ===================================================== -->
+        <div class="card-header">
+
+            <div class="header-icon">
+                <span class="material-icons">
+                    person_add
+                </span>
+            </div>
+
+            <div class="header-content">
+                <h2>Periodo de prueba</h2>
+
+                <p>
+                    Registra la información del periodo de prueba del barbero.
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- FORMULARIO -->
+        <!-- ===================================================== -->
+        <form
+            [formGroup]="formulario"
+            (ngSubmit)="guardar()"
+        >
+
+            <div class="form-grid">
+
+
+                <!-- ================================================= -->
+                <!-- BARBERO -->
+                <!-- ================================================= -->
+                <div class="form-group">
+
+                    <label for="barbero">
+                        Barbero
+                    </label>
+
+                    <select
+                        id="barbero"
+                        formControlName="barbero"
+                    >
+
+                        <option value="">
+                            Seleccione un barbero
+                        </option>
+
+                        <option
+                            *ngFor="let barbero of barberos"
+                            [value]="barbero.id"
+                        >
+                            {{ barbero.nombre }}
+                        </option>
+
+                    </select>
+
+                    <small
+                        class="error"
+                        *ngIf="
+                            formulario.get('barbero')?.touched &&
+                            formulario.get('barbero')?.invalid
+                        "
+                    >
+                        Seleccione un barbero.
+                    </small>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- SEDE -->
+                <!-- ================================================= -->
+                <div class="form-group">
+
+                    <label for="sede">
+                        Sede
+                    </label>
+
+                    <select
+                        id="sede"
+                        formControlName="sede"
+                    >
+
+                        <option value="">
+                            Seleccione una sede
+                        </option>
+
+                        <option
+                            *ngFor="let sede of sedes"
+                            [value]="sede.nombre"
+                        >
+                            {{ sede.nombre }}
+                        </option>
+
+                    </select>
+
+                    <small
+                        class="error"
+                        *ngIf="
+                            formulario.get('sede')?.touched &&
+                            formulario.get('sede')?.invalid
+                        "
+                    >
+                        Seleccione una sede.
+                    </small>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- FECHA -->
+                <!-- ================================================= -->
+                <div class="form-group">
+
+                    <label for="fecha">
+                        Fecha
+                    </label>
+
+                    <input
+                        id="fecha"
+                        type="date"
+                        formControlName="fecha"
+                    >
+
+                    <small
+                        class="error"
+                        *ngIf="
+                            formulario.get('fecha')?.touched &&
+                            formulario.get('fecha')?.invalid
+                        "
+                    >
+                        Seleccione una fecha.
+                    </small>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- NUMERO DE SERVICIOS -->
+                <!-- ================================================= -->
+                <div class="form-group">
+
+                    <label for="numeroServicios">
+                        Número de servicios
+                    </label>
+
+                    <input
+                        id="numeroServicios"
+                        type="number"
+                        min="1"
+                        placeholder="Ej: 15"
+                        formControlName="numeroServicios"
+                    >
+
+                    <small
+                        class="error"
+                        *ngIf="
+                            formulario.get('numeroServicios')?.touched &&
+                            formulario.get('numeroServicios')?.invalid
+                        "
+                    >
+                        Ingrese una cantidad válida de servicios.
+                    </small>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- GANANCIA BARBERO -->
+                <!-- ================================================= -->
+                <div class="form-group">
+
+                    <label for="gananciaBarbero">
+                        Ganancia del barbero
+                    </label>
+
+                    <div class="input-money">
+
+                        <span class="money-symbol">
+                            $
+                        </span>
+
+                        <input
+                            id="gananciaBarbero"
+                            type="number"
+                            min="0"
+                            placeholder="0"
+                            formControlName="gananciaBarbero"
+                        >
+
+                    </div>
+
+                    <small
+                        class="help-text"
+                    >
+                        Valor correspondiente al barbero.
+                    </small>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- GANANCIA BARBERIA -->
+                <!-- ================================================= -->
+                <div class="form-group">
+
+                    <label for="gananciaBarberia">
+                        Ganancia de la barbería
+                    </label>
+
+                    <div class="input-money">
+
+                        <span class="money-symbol">
+                            $
+                        </span>
+
+                        <input
+                            id="gananciaBarberia"
+                            type="number"
+                            min="0"
+                            placeholder="0"
+                            formControlName="gananciaBarberia"
+                        >
+
+                    </div>
+
+                    <small
+                        class="help-text"
+                    >
+                        Valor correspondiente a la barbería.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- ===================================================== -->
+            <!-- RESUMEN -->
+            <!-- ===================================================== -->
+            <div class="resumen">
+
+                <div class="resumen-header">
+
+                    <span class="material-icons">
+                        receipt_long
+                    </span>
+
+                    <span>
+                        Resumen del periodo
+                    </span>
+
+                </div>
+
+
+                <div class="resumen-grid">
+
+                    <!-- SERVICIOS -->
+                    <div class="resumen-item">
+
+                        <span class="resumen-label">
+                            Servicios
+                        </span>
+
+                        <strong class="resumen-value">
+                            {{ formulario.get('numeroServicios')?.value || 0 }}
+                        </strong>
+
+                    </div>
+
+
+                    <!-- GANANCIA BARBERO -->
+                    <div class="resumen-item">
+
+                        <span class="resumen-label">
+                            Ganancia barbero
+                        </span>
+
+                        <strong class="resumen-value">
+
+                            {{
+                                formulario.get('gananciaBarbero')?.value || 0
+                                | number:'1.0-0'
+                            }}
+
+                        </strong>
+
+                    </div>
+
+
+                    <!-- GANANCIA BARBERIA -->
+                    <div class="resumen-item">
+
+                        <span class="resumen-label">
+                            Ganancia barbería
+                        </span>
+
+                        <strong class="resumen-value">
+
+                            {{
+                                formulario.get('gananciaBarberia')?.value || 0
+                                | number:'1.0-0'
+                            }}
+
+                        </strong>
+
+                    </div>
+
+
+                    <!-- TOTAL -->
+                    <div class="resumen-item resumen-total">
+
+                        <span class="resumen-label">
+                            Total generado
+                        </span>
+
+                        <strong class="resumen-value">
+
+                            {{
+                                (formulario.get('gananciaBarbero')?.value || 0) +
+                                (formulario.get('gananciaBarberia')?.value || 0)
+                                | number:'1.0-0'
+                            }}
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ===================================================== -->
+            <!-- BOTONES -->
+            <!-- ===================================================== -->
+            <div class="acciones">
+
+                <button
+                    type="button"
+                    class="btn-cancelar"
+                    [disabled]="guardando"
+                    (click)="formulario.reset()"
+                >
+                    Limpiar
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="btn-guardar"
+                    [disabled]="guardando"
+                >
+
+                    <!-- ESTADO NORMAL -->
+                    <ng-container *ngIf="!guardando">
+
+                        <span class="material-icons">
+                            save
+                        </span>
+
+                        Guardar periodo de prueba
+
+                    </ng-container>
+
+
+                    <!-- ESTADO LOADING -->
+                    <ng-container *ngIf="guardando">
+
+                        <span class="spinner"></span>
+
+                        Guardando...
+
+                    </ng-container>
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
