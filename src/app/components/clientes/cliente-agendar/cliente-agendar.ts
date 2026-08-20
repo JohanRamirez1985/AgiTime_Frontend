@@ -183,10 +183,11 @@ export class ClienteAgendar {
       next: (rest) => {
         if (rest.exito) {
           const empresa: any = rest.datos.find((em) => em.id === this.idEmpresa);
+          const sedeSeleccionada: any = JSON.parse(localStorage.getItem('sedeSeleccionada') || '{}');
           this.empresaLogo = 'assets/img/' + empresa?.logo;
           this.empresaNombre = empresa?.nombre;
           this.seleccionRubro = empresa.servicio;
-          this.telefonoEmpresa = empresa.telefono;
+          this.telefonoEmpresa = sedeSeleccionada.telefono;
           localStorage.setItem('empresa', JSON.stringify(empresa));
           this.obtenerRecursos();
         } else {

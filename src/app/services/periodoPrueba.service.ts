@@ -8,16 +8,21 @@ import { GeneroResponse } from '../interfaces/shared.interface';
 export class PeriodoPruebaService {
 
     private baseUrlPp = `${environment.apiBaseUrl}/Informes`;
-
+    private baseUrlParametros = `${environment.apiBaseUrl}/Parametros`;
 
     constructor(private http: HttpClient) { }
 
 
     obtenerTodasSedes(emp: string) {
-        return this.http.get<GeneroResponse>(`${this.baseUrlPp}/ingresoMesPrueba`, {
+        return this.http.get<GeneroResponse>(`${this.baseUrlParametros}/allSedes`, {
             params: { emp: emp.toString() },
         });
     }
 
-
+    guardarPeriodoPrueba(request: any) {
+        return this.http.post(
+            `${this.baseUrlPp}/ingresoMesPrueba`,
+            request
+        );
+    }
 }

@@ -455,6 +455,8 @@ export class ClienteDashboard {
       return;
     }
 
+    localStorage.setItem('sedeSeleccionada', JSON.stringify(sede));
+
     if (this.idEmpresa === 8) {
       this.router.navigate(
         ['/cliente/reservar'],
