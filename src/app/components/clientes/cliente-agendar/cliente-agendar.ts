@@ -388,12 +388,15 @@ export class ClienteAgendar {
   }
 
   private mensajeWssp(request: any, datos: any): void {
+
     const fecha = new Date(request.FechaIni);
+
     const nombresServicios = this.serviciosSeleccionados
       .map((s: any) => s.nombre)
       .join(', ');
 
     const fechaFormateada = fecha.toLocaleDateString('es-CO');
+
     const horaFormateada = fecha.toLocaleTimeString('es-CO', {
       hour: '2-digit',
       minute: '2-digit',
@@ -404,7 +407,9 @@ export class ClienteAgendar {
       ? this.empresaNombre
       : JSON.parse(localStorage.getItem('recurso') || '{}').nombre;
 
-    const destinatario = this.EnvioMensajeEmpresa ? recurso : 'contigo';
+    const destinatario = this.EnvioMensajeEmpresa
+      ? recurso
+      : 'contigo';
 
     const mensaje = `📅 ¡Hola ${this.empresaNombre}!
 
@@ -422,9 +427,16 @@ export class ClienteAgendar {
 
     const numero = '57' + this.telefonoRecurso;
 
-    const url = `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`;
+    const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    window.open(url, '_blank');
+    if (esMovil) {
+      window.location.href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+    } else {
+      window.open(
+        `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`,
+        '_blank'
+      );
+    }
   }
 
   private reservarCita(
