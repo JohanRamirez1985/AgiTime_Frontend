@@ -18,7 +18,12 @@
 
         <div class="brand-area">
 
-          <img *ngIf="img" [src]="img" [alt]="nombreEmpresa" class="logo-empresa" />
+          <img
+            *ngIf="img"
+            [src]="img"
+            [alt]="nombreEmpresa"
+            class="logo-empresa"
+          />
 
           <div class="brand-info">
 
@@ -34,7 +39,11 @@
 
         </div>
 
-        <button type="button" class="login-button" (click)="irALogin()">
+        <button
+          type="button"
+          class="login-button"
+          (click)="irALogin()"
+        >
 
           <mat-icon>
             login
@@ -82,11 +91,15 @@
 
       <main *ngIf="!loading" class="dashboard-content">
 
+
         <!-- =================================================== -->
         <!-- HERO -->
         <!-- =================================================== -->
 
-        <section *ngIf="!mostrarSede" class="hero-section">
+        <section
+          *ngIf="!mostrarSede"
+          class="hero-section"
+        >
         </section>
 
 
@@ -94,7 +107,11 @@
         <!-- SEDES + MAPA -->
         <!-- =================================================== -->
 
-        <section *ngIf="!mostrarSede" class="sedes-map-layout">
+        <section
+          *ngIf="!mostrarSede"
+          class="sedes-map-layout"
+        >
+
 
           <!-- ================================================= -->
           <!-- COLUMNA SEDES -->
@@ -102,13 +119,12 @@
 
           <div class="sedes-column">
 
+
             <!-- =============================================== -->
             <!-- HEADER SEDES -->
             <!-- =============================================== -->
 
             <div class="sedes-header">
-
-              <!-- BADGE -->
 
               <span class="hero-badge">
 
@@ -123,9 +139,15 @@
 
               <!-- IMAGEN EMPRESA -->
 
-              <div *ngIf="img" class="hero-image">
+              <div
+                *ngIf="img"
+                class="hero-image"
+              >
 
-                <img [src]="img" [alt]="nombreEmpresa" />
+                <img
+                  [src]="img"
+                  [alt]="nombreEmpresa"
+                />
 
               </div>
 
@@ -161,9 +183,19 @@
                 search
               </mat-icon>
 
-              <input type="text" placeholder="Buscar centro" [(ngModel)]="textoBusquedaSede" (input)="buscarSede()" />
+              <input
+                type="text"
+                placeholder="Buscar centro"
+                [(ngModel)]="textoBusquedaSede"
+                (input)="buscarSede()"
+              />
 
-              <button *ngIf="textoBusquedaSede" type="button" class="clear-search" (click)="textoBusquedaSede = ''">
+              <button
+                *ngIf="textoBusquedaSede"
+                type="button"
+                class="clear-search"
+                (click)="textoBusquedaSede = ''"
+              >
 
                 <mat-icon>
                   close
@@ -178,7 +210,11 @@
             <!-- BOTÓN MAPA MOBILE -->
             <!-- =============================================== -->
 
-            <button type="button" class="mobile-map-button" (click)="toggleMapaMobile()">
+            <button
+              type="button"
+              class="mobile-map-button"
+              (click)="toggleMapaMobile()"
+            >
 
               <mat-icon>
                 {{ mostrarMapaMobile ? 'close' : 'map' }}
@@ -195,14 +231,28 @@
             <!-- MAPA MOBILE -->
             <!-- =============================================== -->
 
-            <div *ngIf="mostrarMapaMobile" class="mobile-map-container">
+            <div
+              *ngIf="mostrarMapaMobile"
+              class="mobile-map-container"
+            >
 
-              <google-map width="100%" height="100%" [center]="center" [zoom]="zoom" [options]="mapOptions">
+              <google-map
+                width="100%"
+                height="100%"
+                [center]="center"
+                [zoom]="zoom"
+                [options]="mapOptions"
+              >
 
-                <map-marker *ngFor="let sede of sedesFiltradas" [position]="{
+                <map-marker
+                  *ngFor="let sede of sedesFiltradas"
+                  [position]="{
                     lat: sede.latitud,
                     lng: sede.longitud
-                  }" [title]="sede.nombre" (mapClick)="seleccionarSede(sede)">
+                  }"
+                  [title]="sede.nombre"
+                  (mapClick)="seleccionarSede(sede)"
+                >
                 </map-marker>
 
               </google-map>
@@ -216,15 +266,27 @@
 
             <div class="sedes-list">
 
-              <mat-card *ngFor="let sede of sedesFiltradas" class="sede-card" (click)="seleccionarSede(sede)">
+              <mat-card
+                *ngFor="let sede of sedesFiltradas"
+                class="sede-card"
+                (click)="seleccionarSede(sede)"
+              >
 
                 <!-- IMAGEN -->
 
                 <div class="sede-image-container">
 
-                  <img *ngIf="sede.foto" [src]="sede.foto" [alt]="sede.nombre" class="sede-image" />
+                  <img
+                    *ngIf="sede.foto"
+                    [src]="sede.foto"
+                    [alt]="sede.nombre"
+                    class="sede-image"
+                  />
 
-                  <div *ngIf="!sede.foto" class="sede-image-placeholder">
+                  <div
+                    *ngIf="!sede.foto"
+                    class="sede-image-placeholder"
+                  >
 
                     <mat-icon>
                       business
@@ -235,7 +297,11 @@
 
                   <!-- FAVORITO -->
 
-                  <button type="button" class="favorite-button" (click)="$event.stopPropagation()">
+                  <button
+                    type="button"
+                    class="favorite-button"
+                    (click)="$event.stopPropagation()"
+                  >
 
                     <mat-icon>
                       favorite_border
@@ -256,7 +322,10 @@
                       {{ sede.nombre }}
                     </h3>
 
-                    <div *ngIf="sede.calificacion" class="rating">
+                    <div
+                      *ngIf="sede.calificacion"
+                      class="rating"
+                    >
 
                       <mat-icon>
                         star
@@ -269,7 +338,10 @@
                   </div>
 
 
-                  <p *ngIf="sede.direccion" class="sede-address">
+                  <p
+                    *ngIf="sede.direccion"
+                    class="sede-address"
+                  >
 
                     <mat-icon>
                       location_on
@@ -280,7 +352,10 @@
                   </p>
 
 
-                  <p *ngIf="sede.ciudad" class="sede-location">
+                  <p
+                    *ngIf="sede.ciudad"
+                    class="sede-location"
+                  >
                     {{ sede.ciudad }}
                   </p>
 
@@ -315,10 +390,13 @@
               <!-- SIN RESULTADOS -->
               <!-- ============================================= -->
 
-              <div *ngIf="
+              <div
+                *ngIf="
                   sedesFiltradas.length === 0 &&
                   textoBusquedaSede
-                " class="empty-search">
+                "
+                class="empty-search"
+              >
 
                 <mat-icon>
                   search_off
@@ -347,12 +425,23 @@
 
             <div class="map-floating">
 
-              <google-map width="100%" height="100%" [center]="center" [zoom]="zoom" [options]="mapOptions">
+              <google-map
+                width="100%"
+                height="100%"
+                [center]="center"
+                [zoom]="zoom"
+                [options]="mapOptions"
+              >
 
-                <map-marker *ngFor="let sede of sedesFiltradas" [position]="{
+                <map-marker
+                  *ngFor="let sede of sedesFiltradas"
+                  [position]="{
                     lat: sede.latitud,
                     lng: sede.longitud
-                  }" [title]="sede.nombre" (mapClick)="seleccionarSede(sede)">
+                  }"
+                  [title]="sede.nombre"
+                  (mapClick)="seleccionarSede(sede)"
+                >
                 </map-marker>
 
               </google-map>
@@ -424,7 +513,11 @@
         <!-- SEDE SELECCIONADA -->
         <!-- =================================================== -->
 
-        <section *ngIf="mostrarSede" class="selected-sede-section">
+        <section
+          *ngIf="mostrarSede"
+          class="selected-sede-section"
+        >
+
 
           <!-- HEADER -->
 
@@ -432,8 +525,13 @@
 
             <div class="selected-sede-title">
 
-              <button *ngIf="btnRefresh" mat-icon-button class="back-button" matTooltip="Cambiar sede"
-                (click)="cambiarSede()">
+              <button
+                *ngIf="btnRefresh"
+                mat-icon-button
+                class="back-button"
+                matTooltip="Cambiar sede"
+                (click)="cambiarSede()"
+              >
 
                 <mat-icon>
                   arrow_back
@@ -466,7 +564,12 @@
             </div>
 
 
-            <button *ngIf="btnRefresh" mat-stroked-button class="change-sede-button" (click)="cambiarSede()">
+            <button
+              *ngIf="btnRefresh"
+              mat-stroked-button
+              class="change-sede-button"
+              (click)="cambiarSede()"
+            >
 
               <mat-icon>
                 swap_horiz
@@ -555,19 +658,31 @@
             </div>
 
 
-            <ng-container *ngIf="
+            <ng-container
+              *ngIf="
                 recursosList &&
                 recursosList.length > 0;
                 else noRecursos
-              ">
+              "
+            >
 
-              <div class="profesionales-grid">
+              <div
+                class="profesionales-grid"
+                [class.un-solo-profesional]="recursosList.length === 1"
+              >
 
-                <mat-card *ngFor="let usuario of recursosList" class="profesional-card" (click)="irAReservar(usuario)">
+                <mat-card
+                  *ngFor="let usuario of recursosList"
+                  class="profesional-card"
+                  (click)="irAReservar(usuario)"
+                >
 
                   <div class="profesional-image">
 
-                    <img [src]="usuario.foto" [alt]="'Foto de ' + usuario.nombre" />
+                    <img
+                      [src]="usuario.foto"
+                      [alt]="'Foto de ' + usuario.nombre"
+                    />
 
                     <span class="online-indicator"></span>
 
@@ -647,7 +762,10 @@
                   disponibles para esta sede.
                 </p>
 
-                <button mat-stroked-button (click)="cambiarSede()">
+                <button
+                  mat-stroked-button
+                  (click)="cambiarSede()"
+                >
 
                   <mat-icon>
                     swap_horiz
@@ -668,18 +786,42 @@
       </main>
 
     </mat-card>
-    <button mat-stroked-button color="primary" class="fab-citas" (click)="misCitas()">
-      <mat-icon>event</mat-icon>
+
+
+    <!-- MIS CITAS -->
+
+    <button
+      mat-stroked-button
+      color="primary"
+      class="fab-citas"
+      (click)="misCitas()"
+    >
+
+      <mat-icon>
+        event
+      </mat-icon>
+
       Mis citas
+
     </button>
+
   </ng-container>
 
+
+  <!-- ========================================================= -->
+  <!-- NO AUTORIZADO -->
+  <!-- ========================================================= -->
+
   <ng-template #mensajeNoAutorizado>
+
     <div class="mensaje-error">
+
       <div class="error-icon">
+
         <mat-icon>
           error_outline
         </mat-icon>
+
       </div>
 
       <span class="error-label">
@@ -694,7 +836,11 @@
         {{ mensajeError }}
       </p>
 
-      <button mat-flat-button color="primary" (click)="irALogin()">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="irALogin()"
+      >
 
         <mat-icon>
           login
@@ -709,10 +855,21 @@
   </ng-template>
 
 </div>
-<!-- Footer -->
+
+
+<!-- ========================================================= -->
+<!-- FOOTER -->
+<!-- ========================================================= -->
+
 <footer class="app-footer">
+
   <div class="footer-content">
-    <span>&copy; {{ currentYear }} www.agitime.com.co Todos los derechos
-      reservados.</span>
+
+    <span>
+      &copy; {{ currentYear }} www.agitime.com.co Todos los derechos
+      reservados.
+    </span>
+
   </div>
+
 </footer>

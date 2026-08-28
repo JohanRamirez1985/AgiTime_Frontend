@@ -60,6 +60,13 @@ export class Toolbar implements OnInit {
     },
 
     {
+      codigo: 'ord',
+      label: 'Ordenes Agendamientos',
+      icon: 'event_note',
+      route: '/admin/recurso/ord'
+    },
+
+    {
       codigo: 'usu',
       label: 'Usuarios',
       icon: 'group',

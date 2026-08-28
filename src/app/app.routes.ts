@@ -122,6 +122,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'recurso/ord',
+        loadComponent: () =>
+          import('./components/agendamientoOrden/gestion-agendamiento-orden/gestion-agendamiento-orden').then(
+            (m) => m.GestionAgendamientoOrden
+          ),
+      },
+      {
         path: 'usuarioPorcentaje/gestionar',
         loadComponent: () =>
           import(

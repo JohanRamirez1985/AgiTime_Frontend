@@ -1,0 +1,508 @@
+.gestion-orden {
+  width: 100%;
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+/* ===================================================== */
+/* ENCABEZADO */
+/* ===================================================== */
+
+.encabezado {
+  margin-bottom: 30px;
+}
+
+.encabezado h1 {
+  margin: 0 0 8px;
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.encabezado p {
+  margin: 0;
+  color: #666;
+}
+
+
+/* ===================================================== */
+/* CARD */
+/* ===================================================== */
+
+.card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 14px;
+  padding: 25px;
+}
+
+
+/* ===================================================== */
+/* BUSCADOR */
+/* ===================================================== */
+
+.buscador-card {
+  position: relative;
+}
+
+.buscador-card label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.input-busqueda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border: 1px solid #ccc;
+  border-radius: 10px;
+
+  padding: 0 15px;
+
+  height: 50px;
+
+  background: #fff;
+}
+
+.input-busqueda:focus-within {
+  border-color: #0d47a1;
+}
+
+.input-busqueda input {
+  border: none;
+  outline: none;
+
+  width: 100%;
+
+  font-size: 15px;
+}
+
+
+/* ===================================================== */
+/* RESULTADOS CLIENTES */
+/* ===================================================== */
+
+.resultados-clientes {
+  position: absolute;
+
+  left: 25px;
+  right: 25px;
+
+  top: 105px;
+
+  background: white;
+
+  border: 1px solid #ddd;
+  border-radius: 10px;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+
+  z-index: 20;
+}
+
+.cliente-item {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 14px;
+
+  cursor: pointer;
+}
+
+.cliente-item:hover {
+  background: #f5f7fa;
+}
+
+.cliente-item small {
+  display: block;
+  color: #777;
+  margin-top: 3px;
+}
+
+.cliente-icono {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e3f2fd;
+  color: #0d47a1;
+}
+
+
+/* ===================================================== */
+/* ÓRDENES */
+/* ===================================================== */
+
+.ordenes-container {
+  margin-top: 35px;
+}
+
+.seccion-titulo {
+  margin-bottom: 20px;
+}
+
+.seccion-titulo h2 {
+  margin: 0 0 5px;
+}
+
+.seccion-titulo p {
+  margin: 0;
+  color: #777;
+}
+
+.ordenes-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(300px, 1fr));
+
+  gap: 20px;
+}
+
+
+/* ===================================================== */
+/* ORDEN CARD */
+/* ===================================================== */
+
+.orden-card {
+  padding: 20px;
+
+  border: 1px solid #ddd;
+  border-radius: 14px;
+
+  background: white;
+
+  cursor: pointer;
+
+  transition: all .2s ease;
+}
+
+.orden-card:hover {
+  border-color: #0d47a1;
+
+  box-shadow: 0 6px 20px rgba(0,0,0,.08);
+}
+
+.orden-card.seleccionada {
+  border: 2px solid #0d47a1;
+}
+
+
+/* ===================================================== */
+/* ORDEN HEADER */
+/* ===================================================== */
+
+.orden-header {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.orden-icono {
+  width: 50px;
+  height: 50px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: #e3f2fd;
+  color: #0d47a1;
+}
+
+.orden-header strong {
+  display: block;
+  font-size: 17px;
+}
+
+.orden-header small {
+  color: #777;
+}
+
+
+/* ===================================================== */
+/* INFO ORDEN */
+/* ===================================================== */
+
+.orden-info {
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-top: 25px;
+}
+
+.orden-info span {
+  display: block;
+
+  font-size: 12px;
+
+  color: #888;
+
+  margin-bottom: 4px;
+}
+
+
+/* ===================================================== */
+/* PROGRESO */
+/* ===================================================== */
+
+.barra-progreso {
+  height: 7px;
+
+  background: #eee;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  margin: 15px 0;
+}
+
+.barra-progreso div {
+  height: 100%;
+
+  background: #0d47a1;
+}
+
+
+/* ===================================================== */
+/* FOOTER ORDEN */
+/* ===================================================== */
+
+.orden-footer {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+}
+
+.estado-pendiente {
+  color: #e65100;
+
+  background: #fff3e0;
+
+  padding: 5px 10px;
+
+  border-radius: 20px;
+
+  font-size: 13px;
+}
+
+.ver-orden {
+  display: flex;
+
+  align-items: center;
+
+  gap: 4px;
+
+  color: #0d47a1;
+
+  font-weight: 600;
+}
+
+
+/* ===================================================== */
+/* DETALLE */
+/* ===================================================== */
+
+.detalle-orden {
+  margin-top: 35px;
+
+  background: white;
+
+  border: 1px solid #ddd;
+
+  border-radius: 14px;
+
+  padding: 25px;
+}
+
+.detalle-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 20px;
+}
+
+.detalle-header h2 {
+  margin: 0 0 5px;
+}
+
+.detalle-header p {
+  margin: 0;
+
+  color: #777;
+}
+
+
+/* ===================================================== */
+/* SESIONES */
+/* ===================================================== */
+
+.sesiones {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.sesion-item {
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 15px;
+
+  border: 1px solid #eee;
+
+  border-radius: 10px;
+}
+
+.numero-sesion {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #f0f0f0;
+
+  font-weight: 600;
+}
+
+.sesion-info {
+  flex: 1;
+}
+
+.sesion-info strong {
+  display: block;
+}
+
+.sesion-info span,
+.sesion-info small {
+  display: block;
+
+  color: #777;
+
+  margin-top: 3px;
+}
+
+
+/* ===================================================== */
+/* ESTADOS */
+/* ===================================================== */
+
+.sesion-estado {
+  min-width: 130px;
+
+  display: flex;
+
+  justify-content: flex-end;
+}
+
+.estado-completada {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  color: #2e7d32;
+}
+
+.estado-agendada {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  color: #1565c0;
+}
+
+
+/* ===================================================== */
+/* BOTÓN AGENDAR */
+/* ===================================================== */
+
+.btn-agendar {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  padding: 9px 15px;
+
+  background: #0d47a1;
+
+  color: white;
+
+  cursor: pointer;
+
+  font-weight: 600;
+}
+
+.btn-agendar:hover {
+  background: #083578;
+}
+
+
+/* ===================================================== */
+/* RESPONSIVE */
+/* ===================================================== */
+
+@media (max-width: 700px) {
+
+  .gestion-orden {
+    padding: 15px;
+  }
+
+  .sesion-item {
+    align-items: flex-start;
+
+    flex-wrap: wrap;
+  }
+
+  .sesion-estado {
+    width: 100%;
+
+    justify-content: flex-start;
+  }
+
+  .detalle-header {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 10px;
+  }
+
+}

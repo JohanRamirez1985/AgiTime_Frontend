@@ -818,16 +818,12 @@ export class ClienteAgendar {
     this.sharedServices.obtenerServicios(emp).subscribe({
       next: (rest) => {
         if (rest.exito) {
-          this.serviciosFiltrados = !this.seleccionRubro ? rest.datos.filter(
+          this.serviciosFiltrados = rest.datos.filter(
             (s: any) =>
               s.sede === this.recursoSede &&
-              s.nombre?.toLowerCase().trim() !== 'otro'
-          ) :
-            rest.datos.filter(
-              (s: any) =>
-                s.sede === this.recursoSede &&
-                s.cliente === true
-            );
+              s.cliente === true
+          );
+
           this.mostrarServicios = true;
           this.servicios = this.serviciosFiltrados;
           this.obtenerHorarios();
