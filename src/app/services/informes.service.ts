@@ -43,11 +43,28 @@ export class InformesService {
     );
   }
 
+  generarReporte(payload: any): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/ejecutarReporte`,
+      payload,
+    );
+  }
+  
+  exportarReporte(payload: any): Observable<Blob> {
+    return this.http.post(
+      `${this.baseUrl}/exportarReporte`,
+      payload,
+      {
+        responseType: 'blob'
+      }
+    );
+  }
+
   informacionInventarioVenta(request: any) {
     const params = new HttpParams({ fromObject: request });
     return this.http.get(`${this.baseUrl}/informacionInventarioVenta`, {
       params,
-      responseType: 'blob', 
+      responseType: 'blob',
     })
   }
 }

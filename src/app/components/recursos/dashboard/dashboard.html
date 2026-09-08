@@ -9,7 +9,7 @@
     Inactivarme
   </button>
 </div>
-<mat-tab-group (selectedTabChange)="onTabChange($event)">
+<mat-tab-group [(selectedIndex)]="pestanaSeleccionada" (selectedTabChange)="onTabChange($event)">
   <!-- 🗓 Pestaña 1: Mis Citas -->
   <mat-tab label="Mis Citas">
     <div class="dashboard-container">
@@ -86,7 +86,8 @@
                   <span>Finalizar</span>
                 </button>
 
-                <button *ngIf="!seleccionRecurso" class="btn-accion btn-finalizar" (click)="cancelarCita(cita)">
+                <button *ngIf="idEmpresa === 2 || (!seleccionRecurso && cita.estado === 'Activo')" class="btn-accion btn-finalizar"
+                  (click)="cancelarCita(cita)">
                   <mat-icon>cancel</mat-icon>
                   <span>Cancelar</span>
                 </button>

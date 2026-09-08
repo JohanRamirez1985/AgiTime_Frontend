@@ -94,6 +94,7 @@ export class ClienteAgendar {
   telefonoEmpresa: string = '';
   ultimoHorarioJornada: any;
   currentYear: number = new Date().getFullYear();
+  tipoOrden: boolean = false;
 
   constructor(
     private sharedServices: SharedService,
@@ -187,6 +188,7 @@ export class ClienteAgendar {
           this.empresaLogo = 'assets/img/' + empresa?.logo;
           this.empresaNombre = empresa?.nombre;
           this.seleccionRubro = empresa.servicio;
+          this.tipoOrden = empresa.ordenes;
           this.telefonoEmpresa = sedeSeleccionada.telefono;
           localStorage.setItem('empresa', JSON.stringify(empresa));
           this.obtenerRecursos();
@@ -477,24 +479,48 @@ export class ClienteAgendar {
         },
       });
     } else {
-      this.agendaService.registrarCita(request).subscribe({
-        next: (rest) => {
-          if (this.enviarMjsWssp) {
-            this.mensajeWssp(request, datos);
+      if (this.tipoOrden) {
+        this.agendaService.guardarCitaSesion(request).subscribe({
+          next: (rest) => {
+            if (this.enviarMjsWssp) {
+              this.mensajeWssp(request, datos);
+            }
+            this.modalService.success(
+              rest.mensaje || 'La cita fue creada exitosamente',
+              () => this.volver()
+            );
+            this.loading = false;
+          },
+          error: (err) => {
+            this.modalService.error(err.mensaje);
+            this.loading = false;
+            this.mostrarDisponibilidad = true;
           }
-          this.modalService.success(
-            rest.mensaje || 'La cita fue creada exitosamente',
-            () => this.volver()
-          );
-          this.loading = false;
-        },
-        error: (err) => {
-          this.modalService.error(err.mensaje);
-          this.loading = false;
-          this.mostrarDisponibilidad = true;
-        },
-      });
+        })
+      } else {
+        this.agendaService.registrarCita(request).subscribe({
+          next: (rest) => {
+            if (this.enviarMjsWssp) {
+              this.mensajeWssp(request, datos);
+            }
+            this.modalService.success(
+              rest.mensaje || 'La cita fue creada exitosamente',
+              () => this.volver()
+            );
+            this.loading = false;
+          },
+          error: (err) => {
+            this.modalService.error(err.mensaje);
+            this.loading = false;
+            this.mostrarDisponibilidad = true;
+          },
+        });
+      }
     }
+  }
+
+  private guardarCita(request: any) {
+
   }
 
   onDateChange(event: any) {
@@ -652,25 +678,53 @@ export class ClienteAgendar {
           citas: resultadoAlterno,
           validaHorario: true
         }
+        return json;
       } else {
-        json = {
-          FechaIni: fechaFinal,
-          recurso: this.idRecurso,
-          Valor: this.costo,
-          UsuarioCreacion: 'Cliente',
-          Hora: tiempoTotalServicio,
-          empresa: this.idEmpresa,
-          servicios: serviciosSeleccionados,
-          clienteInfo: {
-            Nombre: datos.nombre,
-            Telefono: datos.celular,
-            Correo: datos.correo,
-            FechaNacimiento: datos.fechaNacimiento,
-          },
-          fechaCreacion: fechaLocal,
-        };
+        if (this.tipoOrden) {
+          let servicios = this.serviciosSeleccionados.map((s) => ({
+            servicio: s.id,
+            cantidad: s.sesiones
+          }));
+
+          json = {
+            recurso: this.idRecurso,
+            FechaIni: fechaFinal,
+            Valor: this.costo,
+            UsuarioCreacion: 'Cliente',
+            Hora: tiempoTotalServicio,
+            empresa: this.idEmpresa,
+            servicios: servicios,
+            clienteInfo: {
+              Nombre: datos.nombre,
+              Telefono: datos.celular,
+              Correo: datos.correo,
+              FechaNacimiento: datos.fechaNacimiento,
+            },
+            fechaCreacion: fechaLocal,
+          };
+
+          return json;
+
+        } else {
+          json = {
+            FechaIni: fechaFinal,
+            recurso: this.idRecurso,
+            Valor: this.costo,
+            UsuarioCreacion: 'Cliente',
+            Hora: tiempoTotalServicio,
+            empresa: this.idEmpresa,
+            servicios: serviciosSeleccionados,
+            clienteInfo: {
+              Nombre: datos.nombre,
+              Telefono: datos.celular,
+              Correo: datos.correo,
+              FechaNacimiento: datos.fechaNacimiento,
+            },
+            fechaCreacion: fechaLocal,
+          };
+        }
+        return json;
       }
-      return json;
     } else {
       return;
     }
@@ -818,16 +872,12 @@ export class ClienteAgendar {
     this.sharedServices.obtenerServicios(emp).subscribe({
       next: (rest) => {
         if (rest.exito) {
-          this.serviciosFiltrados = !this.seleccionRubro ? rest.datos.filter(
+          this.serviciosFiltrados = rest.datos.filter(
             (s: any) =>
               s.sede === this.recursoSede &&
-              s.nombre?.toLowerCase().trim() !== 'otro'
-          ) :
-            rest.datos.filter(
-              (s: any) =>
-                s.sede === this.recursoSede &&
-                s.cliente === true
-            );
+              s.cliente === true
+          );
+
           this.mostrarServicios = true;
           this.servicios = this.serviciosFiltrados;
           this.obtenerHorarios();

@@ -1,0 +1,300 @@
+<div class="gestion-orden">
+
+    <!-- ===================================================== -->
+    <!-- ENCABEZADO -->
+    <!-- ===================================================== -->
+
+    <div class="encabezado">
+
+        <div>
+            <h1>Gestión de órdenes</h1>
+
+            <p>
+                Busca un cliente para consultar sus órdenes pendientes
+                y agendar las sesiones disponibles.
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- BUSCADOR -->
+    <!-- ===================================================== -->
+
+    <div class="card buscador-card">
+
+        <label>
+            Buscar cliente
+        </label>
+
+        <div class="input-busqueda">
+
+            <span class="material-icons">
+                search
+            </span>
+
+            <input type="text" [(ngModel)]="textoBusqueda" placeholder="Escribe el nombre del cliente..." />
+
+        </div>
+
+
+        <!-- RESULTADOS DEL BUSCADOR -->
+
+        <div class="resultados-clientes" *ngIf="clientesFiltrados.length > 0">
+
+            <div class="cliente-item" *ngFor="let cliente of clientesFiltrados" (click)="seleccionarCliente(cliente)">
+
+                <div class="cliente-icono">
+
+                    <span class="material-icons">
+                        search
+                    </span>
+
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ cliente.nombre }}
+                    </strong>
+
+                    <small>
+                        Seleccionar cliente
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p class="loading-text">Cargando disponibilidad...</p>
+    </div>
+
+    <div *ngIf="!loading && ordenes.length > 0 ; else sinInformacon">
+        <!-- ===================================================== -->
+        <!-- ÓRDENES DEL CLIENTE -->
+        <!-- ===================================================== -->
+
+        <div class="ordenes-container" *ngIf="clienteSeleccionado">
+
+            <div class="seccion-titulo">
+
+                <div>
+
+                    <h2>
+                        Órdenes de {{ clienteSeleccionado.nombre }}
+                    </h2>
+
+                    <p>
+                        Selecciona una orden para consultar sus sesiones.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ORDEN -->
+
+            <div class="ordenes-grid">
+
+                <div class="orden-card" *ngFor="let orden of ordenes" (click)="seleccionarOrden(orden)"
+                    [class.seleccionada]="ordenSeleccionada?.id === orden.id">
+
+                    <div class="orden-header">
+
+                        <div class="orden-icono">
+
+                            <span class="material-icons">
+                                event_repeat
+                            </span>
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                {{ orden.nombreServicio }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="orden-info">
+
+                        <div>
+                            <span>Sesiones</span>
+                            <strong>
+                                {{ getSesionesCompletadas(orden) }}
+                                / {{ orden.sesiones.length }}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Creada</span>
+
+                            <strong>
+                                {{ orden.fechaCreacion | date:'dd/MM/yyyy' }}
+                            </strong>
+                        </div>
+
+                    </div>
+
+
+                    <div class="barra-progreso">
+
+                        <div [style.width.%]="
+              (getSesionesCompletadas(orden) / orden.sesiones.length) * 100
+            "></div>
+
+                    </div>
+
+
+                    <div class="orden-footer">
+                        <span [ngClass]="orden.estado === 'Completada'
+                            ? 'estado-completada'
+                            : 'estado-pendiente'">
+                            {{ orden.estado }}
+                        </span>
+
+                        <span class="ver-orden">
+                            Ver sesiones
+                            <span class="material-icons">
+                                arrow_forward
+                            </span>
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div *ngIf="mostrarSesiones">
+            <div class="detalle-orden" *ngIf="ordenSeleccionada">
+
+                <div class="detalle-header">
+
+                    <div>
+
+                        <h2>
+                            {{ ordenSeleccionada.nombreServicio }}
+                        </h2>
+
+                    </div>
+
+                    <span [ngClass]="ordenSeleccionada.estado === 'Completada'
+                            ? 'estado-completada'
+                            : 'estado-pendiente'">
+                        {{ ordenSeleccionada.estado }}
+                    </span>
+
+                </div>
+
+
+                <!-- SESIONES -->
+
+                <div class="sesiones">
+
+                    <div class="sesion-item" *ngFor="let sesion of ordenSeleccionada.sesiones">
+
+                        <div class="numero-sesion">
+
+                            {{ sesion.numero }}
+
+                        </div>
+
+
+                        <div class="sesion-info">
+
+                            <strong>
+                                Sesión {{ sesion.numero }}
+                            </strong>
+
+
+                            <small *ngIf="sesion.fechaCita">
+
+                                {{ sesion.fechaCita | date:'dd/MM/yyyy hh:mm a' }}
+
+                                <span *ngIf="sesion.hora">
+                                    · {{ sesion.hora }}
+                                </span>
+
+                            </small>
+
+                            <span [ngClass]="{
+                                    'estado-completada': sesion.estado === 'Asistio',
+                                    'estado-agendada': sesion.estado === 'Agendada',
+                                    'estado-pendiente': sesion.estado !== 'Asistio' && sesion.estado !== 'Agendada'
+                                }">
+                                {{ sesion.estado }}
+                            </span>
+
+                        </div>
+
+
+                        <!-- ESTADO -->
+
+                        <div class="sesion-estado">
+
+                            <span *ngIf="sesion.estado === 'Completada'" class="estado-completada">
+                                <span class="material-icons">
+                                    check_circle
+                                </span>
+
+                                Completada
+                            </span>
+
+
+                            <span *ngIf="sesion.estado === 'Agendada'" class="estado-agendada">
+                                <span class="material-icons">
+                                    event
+                                </span>
+
+                                Agendada
+                            </span>
+
+
+                            <button *ngIf="sesion.estado === 'Pendiente'" class="btn-agendar"
+                                (click)="agendarSesion(sesion); $event.stopPropagation()">
+
+                                <span class="material-icons">
+                                    event
+                                </span>
+
+                                Agendar
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+
+    <ng-template #sinInformacon>
+        <div class="sin-informacion-full">
+            <span>No hay informacion disponible.</span>
+        </div>
+    </ng-template>
+
+</div>

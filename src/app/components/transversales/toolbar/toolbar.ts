@@ -60,6 +60,13 @@ export class Toolbar implements OnInit {
     },
 
     {
+      codigo: 'ord',
+      label: 'Ordenes Agendamientos',
+      icon: 'event_note',
+      route: '/admin/recurso/ord'
+    },
+
+    {
       codigo: 'usu',
       label: 'Usuarios',
       icon: 'group',
@@ -90,8 +97,15 @@ export class Toolbar implements OnInit {
     {
       codigo: 'inf',
       label: 'Informes',
-      icon: 'assessment',
+      icon: 'analytics',
       route: '/admin/informes'
+    },
+
+    {
+      codigo: 'rep',
+      label: 'Reportes',
+      icon: 'bar_chart',
+      route: '/admin/reportes'
     },
 
     {

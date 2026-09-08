@@ -122,6 +122,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'recurso/ord',
+        loadComponent: () =>
+          import('./components/agendamientoOrden/gestion-agendamiento-orden/gestion-agendamiento-orden').then(
+            (m) => m.GestionAgendamientoOrden
+          ),
+      },
+      {
         path: 'usuarioPorcentaje/gestionar',
         loadComponent: () =>
           import(
@@ -153,6 +160,11 @@ export const routes: Routes = [
         path: 'informes',
         loadComponent: () =>
           import('./components/informes/informes').then((m) => m.Informes),
+      },
+      {
+        path: 'reportes',
+        loadComponent: () =>
+          import('./components/reportes/reportes').then((m) => m.Reportes),
       },
       {
         path: 'liquidacion',

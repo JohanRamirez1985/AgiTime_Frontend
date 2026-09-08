@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -120,6 +120,7 @@ export class DashboardRecurso {
   tipoRangoTiempo: string = 'Tiempo_Agenda';
   estaDeshabilitado: boolean = false;
   seleccionRecurso: boolean = false;
+  tipoOrden: boolean = false;
   viewDate: Date = new Date();
   clientesEmpresa: any[] = [];
   busqueda: string = '';
@@ -128,6 +129,7 @@ export class DashboardRecurso {
   enviarMjsWssp: boolean = false;
   mostrarInfoCliente: boolean = false;
   usoBono: boolean = false;
+  pestanaSeleccionada: number = 0;
 
   constructor(
     private router: Router,
@@ -137,6 +139,7 @@ export class DashboardRecurso {
     private modalService: Modal,
     private dialog: MatDialog,
     private clienteService: ClienteService,
+    private route: ActivatedRoute
   ) { }
 
   onTipoBloqueoChange(valor: string) {
@@ -218,6 +221,7 @@ export class DashboardRecurso {
     this.empresa = JSON.parse(localStorage.getItem('empresa') || '');
     this.idEmpresa = this.empresa.id;
     this.seleccionRecurso = this.empresa.servicio;
+    this.tipoOrden = this.empresa.ordenes;
     this.rol = this.user.rol;
     this.consultarCitas(this.user, this.empresa, this.day);
     this.estadoActivoInactivo();
@@ -227,6 +231,16 @@ export class DashboardRecurso {
     this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
     this.obtenerBloqueos();
     this.consultarInfoCliente();
+    this.route.queryParams.subscribe(params => {
+
+      if (params['tab'] !== undefined) {
+        const tab = Number(params['tab']);
+        this.pestanaSeleccionada = tab;
+        this.onTabChange(tab);
+        this.finalizarAgenda()
+      }
+
+    });
   }
 
   private obtenerRangoParametrizado(): void {
@@ -1094,7 +1108,7 @@ export class DashboardRecurso {
     const nombreMostrar = this.seleccionRecurso
       ? cita.nombreCliente.split('-')[0].trim()
       : cita.nombreCliente;
-    const checkboxHtml = this.seleccionRecurso ? '' : `
+    const checkboxHtml = !this.usoBono ? '' : `
       <div style="margin-top: 15px; display: flex; justify-content: center; align-items: center;">
         <label style="font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
           <input type="checkbox" id="usoBonoCheckbox">
@@ -1120,7 +1134,7 @@ export class DashboardRecurso {
         popup: 'swal-reserva-responsive',
       },
       preConfirm: () => {
-        const usoBono = this.seleccionRecurso ? false : (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked;
+        const usoBono = !this.usoBono ? false : (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked;
         return { usoBono };
       }
     }).then((result) => {
@@ -1134,13 +1148,11 @@ export class DashboardRecurso {
           empresa: JSON.parse(localStorage.getItem('empresa') || '{}').id,
           Id: cita.id,
           Asistencia: result.isConfirmed,
-          Bono: result.value?.usoBono || false
+          Bono: result.value?.usoBono || false,
+          usuarioCreacion: this.user.id.toString(),
+          fechaCreacion: this.formatearFechaActual()
         };
 
-        if (this.seleccionRecurso) {
-          request.usuarioCreacion = this.user.id.toString()
-          request.fechaCreacion = this.formatearFechaActual()
-        }
 
         this.agendamientoServices.ConfirmarAsitenciaCita(request).subscribe({
           next: (rest) => {
@@ -1317,81 +1329,131 @@ export class DashboardRecurso {
     this.cdr.detectChanges();
   }
 
-  private agendar(hora: any, bono: boolean, result: any) {
-    const request: any = this.createJson(hora, bono, result);
-    // Si request.FechaIni viene como ISO: 2026-04-07T15:00:00
+  private agendar(hora: any, bono: boolean, result: any): void {
+    const request = this.createJson(hora, bono, result);
+
+    const mensaje = this.construirMensajeWhatsApp(request, result);
+
+    const observable = this.guardarCita(request);
+
+    observable.subscribe({
+      next: (rest: any) => this.procesarRespuestaAgendamiento(rest, request, mensaje, result),
+      error: (err: any) => this.manejarErrorAgendamiento(err),
+    });
+  }
+
+  /**
+   * Construye el mensaje que se enviará por WhatsApp
+   */
+  private construirMensajeWhatsApp(request: any, result: any): string {
     const fecha = new Date(request?.FechaIni);
     const fechaFormateada = fecha.toLocaleDateString("es-CO", {
       day: "2-digit",
       month: "2-digit",
       year: "2-digit",
     });
-
     const horaFormateada = fecha.toLocaleTimeString("es-CO", {
       hour: "2-digit",
       minute: "2-digit",
       hour12: false,
     });
+    const servicio = this.obtenerServiciosTexto();
 
-    const numero = `57${result.celular}`;
+    return `📅 ¡Hola ${result.nombre}!
+        ¡Tu cita ha sido agendada exitosamente en *${this.empresa.nombre}*! 🎉
 
-    const servicio = this.serviciosSeleccionados
+        📅 *Fecha:* ${fechaFormateada}
+        🕐 *Hora:* ${horaFormateada}
+        💇 *Servicio:* ${servicio}
+
+        ⏰ Te recomendamos llegar unos minutos antes para brindarte la mejor atención y aprovechar al máximo tu cita.
+        🔄 Si necesitas reprogramar tu cita, por favor comunícate con nosotros con anticipación para ayudarte a encontrar un nuevo horario.
+        ✨ ¡Será un gusto atenderte!
+
+        ¡Nos vemos pronto! 🙌
+        💙 *${this.empresa.nombre}*`;
+  }
+
+  /**
+   * Obtiene los servicios seleccionados en formato legible
+   */
+  private obtenerServiciosTexto(): string {
+    return this.serviciosSeleccionados
       .map(s => s.nombre)
       .join(", ")
       .replace(/,([^,]*)$/, " y$1");
+  }
 
-    const mensaje = `📅 ¡Hola ${result.nombre}!
+  /**
+   * Determina qué servicio debe utilizarse para guardar la cita
+   */
+  private guardarCita(request: any): any {
+    if (this.tipoOrden) {
+      if (this.pestanaSeleccionada === 1) {
+        return this.agendamientoServices.guardarCitaSesionOrden(request);
+      } else {
+        return this.agendamientoServices.guardarCitaSesion(request);
+      }
+    }
 
-      ¡Tu cita ha sido agendada exitosamente en *${this.empresa.nombre}*! 🎉
-
-      📅 *Fecha:* ${fechaFormateada}
-      🕐 *Hora:* ${horaFormateada}
-      💇 *Servicio:* ${servicio}
-
-      ⏰ Te recomendamos llegar unos minutos antes para brindarte la mejor atención y aprovechar al máximo tu cita.
-
-      🔄 Si necesitas reprogramar tu cita, por favor comunícate con nosotros con anticipación para ayudarte a encontrar un nuevo horario.
-
-      ✨ ¡Será un gusto atenderte!
-
-      ¡Nos vemos pronto! 🙌
-      💙 *${this.empresa.nombre}*`;
-
-    const observable = this.seleccionRecurso
+    return this.seleccionRecurso
       ? this.agendamientoServices.guardarCita(request)
       : this.agendamientoServices.registrarCita(request);
+  }
 
-    observable.subscribe({
-      next: (rest) => {
-        if (!rest.exito && !this.seleccionRecurso) {
-          this.modalService.error(rest.mensaje || "Error de servidor");
-          return;
-        }
+  /**
+   * Procesa la respuesta del servidor
+   */
+  private procesarRespuestaAgendamiento(
+    rest: any,
+    request: any,
+    mensaje: string,
+    result: any
+  ): void {
 
-        this.modalService.success(
-          rest.mensaje || "La cita fue creada exitosamente",
-          () => {
-            this.serviciosSeleccionados = [];
-            this.mostrarAgenda = false;
-            this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
-          }
-        );
+    if (!rest.exito && !this.seleccionRecurso) {
+      this.modalService.error(rest.mensaje || "Error de servidor");
+      this.loading = false;
+      return;
+    }
 
-        if (this.enviarMjsWssp && request !== '') {
-          window.open(
-            `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`,
-            '_blank'
-          );
-        }
+    this.modalService.success(
+      rest.mensaje || "La cita fue creada exitosamente",
+      () => {
+        this.serviciosSeleccionados = [];
+        this.mostrarAgenda = false;
+        this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
+      }
+    );
 
-        this.loading = false;
-      },
-      error: (err) => {
-        this.modalService.error(err.statusText);
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-    });
+    this.enviarWhatsApp(mensaje, result);
+
+    this.loading = false;
+  }
+
+  /**
+   * Envía el mensaje de confirmación por WhatsApp
+   */
+  private enviarWhatsApp(mensaje: string, result: any): void {
+    if (!this.enviarMjsWssp) {
+      return;
+    }
+
+    const numero = `57${result.celular}`;
+
+    window.open(
+      `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`,
+      "_blank"
+    );
+  }
+
+  /**
+   * Maneja errores de la petición
+   */
+  private manejarErrorAgendamiento(err: any): void {
+    this.modalService.error(err.statusText || "Error al agendar la cita");
+    this.loading = false;
+    this.cdr.detectChanges();
   }
 
   private consultarInfoCliente(): void {
@@ -1539,11 +1601,17 @@ export class DashboardRecurso {
         this.solicitarUsoBono(hora);
         return;
       }
-      if (this.mostrarInfoCliente) {
-        this.solicitarCliente(hora, false);
-      } else {
+
+      if (this.pestanaSeleccionada === 1) {
         this.loading = true;
         this.agendar(hora.hora, false, '');
+      } else {
+        if (this.mostrarInfoCliente) {
+          this.solicitarCliente(hora, false);
+        } else {
+          this.loading = true;
+          this.agendar(hora.hora, false, '');
+        }
       }
     }
   }
@@ -1635,7 +1703,7 @@ export class DashboardRecurso {
       const fechaLocal = this.formatearFechaManual(now);
 
       const valor = this.serviciosSeleccionados.map((s) => s.valor);
-      const tiempoTotalServicio = this.serviciosSeleccionados
+      let tiempoTotalServicio = this.serviciosSeleccionados
         .map((s) => s.tiempo)
         .reduce((a, b) => a + b, 0);
       const serviciosSeleccionados = this.serviciosSeleccionados.map((s) => ({
@@ -1731,27 +1799,77 @@ export class DashboardRecurso {
         }
         return json;
       } else {
+        if (this.tipoOrden) {
+          let servicios = this.serviciosSeleccionados.map((s) => ({
+            servicio: s.id,
+            cantidad: s.sesiones
+          }));
+          const info = JSON.parse(localStorage.getItem('ordenSeleccionada') || '{}');
 
-        json = {
-          recurso: this.user.id,
-          FechaIni: fechaFinal,
-          Valor: this.otroSeleccionado ? this.costoOtro : costo,
-          UsuarioCreacion: 'Usuario',
-          Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
-          empresa: this.idEmpresa,
-          servicios: serviciosSeleccionados,
-          clienteInfo: result?.celular
-            ? {
-              Nombre: result.nombre,
-              Telefono: result.celular,
-              Correo: result.correo,
-              FechaNacimiento: result.fechaNacimiento,
+          if (this.pestanaSeleccionada === 1) {
+            if (this.serviciosSeleccionados.length === 0) {
+              tiempoTotalServicio = this.servicios.find(s => s.id === info.servicioSeleccionado)?.tiempo ?? 0;
             }
-            : null,
-          fechaCreacion: fechaLocal,
-          Bono: bono
-        };
 
+            json = {
+              recurso: this.user.id,
+              FechaIni: fechaFinal,
+              Valor: 0,
+              UsuarioCreacion: 'Usuario',
+              Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
+              empresa: this.idEmpresa,
+              clienteInfo: {
+                Id: info.idCliente
+              },
+              fechaCreacion: fechaLocal,
+              Bono: bono,
+              orden: {
+                Id: info.idOrden
+              },
+              Sesion: info.numeroSesion
+            };
+          } else {
+            json = {
+              recurso: this.user.id,
+              FechaIni: fechaFinal,
+              Valor: this.otroSeleccionado ? this.costoOtro : costo,
+              UsuarioCreacion: 'Usuario',
+              Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
+              empresa: this.idEmpresa,
+              servicios: servicios,
+              clienteInfo: result?.celular
+                ? {
+                  Nombre: result.nombre,
+                  Telefono: result.celular,
+                  Correo: result.correo,
+                  FechaNacimiento: result.fechaNacimiento,
+                }
+                : null,
+              fechaCreacion: fechaLocal,
+              Bono: bono
+            };
+          }
+        } else {
+          json = {
+            recurso: this.user.id,
+            FechaIni: fechaFinal,
+            Valor: this.otroSeleccionado ? this.costoOtro : costo,
+            UsuarioCreacion: 'Usuario',
+            Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
+            empresa: this.idEmpresa,
+            servicios: serviciosSeleccionados,
+            clienteInfo: result?.celular
+              ? {
+                Nombre: result.nombre,
+                Telefono: result.celular,
+                Correo: result.correo,
+                FechaNacimiento: result.fechaNacimiento,
+              }
+              : null,
+            fechaCreacion: fechaLocal,
+            Bono: bono
+          };
+        }
         return json;
       }
     } else {
@@ -1759,7 +1877,7 @@ export class DashboardRecurso {
     }
   }
 
-  onTabChange(event: MatTabChangeEvent) {
+  onTabChange(event: any) {
     const index = event.index;
     this.day = new Date();
     this.loading = true;
