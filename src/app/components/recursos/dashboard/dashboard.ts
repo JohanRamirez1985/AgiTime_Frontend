@@ -1142,13 +1142,11 @@ export class DashboardRecurso {
           empresa: JSON.parse(localStorage.getItem('empresa') || '{}').id,
           Id: cita.id,
           Asistencia: result.isConfirmed,
-          Bono: result.value?.usoBono || false
+          Bono: result.value?.usoBono || false,
+          usuarioCreacion: this.user.id.toString(),
+          fechaCreacion: this.formatearFechaActual()
         };
 
-        if (this.seleccionRecurso || this.tipoOrden) {
-          request.usuarioCreacion = this.user.id.toString()
-          request.fechaCreacion = this.formatearFechaActual()
-        }
 
         this.agendamientoServices.ConfirmarAsitenciaCita(request).subscribe({
           next: (rest) => {

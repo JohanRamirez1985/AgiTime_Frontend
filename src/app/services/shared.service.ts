@@ -12,7 +12,7 @@ import {
 export class SharedService {
   private baseUrlUsuario = `${environment.apiBaseUrl}/Parametros`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   obtenerTiposDocumentos(emp: string) {
     return this.http.get<TipoDocumentoResponse>(
@@ -77,5 +77,11 @@ export class SharedService {
 
   parametrosGenerales() {
     return this.http.get<EmpresasResponse>(`${this.baseUrlUsuario}/parametrosGenerales`);
+  }
+
+  tipoReportes(emp: any) {
+    return this.http.get<any>(`${this.baseUrlUsuario}/reportes`, {
+      params: { emp: emp.toString() },
+    });
   }
 }

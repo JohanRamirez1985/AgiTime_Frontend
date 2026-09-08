@@ -97,8 +97,15 @@ export class Toolbar implements OnInit {
     {
       codigo: 'inf',
       label: 'Informes',
-      icon: 'assessment',
+      icon: 'analytics',
       route: '/admin/informes'
+    },
+
+    {
+      codigo: 'rep',
+      label: 'Reportes',
+      icon: 'bar_chart',
+      route: '/admin/reportes'
     },
 
     {

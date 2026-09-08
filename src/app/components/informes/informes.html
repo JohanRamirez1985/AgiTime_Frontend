@@ -2,7 +2,7 @@
   <mat-card-header>
     <mat-card-title>
       <mat-icon color="primary">bar_chart</mat-icon>
-      Selección de Reporte
+      Selección de Informes
     </mat-card-title>
   </mat-card-header>
 
@@ -17,7 +17,7 @@
         <!-- Selección tipo reporte -->
         <ng-container>
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Tipo de Reporte</mat-label>
+            <mat-label>Tipo de Informes</mat-label>
             <mat-select formControlName="tipo" (selectionChange)="onTipoChange($event.value)">
               <mat-option value="diario">Diario</mat-option>
               <mat-option *ngIf="['1','2'].includes(idEmpresa ?? '')" value="semanal">Semanal</mat-option>
