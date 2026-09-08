@@ -93,7 +93,7 @@ export class Login {
       (this.tipo || '').toLowerCase() === 'cl'
     ).subscribe({
 
-      next: (res: LoginResponse) => {
+      next: (res: any) => {
 
         this.loading = false;
 

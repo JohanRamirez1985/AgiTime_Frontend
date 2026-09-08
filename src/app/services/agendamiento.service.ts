@@ -35,6 +35,14 @@ export class AgendamientoService {
     return this.http.post<any>(`${this.baseUrl}/guardarCita`, request);
   }
 
+  guardarCitaSesion(request: any) {
+    return this.http.post<any>(`${this.baseUrl}/almacenarCitaOrdenNo`, request);
+  }
+
+  guardarCitaSesionOrden(request: any) {
+    return this.http.post<any>(`${this.baseUrl}/almacenarCitaOrdenSi`, request);
+  }
+
   consultarCitasRecurso(request: any) {
     const params = new HttpParams({ fromObject: request });
     return this.http.get<any>(`${this.baseUrl}/consultarCitasRecurso`, {

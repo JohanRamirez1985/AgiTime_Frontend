@@ -2,6 +2,10 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { OrdenAgendamientoService } from '../../../services/ordenesAgenda.service';
+import { Modal } from '../../../shared/services/modal';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Router } from '@angular/router';
 
 interface Cliente {
   id: number;
@@ -11,19 +15,21 @@ interface Cliente {
 interface SesionOrden {
   numero: number;
   servicio: string;
-  fecha?: string;
+  fechaCita?: string;
   hora?: string;
-  estado: 'Pendiente' | 'Agendada' | 'Completada';
+  estado: 'Pendiente' | 'Agendada' | 'Completada' | 'Asistio';
+  id: number
 }
 
 interface Orden {
   id: number;
   numero: string;
   fechaCreacion: string;
-  descripcion: string;
+  nombreServicio: string;
+  idServicio: number;
   totalSesiones: number;
   sesionesCompletadas: number;
-  estado: 'Pendiente' | 'Finalizada';
+  estado: 'Pendiente' | 'Completada';
   sesiones: SesionOrden[];
 }
 
@@ -33,7 +39,8 @@ interface Orden {
   imports: [
     CommonModule,
     FormsModule,
-    MatIconModule
+    MatIconModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './gestion-agendamiento-orden.html',
   styleUrl: './gestion-agendamiento-orden.css'
@@ -41,67 +48,109 @@ interface Orden {
 export class GestionAgendamientoOrden {
 
   textoBusqueda = '';
-
+  loading: boolean = false;
   clienteSeleccionado: Cliente | null = null;
-
   ordenSeleccionada: Orden | null = null;
+  idEmpresa: number = 0;
+  clientes: Cliente[] = [];
+  ordenes: Orden[] = [];
+  mostrarSesiones: boolean = false;
+  // ordenes: Orden[] = [
+  //   {
+  //     id: 1,
+  //     numero: 'ORD-0001',
+  //     fechaCreacion: '20/08/2026',
+  //     nombreServicio: 'Tratamiento capilar',
+  //     totalSesiones: 5,
+  //     sesionesCompletadas: 3,
+  //     estado: 'Pendiente',
 
-  clientes: Cliente[] = [
-    {
-      id: 1,
-      nombre: 'Juan Pérez'
-    },
-    {
-      id: 2,
-      nombre: 'Carlos Gómez'
+  //     sesiones: [
+  //       {
+  //         numero: 1,
+  //         servicio: 'Diagnóstico',
+  //         fecha: '21/08/2026',
+  //         hora: '10:00',
+  //         estado: 'Completada'
+  //       },
+  //       {
+  //         numero: 2,
+  //         servicio: 'Tratamiento capilar',
+  //         fecha: '25/08/2026',
+  //         hora: '10:00',
+  //         estado: 'Completada'
+  //       }]
+  //   }
+  // ]
+
+  constructor(
+    private ordenService: OrdenAgendamientoService,
+    private modalService: Modal,
+    private router: Router
+  ) {
+
+  }
+
+  ngOnInit() {
+    const info = JSON.parse(localStorage.getItem('infoEmp') || '{}');
+    const id = info?.idEmpresa;
+    this.idEmpresa = id;
+    this.consultarClientes();
+  }
+
+  private consultarDetalleSesion(id: number): void {
+    const request = {
+      empresa: this.idEmpresa,
+      cliente: id
     }
-  ];
 
-  ordenes: Orden[] = [
-    {
-      id: 1,
-      numero: 'ORD-0001',
-      fechaCreacion: '20/08/2026',
-      descripcion: 'Tratamiento capilar',
-      totalSesiones: 5,
-      sesionesCompletadas: 3,
-      estado: 'Pendiente',
+    this.ordenService.consultarDetalleAgenda(request).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          this.ordenes = rest.data;
+          this.textoBusqueda = '';
+          console.log(rest);
 
-      sesiones: [
-        {
-          numero: 1,
-          servicio: 'Diagnóstico',
-          fecha: '21/08/2026',
-          hora: '10:00',
-          estado: 'Completada'
-        },
-        {
-          numero: 2,
-          servicio: 'Tratamiento capilar',
-          fecha: '25/08/2026',
-          hora: '10:00',
-          estado: 'Completada'
-        },
-        {
-          numero: 3,
-          servicio: 'Tratamiento capilar',
-          fecha: '28/08/2026',
-          hora: '10:00',
-          estado: 'Completada'
-        },
-        {
-          numero: 4,
-          servicio: 'Tratamiento capilar',
-          estado: 'Pendiente'
-        },
-        {
-          numero: 5,
-          servicio: 'Tratamiento capilar',
-          estado: 'Pendiente'
+        } else {
+          this.modalService.error(rest.mensaje)
         }
-      ]
+        this.loading = false;
+      },
+      error: (err) => {
+        this.modalService.error(err.mensaje);
+      }
+    });
+
+  }
+
+  getSesionesCompletadas(orden: any): number {
+    return orden.sesiones?.filter(
+      (sesion: any) => sesion.estado === 'Asistio'
+    ).length || 0;
+  }
+
+  private consultarClientes(): void {
+
+    const request = {
+      emp: this.idEmpresa
     }
-  ];
+
+    this.ordenService.consultarClientes(request).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          this.clientes = rest.datos.map((c: Cliente) => ({
+            id: c.id,
+            nombre: c.nombre
+          }));
+        } else {
+          this.modalService.error(rest.mensaje)
+        }
+      },
+      error: (err) => {
+        this.modalService.error(err.mensaje);
+      }
+    });
+  }
 
 
   get clientesFiltrados(): Cliente[] {
@@ -126,6 +175,10 @@ export class GestionAgendamientoOrden {
 
     this.ordenSeleccionada = null;
 
+    this.loading = true;
+
+    this.consultarDetalleSesion(this.clienteSeleccionado.id);
+
     // Aquí posteriormente llamaremos al API
     // para consultar las órdenes pendientes
   }
@@ -134,6 +187,7 @@ export class GestionAgendamientoOrden {
   seleccionarOrden(orden: Orden): void {
 
     this.ordenSeleccionada = orden;
+    this.mostrarSesiones = !this.mostrarSesiones
 
   }
 
@@ -162,26 +216,20 @@ export class GestionAgendamientoOrden {
       return;
     }
 
-    console.log('Agendar sesión:', {
+    const data = {
       idOrden: this.ordenSeleccionada.id,
-      numeroSesion: sesion.numero
+      numeroSesion: sesion.id,
+      idCliente: this.clienteSeleccionado?.id,
+      servicioSeleccionado: this.ordenSeleccionada.idServicio
+    }
+
+    localStorage.setItem('ordenSeleccionada', JSON.stringify(data));
+
+
+    this.router.navigate(['admin/recurso/dash'], {
+      queryParams: { tab: 1 }
     });
 
-    /*
-      Posteriormente aquí podemos hacer:
-
-      this.router.navigate(
-        ['/admin/agendamiento'],
-        {
-          queryParams: {
-            idOrden: this.ordenSeleccionada.id,
-            numeroSesion: sesion.numero
-          }
-        }
-      );
-
-      Así reutilizamos tu agendamiento actual.
-    */
   }
 
 }
