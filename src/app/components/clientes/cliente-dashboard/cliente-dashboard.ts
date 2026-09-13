@@ -92,13 +92,13 @@ export class ClienteDashboard {
 
   ngOnInit(): void {
 
-    // this.route.queryParams.subscribe((params) => {
-    //   this.idEmpresa =
-    //     +(params['em'] || 0);
-    // });
+    this.route.queryParams.subscribe((params) => {
+      this.idEmpresa =
+        +(params['em'] || 0);
+    });
 
-    // this.validarProfesionalesORecursos();
-    // this.obtenerEmpresas();
+    this.validarProfesionalesORecursos();
+    this.obtenerEmpresas();
   }
 
   private validarProfesionalesORecursos(): void {
