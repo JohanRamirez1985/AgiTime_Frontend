@@ -1361,8 +1361,11 @@ export class DashboardRecurso {
       hour12: false,
     });
     const servicio = this.obtenerServiciosTexto();
+    const nombreCliente = this.pestanaActiva
+      ? JSON.parse(localStorage.getItem('ordenSeleccionada') || '{}').nombreCLiente
+      : result.nombre;
 
-    return `📅 ¡Hola ${result.nombre}!
+    return `📅 ¡Hola ${nombreCliente}!
         ¡Tu cita ha sido agendada exitosamente en *${this.empresa.nombre}*! 🎉
 
         📅 *Fecha:* ${fechaFormateada}
@@ -1589,35 +1592,6 @@ export class DashboardRecurso {
       }
     });
   }
-
-  // private agendarCita3(hora: any): void {
-  //   if (this.empresaServicio) {
-  //     if (this.mostrarInfoCliente) {
-  //       this.solicitarCliente(hora, false);
-  //       return;
-  //     } else {
-  //       this.loading = true;
-  //       this.agendar(hora.hora, false, '');
-  //     }
-  //   } else {
-  //     if (this.usoBono) {
-  //       this.solicitarUsoBono(hora);
-  //       return;
-  //     }
-
-  //     if (this.pestanaSeleccionada === 1) {
-  //       this.loading = true;
-  //       this.agendar(hora.hora, false, '');
-  //     } else {
-  //       if (this.mostrarInfoCliente) {
-  //         this.solicitarCliente(hora, false);
-  //       } else {
-  //         this.loading = true;
-  //         this.agendar(hora.hora, false, '');
-  //       }
-  //     }
-  //   }
-  // }
 
   private agendarCita(hora: any): void {
     if (this.pestanaActiva) {

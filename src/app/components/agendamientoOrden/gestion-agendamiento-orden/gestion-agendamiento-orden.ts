@@ -220,6 +220,7 @@ export class GestionAgendamientoOrden {
       idOrden: this.ordenSeleccionada.id,
       numeroSesion: sesion.id,
       idCliente: this.clienteSeleccionado?.id,
+      nombreCLiente: this.clienteSeleccionado?.nombre,
       servicioSeleccionado: this.ordenSeleccionada.idServicio
     }
 
