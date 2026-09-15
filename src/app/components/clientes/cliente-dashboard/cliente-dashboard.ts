@@ -80,6 +80,7 @@ export class ClienteDashboard {
     mapTypeId: 'roadmap'
   };
   currentYear: number = new Date().getFullYear();
+  verProfesionales: boolean = false;
 
   constructor(
     private router: Router,
@@ -96,7 +97,14 @@ export class ClienteDashboard {
         +(params['em'] || 0);
     });
 
+    this.validarProfesionalesORecursos();
     this.obtenerEmpresas();
+  }
+
+  private validarProfesionalesORecursos(): void {
+    if(this.idEmpresa === 8 || this.idEmpresa === 12) {
+      this.verProfesionales = true;
+    }
   }
 
   get sedesFiltradas(): any[] {
@@ -457,7 +465,7 @@ export class ClienteDashboard {
 
     localStorage.setItem('sedeSeleccionada', JSON.stringify(sede));
 
-    if (this.idEmpresa === 8) {
+    if (this.idEmpresa === 8 || this.idEmpresa === 12) {
       this.router.navigate(
         ['/cliente/reservar'],
         {
