@@ -119,7 +119,10 @@ export class DashboardRecurso {
   rangoTiempo: string = '';
   tipoRangoTiempo: string = 'Tiempo_Agenda';
   estaDeshabilitado: boolean = false;
-  seleccionRecurso: boolean = false;
+  empresaServicio: boolean = false;
+  empresaOrden: boolean = false;
+  empresaRecursoMultiple: boolean = false;
+  empresaNormal: boolean = false;
   tipoOrden: boolean = false;
   viewDate: Date = new Date();
   clientesEmpresa: any[] = [];
@@ -130,6 +133,7 @@ export class DashboardRecurso {
   mostrarInfoCliente: boolean = false;
   usoBono: boolean = false;
   pestanaSeleccionada: number = 0;
+  pestanaActiva: boolean = false;
 
   constructor(
     private router: Router,
@@ -220,7 +224,10 @@ export class DashboardRecurso {
     this.user = JSON.parse(localStorage.getItem('usuario') || '');
     this.empresa = JSON.parse(localStorage.getItem('empresa') || '');
     this.idEmpresa = this.empresa.id;
-    this.seleccionRecurso = this.empresa.servicio;
+    this.empresaServicio = this.empresa.servicio;
+    this.empresaOrden = this.empresa.ordenes;
+    this.empresaRecursoMultiple = this.empresa.recursoMultiple;
+    this.empresaNormal = !this.empresaServicio && !this.empresaOrden && !this.empresaRecursoMultiple;
     this.tipoOrden = this.empresa.ordenes;
     this.rol = this.user.rol;
     this.consultarCitas(this.user, this.empresa, this.day);
@@ -236,8 +243,10 @@ export class DashboardRecurso {
       if (params['tab'] !== undefined) {
         const tab = Number(params['tab']);
         this.pestanaSeleccionada = tab;
+        this.pestanaActiva = tab === 1;
+
         this.onTabChange(tab);
-        this.finalizarAgenda()
+        this.finalizarAgenda();
       }
 
     });
@@ -793,7 +802,7 @@ export class DashboardRecurso {
         });
 
         if (rolPermitido) {
-          if (this.seleccionRecurso) {
+          if (this.empresaServicio) {
             this.loading = false;
           }
           this.seleccionarRecursoEmpleado(this.day);
@@ -808,7 +817,7 @@ export class DashboardRecurso {
 
     let request: any = {}
 
-    if (this.seleccionRecurso) {
+    if (this.empresaServicio) {
       request = {
         empresa: this.idEmpresa,
         FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
@@ -828,7 +837,7 @@ export class DashboardRecurso {
       };
     }
 
-    if (this.seleccionRecurso && !request.profesional) {
+    if (this.empresaServicio && !request.profesional) {
       this.loading = false;
       this.cdr.detectChanges();
     } else {
@@ -861,7 +870,7 @@ export class DashboardRecurso {
       fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
     };
 
-    if (!this.seleccionRecurso) {
+    if (!this.empresaServicio) {
       request.recurso = this.user.id;
     }
 
@@ -958,7 +967,7 @@ export class DashboardRecurso {
       FechaFin: this.formatearFechaLocal(fecha, '23:59:00'),
     };
 
-    if (!this.seleccionRecurso) {
+    if (!this.empresaServicio) {
       request.recurso = user.id;
     }
 
@@ -968,7 +977,7 @@ export class DashboardRecurso {
           this.ordenCitas(rest.datos);
           const citasConTotales = this.citasHoy.map((cita) => {
             let totalServicios
-            if (this.seleccionRecurso) {
+            if (this.empresaServicio) {
               totalServicios = cita.total;
             } else {
               totalServicios = cita.servicios.reduce(
@@ -993,7 +1002,7 @@ export class DashboardRecurso {
   }
 
   private ordenCitas(citas: any) {
-    if (this.seleccionRecurso) {
+    if (this.empresaServicio) {
       this.agruparPorRecurso(citas);
     } else {
       this.citasHoy = citas;
@@ -1105,7 +1114,7 @@ export class DashboardRecurso {
   }
 
   public confirmarCita(cita: any) {
-    const nombreMostrar = this.seleccionRecurso
+    const nombreMostrar = this.empresaServicio
       ? cita.nombreCliente.split('-')[0].trim()
       : cita.nombreCliente;
     const checkboxHtml = !this.usoBono ? '' : `
@@ -1358,8 +1367,11 @@ export class DashboardRecurso {
       hour12: false,
     });
     const servicio = this.obtenerServiciosTexto();
+    const nombreCliente = this.pestanaActiva
+      ? JSON.parse(localStorage.getItem('ordenSeleccionada') || '{}').nombreCLiente
+      : result.nombre;
 
-    return `📅 ¡Hola ${result.nombre}!
+    return `📅 ¡Hola ${nombreCliente}!
         ¡Tu cita ha sido agendada exitosamente en *${this.empresa.nombre}*! 🎉
 
         📅 *Fecha:* ${fechaFormateada}
@@ -1389,14 +1401,14 @@ export class DashboardRecurso {
    */
   private guardarCita(request: any): any {
     if (this.tipoOrden) {
-      if (this.pestanaSeleccionada === 1) {
+      if (this.pestanaActiva) {
         return this.agendamientoServices.guardarCitaSesionOrden(request);
       } else {
         return this.agendamientoServices.guardarCitaSesion(request);
       }
     }
 
-    return this.seleccionRecurso
+    return this.empresaServicio
       ? this.agendamientoServices.guardarCita(request)
       : this.agendamientoServices.registrarCita(request);
   }
@@ -1411,7 +1423,7 @@ export class DashboardRecurso {
     result: any
   ): void {
 
-    if (!rest.exito && !this.seleccionRecurso) {
+    if (!rest.exito && !this.empresaServicio) {
       this.modalService.error(rest.mensaje || "Error de servidor");
       this.loading = false;
       return;
@@ -1478,7 +1490,7 @@ export class DashboardRecurso {
     if (horaDiponible) {
       this.agendarCita(hora);
     } else {
-      if (this.seleccionRecurso) {
+      if (this.empresaServicio) {
         Swal.fire({
           icon: 'warning',
           title: 'Conflicto de horario',
@@ -1588,30 +1600,19 @@ export class DashboardRecurso {
   }
 
   private agendarCita(hora: any): void {
-    if (this.seleccionRecurso) {
-      if (this.mostrarInfoCliente) {
-        this.solicitarCliente(hora, false);
-        return;
-      } else {
-        this.loading = true;
-        this.agendar(hora.hora, false, '');
-      }
+    if (this.pestanaActiva) {
+      this.loading = true;
+      this.agendar(hora.hora, false, '');
     } else {
       if (this.usoBono) {
         this.solicitarUsoBono(hora);
         return;
       }
-
-      if (this.pestanaSeleccionada === 1) {
+      if (this.mostrarInfoCliente) {
+        this.solicitarCliente(hora, false);
+      } else {
         this.loading = true;
         this.agendar(hora.hora, false, '');
-      } else {
-        if (this.mostrarInfoCliente) {
-          this.solicitarCliente(hora, false);
-        } else {
-          this.loading = true;
-          this.agendar(hora.hora, false, '');
-        }
       }
     }
   }
@@ -1714,7 +1715,7 @@ export class DashboardRecurso {
 
       let json = {};
 
-      if (this.seleccionRecurso) {
+      if (this.empresaServicio) {
         let alterno = this.serviciosSeleccionados
           .filter(s => s.alterno)
           .sort((a, b) => b.tiempo - a.tiempo);
@@ -1806,7 +1807,7 @@ export class DashboardRecurso {
           }));
           const info = JSON.parse(localStorage.getItem('ordenSeleccionada') || '{}');
 
-          if (this.pestanaSeleccionada === 1) {
+          if (this.pestanaActiva) {
             if (this.serviciosSeleccionados.length === 0) {
               tiempoTotalServicio = this.servicios.find(s => s.id === info.servicioSeleccionado)?.tiempo ?? 0;
             }

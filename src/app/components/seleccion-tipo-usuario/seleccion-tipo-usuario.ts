@@ -93,9 +93,7 @@ export class SeleccionTipoUsuario {
   }
 
   public irCliente(): void {
-    this.router.navigate(['/cliente'], {
-      queryParams: { em: this.idEmpresaSeleccionada }
-    });
+    this.router.navigate(['/cliente']);
   }
 
   public listadoFiltrado() {

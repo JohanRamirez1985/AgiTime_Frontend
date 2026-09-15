@@ -1,5 +1,5 @@
 <!-- <app-toolbar></app-toolbar> -->
-<div *ngIf="!seleccionRecurso" class="tabs-header">
+<div *ngIf="!empresaServicio" class="tabs-header">
   <button *ngIf="btnActivar" mat-raised-button color="warn" (click)="activarUsuario()">
     <mat-icon>block</mat-icon>
     Activarme
@@ -50,7 +50,7 @@
                 <span><mat-icon>account_circle</mat-icon>
                   {{ cita.nombreCliente | titlecase }}</span>
                 <span><mat-icon>access_time</mat-icon>
-                  {{ seleccionRecurso ? cita.hora : cita.fechaInicio | date : "shortTime" }}
+                  {{ empresaServicio ? cita.hora : cita.fechaInicio | date : "shortTime" }}
                 </span>
                 <span><mat-icon>monetization_on</mat-icon>
                   {{
@@ -59,7 +59,7 @@
                 </span>
                 <span>
                   <mat-icon>assignment</mat-icon>
-                  <ng-container *ngIf="seleccionRecurso; else normalServicios">
+                  <ng-container *ngIf="empresaServicio; else normalServicios">
                     {{ cita.nombre }}
                   </ng-container>
 
@@ -75,7 +75,7 @@
               </div>
               <div class="acciones-cita">
 
-                <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" class="btn-accion btn-whatsapp"
+                <button *ngIf="empresaServicio && cita.estado === 'Activo'" class="btn-accion btn-whatsapp"
                   (click)="recordatorioWssp(cita)">
                   <i class="fab fa-whatsapp"></i>
                   <span>WhatsApp</span>
@@ -86,25 +86,25 @@
                   <span>Finalizar</span>
                 </button>
 
-                <button *ngIf="idEmpresa === 2 || (!seleccionRecurso && cita.estado === 'Activo')" class="btn-accion btn-finalizar"
+                <button *ngIf="idEmpresa === 2 || (!empresaServicio && cita.estado === 'Activo')" class="btn-accion btn-finalizar"
                   (click)="cancelarCita(cita)">
                   <mat-icon>cancel</mat-icon>
                   <span>Cancelar</span>
                 </button>
 
-                <button *ngIf="cita.estado === 'Activo' && seleccionRecurso" mat-icon-button
+                <button *ngIf="cita.estado === 'Activo' && empresaServicio" mat-icon-button
                   [matMenuTriggerFor]="menuAcciones" class="btn-menu">
                   <mat-icon>more_vert</mat-icon>
                 </button>
 
                 <mat-menu #menuAcciones="matMenu">
 
-                  <button *ngIf="seleccionRecurso" mat-menu-item (click)="editarCita(cita)">
+                  <button *ngIf="empresaServicio" mat-menu-item (click)="editarCita(cita)">
                     <mat-icon>edit</mat-icon>
                     <span>Editar</span>
                   </button>
 
-                  <button *ngIf="seleccionRecurso && cita.estado === 'Activo'" mat-menu-item
+                  <button *ngIf="empresaServicio && cita.estado === 'Activo'" mat-menu-item
                     (click)="cancelarCita(cita)">
                     <mat-icon>cancel</mat-icon>
                     <span>Cancelar</span>
