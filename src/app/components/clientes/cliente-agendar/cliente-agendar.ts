@@ -161,7 +161,11 @@ export class ClienteAgendar {
   }
 
   reservarServicios(): void {
-    this.loading = true;    
+    this.loading = true;
+    this.recursosSeleccionados[0].detalles =
+      this.serviciosSeleccionados.map(
+        (servicio: any) => servicio.nombre
+      );
     this.detallesRecurso = this.serviciosSeleccionados.map(
       (s) =>
         `${s.nombre} - ${new Intl.NumberFormat('es-CO', {
@@ -198,14 +202,11 @@ export class ClienteAgendar {
       });
 
       this.seleccionarRecursos(serviciosConRecursos);
-    }else {
+    } else {
       this.seleccionarRecurso(this.viewDate);
     }
 
-    this.recursosSeleccionados[0].detalles =
-      this.serviciosSeleccionados.map(
-        (servicio: any) => servicio.nombre
-      );
+
 
     this.mostrarServicios = false;
     this.mostrarDetalle = true;
@@ -796,7 +797,7 @@ export class ClienteAgendar {
     this.viewDate = fecha;
     this.loading = true;
     this.obtenerHorarios();
-    this.seleccionarRecurso(this.viewDate);    
+    this.seleccionarRecurso(this.viewDate);
     this.cdr.detectChanges();
   }
 
@@ -944,11 +945,13 @@ export class ClienteAgendar {
                   recurso: element.recurso,
                   validaciones: element.validaciones,
                   Hora: 0,
+                  Valor: 0,
                   servicios: []
                 };
               }
 
               acc[element.recurso].Hora += element.tiempo;
+              acc[element.recurso].Valor += Number(element.valor);
               acc[element.recurso].servicios.push({
                 servicio: element.id
               });
@@ -967,7 +970,6 @@ export class ClienteAgendar {
             fechaInicio = new Date(
               fechaInicio.getTime() + item.Hora * 60000
             );
-
           });
 
           json = {
