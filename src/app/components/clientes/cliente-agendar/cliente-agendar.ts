@@ -99,6 +99,7 @@ export class ClienteAgendar {
   currentYear: number = new Date().getFullYear();
   serviciosEmpresaRecursoMultiple: any[] = [];
   recursosEmpresa: any[] = [];
+  recursosSeleccionados: any[] = [];
 
   constructor(
     private sharedServices: SharedService,
@@ -162,12 +163,9 @@ export class ClienteAgendar {
   }
 
   reservarServicios(): void {
-    if (this.empresaServicio || this.empresaOrden || this.empresaRecursoMultiple) {
+    if (this.empresaServicio || this.empresaOrden) {
       this.loading = true;
-      const empresa = this.empresaServicio
-        || this.empresaOrden
-        || this.empresaRecursoMultiple;
-      this.seleccionarRecurso(this.viewDate, empresa);
+      this.seleccionarRecurso(this.viewDate);
     }
 
     this.detallesRecurso = this.serviciosSeleccionados.map(
@@ -210,6 +208,11 @@ export class ClienteAgendar {
       this.mostrarDisponibilidad = true;
     }
 
+    this.recursosSeleccionados[0].detalles =
+      this.serviciosSeleccionados.map(
+        (servicio: any) => servicio.nombre
+      );
+
     this.mostrarServicios = false;
     this.mostrarDetalle = true;
     this.cdr.detectChanges();
@@ -217,7 +220,6 @@ export class ClienteAgendar {
 
   async seleccionarRecursos(servicios: any[]) {
 
-    
     const grupos: any[] = [];
     servicios.forEach((servicio: any) => {
       const recursosIds = servicio.recursos
@@ -230,103 +232,121 @@ export class ClienteAgendar {
       );
 
       if (grupoExistente) {
-
         grupoExistente.servicios.push(servicio);
-
       } else {
-
         grupos.push({
           recursosIds: recursosIds,
           servicios: [servicio],
           recursos: servicio.recursos
         });
-
       }
+    });
 
+
+    grupos.forEach((grupo: any) => {
+      grupo.recursos.sort((a: any, b: any) => {
+        const aObservacion = Number(a.observacion) === 1;
+        const bObservacion = Number(b.observacion) === 1;
+        return Number(bObservacion) - Number(aObservacion);
+      });
     });
 
     let html = `
     <div class="seleccion-recursos">
   `;
 
-    grupos.forEach((grupo: any) => {
+    grupos.forEach((grupo: any, index: number) => {
+      const tieneObservacion = grupo.servicios.some(
+        (servicio: any) => Number(servicio.observacion) === 1
+      );
       html += `
-      <div class="grupo-recursos">
+        <div class="grupo-recursos ${tieneObservacion ? 'grupo-prioritario' : ''}">
 
-        <div class="servicios-grupo">
-    `;
+          <div class="cabecera-grupo">
 
-      grupo.servicios.forEach((servicio: any) => {
-
-        html += `
-        <div class="servicio-nombre">
-          ${servicio.nombre}
-        </div>
+            <div class="servicios-grupo">
       `;
+      grupo.servicios.forEach((servicio: any) => {
+        html += `
+          <div class="servicio-nombre">
+            ${servicio.nombre}
+          </div>
+        `;
 
       });
+      if (tieneObservacion) {
+        html += `
+          <span class="badge-observacion">
+            Requiere atención
+          </span>
+        `;
+      }
 
       html += `
-        </div>
+          </div>
 
-        <div class="recursos-grid">
-    `;
+          <div class="recursos-grid">
+      `;
 
       grupo.recursos.forEach((recurso: any) => {
-
         html += `
-        <label class="recurso-card">
+      <label class="recurso-card">
 
-          <input
-            type="radio"
-            name="grupo-${grupos.indexOf(grupo)}"
-            value="${recurso.recurso}"
-            class="recurso-radio"
-          >
+        <input
+          type="radio"
+          name="grupo-${index}"
+          value="${recurso.recurso}"
+          class="recurso-radio"
+        >
 
-          <img
-            src="${recurso.foto}"
-            class="foto-recurso"
-          >
+        <img
+          src="${recurso.foto}"
+          class="foto-recurso"
+          onerror="this.src='assets/img/recurso-default.png'"
+        >
 
-          <div class="nombre-recurso">
-            ${recurso.nombre_recurso}
-          </div>
+        <div class="nombre-recurso">
+          ${recurso.nombre_recurso}
+        </div>
 
-          <div class="check-icon">
-            ✓
-          </div>
+        <div class="check-icon">
+          ✓
+        </div>
 
-        </label>
-      `;
+      </label>
+    `;
 
       });
 
       html += `
-        </div>
-
       </div>
-    `;
-
+    </div>
+  `;
     });
 
     html += `</div>`;
 
+    const seleccionados: any[] = [];
 
     const result = await Swal.fire({
-      title: '¿Quién realizará tus servicios?',
+      title: '¿Con quién deseas realizar tu servicio?',
       html: html,
-      width: '650px',
+      width: '700px',
       showCancelButton: true,
       confirmButtonText: 'Continuar',
       cancelButtonText: 'Cancelar',
       confirmButtonColor: '#1976d2',
+      customClass: {
+        popup: 'modal-recursos'
+      },
       preConfirm: () => {
-        const seleccionados: any[] = [];
+
         grupos.forEach((grupo: any, index: number) => {
+
           const seleccionado = document.querySelector(
             `input[name="grupo-${index}"]:checked`
           ) as HTMLInputElement;
+
           if (!seleccionado) {
             Swal.showValidationMessage(
               `Selecciona quién realizará el servicio`
@@ -334,14 +354,39 @@ export class ClienteAgendar {
             return;
           }
 
-          const recurso = Number(seleccionado.value);
+          const recursoId = Number(seleccionado.value);
+
+          // Buscar la información completa del recurso seleccionado
+          const recursoSeleccionado = grupo.recursos.find(
+            (r: any) => Number(r.recurso) === recursoId
+          );
+
           grupo.servicios.forEach((servicio: any) => {
+
+            // Mantienes tu arreglo local
             seleccionados.push({
               idServicio: servicio.id,
               nombreServicio: servicio.nombre,
-              recurso: recurso
+              recurso: recursoId
             });
+
+            // Buscar el servicio original
+            const servicioOriginal = this.serviciosSeleccionados.find(
+              (s: any) => Number(s.id) === Number(servicio.id)
+            );
+
+            if (servicioOriginal) {
+
+              // Actualizar recurso
+              servicioOriginal.recurso = recursoId;
+
+              // Actualizar nombre del recurso
+              servicioOriginal.nombre_recurso =
+                recursoSeleccionado?.nombre_recurso ?? '';
+            }
+
           });
+
         });
 
         if (seleccionados.length === 0) {
@@ -354,11 +399,47 @@ export class ClienteAgendar {
     });
 
     if (result.isConfirmed) {
-      this.mostrarDisponibilidad = true;
-    }else {
+      this.ordenarCabecera(seleccionados);
+      this.seleccionarRecurso(this.viewDate)
+    } else {
       this.mostrarServicios = true;
     }
+
     this.cdr.detectChanges();
+  }
+
+  private ordenarCabecera(seleccionados: any[]): void {
+
+    const recursosMap = new Map<number, any>();
+
+    seleccionados.forEach((servicio: any) => {
+
+      const idRecurso = Number(servicio.recurso);
+
+      const recursoEmpresa = this.recursosEmpresa.find(
+        (r: any) => Number(r.id) === idRecurso
+      );
+
+      if (!recursoEmpresa) {
+        return;
+      }
+
+      if (!recursosMap.has(idRecurso)) {
+
+        recursosMap.set(idRecurso, {
+          id: recursoEmpresa.id,
+          nombre: recursoEmpresa.nombre,
+          foto: recursoEmpresa.foto,
+          detalles: []
+        });
+
+      }
+
+      recursosMap.get(idRecurso).detalles.push(servicio.nombreServicio);
+
+    });
+
+    this.recursosSeleccionados = Array.from(recursosMap.values());
 
   }
 
@@ -392,15 +473,21 @@ export class ClienteAgendar {
           this.recursosEmpresa = recurso.usuario;
           let recursoSeleccionado: any;
 
-          if (this.empresaServicio || this.empresaOrden || this.empresaRecursoMultiple) {
+          if (this.empresaServicio || this.empresaRecursoMultiple) {
             recursoSeleccionado = recurso.usuario[0];
             recurso = recurso.usuario[0].sede;
-
 
             this.recursoSede = recursoSeleccionado.sede;
             this.fotoRecurso = recursoSeleccionado.foto;
             this.nombreDelRecurso = recursoSeleccionado.nombre;
             this.recursoSede = recursoSeleccionado.sede;
+
+            this.recursosSeleccionados.push({
+              id: 0,
+              nombre: this.empresaNombre,
+              foto: this.empresaLogo,
+              detalles: []
+            })
           } else {
             recurso = recurso.usuario.find(
               (r: any) => r.id === this.idRecurso
@@ -410,6 +497,13 @@ export class ClienteAgendar {
             this.nombreDelRecurso = recurso.nombre;
             this.recursoId = recurso.id;
             this.recursoSede = recurso.sede;
+
+            this.recursosSeleccionados.push({
+              id: 0,
+              nombre: this.nombreDelRecurso,
+              foto: this.fotoRecurso,
+              detalles: []
+            })
           }
 
           if (this.EnvioMensajeEmpresa) {
@@ -587,7 +681,7 @@ export class ClienteAgendar {
     });
   }
 
-  private mensajeWssp(request: any, datos: any): void {
+  private mensajeWssp(request: any, datos: any, enviaMensaje: boolean): void {
 
     const fecha = new Date(request.FechaIni);
 
@@ -607,19 +701,16 @@ export class ClienteAgendar {
       ? this.empresaNombre
       : JSON.parse(localStorage.getItem('recurso') || '{}').nombre;
 
-    const destinatario = this.EnvioMensajeEmpresa
-      ? recurso
-      : 'contigo';
-
     const mensaje = `📅 ¡Hola ${this.empresaNombre}!
 
           Te informo que acabo de agendar una cita en ${this.empresaNombre}.
 
-          👤 Profesional: ${destinatario}
+          👤 Profesional: ${recurso}
           📅 Fecha: ${fechaFormateada}
           🕐 Hora: ${horaFormateada}
           ✂️ Servicios: ${nombresServicios}
           🙋 Cliente: ${datos.nombre}
+          ${enviaMensaje ? "⚠️ Observación: Validar horario." : ""}
 
           ✅ La cita ha sido registrada correctamente.
 
@@ -651,12 +742,12 @@ export class ClienteAgendar {
     hora: string
   ) {
     const request = this.createJson(hora, datos);
-    if (this.empresaServicio || this.empresaOrden || this.empresaRecursoMultiple) {
+    if (this.empresaServicio || this.empresaRecursoMultiple) {
       this.agendaService.guardarCita(request).subscribe({
         next: (rest) => {
           if (rest.exito) {
             if (this.enviarMjsWssp) {
-              this.mensajeWssp(request, datos);
+              this.mensajeWssp(request, datos, rest.envioMensaje);
             }
             this.modalService.success(
               rest.mensaje || 'La cita fue creada exitosamente',
@@ -680,7 +771,7 @@ export class ClienteAgendar {
         this.agendaService.guardarCitaSesion(request).subscribe({
           next: (rest) => {
             if (this.enviarMjsWssp) {
-              this.mensajeWssp(request, datos);
+              this.mensajeWssp(request, datos, false);
             }
             this.modalService.success(
               rest.mensaje || 'La cita fue creada exitosamente',
@@ -698,7 +789,7 @@ export class ClienteAgendar {
         this.agendaService.registrarCita(request).subscribe({
           next: (rest) => {
             if (this.enviarMjsWssp) {
-              this.mensajeWssp(request, datos);
+              this.mensajeWssp(request, datos, false);
             }
             this.modalService.success(
               rest.mensaje || 'La cita fue creada exitosamente',
@@ -716,10 +807,6 @@ export class ClienteAgendar {
     }
   }
 
-  private guardarCita(request: any) {
-
-  }
-
   onDateChange(event: any) {
     const fecha = event.value;
     if (!fecha) return;
@@ -728,10 +815,7 @@ export class ClienteAgendar {
     this.loading = true;
     this.obtenerHorarios();
     if (this.empresaServicio || this.empresaOrden || this.empresaRecursoMultiple) {
-      const empresa = this.empresaServicio
-        || this.empresaOrden
-        || this.empresaRecursoMultiple;
-      this.seleccionarRecurso(this.viewDate, empresa)
+      this.seleccionarRecurso(this.viewDate)
     }
     this.cdr.detectChanges();
   }
@@ -794,7 +878,7 @@ export class ClienteAgendar {
       let json = {};
 
 
-      if (this.empresaServicio || this.empresaOrden || this.empresaRecursoMultiple) {
+      if (this.empresaServicio || this.empresaRecursoMultiple) {
 
         let alterno = this.serviciosSeleccionados
           .filter(s => s.alterno)
@@ -864,21 +948,93 @@ export class ClienteAgendar {
           resultadoAlterno.push(element)
         });
 
-        json = {
-          FechaIni: fechaFinal,
-          empresa: this.idEmpresa,
-          UsuarioCreacion: 'Cliente',
-          fechaCreacion: fechaLocal,
-          clienteInfo: {
-            Nombre: datos.nombre,
-            Telefono: datos.celular,
-            Correo: datos.correo,
-            FechaNacimiento: datos.fechaNacimiento,
-          },
-          citas: resultadoAlterno,
-          validaHorario: true
+        if (this.empresaRecursoMultiple) {
+          const formatearFecha = (fecha: Date): string => {
+            const año = fecha.getFullYear();
+            const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+            const dia = String(fecha.getDate()).padStart(2, '0');
+            const hora = String(fecha.getHours()).padStart(2, '0');
+            const minutos = String(fecha.getMinutes()).padStart(2, '0');
+            const segundos = String(fecha.getSeconds()).padStart(2, '0');
+
+            return `${año}-${mes}-${dia}T${hora}:${minutos}:${segundos}`;
+          };
+          const agrupados = Object.values(
+            this.serviciosSeleccionados.reduce((acc: any, element: any) => {
+
+              if (!acc[element.recurso]) {
+                acc[element.recurso] = {
+                  FechaIni: fechaFinal,
+                  recurso: element.recurso,
+                  validaciones: element.validaciones,
+                  Hora: 0,
+                  servicios: []
+                };
+              }
+
+              // Sumar tiempo
+              acc[element.recurso].Hora += element.tiempo;
+
+              // Agregar servicio
+              acc[element.recurso].servicios.push({
+                servicio: element.id
+              });
+
+              return acc;
+
+            }, {})
+          ).sort((a: any, b: any) =>
+            Number(a.validaciones) - Number(b.validaciones)
+          );
+
+
+          // Calcular las fechas iniciales de forma acumulativa
+          let fechaInicio = new Date(fechaFinal);
+
+          agrupados.forEach((item: any) => {
+
+            // Fecha inicial de la cita
+            item.FechaIni = formatearFecha(fechaInicio);
+
+            // Sumar los minutos de esta cita
+            fechaInicio = new Date(
+              fechaInicio.getTime() + item.Hora * 60000
+            );
+
+          });
+
+          json = {
+            FechaIni: fechaFinal,
+            empresa: this.idEmpresa,
+            UsuarioCreacion: 'Cliente',
+            fechaCreacion: fechaLocal,
+            clienteInfo: {
+              Nombre: datos.nombre,
+              Telefono: datos.celular,
+              Correo: datos.correo,
+              FechaNacimiento: datos.fechaNacimiento,
+            },
+            citas: agrupados,
+            validaHorario: true
+          }
+          return json;
+        } else {
+          json = {
+            FechaIni: fechaFinal,
+            empresa: this.idEmpresa,
+            UsuarioCreacion: 'Cliente',
+            fechaCreacion: fechaLocal,
+            clienteInfo: {
+              Nombre: datos.nombre,
+              Telefono: datos.celular,
+              Correo: datos.correo,
+              FechaNacimiento: datos.fechaNacimiento,
+            },
+            citas: resultadoAlterno,
+            validaHorario: true
+          }
+          return json;
         }
-        return json;
       } else {
         if (this.empresaOrden) {
           let servicios = this.serviciosSeleccionados.map((s) => ({
@@ -936,10 +1092,7 @@ export class ClienteAgendar {
     this.loading = true;
     this.obtenerHorarios();
     if (this.empresaServicio || this.empresaOrden || this.empresaRecursoMultiple) {
-      const empresa = this.empresaServicio
-        || this.empresaOrden
-        || this.empresaRecursoMultiple;
-      this.seleccionarRecurso(this.viewDate, empresa)
+      this.seleccionarRecurso(this.viewDate)
     }
     this.cdr.detectChanges();
   }
@@ -963,10 +1116,7 @@ export class ClienteAgendar {
       this.loading = true;
       this.obtenerHorarios();
       if (this.empresaServicio || this.empresaOrden || this.empresaRecursoMultiple) {
-        const empresa = this.empresaServicio
-          || this.empresaOrden
-          || this.empresaRecursoMultiple;
-        this.seleccionarRecurso(this.viewDate, empresa)
+        this.seleccionarRecurso(this.viewDate)
       }
       this.cdr.detectChanges();
     }
@@ -977,18 +1127,16 @@ export class ClienteAgendar {
     this.loading = true;
     this.obtenerHorarios();
     if (this.empresaServicio || this.empresaOrden || this.empresaRecursoMultiple) {
-      const empresa = this.empresaServicio
-        || this.empresaOrden
-        || this.empresaRecursoMultiple;
-      this.seleccionarRecurso(this.viewDate, empresa)
+      this.seleccionarRecurso(this.viewDate)
     }
     this.cdr.detectChanges();
   }
 
-  public seleccionarRecurso(fecha: Date, seleccionRubro: boolean): void {
+  public seleccionarRecurso(fecha: Date): void {
     let request = {}
 
-    if (seleccionRubro) {
+
+    if (this.empresaServicio) {
       request = {
         empresa: this.idEmpresa,
         FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
@@ -1000,12 +1148,28 @@ export class ClienteAgendar {
         )].join(',')
       };
     } else {
-      request = {
-        empresa: this.idEmpresa,
-        FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
-        fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
-        recurso: this.recursoId,
-      };
+      if (this.empresaRecursoMultiple) {
+        const servicioPrioritario = this.serviciosSeleccionados.reduce(
+          (menor: any, actual: any) =>
+            Number(actual.validaciones) < Number(menor.validaciones)
+              ? actual
+              : menor
+        );
+
+        request = {
+          empresa: this.idEmpresa,
+          FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
+          fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
+          recurso: servicioPrioritario?.recurso
+        };
+      } else {
+        request = {
+          empresa: this.idEmpresa,
+          FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
+          fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
+          recurso: this.recursoId,
+        };
+      }
     }
 
 
@@ -1032,6 +1196,7 @@ export class ClienteAgendar {
         }
 
         this.verificarHoras();
+        this.mostrarDisponibilidad = true;
         this.cdr.detectChanges();
       },
     });
@@ -1150,7 +1315,7 @@ export class ClienteAgendar {
           this.ultimoHorarioJornada = this.horas[this.horas.length - 1].hora;
 
           if (!this.empresaServicio && !this.empresaOrden && !this.empresaRecursoMultiple) {
-            this.seleccionarRecurso(this.viewDate, this.empresaServicio);
+            this.seleccionarRecurso(this.viewDate);
           } else {
             this.verificarHoras();
           }

@@ -27,39 +27,41 @@
         <p class="loading-text">Cargando disponibilidad...</p>
       </div>
       <div *ngIf="!loading">
-        <mat-card class="card-recurso mat-elevation-z4">
-          <mat-card-content class="contenido-recurso">
+        <div class="recursos-container">
 
-            <!-- KC Nails -->
-            <img *ngIf="empresaServicio" [src]="empresaLogo" alt="Recurso" class="imagen-recurso" />
+          <mat-card class="card-recurso" *ngFor="let recurso of recursosSeleccionados">
 
-            <!-- Akemy -->
-            <img *ngIf="empresaOrden" [src]="fotoRecurso" alt="Recurso" class="imagen-recurso" />
+            <mat-card-content class="contenido-recurso">
 
-            <!-- Lune -->
-            <img *ngIf="empresaRecursoMultiple" [src]="fotoRecurso" alt="Recurso" class="imagen-recurso" />
+              <img [src]="recurso.foto" alt="Recurso" class="imagen-recurso" />
 
-            <!-- A Fuego -->
-            <img *ngIf="empresaNormal" [src]="fotoRecurso" alt="Recurso" class="imagen-recurso" />
+              <div class="info-recurso">
 
-            <div class="info-recurso">
-              <div class="recurso-nombre">
-                <mat-icon color="primary">check_circle</mat-icon>
+                <div class="recurso-nombre">
 
-                <span class="texto-recurso">
-                  {{ (empresaServicio ? empresaNombre : nombreDelRecurso) | titlecase }}
-                </span>
+                  <mat-icon color="primary">
+                    check_circle
+                  </mat-icon>
+
+                  <span class="texto-recurso">
+                    {{ recurso.nombre | titlecase }}
+                  </span>
+
+                </div>
+
+                <ul class="subtexto-recurso-lista" *ngIf="mostrarDetalle && recurso.detalles?.length">
+                  <li *ngFor="let detalle of recurso.detalles">
+                    {{ detalle }}
+                  </li>
+                </ul>
+
               </div>
 
-              <ul class="subtexto-recurso-lista" *ngIf="mostrarDetalle">
-                <li *ngFor="let detalle of detallesRecurso">
-                  {{ detalle }}
-                </li>
-              </ul>
-            </div>
+            </mat-card-content>
 
-          </mat-card-content>
-        </mat-card>
+          </mat-card>
+
+        </div>
 
         <!-- Servicios -->
         <div class="servicios-wrapper" *ngIf="mostrarServicios">
