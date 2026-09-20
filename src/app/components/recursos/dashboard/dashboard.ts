@@ -131,6 +131,7 @@ export class DashboardRecurso {
   cruzeHorario: boolean = true;
   enviarMjsWssp: boolean = false;
   mostrarInfoCliente: boolean = false;
+  mostrarMetodoPago: boolean = false;
   usoBono: boolean = false;
   pestanaSeleccionada: number = 0;
   pestanaActiva: boolean = false;
@@ -269,6 +270,10 @@ export class DashboardRecurso {
 
           this.usoBono =
             rest.datos.find((h: any) => h.tipo === 'UsoBono')
+              ?.valor?.toLowerCase() === 'true';
+
+          this.mostrarMetodoPago =
+            rest.datos.find((h: any) => h.tipo === 'MostrarMetodoPago')
               ?.valor?.toLowerCase() === 'true';
         }
       },
@@ -1114,24 +1119,106 @@ export class DashboardRecurso {
   }
 
   public confirmarCita(cita: any) {
+
     const nombreMostrar = this.empresaServicio
       ? cita.nombreCliente.split('-')[0].trim()
       : cita.nombreCliente;
+
+    // Métodos de pago
+    const metodosPago = [
+      'Efectivo',
+      'Tarjeta débito',
+      'Tarjeta crédito',
+      'Transferencia',
+      'Nequi',
+      'Daviplata'
+    ];
+
+    // Checkbox del bono
     const checkboxHtml = !this.usoBono ? '' : `
-      <div style="margin-top: 15px; display: flex; justify-content: center; align-items: center;">
-        <label style="font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-          <input type="checkbox" id="usoBonoCheckbox">
-          ¿El servicio incluye bono?
-        </label>
+    <div style="
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    ">
+      <label style="
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      ">
+        <input type="checkbox" id="usoBonoCheckbox">
+        ¿El servicio incluye bono?
+      </label>
+    </div>
+  `;
+
+    // Métodos de pago
+    const metodosPagoHtml = this.mostrarMetodoPago ? `
+    <div style="
+      margin-top: 15px;
+      text-align: center;
+    ">
+
+      <p style="
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      ">
+        Método de pago
+      </p>
+
+      <div style="
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        overflow-x: auto;
+      ">
+
+        ${metodosPago.map((metodo, index) => `
+          <label style="
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+          ">
+
+            <input
+              type="checkbox"
+              class="metodo-pago-checkbox"
+              value="${metodo}"
+              id="metodoPago_${index}"
+            >
+
+            <span>${metodo}</span>
+
+          </label>
+        `).join('')}
+
       </div>
-    `;
+
+    </div>
+  ` : '';
 
     Swal.fire({
       title: 'Confirmar Asistencia',
       html: `
-        ${checkboxHtml}
-        <p>¿El cliente <strong>${nombreMostrar}</strong> asistió a la cita?</p>
-      `,
+      ${checkboxHtml}
+      <p style="margin-top: 10px;">
+        ¿El cliente
+        <strong>${nombreMostrar}</strong>
+        asistió a la cita?
+      </p>
+      ${metodosPagoHtml}
+    `,
+
       icon: 'success',
       showCancelButton: true,
       showCloseButton: true,
@@ -1142,37 +1229,101 @@ export class DashboardRecurso {
       customClass: {
         popup: 'swal-reserva-responsive',
       },
+
+      // Hace que los checkbox funcionen como selección única
+      didOpen: () => {
+        const checkboxes = document.querySelectorAll(
+          '.metodo-pago-checkbox'
+        ) as NodeListOf<HTMLInputElement>;
+
+        checkboxes.forEach((checkbox) => {
+          checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+              checkboxes.forEach((otro) => {
+                if (otro !== checkbox) {
+                  otro.checked = false;
+                }
+              });
+            }
+          });
+        });
+      },
       preConfirm: () => {
-        const usoBono = !this.usoBono ? false : (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked;
-        return { usoBono };
+        // Bono
+        const usoBono = !this.usoBono
+          ? false
+          : (
+            document.getElementById(
+              'usoBonoCheckbox'
+            ) as HTMLInputElement
+          )?.checked || false;
+
+        let metodoPago = null;
+
+        // Solo exigimos método de pago cuando se confirma asistencia
+        if (this.mostrarMetodoPago) {
+          const checkboxes = document.querySelectorAll(
+            '.metodo-pago-checkbox:checked'
+          ) as NodeListOf<HTMLInputElement>;
+
+          if (checkboxes.length === 0) {
+            Swal.showValidationMessage(
+              'Selecciona un método de pago'
+            );
+            return false;
+          }
+
+          metodoPago = checkboxes[0].value;
+        }
+        return {
+          usoBono,
+          metodoPago
+        };
+
       }
+
     }).then((result) => {
-      if (result.isConfirmed || result.dismiss === Swal.DismissReason.cancel) {
+      if (
+        result.isConfirmed ||
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+
         this.loading = true;
-
         const now = new Date(this.day);
-        const fechaLocal = this.formatearFechaManual(now);
-
+        const fechaLocal =
+          this.formatearFechaManual(now);
         const request: any = {
-          empresa: JSON.parse(localStorage.getItem('empresa') || '{}').id,
+          empresa: JSON.parse(
+            localStorage.getItem('empresa') || '{}'
+          ).id,
           Id: cita.id,
           Asistencia: result.isConfirmed,
           Bono: result.value?.usoBono || false,
+          MetodoPago: result.isConfirmed
+            ? result.value?.metodoPago || null
+            : null,
           usuarioCreacion: this.user.id.toString(),
           fechaCreacion: this.formatearFechaActual()
         };
 
-
-        this.agendamientoServices.ConfirmarAsitenciaCita(request).subscribe({
-          next: (rest) => {
-            this.consultarCitas(this.user, this.empresa, new Date(fechaLocal));
-          },
-          error: (err) => {
-            this.modalService.error(err.error.mensaje)
-            this.loading = false;
-            this.cdr.detectChanges();
-          }
-        });
+        this.agendamientoServices
+          .ConfirmarAsitenciaCita(request)
+          .subscribe({
+            next: (rest) => {
+              this.consultarCitas(
+                this.user,
+                this.empresa,
+                new Date(fechaLocal)
+              );
+            },
+            error: (err) => {
+              this.modalService.error(
+                err.error.mensaje
+              );
+              this.loading = false;
+              this.cdr.detectChanges();
+            }
+          });
       }
     });
   }
