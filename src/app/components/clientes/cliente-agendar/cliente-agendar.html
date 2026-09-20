@@ -49,7 +49,7 @@
 
                 </div>
 
-                <ul class="subtexto-recurso-lista" *ngIf="mostrarDetalle && recurso.detalles?.length">
+                <ul class="subtexto-recurso-lista" *ngIf="recurso.detalles?.length">
                   <li *ngFor="let detalle of recurso.detalles">
                     {{ detalle }}
                   </li>
