@@ -1042,7 +1042,7 @@ export class ClienteAgendar {
     const horaBase = parseHora(hora);
     const horasGeneradas: string[] = [];
 
-    for (let i = 0; i <= loteHoras; i++) {
+    for (let i = 0; i < loteHoras; i++) {
       const nuevaHora = new Date(
         horaBase.getTime() + i * rangoMinutos * 60000
       );
