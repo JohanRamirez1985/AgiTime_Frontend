@@ -763,7 +763,7 @@ export class DashboardRecurso {
   }
 
   finalizarAgenda() {
-    this.seleccionarRecursoEmpleado(this.day);
+    this.consultarHorariosOcupadosRecurso(this.day);
     this.mostrarAgenda = true;
     this.cdr.detectChanges();
   }
@@ -775,13 +775,29 @@ export class DashboardRecurso {
   private obtenerServicios(emp: number): void {
     this.sharedServices.obtenerServicios(emp).subscribe({
       next: (rest) => {
-        this.serviciosFiltrados = [...rest.datos];
-        this.serviciosFiltrados = this.serviciosFiltrados.filter(
-          (s) => s.sede === this.user.sede,
-        );
-        this.servicios = this.serviciosFiltrados;
-        this.loading = false;
+        if (rest.exito) {
+          this.serviciosFiltrados = [...rest.datos];
+          if (this.empresaRecursoMultiple) {
+            this.serviciosFiltrados = this.serviciosFiltrados.filter(
+              (s) => s.recurso === this.user.id
+            );
+          } else {
+            this.serviciosFiltrados = this.serviciosFiltrados.filter(
+              (s) => s.sede === this.user.sede,
+            );
+          }
+
+          this.servicios = this.serviciosFiltrados;
+          this.loading = false;
+        } else {
+          this.servicios = [];
+          this.serviciosFiltrados = [];
+        }
       },
+      error: (err) => {
+        this.servicios = [];
+        this.serviciosFiltrados = [];
+      }
     });
   }
 
@@ -810,7 +826,7 @@ export class DashboardRecurso {
           if (this.empresaServicio) {
             this.loading = false;
           }
-          this.seleccionarRecursoEmpleado(this.day);
+          this.consultarHorariosOcupadosRecurso(this.day);
         } else {
           this.seleccionarRecurso(this.day);
         }
@@ -818,8 +834,7 @@ export class DashboardRecurso {
     });
   }
 
-  seleccionarRecursoEmpleado(fecha: Date): void {
-
+  consultarHorariosOcupadosRecurso(fecha: Date): void {
     let request: any = {}
 
     if (this.empresaServicio) {
@@ -842,30 +857,25 @@ export class DashboardRecurso {
       };
     }
 
-    if (this.empresaServicio && !request.profesional) {
-      this.loading = false;
-      this.cdr.detectChanges();
-    } else {
-      this.agendamientoServices
-        .consultarAgendamientosEmpleado(request)
-        .subscribe({
-          next: (rest) => {
-            if (rest.exito) {
-              for (let i = 0; i < this.horas.length; i++) {
-                let disponible = true;
-                disponible = rest.horasOcupadas.find(
-                  (h: any) => h === this.horas[i].hora,
-                );
-                if (disponible) {
-                  this.horas[i].disponible = false;
-                }
+    this.agendamientoServices
+      .consultarAgendamientosEmpleado(request)
+      .subscribe({
+        next: (rest) => {
+          if (rest.exito) {
+            for (let i = 0; i < this.horas.length; i++) {
+              let disponible = true;
+              disponible = rest.horasOcupadas.find(
+                (h: any) => h === this.horas[i].hora,
+              );
+              if (disponible) {
+                this.horas[i].disponible = false;
               }
-              this.horas = this.horas.filter((h) => h.disponible);
             }
-            this.verificarHoras();
-          },
-        });
-    }
+            this.horas = this.horas.filter((h) => h.disponible);
+          }
+          this.verificarHoras();
+        },
+      });
   }
 
   public seleccionarRecurso(fecha: Date): void {
@@ -1494,12 +1504,12 @@ export class DashboardRecurso {
 
     const mensaje = this.construirMensajeWhatsApp(request, result);
 
-    const observable = this.guardarCita(request);
+    // const observable = this.guardarCita(request);
 
-    observable.subscribe({
-      next: (rest: any) => this.procesarRespuestaAgendamiento(rest, request, mensaje, result),
-      error: (err: any) => this.manejarErrorAgendamiento(err),
-    });
+    // observable.subscribe({
+    //   next: (rest: any) => this.procesarRespuestaAgendamiento(rest, request, mensaje, result),
+    //   error: (err: any) => this.manejarErrorAgendamiento(err),
+    // });
   }
 
   /**
@@ -1633,12 +1643,10 @@ export class DashboardRecurso {
 
   public seleccionarHora(hora: any): void {
     this.loading = true;
-    let horaDiponible = false;
+    let horaDiponible = this.validarHoraDisponible(hora.hora);
+    this.cruzeHorario = horaDiponible.disponible;
 
-    horaDiponible = this.validarHoraDisponible(hora.hora);
-    this.cruzeHorario = horaDiponible;
-
-    if (horaDiponible) {
+    if (horaDiponible.disponible) {
       this.agendarCita(hora);
     } else {
       if (this.empresaServicio) {
@@ -1662,8 +1670,16 @@ export class DashboardRecurso {
       } else {
         Swal.fire({
           icon: 'warning',
-          title: 'Mensaje',
-          text: 'No puedes realizar el agendamiento ya que el tiempo de la cita sobrepasa al rango de horas disponibles.',
+          title: 'Horario no disponible',
+          html: `
+              <p>La duración de la cita supera el horario disponible.</p>
+              <p>
+                El horario de las <strong>${horaDiponible.horaConflicto}</strong>
+                ya se encuentra ocupado.
+              </p>
+              <p>Por favor, selecciona una hora diferente.</p>
+            `,
+          confirmButtonText: 'Entendido'
         });
         this.loading = false;
       }
@@ -1768,10 +1784,15 @@ export class DashboardRecurso {
     }
   }
 
-  private validarHoraDisponible(hora: string): boolean {
+  private validarHoraDisponible(hora: string): {
+    disponible: boolean;
+    horaConflicto: string | null;
+  } {
     const loteHoras =
-      this.serviciosSeleccionados.reduce((acc, item) => acc + item.tiempo, 0) /
-      parseInt(this.rangoTiempo);
+      this.serviciosSeleccionados.reduce(
+        (acc, item) => acc + item.tiempo,
+        0
+      ) / parseInt(this.rangoTiempo);
 
     const parseHora = (horaStr: string): Date => {
       const [time, modifier] = horaStr.split(' ');
@@ -1782,6 +1803,7 @@ export class DashboardRecurso {
 
       const date = new Date();
       date.setHours(hours, minutes, 0, 0);
+
       return date;
     };
 
@@ -1789,9 +1811,12 @@ export class DashboardRecurso {
       let hours = date.getHours();
       const minutes = date.getMinutes();
       const ampm = hours >= 12 ? 'PM' : 'AM';
+
       hours = hours % 12 || 12;
+
       const mm = minutes.toString().padStart(2, '0');
       const hh = hours.toString().padStart(2, '0');
+
       return `${hh}:${mm} ${ampm}`;
     };
 
@@ -1800,19 +1825,29 @@ export class DashboardRecurso {
     const horasGeneradas: string[] = [];
 
     for (let i = 0; i < loteHoras; i++) {
-      const nuevaHora = new Date(horaBase.getTime() + i * rangoMinutos * 60000);
+      const nuevaHora = new Date(
+        horaBase.getTime() + i * rangoMinutos * 60000
+      );
+
       horasGeneradas.push(formatHora(nuevaHora));
     }
 
-    const conflicto = horasGeneradas.find(
-      (h) => !this.horas.some((x) => x.hora === h),
+    // Buscar la primera hora que no está disponible
+    const horaConflicto = horasGeneradas.find(
+      (h) => !this.horas.some((x) => x.hora === h)
     );
 
-    if (conflicto) {
-      return false;
+    if (horaConflicto) {
+      return {
+        disponible: false,
+        horaConflicto: horaConflicto
+      };
     }
 
-    return true;
+    return {
+      disponible: true,
+      horaConflicto: null
+    };
   }
 
   onDateChange(event: any, cita: any) {
@@ -1830,52 +1865,97 @@ export class DashboardRecurso {
     this.cdr.detectChanges();
   }
 
-  private createJson(hora: string, bono: boolean, result: any) {
+  obtenerFechaIni(hora: any) {
     const match = hora.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-    //const fechaBase = this.day.toISOString().split('T')[0];
+
+    let horas = parseInt(match[1], 10);
+    const minutos = match[2];
+    const periodo = match[3].toUpperCase();
+
+    // Convertir a formato militar
+    if (periodo === 'PM' && horas !== 12) {
+      horas += 12;
+    }
+
+    if (periodo === 'AM' && horas === 12) {
+      horas = 0;
+    }
+
     const year = this.day.getFullYear();
     const month = String(this.day.getMonth() + 1).padStart(2, '0');
     const day = String(this.day.getDate()).padStart(2, '0');
+
     const fechaBase = `${year}-${month}-${day}`;
+    const horasStr = String(horas).padStart(2, '0');
 
-    if (match) {
-      let horas = parseInt(match[1], 10);
-      const minutos = match[2];
-      const periodo = match[3].toUpperCase();
+    return `${fechaBase}T${horasStr}:${minutos}:00`;
+  }
 
-      // Convertir a formato 24 horas
-      if (periodo === 'PM' && horas < 12) {
-        horas += 12;
-      } else if (periodo === 'AM' && horas === 12) {
-        horas = 0;
-      }
-      const horasStr = horas.toString().padStart(2, '0');
-      const fechaFinal = `${fechaBase}T${horasStr}:${minutos}:00`;
-      const now = new Date();
-      const fechaLocal = this.formatearFechaManual(now);
+  private createJson(hora: string, bono: boolean, result: any) {
+    const fechaFinal = this.obtenerFechaIni(hora);
+    const valor = this.serviciosSeleccionados.map((s) => s.valor);
+    let tiempoTotalServicio = this.serviciosSeleccionados
+      .map((s) => s.tiempo)
+      .reduce((a, b) => a + b, 0);
+    const serviciosSeleccionados = this.serviciosSeleccionados.map((s) => ({
+      servicio: s.id,
+    }));
 
-      const valor = this.serviciosSeleccionados.map((s) => s.valor);
-      let tiempoTotalServicio = this.serviciosSeleccionados
-        .map((s) => s.tiempo)
-        .reduce((a, b) => a + b, 0);
-      const serviciosSeleccionados = this.serviciosSeleccionados.map((s) => ({
-        servicio: s.id,
+    const costo = valor.reduce((a, b) => a + b, 0);
+    const now = new Date();
+    const fechaLocal = this.formatearFechaManual(now);
+    let json = {};
+
+    if (this.empresaServicio || this.empresaRecursoMultiple) {
+      let alterno = this.serviciosSeleccionados
+        .filter(s => s.alterno)
+        .sort((a, b) => b.tiempo - a.tiempo);
+      let noAlterno = this.serviciosSeleccionados
+        .filter(s => !s.alterno)
+        .sort((a, b) => b.tiempo - a.tiempo);
+
+      let resultadoAlterno = alterno.map(a => ({
+        FechaIni: fechaFinal,
+        recurso: a.recurso,
+        Valor: a.valor,
+        Hora: a.tiempo,
+        servicios: [
+          {
+            servicio: a.id
+          }
+        ]
       }));
+      let baseFecha = fechaFinal;
+      let horaAlterno = 0;
 
-      const costo = valor.reduce((a, b) => a + b, 0);
+      if (alterno.length > 0) {
+        baseFecha = resultadoAlterno[0].FechaIni;
+        horaAlterno = alterno[0].tiempo
+      }
 
-      let json = {};
+      const formatearFechaLocal = (fecha: Date) => {
+        return fecha.getFullYear() + '-' +
+          String(fecha.getMonth() + 1).padStart(2, '0') + '-' +
+          String(fecha.getDate()).padStart(2, '0') + 'T' +
+          String(fecha.getHours()).padStart(2, '0') + ':' +
+          String(fecha.getMinutes()).padStart(2, '0') + ':' +
+          String(fecha.getSeconds()).padStart(2, '0');
+      };
 
-      if (this.empresaServicio) {
-        let alterno = this.serviciosSeleccionados
-          .filter(s => s.alterno)
-          .sort((a, b) => b.tiempo - a.tiempo);
-        let noAlterno = this.serviciosSeleccionados
-          .filter(s => !s.alterno)
-          .sort((a, b) => b.tiempo - a.tiempo);
+      let base = new Date(baseFecha);
 
-        let resultadoAlterno = alterno.map(a => ({
-          FechaIni: fechaFinal,
+      if (isNaN(base.getTime())) {
+        throw new Error("baseFecha inválida: " + baseFecha);
+      }
+
+      // arrancan después del tiempo de alternos
+      base.setMinutes(base.getMinutes() + horaAlterno);
+
+      let resultadoNoAlterno = noAlterno.map(a => {
+        const fechaInicio = new Date(base);
+
+        const item = {
+          FechaIni: formatearFechaLocal(fechaInicio),
           recurso: a.recurso,
           Valor: a.valor,
           Hora: a.tiempo,
@@ -1884,123 +1964,63 @@ export class DashboardRecurso {
               servicio: a.id
             }
           ]
-        }));
-        let baseFecha = fechaFinal;
-        let horaAlterno = 0;
-
-        if (alterno.length > 0) {
-          baseFecha = resultadoAlterno[0].FechaIni;
-          horaAlterno = alterno[0].tiempo
-        }
-
-        const formatearFechaLocal = (fecha: Date) => {
-          return fecha.getFullYear() + '-' +
-            String(fecha.getMonth() + 1).padStart(2, '0') + '-' +
-            String(fecha.getDate()).padStart(2, '0') + 'T' +
-            String(fecha.getHours()).padStart(2, '0') + ':' +
-            String(fecha.getMinutes()).padStart(2, '0') + ':' +
-            String(fecha.getSeconds()).padStart(2, '0');
         };
 
-        let base = new Date(baseFecha);
+        base.setMinutes(base.getMinutes() + a.tiempo);
 
-        if (isNaN(base.getTime())) {
-          throw new Error("baseFecha inválida: " + baseFecha);
-        }
+        return item;
+      });
 
-        // arrancan después del tiempo de alternos
-        base.setMinutes(base.getMinutes() + horaAlterno);
+      resultadoNoAlterno.forEach(element => {
+        resultadoAlterno.push(element)
+      });
 
-        let resultadoNoAlterno = noAlterno.map(a => {
-          const fechaInicio = new Date(base);
+      json = {
+        FechaIni: fechaFinal,
+        empresa: this.idEmpresa,
+        UsuarioCreacion: 'Usuario',
+        fechaCreacion: fechaLocal,
+        clienteInfo: {
+          Nombre: result.nombre,
+          Telefono: result.celular,
+          Correo: result.correo,
+          FechaNacimiento: result.fechaNacimiento,
+        },
+        citas: resultadoAlterno,
+        validaHorario: this.cruzeHorario
+      }
+      return json;
 
-          const item = {
-            FechaIni: formatearFechaLocal(fechaInicio),
-            recurso: a.recurso,
-            Valor: a.valor,
-            Hora: a.tiempo,
-            servicios: [
-              {
-                servicio: a.id
-              }
-            ]
-          };
+    } else {
+      if (this.tipoOrden) {
+        let servicios = this.serviciosSeleccionados.map((s) => ({
+          servicio: s.id,
+          cantidad: s.sesiones
+        }));
+        const info = JSON.parse(localStorage.getItem('ordenSeleccionada') || '{}');
 
-          base.setMinutes(base.getMinutes() + a.tiempo);
-
-          return item;
-        });
-
-        resultadoNoAlterno.forEach(element => {
-          resultadoAlterno.push(element)
-        });
-
-        json = {
-          FechaIni: fechaFinal,
-          empresa: this.idEmpresa,
-          UsuarioCreacion: 'Usuario',
-          fechaCreacion: fechaLocal,
-          clienteInfo: {
-            Nombre: result.nombre,
-            Telefono: result.celular,
-            Correo: result.correo,
-            FechaNacimiento: result.fechaNacimiento,
-          },
-          citas: resultadoAlterno,
-          validaHorario: this.cruzeHorario
-        }
-        return json;
-      } else {
-        if (this.tipoOrden) {
-          let servicios = this.serviciosSeleccionados.map((s) => ({
-            servicio: s.id,
-            cantidad: s.sesiones
-          }));
-          const info = JSON.parse(localStorage.getItem('ordenSeleccionada') || '{}');
-
-          if (this.pestanaActiva) {
-            if (this.serviciosSeleccionados.length === 0) {
-              tiempoTotalServicio = this.servicios.find(s => s.id === info.servicioSeleccionado)?.tiempo ?? 0;
-            }
-
-            json = {
-              recurso: this.user.id,
-              FechaIni: fechaFinal,
-              Valor: 0,
-              UsuarioCreacion: 'Usuario',
-              Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
-              empresa: this.idEmpresa,
-              clienteInfo: {
-                Id: info.idCliente
-              },
-              fechaCreacion: fechaLocal,
-              Bono: bono,
-              orden: {
-                Id: info.idOrden
-              },
-              Sesion: info.numeroSesion
-            };
-          } else {
-            json = {
-              recurso: this.user.id,
-              FechaIni: fechaFinal,
-              Valor: this.otroSeleccionado ? this.costoOtro : costo,
-              UsuarioCreacion: 'Usuario',
-              Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
-              empresa: this.idEmpresa,
-              servicios: servicios,
-              clienteInfo: result?.celular
-                ? {
-                  Nombre: result.nombre,
-                  Telefono: result.celular,
-                  Correo: result.correo,
-                  FechaNacimiento: result.fechaNacimiento,
-                }
-                : null,
-              fechaCreacion: fechaLocal,
-              Bono: bono
-            };
+        if (this.pestanaActiva) {
+          if (this.serviciosSeleccionados.length === 0) {
+            tiempoTotalServicio = this.servicios.find(s => s.id === info.servicioSeleccionado)?.tiempo ?? 0;
           }
+
+          json = {
+            recurso: this.user.id,
+            FechaIni: fechaFinal,
+            Valor: 0,
+            UsuarioCreacion: 'Usuario',
+            Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
+            empresa: this.idEmpresa,
+            clienteInfo: {
+              Id: info.idCliente
+            },
+            fechaCreacion: fechaLocal,
+            Bono: bono,
+            orden: {
+              Id: info.idOrden
+            },
+            Sesion: info.numeroSesion
+          };
         } else {
           json = {
             recurso: this.user.id,
@@ -2009,7 +2029,7 @@ export class DashboardRecurso {
             UsuarioCreacion: 'Usuario',
             Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
             empresa: this.idEmpresa,
-            servicios: serviciosSeleccionados,
+            servicios: servicios,
             clienteInfo: result?.celular
               ? {
                 Nombre: result.nombre,
@@ -2022,10 +2042,28 @@ export class DashboardRecurso {
             Bono: bono
           };
         }
-        return json;
+      } else {
+        json = {
+          recurso: this.user.id,
+          FechaIni: fechaFinal,
+          Valor: this.otroSeleccionado ? this.costoOtro : costo,
+          UsuarioCreacion: 'Usuario',
+          Hora: tiempoTotalServicio === 0 ? 30 : tiempoTotalServicio,
+          empresa: this.idEmpresa,
+          servicios: serviciosSeleccionados,
+          clienteInfo: result?.celular
+            ? {
+              Nombre: result.nombre,
+              Telefono: result.celular,
+              Correo: result.correo,
+              FechaNacimiento: result.fechaNacimiento,
+            }
+            : null,
+          fechaCreacion: fechaLocal,
+          Bono: bono
+        };
       }
-    } else {
-      return;
+      return json;
     }
   }
 

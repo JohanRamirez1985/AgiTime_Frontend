@@ -9,4 +9,11 @@ import { Component } from '@angular/core';
 })
 export class ModalActualizando {
 
+
+  ngOnInit(): void {
+    setTimeout(() => {
+      window.location.reload();
+    }, 5000);
+  }
+
 }
