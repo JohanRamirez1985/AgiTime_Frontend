@@ -1504,12 +1504,12 @@ export class DashboardRecurso {
 
     const mensaje = this.construirMensajeWhatsApp(request, result);
 
-    // const observable = this.guardarCita(request);
+    const observable = this.guardarCita(request);
 
-    // observable.subscribe({
-    //   next: (rest: any) => this.procesarRespuestaAgendamiento(rest, request, mensaje, result),
-    //   error: (err: any) => this.manejarErrorAgendamiento(err),
-    // });
+    observable.subscribe({
+      next: (rest: any) => this.procesarRespuestaAgendamiento(rest, request, mensaje, result),
+      error: (err: any) => this.manejarErrorAgendamiento(err),
+    });
   }
 
   /**
