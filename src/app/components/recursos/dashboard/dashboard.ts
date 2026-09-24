@@ -132,6 +132,7 @@ export class DashboardRecurso {
   enviarMjsWssp: boolean = false;
   mostrarInfoCliente: boolean = false;
   mostrarMetodoPago: boolean = false;
+  WhatsappRecordatorio: boolean = false;
   usoBono: boolean = false;
   pestanaSeleccionada: number = 0;
   pestanaActiva: boolean = false;
@@ -275,6 +276,11 @@ export class DashboardRecurso {
           this.mostrarMetodoPago =
             rest.datos.find((h: any) => h.tipo === 'MostrarMetodoPago')
               ?.valor?.toLowerCase() === 'true';
+
+          this.WhatsappRecordatorio =
+            rest.datos.find((h: any) => h.tipo === 'WhatsappRecordatorio')
+              ?.valor?.toLowerCase() === 'true';
+
         }
       },
     });
@@ -1070,27 +1076,29 @@ export class DashboardRecurso {
 
   public recordatorioWssp(cliente: any) {
 
-    const fecha = new Date(cliente.fechaOrden);
-
+    const fecha = this.empresaServicio ? new Date(cliente.fechaOrden) : new Date(cliente.fechaInicio);
     const fechaFormateada = fecha.toLocaleDateString('es-CO');
-
     const horaFormateada = fecha.toLocaleTimeString('es-CO', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true
     });
 
-    const telefonoBreB = '3137938061';
+    let mensaje: string = '';
+    let numero: string = '';
 
-    const abono = cliente.total / 2;
+    if (this.empresaServicio) {
+      const telefonoBreB = '3137938061';
+      const abono = cliente.total / 2;
+      numero = '57' + cliente.telefono;
 
-    const mensaje = `💅 ¡Hola ${cliente.cliente}!
+      mensaje = `💅 ¡Hola ${cliente.cliente}!
 
           Te recordamos que tienes un servicio programado en *KC NAILS COFFE BAR*:
 
           📅 Fecha: ${fechaFormateada}
           🕐 Hora: ${horaFormateada}
-          💅 Servicio: ${cliente.nombre}
+          ✨ Servicio: ${cliente.nombre}
 
           🔐 *Para confirmar tu cita*, debes realizar un abono de *$${abono.toLocaleString("es-CO")}*.
 
@@ -1108,7 +1116,32 @@ export class DashboardRecurso {
 
           💖 Gracias por elegir *KC NAILS COFFE BAR*.`;
 
-    const numero = '57' + cliente.telefono;
+    } else {
+      numero = '57' + cliente.telefonoCliente
+
+      mensaje = `🌸 ¡Hola ${cliente.nombreCliente}!
+
+        ¡Tenemos una cita reservada especialmente para ti en ${this.empresa.nombre}! 💖
+
+        📅 Fecha: ${fechaFormateada}
+        🕐 Hora: ${horaFormateada}
+        ✨ Servicio: ${cliente.servicios.map((s: any) => s.nombre).join(', ')}
+
+        Para asegurar y confirmar tu cita, debes realizar un abono de $30.000. 💳
+
+        📲 Pago por Nequi:
+        📱 Número: 3022566598
+
+        📩 Después de realizar el pago, envíanos el comprobante por este WhatsApp para dejar tu cita confirmada. ✅
+
+        ⚠️ Recuerda que, si no recibimos el abono dentro del tiempo establecido, la cita podrá ser liberada y asignada a otra persona.
+
+        ✨ ¡Será un placer atenderte!
+
+        💖 Gracias por confiar en ${this.empresa.nombre}.`;
+
+    }
+
 
     const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
@@ -1123,7 +1156,6 @@ export class DashboardRecurso {
   }
 
   public confirmarCita(cita: any) {
-
     const nombreMostrar = this.empresaServicio
       ? cita.nombreCliente.split('-')[0].trim()
       : cita.nombreCliente;
@@ -1138,28 +1170,114 @@ export class DashboardRecurso {
       'Daviplata'
     ];
 
-    // Checkbox del bono
-    const checkboxHtml = !this.usoBono ? '' : `
-    <div style="
-      margin-top: 15px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    ">
-      <label style="
-        font-size: 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      ">
-        <input type="checkbox" id="usoBonoCheckbox">
-        ¿El servicio incluye bono?
-      </label>
-    </div>
-  `;
+    let fidelidadHtml = '';
 
-    // Métodos de pago
+    if (cita.fidelidad && cita.fidelidad.trim() !== '') {
+      fidelidadHtml = `
+          <div style="
+            margin: 15px 0;
+            padding: 12px;
+            border-radius: 8px;
+            background-color: #fff8e1;
+            border: 1px solid #ffe082;
+            text-align: center;
+          ">
+            <div style="
+              font-size: 16px;
+              font-weight: 600;
+              margin-bottom: 5px;
+            ">
+              🎁 Beneficio de fidelidad
+            </div>
+
+            <div style="
+              font-size: 14px;
+            ">
+              ${cita.fidelidad}
+            </div>
+          </div>
+        `;
+    }
+
+    let checkboxHtml = '';
+
+    if (this.usoBono) {
+      if (this.empresaOrden) {
+        checkboxHtml = `
+        <div style="
+          margin-top: 15px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+        ">
+
+          <label style="
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          ">
+            <input type="checkbox" id="clienteTieneDescuento">
+            ¿El cliente pagará un valor diferente al precio del servicio?
+          </label>
+
+          <div id="valorPersonalizadoContainer" style="
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+          ">
+
+            <label style="
+              font-size: 16px;
+              font-weight: 600;
+            ">
+              💰 Digita el valor que se cobrará:
+            </label>
+
+            <input
+              type="number"
+              id="valorServicioInput"
+              placeholder="Ej: 50000"
+              min="0"
+              style="
+                width: 180px;
+                padding: 8px;
+                font-size: 16px;
+                text-align: center;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+              "
+            >
+
+          </div>
+        </div>
+      `;
+      } else {
+        checkboxHtml = `
+        <div style="
+          margin-top: 15px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        ">
+          <label style="
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          ">
+            <input type="checkbox" id="usoBonoCheckbox">
+            ¿El servicio incluye bono?
+          </label>
+        </div>
+      `;
+      }
+    }
+
     const metodosPagoHtml = this.mostrarMetodoPago ? `
     <div style="
       margin-top: 15px;
@@ -1214,15 +1332,18 @@ export class DashboardRecurso {
     Swal.fire({
       title: 'Confirmar Asistencia',
       html: `
-      ${checkboxHtml}
-      <p style="margin-top: 10px;">
-        ¿El cliente
-        <strong>${nombreMostrar}</strong>
-        asistió a la cita?
-      </p>
-      ${metodosPagoHtml}
-    `,
+        ${fidelidadHtml}
 
+        ${checkboxHtml}
+
+        <p style="margin-top: 10px;">
+          ¿El cliente
+          <strong>${nombreMostrar}</strong>
+          asistió a la cita?
+        </p>
+
+        ${metodosPagoHtml}
+      `,
       icon: 'success',
       showCancelButton: true,
       showCloseButton: true,
@@ -1233,9 +1354,39 @@ export class DashboardRecurso {
       customClass: {
         popup: 'swal-reserva-responsive',
       },
-
-      // Hace que los checkbox funcionen como selección única
       didOpen: () => {
+        if (this.usoBono && this.empresaOrden) {
+          const checkboxDescuento =
+            document.getElementById(
+              'clienteTieneDescuento'
+            ) as HTMLInputElement;
+
+          const valorContainer =
+            document.getElementById(
+              'valorPersonalizadoContainer'
+            ) as HTMLDivElement;
+
+          checkboxDescuento?.addEventListener(
+            'change',
+            () => {
+              if (checkboxDescuento.checked) {
+                valorContainer.style.display = 'flex';
+              } else {
+                valorContainer.style.display = 'none';
+                const input =
+                  document.getElementById(
+                    'valorServicioInput'
+                  ) as HTMLInputElement;
+
+                if (input) {
+                  input.value = '';
+                }
+              }
+
+            }
+          );
+        }
+
         const checkboxes = document.querySelectorAll(
           '.metodo-pago-checkbox'
         ) as NodeListOf<HTMLInputElement>;
@@ -1253,18 +1404,46 @@ export class DashboardRecurso {
         });
       },
       preConfirm: () => {
-        // Bono
-        const usoBono = !this.usoBono
-          ? false
-          : (
-            document.getElementById(
-              'usoBonoCheckbox'
-            ) as HTMLInputElement
-          )?.checked || false;
+        let usoBono = false;
+        let valorServicio: number | null = null;
+        if (this.usoBono) {
+          if (this.empresaOrden) {
+            const checkboxDescuento =
+              document.getElementById(
+                'clienteTieneDescuento'
+              ) as HTMLInputElement;
+
+            const tieneValorDiferente =
+              checkboxDescuento?.checked || false;
+
+            if (tieneValorDiferente) {
+
+              const input =
+                document.getElementById(
+                  'valorServicioInput'
+                ) as HTMLInputElement;
+
+              valorServicio = Number(input?.value || 0);
+              if (!valorServicio || valorServicio <= 0) {
+                Swal.showValidationMessage(
+                  'Digita un valor válido para el servicio'
+                );
+                return false;
+              }
+            }
+            usoBono = true;
+          } else {
+            usoBono =
+              (
+                document.getElementById(
+                  'usoBonoCheckbox'
+                ) as HTMLInputElement
+              )?.checked || false;
+          }
+        }
 
         let metodoPago = null;
 
-        // Solo exigimos método de pago cuando se confirma asistencia
         if (this.mostrarMetodoPago) {
           const checkboxes = document.querySelectorAll(
             '.metodo-pago-checkbox:checked'
@@ -1274,24 +1453,23 @@ export class DashboardRecurso {
             Swal.showValidationMessage(
               'Selecciona un método de pago'
             );
+
             return false;
           }
-
           metodoPago = checkboxes[0].value;
         }
+
         return {
           usoBono,
+          valorServicio,
           metodoPago
         };
-
       }
-
     }).then((result) => {
       if (
         result.isConfirmed ||
         result.dismiss === Swal.DismissReason.cancel
       ) {
-
         this.loading = true;
         const now = new Date(this.day);
         const fechaLocal =
@@ -1303,11 +1481,15 @@ export class DashboardRecurso {
           Id: cita.id,
           Asistencia: result.isConfirmed,
           Bono: result.value?.usoBono || false,
+          Valor:
+            result.value?.valorServicio || null,
           MetodoPago: result.isConfirmed
             ? result.value?.metodoPago || null
             : null,
-          usuarioCreacion: this.user.id.toString(),
-          fechaCreacion: this.formatearFechaActual()
+          usuarioCreacion:
+            this.user.id.toString(),
+          fechaCreacion:
+            this.formatearFechaActual()
         };
 
         this.agendamientoServices
@@ -1563,7 +1745,7 @@ export class DashboardRecurso {
       }
     }
 
-    return this.empresaServicio
+    return this.empresaServicio || this.empresaRecursoMultiple
       ? this.agendamientoServices.guardarCita(request)
       : this.agendamientoServices.registrarCita(request);
   }

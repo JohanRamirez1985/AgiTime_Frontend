@@ -17,7 +17,7 @@ export class Modal {
       Swal.fire({
         icon: tipo,
         title: titulo,
-        text: mensaje,
+        html: mensaje,
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'Ok',
       }).then((result) => {

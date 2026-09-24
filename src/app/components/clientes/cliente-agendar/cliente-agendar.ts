@@ -235,7 +235,8 @@ export class ClienteAgendar {
             this.serviciosFiltrados = rest.datos.filter(
               (s: any) =>
                 s.sede === this.recursoSede &&
-                s.cliente === true
+                s.cliente === true &&
+                s.nombre !== 'Otro'
             );
           }
 
@@ -648,8 +649,28 @@ export class ClienteAgendar {
             if (this.enviarMjsWssp) {
               this.mensajeWssp(request, datos, rest.envioMensaje);
             }
+            const mensaje = rest.fidelidadMensaje
+              ? `
+                <div>
+                  <div style="font-size: 17px; font-weight: 600;">
+                    ✅ ${rest.mensaje || 'La cita fue creada exitosamente'}
+                  </div>
+
+                  <div style="
+                    margin-top: 15px;
+                    padding: 12px;
+                    border-radius: 8px;
+                    background: #f8f9fa;
+                  ">
+                    🎁 <strong>Fidelidad</strong><br>
+                    ${rest.fidelidadMensaje}
+                  </div>
+                </div>
+              `
+              : rest.mensaje || 'La cita fue creada exitosamente';
+
             this.modalService.success(
-              rest.mensaje || 'La cita fue creada exitosamente',
+              mensaje,
               () => this.volver()
             );
           } else {
@@ -1250,6 +1271,7 @@ export class ClienteAgendar {
       this.ordenarCabecera(seleccionados);
       this.consultarHorariosOcupadosRecurso(this.viewDate)
     } else {
+      this.loading = false;
       this.mostrarServicios = true;
     }
 

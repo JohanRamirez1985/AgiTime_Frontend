@@ -55,33 +55,7 @@ export class GestionAgendamientoOrden {
   clientes: Cliente[] = [];
   ordenes: Orden[] = [];
   mostrarSesiones: boolean = false;
-  // ordenes: Orden[] = [
-  //   {
-  //     id: 1,
-  //     numero: 'ORD-0001',
-  //     fechaCreacion: '20/08/2026',
-  //     nombreServicio: 'Tratamiento capilar',
-  //     totalSesiones: 5,
-  //     sesionesCompletadas: 3,
-  //     estado: 'Pendiente',
 
-  //     sesiones: [
-  //       {
-  //         numero: 1,
-  //         servicio: 'Diagnóstico',
-  //         fecha: '21/08/2026',
-  //         hora: '10:00',
-  //         estado: 'Completada'
-  //       },
-  //       {
-  //         numero: 2,
-  //         servicio: 'Tratamiento capilar',
-  //         fecha: '25/08/2026',
-  //         hora: '10:00',
-  //         estado: 'Completada'
-  //       }]
-  //   }
-  // ]
 
   constructor(
     private ordenService: OrdenAgendamientoService,
@@ -107,7 +81,7 @@ export class GestionAgendamientoOrden {
     this.ordenService.consultarDetalleAgenda(request).subscribe({
       next: (rest) => {
         if (rest.exito) {
-          this.ordenes = rest.data;
+          this.ordenes = rest.data.filter((o: any) => o.estado === 'Pendiente');
           this.textoBusqueda = '';
           console.log(rest);
 
@@ -170,17 +144,11 @@ export class GestionAgendamientoOrden {
   seleccionarCliente(cliente: Cliente): void {
 
     this.clienteSeleccionado = cliente;
-
     this.textoBusqueda = cliente.nombre;
-
     this.ordenSeleccionada = null;
-
     this.loading = true;
-
     this.consultarDetalleSesion(this.clienteSeleccionado.id);
 
-    // Aquí posteriormente llamaremos al API
-    // para consultar las órdenes pendientes
   }
 
 
