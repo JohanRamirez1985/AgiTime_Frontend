@@ -1,4 +1,3 @@
-<!-- <app-toolbar></app-toolbar> -->
 <div *ngIf="!empresaServicio" class="tabs-header">
   <button *ngIf="btnActivar" mat-raised-button color="warn" (click)="activarUsuario()">
     <mat-icon>block</mat-icon>
@@ -75,7 +74,7 @@
               </div>
               <div class="acciones-cita">
 
-                <button *ngIf="empresaServicio && cita.estado === 'Activo'" class="btn-accion btn-whatsapp"
+                <button *ngIf="WhatsappRecordatorio && cita.estado === 'Activo'" class="btn-accion btn-whatsapp"
                   (click)="recordatorioWssp(cita)">
                   <i class="fab fa-whatsapp"></i>
                   <span>WhatsApp</span>
