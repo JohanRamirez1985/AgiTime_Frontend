@@ -1,7 +1,42 @@
+:host {
+  --primary: var(--app-primary, #4355c5);
+
+  /* Variaciones automáticas del color principal */
+  --primary-dark: color-mix(in srgb,
+      var(--primary) 80%,
+      #000000);
+
+  --primary-light: color-mix(in srgb,
+      var(--primary) 10%,
+      #ffffff);
+
+  /* Colores provenientes del backend */
+  --text: var(--app-text, #212121);
+  --text-secondary: color-mix(in srgb,
+      var(--text) 65%,
+      #ffffff);
+
+  --text-light: color-mix(in srgb,
+      var(--text) 45%,
+      #ffffff);
+
+  --background: var(--app-background, #ffffff);
+  --header: var(--app-header, #424242);
+  --footer: var(--app-footer, #424242);
+
+  /* Colores auxiliares */
+  --border: #e4e7ec;
+  --white: #ffffff;
+  --success: #16a34a;
+  --danger: #dc2626;
+
+  display: block;
+}
+
 .agendar-wrapper {
   width: 100vw;
   min-height: 100vh;
-  font-family: "Segoe UI", sans-serif;
+  font-family: var(--app-font-family);
   box-sizing: border-box;
 }
 
@@ -10,8 +45,8 @@
   justify-content: center;
   padding: 2rem;
   min-height: 100vh;
-  background: #f7f7f7;
-  background-size: cover; /* asegura que la textura cubra */
+  background: var(--app-background);
+  background-size: cover
 }
 
 .imagen-banner {
@@ -35,7 +70,7 @@
 /* ---------- Título ---------- */
 .agendar-wrapper h2 {
   text-align: center;
-  color: #002d72;
+  color: var(--text);
   font-size: 1.6rem;
   margin-bottom: 1.5rem;
   display: flex;
@@ -60,7 +95,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap; /* Responsive */
+  flex-wrap: wrap;
+  /* Responsive */
   padding: 0.8rem 1rem;
   border-bottom: 1px solid #e0e0e0;
   background-color: #fafafa;
@@ -106,7 +142,7 @@
 
 .seccion-titulo {
   font-weight: 600;
-  color: #002d72;
+  color: var(--text);
   margin-bottom: 0.8rem;
   display: flex;
   align-items: center;
@@ -154,15 +190,16 @@ button.hora-no-disponible {
 .header-container {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* separa izquierda y derecha */
+  justify-content: space-between;
+  /* separa izquierda y derecha */
   border-bottom: 1px solid #e0e0e0;
 }
 
 .header-title {
-  flex: 1; /* ocupa espacio para centrar */
+  flex: 1;
   font-size: 1.2rem;
   font-weight: 500;
-  color: #333;
+  color: var(--app-text);
 }
 
 /* ---------- Servicios ---------- */
@@ -178,7 +215,8 @@ button.hora-no-disponible {
   font-size: 1.3rem;
   font-weight: bold;
   margin-bottom: 1rem;
-  color: #1e293b;
+  color: var(--text);
+  font-family: var(--app-font-family, "Segoe UI", Arial, sans-serif);
 }
 
 .servicios-container {
@@ -212,8 +250,10 @@ button.hora-no-disponible {
 .servicio-info {
   display: flex;
   flex-direction: column;
-  flex: 1;        /* 🔥 ocupa el espacio disponible */
-  min-width: 0;   /* 🔥 evita que el texto rompa el layout */
+  flex: 1;
+  /* 🔥 ocupa el espacio disponible */
+  min-width: 0;
+  /* 🔥 evita que el texto rompa el layout */
 }
 
 .servicio-nombre {
@@ -231,17 +271,21 @@ button.hora-no-disponible {
   font-size: 0.75rem;
   color: #555;
   line-height: 1.3;
-  max-height: 3.6em; /* límite de 3 líneas */
+  max-height: 3.6em;
+  /* límite de 3 líneas */
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  white-space: normal; /* 👈 permite saltos de línea */
-  word-break: break-word; /* 👈 evita que palabras largas se salgan */
+  white-space: normal;
+  /* 👈 permite saltos de línea */
+  word-break: break-word;
+  /* 👈 evita que palabras largas se salgan */
 }
 
 .servicio-descripcion ul {
-  padding-left: 16px; /* sangría bonita para las viñetas */
+  padding-left: 16px;
+  /* sangría bonita para las viñetas */
   margin: 4px 0;
 }
 
@@ -250,12 +294,13 @@ button.hora-no-disponible {
   color: #666;
   line-height: 1.3;
   margin-bottom: 2px;
-  list-style-type: disc; /* viñetas normales */
+  list-style-type: disc;
+  /* viñetas normales */
 }
 
 .boton-add {
   margin-left: 1rem;
-   flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 /* ---------- Botón flotante ---------- */
@@ -328,7 +373,8 @@ button.hora-no-disponible {
 
 .recurso-nombre {
   display: flex;
-  align-items: flex-start; /* Alinea el icono arriba */
+  align-items: flex-start;
+  /* Alinea el icono arriba */
   gap: 6px;
   font-size: 16px;
   font-weight: 600;
@@ -382,7 +428,7 @@ button.hora-no-disponible {
 .header-empresa {
   display: flex;
   align-items: center;
-  gap: 8px; /* espacio entre nombre y logo */
+  gap: 8px;
 }
 
 
@@ -395,7 +441,7 @@ button.hora-no-disponible {
 .empresa-nombre {
   font-size: 1rem;
   font-weight: 500;
-  color: #333;
+  color: var(--text);
   text-align: -webkit-right;
 }
 
@@ -404,7 +450,7 @@ button.hora-no-disponible {
   align-items: center;
   font-size: 20px;
   font-weight: bold;
-  color: #1a237e;
+  color: var(--text);
   margin: 0 0 16px 0;
   margin-top: 20px;
 }
@@ -412,7 +458,8 @@ button.hora-no-disponible {
 .fab-citas {
   position: fixed;
   bottom: 20px;
-  left: 20px; /* 👈 lo mandas al lado izquierdo */
+  left: 20px;
+  /* 👈 lo mandas al lado izquierdo */
   z-index: 1000;
 }
 
@@ -424,13 +471,13 @@ button.hora-no-disponible {
 
 .mat-datepicker-content {
   border-radius: 14px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .app-footer {
-  background-color: #0d47a1; /* azul corporativo como el header */
-  color: #fff; /* texto blanco */
-  border-top: none; /* quitamos línea de división */
+  background: var(--footer);
+  color: var(--text);
+  border-top: none;
   padding: 12px 20px;
   text-align: center;
 }

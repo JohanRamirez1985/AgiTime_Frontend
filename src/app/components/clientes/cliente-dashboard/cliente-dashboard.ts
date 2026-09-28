@@ -102,7 +102,7 @@ export class ClienteDashboard {
   }
 
   private validarProfesionalesORecursos(): void {
-    if(this.idEmpresa === 8 || this.idEmpresa === 12) {
+    if (this.idEmpresa === 8 || this.idEmpresa === 12) {
       this.verProfesionales = true;
     }
   }
@@ -149,6 +149,57 @@ export class ClienteDashboard {
 
     this.cdr.detectChanges();
 
+  }
+
+  private aplicarEstilosEmpresa(apariencia: any): void {
+
+    if (!apariencia) {
+      return;
+    }
+
+    const root = document.documentElement;
+
+    // Fuente
+    root.style.setProperty(
+      '--app-font-family',
+      apariencia.tipoLetra || 'Roboto'
+    );
+
+    // Color general de textos
+    root.style.setProperty(
+      '--app-text',
+      apariencia.colorLetra || '#212121'
+    );
+
+    // Fondo general
+    root.style.setProperty(
+      '--app-background',
+      apariencia.colorFondo || '#FFFFFF'
+    );
+
+    // Color de fondo de la cabecera
+    root.style.setProperty(
+      '--app-header',
+      apariencia.colorCabecera || '#424242'
+    );
+
+    // Color de texto de la cabecera
+    root.style.setProperty(
+      '--app-header-text',
+      apariencia.colorLetraCabecera || '#FFFFFF'
+    );
+
+    // Color de fondo del pie de página
+    root.style.setProperty(
+      '--app-footer',
+      apariencia.colorPiePagina || '#424242'
+    );
+
+    // Color de texto del pie de página
+    root.style.setProperty(
+      '--app-footer-text',
+      apariencia.colorLetraPiePagina || '#FFFFFF'
+    );
   }
 
 
@@ -220,6 +271,8 @@ export class ClienteDashboard {
             this.seleccionRubro =
               empresa?.servicio ?? false;
 
+
+            this.aplicarEstilosEmpresa(empresa.apariencia);
             this.obtenerSedes();
 
             localStorage.setItem(

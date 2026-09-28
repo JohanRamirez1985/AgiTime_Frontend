@@ -1,14 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { RouterOutlet } from '@angular/router';
-import { Sidebar } from '../transversales/sidebar/sidebar';
 import { Toolbar } from '../transversales/toolbar/toolbar';
 
 @Component({
   selector: 'app-dashboard-layout',
   standalone: true,
-  imports: [CommonModule, MatSidenavModule, Toolbar, RouterOutlet],
+  imports: [CommonModule, MatSidenavModule, Toolbar],
   templateUrl: './dashboard-layout.html',
   styleUrl: './dashboard-layout.css',
 })

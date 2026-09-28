@@ -43,21 +43,31 @@
       <div style="margin-top: 10px" *ngIf="!loading">
         <ng-container *ngIf="citasHoy.length > 0; else sinCitas">
           <mat-card class="card-cita" *ngFor="let cita of citasHoy">
+
             <div class="card-content">
+
               <div class="info-cita">
+
                 <strong>{{ cita.servicio }}</strong>
-                <span><mat-icon>account_circle</mat-icon>
-                  {{ cita.nombreCliente | titlecase }}</span>
-                <span><mat-icon>access_time</mat-icon>
+
+                <span>
+                  <mat-icon>account_circle</mat-icon>
+                  {{ cita.nombreCliente | titlecase }}
+                </span>
+
+                <span>
+                  <mat-icon>access_time</mat-icon>
                   {{ empresaServicio ? cita.hora : cita.fechaInicio | date : "shortTime" }}
                 </span>
-                <span><mat-icon>monetization_on</mat-icon>
-                  {{
-                  cita.totalServicios | currency : "COP" : "symbol" : "1.0-0"
-                  }}
+
+                <span>
+                  <mat-icon>monetization_on</mat-icon>
+                  {{ cita.totalServicios | currency : "COP" : "symbol" : "1.0-0" }}
                 </span>
+
                 <span>
                   <mat-icon>assignment</mat-icon>
+
                   <ng-container *ngIf="empresaServicio; else normalServicios">
                     {{ cita.nombre }}
                   </ng-container>
@@ -68,10 +78,25 @@
                     </ng-container>
                   </ng-template>
                 </span>
+
                 <span class="estado-badge" [ngClass]="getEstadoClase(cita.estado)">
                   {{ cita.estado }}
                 </span>
+
               </div>
+
+              <!-- AVISO DE FIDELIDAD -->
+              <div class="fidelidad-aviso" *ngIf="cita.fidelidad">
+
+                <mat-icon>card_giftcard</mat-icon>
+
+                <div class="fidelidad-contenido">
+                  <strong>Beneficio de fidelidad</strong>
+                  <span>{{ cita.fidelidad }}</span>
+                </div>
+
+              </div>
+
               <div class="acciones-cita">
 
                 <button *ngIf="WhatsappRecordatorio && cita.estado === 'Activo'" class="btn-accion btn-whatsapp"
@@ -85,8 +110,8 @@
                   <span>Finalizar</span>
                 </button>
 
-                <button *ngIf="idEmpresa === 2 || (!empresaServicio && cita.estado === 'Activo')" class="btn-accion btn-finalizar"
-                  (click)="cancelarCita(cita)">
+                <button *ngIf="idEmpresa === 2 || (!empresaServicio && cita.estado === 'Activo')"
+                  class="btn-accion btn-finalizar" (click)="cancelarCita(cita)">
                   <mat-icon>cancel</mat-icon>
                   <span>Cancelar</span>
                 </button>
@@ -112,7 +137,9 @@
                 </mat-menu>
 
               </div>
+
             </div>
+
           </mat-card>
         </ng-container>
 
