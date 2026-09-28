@@ -170,35 +170,46 @@ export class ClienteAgendar {
 
     const root = document.documentElement;
 
+    // Fuente
     root.style.setProperty(
       '--app-font-family',
       apariencia.tipoLetra || 'Roboto'
     );
 
+    // Color general de textos
     root.style.setProperty(
       '--app-text',
       apariencia.colorLetra || '#212121'
     );
 
+    // Fondo general
     root.style.setProperty(
       '--app-background',
       apariencia.colorFondo || '#FFFFFF'
     );
 
+    // Color de fondo de la cabecera
     root.style.setProperty(
       '--app-header',
       apariencia.colorCabecera || '#424242'
     );
 
+    // Color de texto de la cabecera
+    root.style.setProperty(
+      '--app-header-text',
+      apariencia.colorLetraCabecera || '#FFFFFF'
+    );
+
+    // Color de fondo del pie de página
     root.style.setProperty(
       '--app-footer',
       apariencia.colorPiePagina || '#424242'
     );
 
-    // El color de cabecera será también el color principal
+    // Color de texto del pie de página
     root.style.setProperty(
-      '--app-primary',
-      apariencia.colorCabecera || '#4355c5'
+      '--app-footer-text',
+      apariencia.colorLetraPiePagina || '#FFFFFF'
     );
   }
 
