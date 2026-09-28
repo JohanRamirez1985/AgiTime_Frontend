@@ -152,6 +152,7 @@ export class ClienteAgendar {
           this.empresaRecursoMultiple = empresa.recursoMultiple;
           this.empresaNormal = !this.empresaServicio && !this.empresaOrden && !this.empresaRecursoMultiple;
           this.telefonoEmpresa = sedeSeleccionada.telefono;
+          this.aplicarEstilosEmpresa(empresa.apariencia);
           localStorage.setItem('empresa', JSON.stringify(empresa));
           this.obtenerRecursos();
         } else {
@@ -159,6 +160,46 @@ export class ClienteAgendar {
         }
       },
     });
+  }
+
+  private aplicarEstilosEmpresa(apariencia: any): void {
+
+    if (!apariencia) {
+      return;
+    }
+
+    const root = document.documentElement;
+
+    root.style.setProperty(
+      '--app-font-family',
+      apariencia.tipoLetra || 'Roboto'
+    );
+
+    root.style.setProperty(
+      '--app-text',
+      apariencia.colorLetra || '#212121'
+    );
+
+    root.style.setProperty(
+      '--app-background',
+      apariencia.colorFondo || '#FFFFFF'
+    );
+
+    root.style.setProperty(
+      '--app-header',
+      apariencia.colorCabecera || '#424242'
+    );
+
+    root.style.setProperty(
+      '--app-footer',
+      apariencia.colorPiePagina || '#424242'
+    );
+
+    // El color de cabecera será también el color principal
+    root.style.setProperty(
+      '--app-primary',
+      apariencia.colorCabecera || '#4355c5'
+    );
   }
 
   private obtenerRecursos(): void {

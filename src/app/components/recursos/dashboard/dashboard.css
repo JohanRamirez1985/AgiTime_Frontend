@@ -545,3 +545,35 @@ button mat-icon {
   border-radius: 14px;
   box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
+
+.fidelidad-aviso {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin: 0 1rem 1rem;
+  border-radius: 10px;
+  background: #fff8e1;
+  border: 1px solid #f6d365;
+  color: #7a5a00;
+}
+
+.fidelidad-aviso > mat-icon {
+  flex-shrink: 0;
+  color: #d89b00;
+}
+
+.fidelidad-contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fidelidad-contenido strong {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.fidelidad-contenido span {
+  font-size: 0.85rem;
+}
