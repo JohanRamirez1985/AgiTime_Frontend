@@ -1,4 +1,5 @@
 :host {
+
   --primary: var(--app-primary, #4355c5);
 
   /* Variaciones automáticas del color principal */
@@ -12,6 +13,7 @@
 
   /* Colores provenientes del backend */
   --text: var(--app-text, #212121);
+
   --text-secondary: color-mix(in srgb,
       var(--text) 65%,
       #ffffff);
@@ -21,8 +23,14 @@
       #ffffff);
 
   --background: var(--app-background, #ffffff);
+
+  /* Cabecera */
   --header: var(--app-header, #424242);
+  --header-text: var(--app-header-text, #ffffff);
+
+  /* Pie de página */
   --footer: var(--app-footer, #424242);
+  --footer-text: var(--app-footer-text, #ffffff);
 
   /* Colores auxiliares */
   --border: #e4e7ec;
@@ -199,7 +207,7 @@ button.hora-no-disponible {
   flex: 1;
   font-size: 1.2rem;
   font-weight: 500;
-  color: var(--app-text);
+  color: var(--header-text);
 }
 
 /* ---------- Servicios ---------- */
@@ -441,7 +449,7 @@ button.hora-no-disponible {
 .empresa-nombre {
   font-size: 1rem;
   font-weight: 500;
-  color: var(--text);
+  color: var(--header-text);
   text-align: -webkit-right;
 }
 
@@ -476,7 +484,7 @@ button.hora-no-disponible {
 
 .app-footer {
   background: var(--footer);
-  color: var(--text);
+  color: var(--footer-text);
   border-top: none;
   padding: 12px 20px;
   text-align: center;
