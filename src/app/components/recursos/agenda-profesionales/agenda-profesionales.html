@@ -1,0 +1,205 @@
+<div class="agenda-container">
+
+    <div *ngIf="!mostrarServicios">
+        <div class="agenda-header">
+
+            <div class="titulo">
+
+                <div class="titulo-icono">
+                    <mat-icon>calendar_month</mat-icon>
+                </div>
+
+                <div>
+                    <h1>Agenda de profesionales</h1>
+                    <p>Selecciona el profesional y el horario que deseas reservar.</p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div *ngIf="loading" class="loading-container">
+            <mat-spinner diameter="50"></mat-spinner>
+            <p class="loading-text">Cargando disponibilidad...</p>
+        </div>
+
+        <div *ngIf="!loading">
+            <!-- SELECTOR DE FECHA -->
+            <div class="fecha-container">
+
+                <button class="btn-dia" (click)="cambiarDia(-1)" title="Día anterior">
+
+                    <mat-icon>chevron_left</mat-icon>
+
+                </button>
+
+
+                <div class="fecha-centro">
+
+                    <span class="fecha-label">
+                        Fecha seleccionada
+                    </span>
+
+                    <strong>
+                        {{ fechaTexto | titlecase }}
+                    </strong>
+
+                </div>
+
+
+                <button class="btn-dia" (click)="cambiarDia(1)" title="Día siguiente">
+
+                    <mat-icon>chevron_right</mat-icon>
+
+                </button>
+
+            </div>
+
+
+            <!-- BOTÓN HOY -->
+            <div class="hoy-container">
+
+                <button class="btn-hoy" [disabled]="esHoy()" (click)="irHoy()">
+
+                    <mat-icon>today</mat-icon>
+
+                    Hoy
+
+                </button>
+
+            </div>
+
+
+            <!-- PROFESIONALES -->
+            <div class="profesionales">
+
+                <div class="profesional-card" *ngFor="let recurso of recursos">
+
+
+                    <!-- INFORMACIÓN DEL PROFESIONAL -->
+                    <div class="profesional-info">
+
+                        <img [src]="recurso.foto" [alt]="recurso.nombre" class="profesional-foto" />
+
+                        <div class="profesional-datos">
+
+                            <h2>
+                                {{ recurso.nombre }}
+                            </h2>
+
+                            <span>
+                                <mat-icon>schedule</mat-icon>
+
+                                Horarios disponibles
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- HORARIOS -->
+                    <div class="horarios">
+
+                        <button *ngFor="let horario of recurso.horarios" class="horario"
+                            [class.disponible]="horario.disponible" [class.ocupado]="!horario.disponible"
+                            [class.seleccionado]="
+            horarioSeleccionado?.recursoId === recurso.id &&
+            horarioSeleccionado?.hora === horario.hora
+          " [disabled]="!horario.disponible" (click)="seleccionarHorario(recurso, horario)">
+
+                            <mat-icon *ngIf="horario.disponible">
+                                access_time
+                            </mat-icon>
+
+                            <mat-icon *ngIf="!horario.disponible">
+                                block
+                            </mat-icon>
+
+                            {{ horario.hora }}
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- MENSAJE -->
+                    <div class="sin-horarios" *ngIf="recurso.horarios.length === 0">
+
+                        <mat-icon>event_busy</mat-icon>
+
+                        No hay horarios disponibles para este día.
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- SELECCIÓN -->
+            <div class="seleccion" *ngIf="horarioSeleccionado">
+
+                <mat-icon>check_circle</mat-icon>
+
+                <span>
+                    Seleccionaste el horario
+                    <strong>
+                        {{ horarioSeleccionado.hora }}
+                    </strong>
+                </span>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="servicios-wrapper" *ngIf="mostrarServicios">
+        <h2 class="titulo">Servicios</h2>
+        <input type="text" [(ngModel)]="busqueda" (input)="filtrarServicios()" placeholder="Buscar servicio..."
+            class="input-busqueda" />
+        <ng-container *ngIf="
+              serviciosRecurso && serviciosRecurso.length > 0;
+              else noRecursos
+            ">
+            <div class="servicios-container">
+                <mat-card class="servicio-card" *ngFor="let servicio of serviciosRecurso"
+                    [class.selected]="estaSeleccionado(servicio)">
+                    <div class="contenido-servicio">
+                        <div class="servicio-info">
+                            <div class="servicio-nombre">
+                                {{ servicio.nombre | titlecase }}
+                            </div>
+                            <div class="servicio-precio">
+                                ${{ servicio.valor | number : "1.0-0" : "es-CO" }}
+                            </div>
+                            <div class="servicio-descripcion" [matTooltip]="servicio.observaciones">
+                                {{ servicio.observaciones | slice:0:80 }}...
+                            </div>
+                        </div>
+
+                        <button mat-mini-fab color="primary" class="boton-add"
+                            (click)="toggleSeleccionServicio(servicio)">
+                            <mat-icon>
+                                {{ estaSeleccionado(servicio) ? "check" : "add" }}
+                            </mat-icon>
+                        </button>
+                    </div>
+                </mat-card>
+            </div>
+        </ng-container>
+        <ng-template #noRecursos>
+            <div class="mensaje-vacio">
+                <mat-icon>info</mat-icon>
+                No hay servicios disponibles.
+            </div>
+        </ng-template>
+
+        <div *ngIf="serviciosSeleccionados.length > 0" class="boton-flotante-wrapper">
+            <button mat-flat-button color="primary" class="boton-flotante-mejorado" (click)="reservarServicios()">
+                Reservar ({{ serviciosSeleccionados.length }})
+            </button>
+        </div>
+    </div>
+
+</div>

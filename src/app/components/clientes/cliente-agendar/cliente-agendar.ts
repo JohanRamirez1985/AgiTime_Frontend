@@ -662,6 +662,9 @@ export class ClienteAgendar {
         if (result) {
           this.loading = true;
           this.reservarCita(result, hora.hora);
+        }else {
+          this.loading = false;
+          this.cdr.detectChanges();
         }
       });
     } else {
@@ -1051,9 +1054,19 @@ export class ClienteAgendar {
       hour12: true
     });
 
-    const recurso = this.idEmpresa === 8
-      ? this.empresaNombre
-      : JSON.parse(localStorage.getItem('recurso') || '{}').nombre;
+    let recurso: string = '';
+
+    if (this.empresaServicio) {
+      recurso = this.empresaNombre
+    } else {
+      if (this.empresaRecursoMultiple) {
+        recurso = this.recursosSeleccionados
+          .map(r => r.nombre)
+          .join(', ');
+      } else {
+        recurso = JSON.parse(localStorage.getItem('recurso') || '{}').nombre;
+      }
+    }
 
     const mensaje = `📅 ¡Hola ${this.empresaNombre}!
 

@@ -1,219 +1,1011 @@
-.agendar-wrapper {
-  width: 100vw;
-  min-height: 100vh;
-  font-family: "Segoe UI", sans-serif;
+:host {
+  display: block;
+
+  --primary: var(--app-primary, #3f51b5);
+  --primary-dark: var(--app-primary-dark, #303f9f);
+
+  --text: var(--app-text, #212121);
+  --background: var(--app-background, #f6f8fb);
+
+  --header: var(--app-header, #ffffff);
+  --header-text: var(--app-header-text, #212121);
+
+  --border: #e3e7ef;
+
+  --success: #16a34a;
+  --danger: #dc2626;
+
+  --white: #ffffff;
+}
+
+
+* {
   box-sizing: border-box;
 }
 
-.agendar-wrapper h2 {
-  text-align: center;
-  color: #002d72;
-  font-size: 1.6rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
 
-
-.mis-citas-card {
-  width: 100%;
-  max-width: 700px;
-  padding: 2rem 1.5rem 1.5rem;
-  border-radius: 16px;
-  background-color: #ffffff;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-}
-
-.title {
-  text-align: center;
-  margin-bottom: 1rem;
-  font-weight: 600;
-  font-size: 1.6rem;
-  color: #2e3c5d;
-}
-
-.sin-citas {
-  text-align: center;
-  color: #777;
-  margin-top: 2rem;
-}
-
-.sin-citas mat-icon {
-  font-size: 48px;
-  color: #ccc;
-  margin-bottom: 0.5rem;
-}
-
-.cita-lista {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  margin-top: 1.5rem;
-  max-height: 500px;
-  overflow-y: auto;
-  padding-right: 0.5rem;
-}
-
-.cita-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border-radius: 12px;
-  background-color: #f9f9f9;
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
-}
-
-.cita-item:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  transform: scale(1.01);
-}
-
-.cita-info {
-  flex: 1;
-}
-
-.cita-info h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #333;
-}
-
-.cita-info p {
-  display: flex;
-  align-items: center;
-  margin: 0.2rem 0;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-.cita-info mat-icon {
-  margin-right: 0.4rem;
-  font-size: 18px;
-  color: #3f51b5;
-}
-
-.cita-acciones {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.header-title {
-  flex: 1; /* ocupa espacio para centrar */
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: #333;
-}
-
-.header-container {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 0;
-  gap: 0.5rem;
-}
-
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 0;
-  color: #555;
-}
-
-.telefono-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  padding: 1.2rem;
-  background: #f9fafc;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  max-width: 350px;
-  margin: 0 auto;
-}
-
-.telefono-field {
-  width: 100%;
-}
-
-.btn-consultar-small {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #1565c0;
-  border-color: #1565c0;
-  border-radius: 6px;
-  padding: 0.4rem 0.8rem;
-  line-height: 1.2;
-  min-height: 36px;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  justify-content: center;
-}
-
-.btn-consultar-small:hover {
-  background-color: #1565c0;
-  color: white;
-}
-
-.btn-pill {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  background-color: var(--mat-sys-primary);
-  color: var(--mat-sys-on-primary);
-  border: none;
-  outline: none;
-  border-radius: 999px;
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  text-transform: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s ease-in-out;
-}
-
-.btn-pill:hover {
-  background-color: var(--mat-sys-on-primary-fixed-variant);
-  transform: translateY(-1px);
-}
-
-.btn-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
+/* =====================================================
+   CONTENEDOR GENERAL
+===================================================== */
 
 .agendar-background {
-  display: flex;
-  justify-content: center;
-  padding: 2rem;
+  width: 100%;
   min-height: 100vh;
-  background: #f7f7f7;
-  background-size: cover; /* asegura que la textura cubra */
+
+  background: var(--background);
+
+  padding: 0 24px 40px;
 }
+
+
+.agendar-wrapper {
+  width: 100%;
+  max-width: 1100px;
+
+  margin: 0 auto;
+
+  font-family: var(
+    --app-font-family,
+    "Segoe UI",
+    Arial,
+    sans-serif
+  );
+
+  color: var(--text);
+}
+
+
+/* =====================================================
+   CABECERA
+===================================================== */
+
+.header-container {
+  width: 100%;
+
+  min-height: 68px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 10px 4px;
+
+  border-bottom: 1px solid var(--border);
+
+  background: var(--header);
+
+  color: var(--header-text);
+}
+
+
+.btn-volver {
+  color: var(--header-text) !important;
+
+  flex-shrink: 0;
+}
+
+
+.header-title {
+  flex: 1;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  color: var(--header-text);
+}
+
 
 .header-empresa {
   display: flex;
+
   align-items: center;
-  gap: 8px; /* espacio entre nombre y logo */
+
+  gap: 10px;
+
+  max-width: 55%;
 }
 
-.empresa-logo {
-  height: 32px;
-  width: auto;
-  object-fit: contain;
+
+.empresa-datos {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  min-width: 0;
 }
+
+
+.empresa-label {
+  font-size: 10px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.7px;
+
+  opacity: 0.65;
+}
+
 
 .empresa-nombre {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #333;
-  text-align: -webkit-right;
+  font-size: 14px;
+
+  font-weight: 600;
+
+  color: var(--header-text);
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  max-width: 300px;
+}
+
+
+.empresa-logo {
+  width: 40px;
+  height: 40px;
+
+  min-width: 40px;
+
+  object-fit: contain;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  padding: 3px;
+
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+
+/* =====================================================
+   CONTENIDO
+===================================================== */
+
+.contenido-mis-citas {
+  width: 100%;
+
+  padding: 32px 0;
+}
+
+
+/* =====================================================
+   TITULO
+===================================================== */
+
+.titulo-seccion {
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  margin-bottom: 28px;
+}
+
+
+.titulo-icono {
+  width: 48px;
+  height: 48px;
+
+  min-width: 48px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+
+  background: var(--primary-light);
+
+  color: var(--primary);
+}
+
+
+.titulo-icono mat-icon {
+  font-size: 25px;
+
+  width: 25px;
+  height: 25px;
+}
+
+
+.titulo-seccion h2 {
+  margin: 0;
+
+  font-size: 25px;
+
+  line-height: 1.2;
+
+  font-weight: 700;
+
+  color: var(--text);
+}
+
+
+.titulo-seccion p {
+  margin: 5px 0 0;
+
+  font-size: 14px;
+
+  color: #6b7280;
+}
+
+
+/* =====================================================
+   CARD CONSULTA
+===================================================== */
+
+.consulta-card {
+  width: 100%;
+
+  padding: 22px;
+
+  background: var(--white);
+
+  border: 1px solid var(--border);
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 3px 12px rgba(15, 23, 42, 0.05);
+
+  margin-bottom: 30px;
+}
+
+
+.consulta-header {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 18px;
+}
+
+
+.consulta-icono {
+  width: 42px;
+  height: 42px;
+
+  min-width: 42px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: var(--primary-light);
+
+  color: var(--primary);
+}
+
+
+.consulta-icono mat-icon {
+  font-size: 21px;
+
+  width: 21px;
+  height: 21px;
+}
+
+
+.consulta-header h3 {
+  margin: 0;
+
+  font-size: 16px;
+
+  font-weight: 650;
+
+  color: var(--text);
+}
+
+
+.consulta-header p {
+  margin: 3px 0 0;
+
+  font-size: 13px;
+
+  color: #6b7280;
+}
+
+
+/* =====================================================
+   TELEFONO
+===================================================== */
+
+.telefono-container {
+  width: 100%;
+
+  max-width: none;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 0;
+
+  margin: 0;
+
+  background: transparent;
+
+  box-shadow: none;
+}
+
+
+.telefono-field {
+  flex: 1;
+
+  width: auto;
+}
+
+
+.btn-container {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin: 0;
+}
+
+
+.btn-pill {
+  height: 48px;
+
+  padding: 0 22px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  background: var(--primary);
+
+  color: #ffffff;
+
+  border: none;
+
+  border-radius: 10px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  text-transform: none;
+
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.12);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.btn-pill:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.16);
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.loading-container {
+  min-height: 180px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 12px;
+
+  color: #6b7280;
+}
+
+
+.loading-text {
+  margin: 0;
+
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   LISTA DE CITAS
+===================================================== */
+
+.cita-lista {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 14px;
+
+  width: 100%;
+}
+
+
+.lista-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: 4px;
+}
+
+
+.lista-header h3 {
+  margin: 0;
+
+  font-size: 18px;
+
+  font-weight: 700;
+
+  color: var(--text);
+}
+
+
+.lista-header span {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 12px;
+
+  color: #6b7280;
+}
+
+
+/* =====================================================
+   CARD CITA
+===================================================== */
+
+.cita-item {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 25px;
+
+  padding: 20px;
+
+  border-radius: 16px;
+
+  background: var(--white);
+
+  border: 1px solid var(--border);
+
+  box-shadow:
+    0 3px 10px rgba(15, 23, 42, 0.04);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.cita-item:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+
+/* =====================================================
+   INFORMACION CITA
+===================================================== */
+
+.cita-info {
+  flex: 1;
+
+  min-width: 0;
+}
+
+
+.cita-servicio {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 15px;
+}
+
+
+.servicio-icono {
+  width: 42px;
+  height: 42px;
+
+  min-width: 42px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  background: var(--primary-light);
+
+  color: var(--primary);
+}
+
+
+.servicio-icono mat-icon {
+  font-size: 21px;
+
+  width: 21px;
+  height: 21px;
+}
+
+
+.servicio-label {
+  display: block;
+
+  font-size: 10px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.6px;
+
+  color: #9ca3af;
+
+  margin-bottom: 2px;
+}
+
+
+.cita-info h3 {
+  margin: 0;
+
+  font-size: 17px;
+
+  font-weight: 700;
+
+  color: var(--text);
+}
+
+
+/* =====================================================
+   DATOS DE LA CITA
+===================================================== */
+
+.cita-datos {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 10px 20px;
+}
+
+
+.cita-datos p {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  margin: 0;
+
+  font-size: 13px;
+
+  color: #5f6673;
+}
+
+
+.cita-datos mat-icon {
+  width: 18px;
+  height: 18px;
+
+  font-size: 18px;
+
+  color: var(--primary);
+}
+
+
+/* =====================================================
+   LATERAL
+===================================================== */
+
+.cita-lateral {
+  min-width: 150px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  gap: 10px;
+}
+
+
+.cita-valor {
+  font-size: 17px;
+
+  font-weight: 700;
+
+  color: var(--text);
+}
+
+
+/* =====================================================
+   ESTADO
+===================================================== */
+
+.estado-cita {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+
+.estado-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  display: block;
+}
+
+
+.estado-activo {
+  color: #15803d;
+
+  background: #f0fdf4;
+}
+
+
+.estado-activo .estado-dot {
+  background: #22c55e;
+}
+
+
+.estado-inactivo {
+  color: #b91c1c;
+
+  background: #fef2f2;
+}
+
+
+.estado-inactivo .estado-dot {
+  background: #ef4444;
+}
+
+
+/* =====================================================
+   BOTON CANCELAR
+===================================================== */
+
+.cita-acciones {
+  display: flex;
+
+  align-items: center;
+}
+
+
+.btn-cancelar {
+  height: 36px;
+
+  border-radius: 8px !important;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+}
+
+
+.btn-cancelar mat-icon {
+  font-size: 17px;
+
+  width: 17px;
+  height: 17px;
+}
+
+
+/* =====================================================
+   SIN CITAS
+===================================================== */
+
+.sin-citas {
+  width: 100%;
+
+  padding: 55px 20px;
+
+  text-align: center;
+
+  background: var(--white);
+
+  border: 1px solid var(--border);
+
+  border-radius: 16px;
+}
+
+
+.sin-citas-icon {
+  width: 64px;
+  height: 64px;
+
+  margin: 0 auto 14px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #f3f4f6;
+
+  color: #9ca3af;
+}
+
+
+.sin-citas-icon mat-icon {
+  font-size: 30px;
+
+  width: 30px;
+  height: 30px;
+}
+
+
+.sin-citas h3 {
+  margin: 0;
+
+  font-size: 17px;
+
+  color: var(--text);
+}
+
+
+.sin-citas p {
+  margin: 7px 0 0;
+
+  font-size: 13px;
+
+  color: #6b7280;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 768px) {
+
+  .agendar-background {
+    padding: 0 12px 25px;
+  }
+
+
+  .header-container {
+    min-height: 60px;
+
+    padding: 8px 0;
+  }
+
+
+  .header-title {
+    font-size: 14px;
+  }
+
+
+  .empresa-label {
+    display: none;
+  }
+
+
+  .empresa-nombre {
+    max-width: 140px;
+
+    font-size: 12px;
+  }
+
+
+  .empresa-logo {
+    width: 36px;
+    height: 36px;
+
+    min-width: 36px;
+  }
+
+
+  .contenido-mis-citas {
+    padding: 22px 0;
+  }
+
+
+  .titulo-seccion {
+    margin-bottom: 20px;
+  }
+
+
+  .titulo-icono {
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+  }
+
+
+  .titulo-seccion h2 {
+    font-size: 21px;
+  }
+
+
+  .titulo-seccion p {
+    font-size: 12px;
+  }
+
+
+  .consulta-card {
+    padding: 16px;
+
+    border-radius: 14px;
+  }
+
+
+  .consulta-header {
+    align-items: flex-start;
+  }
+
+
+  .consulta-header h3 {
+    font-size: 15px;
+  }
+
+
+  .consulta-header p {
+    line-height: 1.4;
+  }
+
+
+  .telefono-container {
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 5px;
+  }
+
+
+  .telefono-field {
+    width: 100%;
+  }
+
+
+  .btn-container {
+    width: 100%;
+
+    margin-top: 5px;
+  }
+
+
+  .btn-pill {
+    width: 100%;
+
+    height: 44px;
+  }
+
+
+  .cita-item {
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 18px;
+
+    padding: 16px;
+  }
+
+
+  .cita-datos {
+    flex-direction: column;
+
+    gap: 9px;
+  }
+
+
+  .cita-lateral {
+    width: 100%;
+
+    min-width: 0;
+
+    align-items: stretch;
+
+    padding-top: 14px;
+
+    border-top: 1px solid var(--border);
+  }
+
+
+  .cita-valor {
+    font-size: 16px;
+  }
+
+
+  .estado-cita {
+    align-self: flex-start;
+  }
+
+
+  .btn-cancelar {
+    width: 100%;
+
+    justify-content: center;
+  }
+
+}
+
+
+@media (max-width: 420px) {
+
+  .empresa-nombre {
+    max-width: 100px;
+  }
+
+
+  .titulo-seccion {
+    gap: 10px;
+  }
+
+
+  .titulo-seccion h2 {
+    font-size: 19px;
+  }
+
+
+  .titulo-seccion p {
+    font-size: 11px;
+  }
+
 }

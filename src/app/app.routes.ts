@@ -175,7 +175,13 @@ export const routes: Routes = [
         path: 'periodo-prueba',
         loadComponent: () =>
           import('./components/periodo-prueba/periodo-prueba').then((m) => m.PeriodoPrueba),
+      },
+      {
+        path: 'agenda-prf',
+        loadComponent: () =>
+          import('./components/recursos/agenda-profesionales/agenda-profesionales').then((m) => m.AgendaProfesionales),
       }
+
     ],
   },
 
