@@ -120,6 +120,13 @@ export class Toolbar implements OnInit {
       label: 'Período de prueba',
       icon: 'person_search',
       route: '/admin/periodo-prueba'
+    },
+
+    {
+      codigo: 'agp',
+      label: 'Agenda',
+      icon: 'event_note',
+      route: '/admin/agenda-prf'
     }
 
   ];

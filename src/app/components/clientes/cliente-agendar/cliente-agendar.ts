@@ -662,6 +662,9 @@ export class ClienteAgendar {
         if (result) {
           this.loading = true;
           this.reservarCita(result, hora.hora);
+        }else {
+          this.loading = false;
+          this.cdr.detectChanges();
         }
       });
     } else {
