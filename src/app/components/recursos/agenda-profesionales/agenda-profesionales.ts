@@ -60,6 +60,8 @@ export class AgendaProfesionales {
   } | null = null;
   clientesEmpresa: any[] = [];
   enviarMjsWssp: boolean = false;
+  rangoTiempo: string = '';
+  tipoRangoTiempo: string = 'Tiempo_Agenda';
 
 
   constructor(private sharedService: SharedService,
@@ -102,6 +104,9 @@ export class AgendaProfesionales {
     this.sharedService.parametros(this.idEmpresa.toString()).subscribe({
       next: (rest) => {
         if (rest.exito) {
+          this.rangoTiempo = rest.datos.find(
+            (h: any) => h.tipo === this.tipoRangoTiempo
+          ).valor;
           this.enviarMjsWssp =
             rest.datos.find((h: any) => h.tipo === 'WhatsappRecurso')
               ?.valor?.toLowerCase() === 'true';
@@ -284,6 +289,7 @@ export class AgendaProfesionales {
           );
         } else {
           this.modalService.error(rest.mensaje)
+          this.loading = false;
         }
         this.serviciosSeleccionados = [];
         this.horarioSeleccionado = null;
@@ -616,10 +622,10 @@ export class AgendaProfesionales {
               disponible: true
             }));
           }
+          recurso.horarios =this.verificarHoras(recurso.horarios);      
         });
-        this.loading = false;
+        this.loading = false;     
         this.cdr.detectChanges();
-
       },
       error: (error) => {
         console.error(
@@ -627,8 +633,70 @@ export class AgendaProfesionales {
           error
         );
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
+  }
+
+  private verificarHoras(horas: any) {
+    const ahora = new Date();
+    const fechaSeleccionada = this.fechaSeleccionada;
+
+    const esHoy = this.esHoy2(fechaSeleccionada);
+
+    const horasFuturas = horas
+      .map((h: any) => ({
+        ...h,
+        fecha: this.convertirHoraAFecha(h.hora, fechaSeleccionada),
+      }))
+      .filter((h: any) => (esHoy ? h.fecha >= ahora : true));
+
+    horasFuturas.sort((a: any, b: any) => a.fecha.getTime() - b.fecha.getTime());
+
+    const horasValidas = horasFuturas.filter((horaActual: any, index: any, array: any) => {
+      const anterior = array[index - 1];
+      const siguiente = array[index + 1];
+
+      const tieneAnterior =
+        anterior &&
+        horaActual.fecha.getTime() - anterior.fecha.getTime() ===
+        parseInt(this.rangoTiempo) * 60000;
+
+      const tieneSiguiente =
+        siguiente &&
+        siguiente.fecha.getTime() - horaActual.fecha.getTime() ===
+        parseInt(this.rangoTiempo) * 60000;
+
+      return tieneAnterior || tieneSiguiente;
+    });
+
+    return horasValidas;
+  }
+
+  private convertirHoraAFecha = (horaStr: string, fechaBase: Date): Date => {
+    const [tiempo, ampm] = horaStr.split(' ');
+    let [hora, minutos] = tiempo.split(':').map(Number);
+
+    if (ampm === 'PM' && hora !== 12) hora += 12;
+    if (ampm === 'AM' && hora === 12) hora = 0;
+
+    return new Date(
+      fechaBase.getFullYear(),
+      fechaBase.getMonth(),
+      fechaBase.getDate(),
+      hora,
+      minutos
+    );
+  };
+
+
+  private esHoy2(fecha: Date): boolean {
+    const hoy = new Date();
+    return (
+      fecha.getDate() === hoy.getDate() &&
+      fecha.getMonth() === hoy.getMonth() &&
+      fecha.getFullYear() === hoy.getFullYear()
+    );
   }
 
   private obtenerHorarios(): void {
