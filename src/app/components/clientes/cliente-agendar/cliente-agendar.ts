@@ -24,6 +24,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ValidarVersion } from '../../../shared/validar-version/validar-version';
+import { environment } from '../../../../environments/environment';
 
 registerLocaleData(localeEs);
 
@@ -96,6 +97,7 @@ export class ClienteAgendar {
   recursosSeleccionados: any[] = [];
   gruposRecursos: any[] = [];
   mostrarModalRecursos = false;
+  version = environment.version;
 
   constructor(
     private sharedServices: SharedService,
@@ -434,6 +436,44 @@ export class ClienteAgendar {
     });
   }
 
+  public validarVersionApp(callback: () => void): void {
+    this.sharedServices.parametrosGenerales().subscribe({
+      next: (rest) => {
+        const parametroVersion: any = rest.datos.find(
+          (v: any) => v.tipo === 'version'
+        );
+
+        const versionBd = parametroVersion?.valor || '';
+
+        if (versionBd === this.version) {
+          callback();
+        } else {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Versión desactualizada',
+            html: `
+                <div style="font-size: 16px;">
+                  Tu versión de la aplicación está desactualizada.
+                  <br><br>
+                  <strong>Actualizando...</strong>
+                </div>
+              `,
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false
+          }).then(() => {
+            this.volver();
+          });
+        }
+      },
+      error: (error) => {
+        this.modalService.error(error.mensaje);
+      }
+    });
+  }
+
   filtrarServicios() {
     const texto = this.busqueda.toLowerCase();
 
@@ -459,42 +499,44 @@ export class ClienteAgendar {
   }
 
   reservarServicios(): void {
-    this.loading = true;
-    this.recursosSeleccionados[0].detalles =
-      this.serviciosSeleccionados.map(
-        (servicio: any) => servicio.nombre
-      );
+    this.validarVersionApp(() => {
+      this.loading = true;
+      this.recursosSeleccionados[0].detalles =
+        this.serviciosSeleccionados.map(
+          (servicio: any) => servicio.nombre
+        );
 
-    this.cdr.detectChanges();
-    if (this.empresaRecursoMultiple) {
-      this.obtenerHorarios(false);
-      const serviciosConRecursos = this.serviciosSeleccionados.map((servicio: any) => {
-        const recursos = this.serviciosEmpresaRecursoMultiple
-          .filter(
-            (item: any) => item.id === servicio.id
-          )
-          .map((item: any) => {
-            const recursoEmpresa = this.recursosEmpresa.find(
-              (recurso: any) => recurso.id === item.recurso
-            );
-            return {
-              ...item,
-              foto: recursoEmpresa?.foto
-            };
-          });
+      this.cdr.detectChanges();
+      if (this.empresaRecursoMultiple) {
+        this.obtenerHorarios(false);
+        const serviciosConRecursos = this.serviciosSeleccionados.map((servicio: any) => {
+          const recursos = this.serviciosEmpresaRecursoMultiple
+            .filter(
+              (item: any) => item.id === servicio.id
+            )
+            .map((item: any) => {
+              const recursoEmpresa = this.recursosEmpresa.find(
+                (recurso: any) => recurso.id === item.recurso
+              );
+              return {
+                ...item,
+                foto: recursoEmpresa?.foto
+              };
+            });
 
-        return {
-          id: servicio.id,
-          nombre: servicio.nombre,
-          recursos: recursos
-        };
+          return {
+            id: servicio.id,
+            nombre: servicio.nombre,
+            recursos: recursos
+          };
 
-      });
+        });
 
-      this.seleccionarRecursosModal(serviciosConRecursos);
-    } else {
-      this.obtenerHorarios(true);
-    }
+        this.seleccionarRecursosModal(serviciosConRecursos);
+      } else {
+        this.obtenerHorarios(true);
+      }
+    })
   }
 
   formatearFechaLocal(fecha: Date, hora: string): string {
@@ -618,71 +660,73 @@ export class ClienteAgendar {
   }
 
   public seleccionarHora(hora: any): void {
-    let horaDiponible = false;
-    horaDiponible = this.validarHoraDisponible(hora.hora);
+    this.validarVersionApp(() => {
+      let horaDiponible = false;
+      horaDiponible = this.validarHoraDisponible(hora.hora);
 
-    if (horaDiponible) {
-      const fechaFormateada = this.viewDate.toLocaleDateString('es-CO', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
+      if (horaDiponible) {
+        const fechaFormateada = this.viewDate.toLocaleDateString('es-CO', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
 
-      const valor = this.serviciosSeleccionados.map((s) => s.valor);
-      this.costo = valor.reduce((a, b) => a + b, 0);
-      const costoFormateado = new Intl.NumberFormat('es-CO', {
-        style: 'currency',
-        currency: 'COP',
-        minimumFractionDigits: 0,
-      }).format(this.costo);
+        const valor = this.serviciosSeleccionados.map((s) => s.valor);
+        this.costo = valor.reduce((a, b) => a + b, 0);
+        const costoFormateado = new Intl.NumberFormat('es-CO', {
+          style: 'currency',
+          currency: 'COP',
+          minimumFractionDigits: 0,
+        }).format(this.costo);
 
-      const dialogRef = this.dialog.open(ReservaDialog, {
-        width: '400px',
-        data: {
-          fecha: fechaFormateada,
-          hora: hora.hora,
-          costo: costoFormateado,
-        },
-      });
+        const dialogRef = this.dialog.open(ReservaDialog, {
+          width: '400px',
+          data: {
+            fecha: fechaFormateada,
+            hora: hora.hora,
+            costo: costoFormateado,
+          },
+        });
 
-      const instance = dialogRef.componentInstance;
+        const instance = dialogRef.componentInstance;
 
-      instance.celularIngresado.subscribe((celular: string) => {
-        const cliente = this.clientesEmpresa.find(
-          (c) => c.telefono === celular || c.celular === celular
+        instance.celularIngresado.subscribe((celular: string) => {
+          const cliente = this.clientesEmpresa.find(
+            (c) => c.telefono === celular || c.celular === celular
+          );
+
+          if (cliente) {
+            instance.poblarDatos(cliente);
+          }
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+          if (result) {
+            this.loading = true;
+            this.reservarCita(result, hora.hora);
+          } else {
+            this.loading = false;
+            this.cdr.detectChanges();
+          }
+        });
+      } else {
+        const tiempoServicios = this.serviciosSeleccionados.reduce(
+          (total, servicio) => total + servicio.tiempo,
+          0
         );
-
-        if (cliente) {
-          instance.poblarDatos(cliente);
-        }
-      });
-
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.loading = true;
-          this.reservarCita(result, hora.hora);
-        }else {
-          this.loading = false;
-          this.cdr.detectChanges();
-        }
-      });
-    } else {
-      const tiempoServicios = this.serviciosSeleccionados.reduce(
-        (total, servicio) => total + servicio.tiempo,
-        0
-      );
-      Swal.fire({
-        icon: 'info',
-        title: `No es posible agendar a las ${hora.hora}`,
-        html: `
+        Swal.fire({
+          icon: 'info',
+          title: `No es posible agendar a las ${hora.hora}`,
+          html: `
           El servicio seleccionado requiere <b> ${tiempoServicios} minutos continuos</b>.<br><br>
           Desde las <b>${hora.hora}</b> no hay tiempo suficiente para completar el servicio antes de la siguiente cita.<br><br>
           <b>Por favor selecciona un horario anterior.</b>
         `,
-        confirmButtonText: 'Entendido'
-      });
-    }
+          confirmButtonText: 'Entendido'
+        });
+      }
+    })
   }
 
   private reservarCita(
@@ -696,16 +740,17 @@ export class ClienteAgendar {
     },
     hora: string
   ) {
-    const request = this.createJson(hora, datos);
-    if (this.empresaServicio || this.empresaRecursoMultiple) {
-      this.agendaService.guardarCita(request).subscribe({
-        next: (rest) => {
-          if (rest.exito) {
-            if (this.enviarMjsWssp) {
-              this.mensajeWssp(request, datos, rest.envioMensaje);
-            }
-            const mensaje = rest.fidelidadMensaje
-              ? `
+    this.validarVersionApp(() => {
+      const request = this.createJson(hora, datos);
+      if (this.empresaServicio || this.empresaRecursoMultiple) {
+        this.agendaService.guardarCita(request).subscribe({
+          next: (rest) => {
+            if (rest.exito) {
+              if (this.enviarMjsWssp) {
+                this.mensajeWssp(request, datos, rest.envioMensaje);
+              }
+              const mensaje = rest.fidelidadMensaje
+                ? `
                 <div>
                   <div style="font-size: 17px; font-weight: 600;">
                     ✅ ${rest.mensaje || 'La cita fue creada exitosamente'}
@@ -722,64 +767,65 @@ export class ClienteAgendar {
                   </div>
                 </div>
               `
-              : rest.mensaje || 'La cita fue creada exitosamente';
+                : rest.mensaje || 'La cita fue creada exitosamente';
 
-            this.modalService.success(
-              mensaje,
-              () => this.volver()
-            );
-          } else {
-            this.modalService.error(rest.mensaje)
-          }
-          this.loading = false;
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          this.modalService.error(err.statusText);
-          this.loading = false;
-          this.mostrarDisponibilidad = true;
-          this.cdr.detectChanges();
-        },
-      });
-    } else {
-      if (this.empresaOrden) {
-        this.agendaService.guardarCitaSesion(request).subscribe({
-          next: (rest) => {
-            if (this.enviarMjsWssp) {
-              this.mensajeWssp(request, datos, false);
+              this.modalService.success(
+                mensaje,
+                () => this.volver()
+              );
+            } else {
+              this.modalService.error(rest.mensaje)
             }
-            this.modalService.success(
-              rest.mensaje || 'La cita fue creada exitosamente',
-              () => this.volver()
-            );
             this.loading = false;
+            this.cdr.detectChanges();
           },
           error: (err) => {
-            this.modalService.error(err.mensaje);
+            this.modalService.error(err.statusText);
             this.loading = false;
             this.mostrarDisponibilidad = true;
-          }
-        })
-      } else {
-        this.agendaService.registrarCita(request).subscribe({
-          next: (rest) => {
-            if (this.enviarMjsWssp) {
-              this.mensajeWssp(request, datos, false);
-            }
-            this.modalService.success(
-              rest.mensaje || 'La cita fue creada exitosamente',
-              () => this.volver()
-            );
-            this.loading = false;
-          },
-          error: (err) => {
-            this.modalService.error(err.mensaje);
-            this.loading = false;
-            this.mostrarDisponibilidad = true;
+            this.cdr.detectChanges();
           },
         });
+      } else {
+        if (this.empresaOrden) {
+          this.agendaService.guardarCitaSesion(request).subscribe({
+            next: (rest) => {
+              if (this.enviarMjsWssp) {
+                this.mensajeWssp(request, datos, false);
+              }
+              this.modalService.success(
+                rest.mensaje || 'La cita fue creada exitosamente',
+                () => this.volver()
+              );
+              this.loading = false;
+            },
+            error: (err) => {
+              this.modalService.error(err.mensaje);
+              this.loading = false;
+              this.mostrarDisponibilidad = true;
+            }
+          })
+        } else {
+          this.agendaService.registrarCita(request).subscribe({
+            next: (rest) => {
+              if (this.enviarMjsWssp) {
+                this.mensajeWssp(request, datos, false);
+              }
+              this.modalService.success(
+                rest.mensaje || 'La cita fue creada exitosamente',
+                () => this.volver()
+              );
+              this.loading = false;
+            },
+            error: (err) => {
+              this.modalService.error(err.mensaje);
+              this.loading = false;
+              this.mostrarDisponibilidad = true;
+            },
+          });
+        }
       }
-    }
+    })
   }
 
   obtenerFechaIni(hora: any) {
