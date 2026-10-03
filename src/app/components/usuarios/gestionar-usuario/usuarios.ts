@@ -20,6 +20,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { SharedService } from '../../../services/shared.service';
 import { Usuario } from '../../../interfaces/shared.interface';
 import { RouterModule } from '@angular/router';
+import { Table } from '../../transversales/table/table';
 
 interface tableUser {
   nombre: string;
@@ -46,11 +47,13 @@ interface tableUser {
     MatNativeDateModule,
     MatProgressSpinnerModule,
     RouterModule,
+    Table
   ],
   templateUrl: './usuarios.html',
   styleUrl: './usuarios.css',
 })
-export class Usuarios implements AfterViewInit {
+export class Usuarios {
+
   filtro = '';
   rolSeleccionado = '';
   fechaInicio: Date | null = null;
@@ -59,31 +62,32 @@ export class Usuarios implements AfterViewInit {
   usuarios: Usuario[] = [];
   usuariosFiltrados: Usuario[] = [];
   dataSource = new MatTableDataSource<any>([]);
-  loading = false;
-  displayedColumns: string[] = [
-    'nombre',
-    'rol',
-    'estado',
-    'telefono',
-    'identificacion',
-    'sede',
-    'recurso',
-    'acciones',
+  loading: boolean = true;
+  idEmpresa: number = 0;
+  usuario:any = {};
+  columnas = [
+    { key: 'nombre', label: 'Nombre' },
+    { key: 'rol', label: 'Rol' },
+    { key: 'estado', label: 'Estado' },
+    { key: 'telefono', label: 'Telefono' },
+    { key: 'documento', label: 'Identificacion' },
+    { key: 'sede', label: 'Sede' },
+    { key: 'recurso', label: 'Recurso' },
+  ];
+  acciones: any[] = [
+    {
+      icon: 'edit',
+      label: 'Editar usuario',
+      action: (element: any) => this.editarProducto(element)
+    },
   ];
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-
   constructor(private sharedService: SharedService) {
+    const info = JSON.parse(localStorage.getItem('infoEmp') || '{}');
+    this.idEmpresa = info?.idEmpresa;
     this.consultarUsuarios();
   }
 
-  ngAfterViewInit() {
-    // this.dataSource.paginator = this.paginator;
-    // // Aquí sí entra el evento cuando usas flechas
-    // this.paginator.page.subscribe(event => {
-    //   this.onPageChange(event);  // ✅ Llama tu función de cambio de página
-    // });
-  }
 
   ngOnInit() {
     this.checkResponsive();
@@ -95,7 +99,6 @@ export class Usuarios implements AfterViewInit {
   }
 
   filtrarUsuarios(valor: string) {
-    console.log('Buscando:', valor);
     const filtroLower = valor.toLowerCase().trim();
     this.usuariosFiltrados = this.usuarios.filter((user) =>
       user.nombre.toLowerCase().includes(filtroLower)
@@ -103,17 +106,7 @@ export class Usuarios implements AfterViewInit {
   }
 
   public consultarUsuarios(): void {
-    const info = JSON.parse(localStorage.getItem('infoEmp') || '{}');
-    const idEmpresa = info?.idEmpresa;
-
-    if (!idEmpresa) {
-      console.warn('No se encontró ID de empresa en el localStorage');
-      return;
-    }
-
-    this.loading = true;
-
-    this.sharedService.obtenerUsuarios(idEmpresa).subscribe({
+    this.sharedService.obtenerUsuarios(this.idEmpresa).subscribe({
       next: (res) => {
         if (res.exito) {
           this.usuarios = res.datos;
@@ -139,7 +132,6 @@ export class Usuarios implements AfterViewInit {
             return nombreCorreo && rolMatch && fechaMatch;
           });
 
-          this.dataSource.paginator = this.paginator;
         }
 
         this.loading = false;

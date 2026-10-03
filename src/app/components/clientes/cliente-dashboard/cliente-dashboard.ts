@@ -22,6 +22,9 @@ import {
 import { SharedService } from '../../../services/shared.service';
 import { FormsModule } from '@angular/forms';
 import { ValidarVersion } from '../../../shared/validar-version/validar-version';
+import { environment } from '../../../../environments/environment';
+import { Modal } from '../../../shared/services/modal';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -81,11 +84,13 @@ export class ClienteDashboard {
   };
   currentYear: number = new Date().getFullYear();
   verProfesionales: boolean = false;
+  version = environment.version;
 
   constructor(
     private router: Router,
     private sharenServices: SharedService,
     private route: ActivatedRoute,
+    private modalService: Modal,
     private cdr: ChangeDetectorRef
   ) { }
 
@@ -105,6 +110,44 @@ export class ClienteDashboard {
     if (this.idEmpresa === 8 || this.idEmpresa === 12) {
       this.verProfesionales = true;
     }
+  }
+
+  public validarVersionApp(callback: () => void): void {
+    this.sharenServices.parametrosGenerales().subscribe({
+      next: (rest) => {
+        const parametroVersion: any = rest.datos.find(
+          (v: any) => v.tipo === 'version'
+        );
+
+        const versionBd = parametroVersion?.valor || '';
+
+        if (versionBd === this.version) {
+          callback();
+        } else {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Versión desactualizada',
+            html: `
+              <div style="font-size: 16px;">
+                Tu versión de la aplicación está desactualizada.
+                <br><br>
+                <strong>Actualizando...</strong>
+              </div>
+            `,
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false
+          }).then(() => {
+            window.location.reload();
+          });
+        }
+      },
+      error: (error) => {
+        this.modalService.error(error.mensaje);
+      }
+    });
   }
 
   get sedesFiltradas(): any[] {
@@ -512,51 +555,57 @@ export class ClienteDashboard {
   }
 
   public seleccionarSede(sede: any): void {
-    if (!sede) {
-      return;
-    }
 
-    localStorage.setItem('sedeSeleccionada', JSON.stringify(sede));
+    this.validarVersionApp(() => {
 
-    if (this.idEmpresa === 8 || this.idEmpresa === 12) {
-      this.router.navigate(
-        ['/cliente/reservar'],
-        {
-          queryParams: {
-            emp: this.idEmpresa,
-            rcr: 0
-          }
-        }
+      // TODO ESTO SOLO SE EJECUTA SI LA VERSIÓN ES CORRECTA
+
+      localStorage.setItem(
+        'sedeSeleccionada',
+        JSON.stringify(sede)
       );
-    } else {
-      this.sedeSeleccionada =
-        sede.nombre;
 
-      this.sedeSeleccionadaObj =
-        sede;
+      if (this.idEmpresa === 8 || this.idEmpresa === 12) {
 
-      this.recursosList =
-        this.recursos.filter(
-          (r: any) =>
-            r.sede === sede.id
+        this.router.navigate(
+          ['/cliente/reservar'],
+          {
+            queryParams: {
+              emp: this.idEmpresa,
+              rcr: 0
+            }
+          }
         );
 
-      this.mostrarSede = true;
-      this.btnRefresh = true;
-      this.mostrarMapaMobile = false;
+      } else {
 
-      if (
-        sede.latitud != null &&
-        sede.longitud != null
-      ) {
-        this.center = {
-          lat: Number(sede.latitud),
-          lng: Number(sede.longitud)
-        };
-        this.zoom = 17;
+        this.sedeSeleccionada = sede.nombre;
+
+        this.sedeSeleccionadaObj = sede;
+
+        this.recursosList = this.recursos.filter(
+          (r: any) => r.sede === sede.id
+        );
+
+        this.mostrarSede = true;
+        this.btnRefresh = true;
+        this.mostrarMapaMobile = false;
+
+        if (
+          sede.latitud != null &&
+          sede.longitud != null
+        ) {
+          this.center = {
+            lat: Number(sede.latitud),
+            lng: Number(sede.longitud)
+          };
+
+          this.zoom = 17;
+        }
+
+        this.cdr.detectChanges();
       }
-      this.cdr.detectChanges();
-    }
+    });
   }
 
   public cambiarSede(): void {
@@ -597,27 +646,24 @@ export class ClienteDashboard {
     usuario: any
   ): void {
 
+    this.validarVersionApp(() => {
+      localStorage.setItem(
+        'recurso',
+        JSON.stringify(usuario)
+      );
 
-    if (!usuario) {
-
-      return;
-
-    }
-
-    localStorage.setItem(
-      'recurso',
-      JSON.stringify(usuario)
-    );
-
-    this.router.navigate(
-      ['/cliente/reservar'],
-      {
-        queryParams: {
-          emp: this.idEmpresa,
-          rcr: usuario.id
+      this.router.navigate(
+        ['/cliente/reservar'],
+        {
+          queryParams: {
+            emp: this.idEmpresa,
+            rcr: usuario.id
+          }
         }
-      }
-    );
+      );
+    })
+
+
   }
 
   public irAHistorial(): void {
