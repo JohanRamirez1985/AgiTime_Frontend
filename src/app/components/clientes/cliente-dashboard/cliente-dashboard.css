@@ -2051,14 +2051,43 @@
   right: 25px;
   bottom: 25px;
   z-index: 100;
+
   display: flex;
   align-items: center;
   gap: 7px;
+
   padding: 10px 17px;
+
   border-color: var(--text) !important;
   background: var(--white) !important;
   color: var(--text);
+
   font-family: inherit !important;
+
   box-shadow:
     0 5px 18px rgba(16, 24, 40, 0.14);
+}
+
+
+/* WhatsApp */
+.fab-whatsapp {
+  position: fixed;
+  right: 25px;
+  bottom: 85px;
+  z-index: 100;
+
+  background: #25D366 !important;
+  color: white !important;
+
+  box-shadow:
+    0 5px 18px rgba(16, 24, 40, 0.20);
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fab-whatsapp:hover {
+  transform: scale(1.08);
+
+  box-shadow:
+    0 7px 22px rgba(16, 24, 40, 0.25);
 }

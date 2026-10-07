@@ -6,12 +6,7 @@
       <header class="dashboard-header">
         <div class="brand-area">
 
-          <img
-            *ngIf="img"
-            [src]="img"
-            [alt]="nombreEmpresa"
-            class="logo-empresa"
-          />
+          <img *ngIf="img" [src]="img" [alt]="nombreEmpresa" class="logo-empresa" />
 
           <div class="brand-info">
 
@@ -27,11 +22,7 @@
 
         </div>
 
-        <button
-          type="button"
-          class="login-button"
-          (click)="irALogin()"
-        >
+        <button type="button" class="login-button" (click)="irALogin()">
 
           <mat-icon>
             login
@@ -84,10 +75,7 @@
         <!-- HERO -->
         <!-- =================================================== -->
 
-        <section
-          *ngIf="!mostrarSede"
-          class="hero-section"
-        >
+        <section *ngIf="!mostrarSede" class="hero-section">
         </section>
 
 
@@ -95,10 +83,7 @@
         <!-- SEDES + MAPA -->
         <!-- =================================================== -->
 
-        <section
-          *ngIf="!mostrarSede"
-          class="sedes-map-layout"
-        >
+        <section *ngIf="!mostrarSede" class="sedes-map-layout">
 
 
           <!-- ================================================= -->
@@ -127,15 +112,9 @@
 
               <!-- IMAGEN EMPRESA -->
 
-              <div
-                *ngIf="img"
-                class="hero-image"
-              >
+              <div *ngIf="img" class="hero-image">
 
-                <img
-                  [src]="img"
-                  [alt]="nombreEmpresa"
-                />
+                <img [src]="img" [alt]="nombreEmpresa" />
 
               </div>
 
@@ -171,19 +150,9 @@
                 search
               </mat-icon>
 
-              <input
-                type="text"
-                placeholder="Buscar centro"
-                [(ngModel)]="textoBusquedaSede"
-                (input)="buscarSede()"
-              />
+              <input type="text" placeholder="Buscar centro" [(ngModel)]="textoBusquedaSede" (input)="buscarSede()" />
 
-              <button
-                *ngIf="textoBusquedaSede"
-                type="button"
-                class="clear-search"
-                (click)="textoBusquedaSede = ''"
-              >
+              <button *ngIf="textoBusquedaSede" type="button" class="clear-search" (click)="textoBusquedaSede = ''">
 
                 <mat-icon>
                   close
@@ -198,11 +167,7 @@
             <!-- BOTÓN MAPA MOBILE -->
             <!-- =============================================== -->
 
-            <button
-              type="button"
-              class="mobile-map-button"
-              (click)="toggleMapaMobile()"
-            >
+            <button type="button" class="mobile-map-button" (click)="toggleMapaMobile()">
 
               <mat-icon>
                 {{ mostrarMapaMobile ? 'close' : 'map' }}
@@ -219,28 +184,14 @@
             <!-- MAPA MOBILE -->
             <!-- =============================================== -->
 
-            <div
-              *ngIf="mostrarMapaMobile"
-              class="mobile-map-container"
-            >
+            <div *ngIf="mostrarMapaMobile" class="mobile-map-container">
 
-              <google-map
-                width="100%"
-                height="100%"
-                [center]="center"
-                [zoom]="zoom"
-                [options]="mapOptions"
-              >
+              <google-map width="100%" height="100%" [center]="center" [zoom]="zoom" [options]="mapOptions">
 
-                <map-marker
-                  *ngFor="let sede of sedesFiltradas"
-                  [position]="{
+                <map-marker *ngFor="let sede of sedesFiltradas" [position]="{
                     lat: sede.latitud,
                     lng: sede.longitud
-                  }"
-                  [title]="sede.nombre"
-                  (mapClick)="seleccionarSede(sede)"
-                >
+                  }" [title]="sede.nombre" (mapClick)="seleccionarSede(sede)">
                 </map-marker>
 
               </google-map>
@@ -254,27 +205,15 @@
 
             <div class="sedes-list">
 
-              <mat-card
-                *ngFor="let sede of sedesFiltradas"
-                class="sede-card"
-                (click)="seleccionarSede(sede)"
-              >
+              <mat-card *ngFor="let sede of sedesFiltradas" class="sede-card" (click)="seleccionarSede(sede)">
 
                 <!-- IMAGEN -->
 
                 <div class="sede-image-container">
 
-                  <img
-                    *ngIf="sede.foto"
-                    [src]="sede.foto"
-                    [alt]="sede.nombre"
-                    class="sede-image"
-                  />
+                  <img *ngIf="sede.foto" [src]="sede.foto" [alt]="sede.nombre" class="sede-image" />
 
-                  <div
-                    *ngIf="!sede.foto"
-                    class="sede-image-placeholder"
-                  >
+                  <div *ngIf="!sede.foto" class="sede-image-placeholder">
 
                     <mat-icon>
                       business
@@ -285,11 +224,7 @@
 
                   <!-- FAVORITO -->
 
-                  <button
-                    type="button"
-                    class="favorite-button"
-                    (click)="$event.stopPropagation()"
-                  >
+                  <button type="button" class="favorite-button" (click)="$event.stopPropagation()">
 
                     <mat-icon>
                       favorite_border
@@ -310,10 +245,7 @@
                       {{ sede.nombre }}
                     </h3>
 
-                    <div
-                      *ngIf="sede.calificacion"
-                      class="rating"
-                    >
+                    <div *ngIf="sede.calificacion" class="rating">
 
                       <mat-icon>
                         star
@@ -326,10 +258,7 @@
                   </div>
 
 
-                  <p
-                    *ngIf="sede.direccion"
-                    class="sede-address"
-                  >
+                  <p *ngIf="sede.direccion" class="sede-address">
 
                     <mat-icon>
                       location_on
@@ -340,10 +269,7 @@
                   </p>
 
 
-                  <p
-                    *ngIf="sede.ciudad"
-                    class="sede-location"
-                  >
+                  <p *ngIf="sede.ciudad" class="sede-location">
                     {{ sede.ciudad }}
                   </p>
 
@@ -378,13 +304,10 @@
               <!-- SIN RESULTADOS -->
               <!-- ============================================= -->
 
-              <div
-                *ngIf="
+              <div *ngIf="
                   sedesFiltradas.length === 0 &&
                   textoBusquedaSede
-                "
-                class="empty-search"
-              >
+                " class="empty-search">
 
                 <mat-icon>
                   search_off
@@ -413,23 +336,12 @@
 
             <div class="map-floating">
 
-              <google-map
-                width="100%"
-                height="100%"
-                [center]="center"
-                [zoom]="zoom"
-                [options]="mapOptions"
-              >
+              <google-map width="100%" height="100%" [center]="center" [zoom]="zoom" [options]="mapOptions">
 
-                <map-marker
-                  *ngFor="let sede of sedesFiltradas"
-                  [position]="{
+                <map-marker *ngFor="let sede of sedesFiltradas" [position]="{
                     lat: sede.latitud,
                     lng: sede.longitud
-                  }"
-                  [title]="sede.nombre"
-                  (mapClick)="seleccionarSede(sede)"
-                >
+                  }" [title]="sede.nombre" (mapClick)="seleccionarSede(sede)">
                 </map-marker>
 
               </google-map>
@@ -501,10 +413,7 @@
         <!-- SEDE SELECCIONADA -->
         <!-- =================================================== -->
 
-        <section
-          *ngIf="mostrarSede"
-          class="selected-sede-section"
-        >
+        <section *ngIf="mostrarSede" class="selected-sede-section">
 
 
           <!-- HEADER -->
@@ -513,13 +422,8 @@
 
             <div class="selected-sede-title">
 
-              <button
-                *ngIf="btnRefresh"
-                mat-icon-button
-                class="back-button"
-                matTooltip="Cambiar sede"
-                (click)="cambiarSede()"
-              >
+              <button *ngIf="btnRefresh" mat-icon-button class="back-button" matTooltip="Cambiar sede"
+                (click)="cambiarSede()">
 
                 <mat-icon>
                   arrow_back
@@ -552,12 +456,7 @@
             </div>
 
 
-            <button
-              *ngIf="btnRefresh"
-              mat-stroked-button
-              class="change-sede-button"
-              (click)="cambiarSede()"
-            >
+            <button *ngIf="btnRefresh" mat-stroked-button class="change-sede-button" (click)="cambiarSede()">
 
               <mat-icon>
                 swap_horiz
@@ -646,31 +545,19 @@
             </div>
 
 
-            <ng-container
-              *ngIf="
+            <ng-container *ngIf="
                 recursosList &&
                 recursosList.length > 0;
                 else noRecursos
-              "
-            >
+              ">
 
-              <div
-                class="profesionales-grid"
-                [class.un-solo-profesional]="recursosList.length === 1"
-              >
+              <div class="profesionales-grid" [class.un-solo-profesional]="recursosList.length === 1">
 
-                <mat-card
-                  *ngFor="let usuario of recursosList"
-                  class="profesional-card"
-                  (click)="irAReservar(usuario)"
-                >
+                <mat-card *ngFor="let usuario of recursosList" class="profesional-card" (click)="irAReservar(usuario)">
 
                   <div class="profesional-image">
 
-                    <img
-                      [src]="usuario.foto"
-                      [alt]="'Foto de ' + usuario.nombre"
-                    />
+                    <img [src]="usuario.foto" [alt]="'Foto de ' + usuario.nombre" />
 
                     <span class="online-indicator"></span>
 
@@ -750,10 +637,7 @@
                   disponibles para esta sede.
                 </p>
 
-                <button
-                  mat-stroked-button
-                  (click)="cambiarSede()"
-                >
+                <button mat-stroked-button (click)="cambiarSede()">
 
                   <mat-icon>
                     swap_horiz
@@ -775,22 +659,17 @@
 
     </mat-card>
 
-
-    <!-- MIS CITAS -->
-
-    <button
-      mat-stroked-button
-      color="primary"
-      class="fab-citas"
-      (click)="misCitas()"
-    >
-
-      <mat-icon>
-        event
-      </mat-icon>
-
+    <!-- Botón Mis citas -->
+    <button mat-stroked-button color="primary" class="fab-citas" (click)="misCitas()">
+      <mat-icon>event</mat-icon>
       Mis citas
+    </button>
 
+
+    <!-- Botón WhatsApp -->
+    <button *ngIf="btnWssp" mat-fab class="fab-whatsapp" [matTooltip]="mensajeBtnWssp" matTooltipPosition="left"
+      (click)="abrirWhatsApp()">
+      <mat-icon>chat</mat-icon>
     </button>
 
   </ng-container>
@@ -824,11 +703,7 @@
         {{ mensajeError }}
       </p>
 
-      <button
-        mat-flat-button
-        color="primary"
-        (click)="irALogin()"
-      >
+      <button mat-flat-button color="primary" (click)="irALogin()">
 
         <mat-icon>
           login
