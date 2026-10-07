@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Allura&family=Bebas+Neue&family=Cookie&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Courgette&family=Dancing+Script:wght@400;500;600;700&family=Great+Vibes&family=Inter:wght@300;400;500;600;700&family=Kaushan+Script&family=Lobster&family=Marck+Script&family=Montserrat:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&family=Oswald:wght@300;400;500;600;700&family=Pacifico&family=Parisienne&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Sacramento&family=Satisfy&family=Tangerine:wght@400;700&family=Yellowtail&display=swap');
+
 html,
 body {
   height: 100%;
@@ -11,7 +12,7 @@ body {
 
 :root {
   --app-background: #f7f7f7;
-  --app-font-family: "Segoe UI", Arial, sans-serif;
+  --app-font-family: "Poppins", "Segoe UI", Arial, sans-serif;
   --app-text: #212121;
   --app-header: #424242;
   --app-footer: #424242;

@@ -85,6 +85,8 @@ export class ClienteDashboard {
   currentYear: number = new Date().getFullYear();
   verProfesionales: boolean = false;
   version = environment.version;
+  btnWssp: boolean = false;
+  mensajeBtnWssp: string = '';
 
   constructor(
     private router: Router,
@@ -102,8 +104,25 @@ export class ClienteDashboard {
         +(params['em'] || 0);
     });
 
+    this.obtenerRangoParametrizado();
     this.validarProfesionalesORecursos();
     this.obtenerEmpresas();
+  }
+
+  private obtenerRangoParametrizado(): void {
+    this.sharenServices.parametros(this.idEmpresa.toString()).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          this.mensajeBtnWssp =
+            rest.datos.find((h: any) => h.tipo === 'MensajeWhatsappAyudaCliente')
+              ?.valor ?? '';
+
+          this.btnWssp =
+            rest.datos.find((h: any) => h.tipo === 'WhatsappAyudaCliente')
+              ?.valor?.toLowerCase() === 'true';
+        }
+      },
+    });
   }
 
   private validarProfesionalesORecursos(): void {
@@ -640,6 +659,19 @@ export class ClienteDashboard {
           : '';
     }
 
+  }
+
+  abrirWhatsApp() {
+    const telefono = '573001234567';
+
+    const mensaje = encodeURIComponent(
+      'Hola, tengo una duda y quisiera recibir ayuda.'
+    );
+
+    window.open(
+      `https://wa.me/${telefono}?text=${mensaje}`,
+      '_blank'
+    );
   }
 
   public irAReservar(
