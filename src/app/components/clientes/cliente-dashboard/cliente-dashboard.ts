@@ -666,9 +666,7 @@ export class ClienteDashboard {
 
   abrirWhatsApp() {
     const numero = '57' + this.telefonoEmp;
-    const mensaje = encodeURIComponent(
-      'Hola, tengo una duda y quisiera recibir ayuda.'
-    );
+    const mensaje ='Hola, me gustaría recibir información sobre sus servicios y conocer cómo pueden ayudarme. Muchas gracias.';
     const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     if (esMovil) {
