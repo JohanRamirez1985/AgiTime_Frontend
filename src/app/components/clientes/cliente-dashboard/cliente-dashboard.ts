@@ -87,6 +87,7 @@ export class ClienteDashboard {
   version = environment.version;
   btnWssp: boolean = false;
   mensajeBtnWssp: string = '';
+  telefonoEmp: string = '';
 
   constructor(
     private router: Router,
@@ -332,6 +333,8 @@ export class ClienteDashboard {
 
             this.seleccionRubro =
               empresa?.servicio ?? false;
+
+            this.telefonoEmp = empresa?.telefono;
 
 
             this.aplicarEstilosEmpresa(empresa.apariencia);
@@ -662,16 +665,20 @@ export class ClienteDashboard {
   }
 
   abrirWhatsApp() {
-    const telefono = '573001234567';
-
+    const numero = '57' + this.telefonoEmp;
     const mensaje = encodeURIComponent(
       'Hola, tengo una duda y quisiera recibir ayuda.'
     );
+    const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    window.open(
-      `https://wa.me/${telefono}?text=${mensaje}`,
-      '_blank'
-    );
+    if (esMovil) {
+      window.location.href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+    } else {
+      window.open(
+        `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`,
+        '_blank'
+      );
+    }
   }
 
   public irAReservar(
