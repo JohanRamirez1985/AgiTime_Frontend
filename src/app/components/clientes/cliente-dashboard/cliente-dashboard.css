@@ -2079,15 +2079,18 @@
   background: #25D366 !important;
   color: white !important;
 
-  box-shadow:
-    0 5px 18px rgba(16, 24, 40, 0.20);
+  box-shadow: 0 5px 18px rgba(16, 24, 40, 0.20);
 
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .fab-whatsapp:hover {
   transform: scale(1.08);
+  box-shadow: 0 7px 22px rgba(16, 24, 40, 0.25);
+}
 
-  box-shadow:
-    0 7px 22px rgba(16, 24, 40, 0.25);
+.whatsapp-icon {
+  width: 25px;
+  height: 25px;
+  display: block;
 }
