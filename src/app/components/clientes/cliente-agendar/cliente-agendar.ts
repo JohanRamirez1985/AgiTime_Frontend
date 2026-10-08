@@ -1121,7 +1121,7 @@ export class ClienteAgendar {
           👤 Profesional: ${recurso}
           📅 Fecha: ${fechaFormateada}
           🕐 Hora: ${horaFormateada}
-          ✂️ Servicios: ${nombresServicios}
+          ✨ Servicios: ${nombresServicios}
           🙋 Cliente: ${datos.nombre}
           ${enviaMensaje ? "⚠️ Observación: Validar horario." : ""}
 
