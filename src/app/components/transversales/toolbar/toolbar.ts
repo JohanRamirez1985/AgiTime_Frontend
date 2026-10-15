@@ -127,7 +127,14 @@ export class Toolbar implements OnInit {
       label: 'Agenda',
       icon: 'event_note',
       route: '/admin/agenda-prf'
-    }
+    },
+
+    {
+      codigo: 'crt',
+      label: 'Recordatorio clientes',
+      icon: 'percent',
+      route: '/admin/clientesRecordatorio/informacioncliente'
+    },
 
   ];
 

@@ -136,6 +136,13 @@ export const routes: Routes = [
           ).then((m) => m.GestionarPorcentaje),
       },
       {
+        path: 'clientesRecordatorio/informacioncliente',
+        loadComponent: () =>
+          import(
+            './components/clientes/cliente-recordatorio/cliente-recordatorio'
+          ).then((m) => m.ClienteRecordatorio),
+      },
+      {
         path: 'servicios',
         loadComponent: () =>
           import(

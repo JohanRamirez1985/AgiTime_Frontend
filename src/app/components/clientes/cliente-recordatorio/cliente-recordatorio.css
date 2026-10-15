@@ -160,6 +160,19 @@ button[mat-icon-button] {
 
 .productos-card {
   padding: 24px;
-  background-color: #fafafa;
-  border-radius: 8px;
+  background: #f5f7fb;
+  min-height: 100vh;
+}
+
+/* FILTROS */
+.filtros-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.filtros-container mat-form-field {
+  width: 280px;
 }

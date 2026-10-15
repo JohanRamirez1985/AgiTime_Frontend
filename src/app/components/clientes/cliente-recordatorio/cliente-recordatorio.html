@@ -1,19 +1,53 @@
 <div class="productos-card">
   <h2>Recordatorio clientes</h2>
   <!-- Formulario de filtros -->
-  <form class="filtros" (ngSubmit)="consultarClientes()">
-    <div class="filtros-grid">
-      <mat-form-field appearance="outline">
-        <mat-label>Buscar por nombre</mat-label>
-        <input matInput [(ngModel)]="filtro" name="filtro" placeholder="Nombre" (ngModelChange)="filtrarCliente($event)" />
-      </mat-form-field>
 
-    </div>
-  </form>
+<div class="filtros-container">
+
+  <mat-form-field appearance="outline">
+    <mat-label>Días sin asistir</mat-label>
+    <input
+      matInput
+      type="number"
+      name="dias"
+      [(ngModel)]="dias"
+      min="1"
+      step="1"
+      required
+      placeholder="Ej. 15"
+    />
+  </mat-form-field>
+
+  <button
+    mat-flat-button
+    color="primary"
+    type="submit"
+    [disabled]="btnConsultar || loading">
+    <mat-icon>search</mat-icon>
+    Consultar
+  </button>
+
+</div>
+
+<form class="filtros" (ngSubmit)="consultar()">
+  <div class="filtros-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Buscar por nombre</mat-label>
+      <input
+        matInput
+        [(ngModel)]="filtro"
+        name="filtro"
+        placeholder="Nombre"
+        (ngModelChange)="filtrarCliente($event)"
+      />
+    </mat-form-field>
+  </div>
+</form>
+
 
   <app-table 
     *ngIf="!isMobileView"
-    [data]="usuariosFiltrados" 
+    [data]="clienteRecordatorioFiltrados" 
     [columns]="columnas"
     [actions]="acciones"
     [loading]="loading">
@@ -22,9 +56,9 @@
 
    <!-- Vista tipo tarjetas en móvil -->
   <div *ngIf="isMobileView" class="productos-cards">
-    <mat-card *ngFor="let cli of clienteRecordatorioFiltrado" class="producto-card mat-elevation-z4">
+    <mat-card *ngFor="let cli of clienteRecordatorioFiltrados" class="producto-card mat-elevation-z4">
       <h3>{{ cli.nombre }}</h3>
-      <p><strong>fecha ultima visita:</strong> {{ cli.fecha }}</p>
+      <p><strong>fecha ultima visita:</strong> {{ cli.ultimaFechaAsistio }}</p>
       <div class="acciones-cell">
         <button mat-icon-button color="accent" (click)="envioMensaje(cli)">
           <mat-icon>edit</mat-icon>

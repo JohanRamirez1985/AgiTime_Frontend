@@ -24,4 +24,10 @@ export class ClienteService {
       params: { emp: emp.toString() },
     });
   }
+
+  obtenerClienteRecordatorio(emp: string) {
+    return this.http.get<any>(`${this.baseUrlUsuario}/clientesRecordatorio`, {
+      params: { emp: emp.toString() },
+    });
+  }
 }
