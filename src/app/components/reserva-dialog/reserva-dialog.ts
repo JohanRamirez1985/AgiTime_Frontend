@@ -52,7 +52,7 @@ export class ReservaDialog {
         '',
         [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/)],
       ],
-      correo: ['', [Validators.required, Validators.email]],
+      correo: ['', [Validators.email]],
       fechaNacimiento: ['', Validators.required],
     });
 

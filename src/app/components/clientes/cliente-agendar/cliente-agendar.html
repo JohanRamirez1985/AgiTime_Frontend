@@ -27,7 +27,7 @@
         <p class="loading-text">Cargando disponibilidad...</p>
       </div>
       <div *ngIf="!loading">
-        <div class="recursos-container">
+        <div *ngIf="mostrarInfoRecursos" class="recursos-container">
 
           <mat-card class="card-recurso" *ngFor="let recurso of recursosSeleccionados">
 
@@ -181,6 +181,12 @@
               </ng-template>
             </div>
           </div>
+        </div>
+
+        <div *ngIf="mostrarRecursos">
+          <app-profesionales [recursosList]="recursosList" [sedeSeleccionada]="sedeSeleccionada"
+            (reservar)="irAReservar($event)" (cambiarSedeEvento)="cambiarSede()">
+          </app-profesionales>
         </div>
       </div>
     </ng-container>

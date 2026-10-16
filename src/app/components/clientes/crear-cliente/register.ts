@@ -42,19 +42,34 @@ export class Register {
   successMessage = '';
   fechaNacimiento: Date | null = null;
   cellphone: string = '';
-  idEmpresa: string | null = null;
+  idEmpresa: number = 0
   uniqueId = Math.floor(Math.random() * 100000);
   btnRegistrar: boolean = false;
+  mensajeWsspEmpresa: string = '';
 
   constructor(private route: ActivatedRoute,
     private router: Router,
     private clientService: ClienteService,
-    private modalService: Modal
+    private modalService: Modal,
+    private sharedServices: SharedService
   ) { }
 
 
   ngOnInit(): void {
-    this.idEmpresa = this.route.snapshot.queryParamMap.get('em');
+    this.route.queryParams.subscribe((params) => {
+      this.idEmpresa = +params['em'];
+    });
+    this.obtenerMensajesCliente();
+  }
+
+  private obtenerMensajesCliente(): void {
+    this.sharedServices.mensajesWhatsApp(this.idEmpresa.toString()).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          this.mensajeWsspEmpresa = rest.datos.find((h: any) => h.tipo === 'WhatsappCreacionCliente').mensaje;
+        }
+      },
+    });
   }
 
   public registrar(): void {
@@ -91,24 +106,16 @@ export class Register {
 
   private mensajeWssp(telefono: string): void {
 
-    const mensaje = `🔥 ¡Hola! Te saluda A Fuego Barber Shop. Fue un gusto atenderte hoy. 💈
+    let mensaje = this.mensajeWsspEmpresa || '';
 
-          Queremos saber algo importante: ¿qué tal te pareció tu corte y la atención? 👀🔥
+    mensaje = (this.mensajeWsspEmpresa || '')
+      .replace(/\\n/g, '\n')
+      .replace(/\\u200D/g, '\u200D')
+      .replace(/^[ \t]+/gm, '')
+      .trim();
 
-          Tu opinión nos ayuda a seguir mejorando y a asegurarnos de que cada visita a A Fuego sea una buena experiencia. 🙌
-
-          Para tu próxima visita puedes elegir la opción que más te convenga:
-
-          📲 Agenda online: https://agitime.com.co/cliente?em=2
-          💬 WhatsApp: Escríbenos directamente.
-          🚶‍♂️ Sin cita: También puedes visitarnos sin cita; atendemos por orden de llegada según disponibilidad.
-
-          📲 Guarda nuestro contacto para que no te pierdas nuestros estados, promociones y novedades.
-
-          🔥¡Te esperamos nuevamente!🔥`;
 
     const numero = '57' + telefono;
-
     const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     if (esMovil) {

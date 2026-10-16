@@ -136,6 +136,9 @@ export class DashboardRecurso {
   usoBono: boolean = false;
   pestanaSeleccionada: number = 0;
   pestanaActiva: boolean = false;
+  metodosPago: string[] = [];
+  mensajeWsspEmpresa: string = '';
+  mensajeRecordatorioWssp: string = '';
 
   constructor(
     private router: Router,
@@ -235,6 +238,8 @@ export class DashboardRecurso {
     this.consultarCitas(this.user, this.empresa, this.day);
     this.estadoActivoInactivo();
     this.obtenerRangoParametrizado();
+    this.obtenerMetodosPago();
+    this.obtenerMensajesWssp();
     this.obtenerServicios(this.idEmpresa);
     this.rolesPermitidos = [RolesContent.Empleado, RolesContent.Administrador];
     this.obtenerHorarios(this.rolesPermitidos.includes(this.rol));
@@ -281,6 +286,27 @@ export class DashboardRecurso {
             rest.datos.find((h: any) => h.tipo === 'WhatsappRecordatorio')
               ?.valor?.toLowerCase() === 'true';
 
+        }
+      },
+    });
+  }
+
+  private obtenerMetodosPago(): void {
+    this.sharedServices.metodosPago(this.idEmpresa.toString()).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          this.metodosPago = (rest.datos || []).map((m: any) => m.nombre);
+        }
+      },
+    });
+  }
+
+  private obtenerMensajesWssp(): void {
+    this.sharedServices.mensajesWhatsApp(this.idEmpresa.toString()).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          this.mensajeWsspEmpresa = rest.datos.find((h: any) => h.tipo === 'WhatsappRecurso').mensaje;
+          this.mensajeRecordatorioWssp = rest.datos.find((h: any) => h.tipo === 'WhatsappRecordatorio').mensaje;
         }
       },
     });
@@ -843,45 +869,47 @@ export class DashboardRecurso {
   consultarHorariosOcupadosRecurso(fecha: Date): void {
     let request: any = {}
 
-    if (this.empresaServicio) {
-      request = {
-        empresa: this.idEmpresa,
-        FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
-        fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
-        profesional: [...new Set(
-          this.serviciosSeleccionados
-            .filter(s => s.recurso != null)
-            .map(s => s.recurso)
-        )].join(',')
-      };
-    } else {
-      request = {
-        empresa: this.idEmpresa,
-        FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
-        fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
-        recurso: this.user.id,
-      };
-    }
+    if (this.serviciosSeleccionados.length > 0) {
+      if (this.empresaServicio) {
+        request = {
+          empresa: this.idEmpresa,
+          FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
+          fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
+          profesional: [...new Set(
+            this.serviciosSeleccionados
+              .filter(s => s.recurso != null)
+              .map(s => s.recurso)
+          )].join(',')
+        };
+      } else {
+        request = {
+          empresa: this.idEmpresa,
+          FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
+          fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
+          recurso: this.user.id,
+        };
+      }
 
-    this.agendamientoServices
-      .consultarAgendamientosEmpleado(request)
-      .subscribe({
-        next: (rest) => {
-          if (rest.exito) {
-            for (let i = 0; i < this.horas.length; i++) {
-              let disponible = true;
-              disponible = rest.horasOcupadas.find(
-                (h: any) => h === this.horas[i].hora,
-              );
-              if (disponible) {
-                this.horas[i].disponible = false;
+      this.agendamientoServices
+        .consultarAgendamientosEmpleado(request)
+        .subscribe({
+          next: (rest) => {
+            if (rest.exito) {
+              for (let i = 0; i < this.horas.length; i++) {
+                let disponible = true;
+                disponible = rest.horasOcupadas.find(
+                  (h: any) => h === this.horas[i].hora,
+                );
+                if (disponible) {
+                  this.horas[i].disponible = false;
+                }
               }
+              this.horas = this.horas.filter((h) => h.disponible);
             }
-            this.horas = this.horas.filter((h) => h.disponible);
-          }
-          this.verificarHoras();
-        },
-      });
+            this.verificarHoras();
+          },
+        });
+    }
   }
 
   public seleccionarRecurso(fecha: Date): void {
@@ -1080,84 +1108,78 @@ export class DashboardRecurso {
     this.citasHoy = resultado
   }
 
-  public recordatorioWssp(cliente: any) {
+  public recordatorioWssp(cliente: any): void {
+    const fecha = this.empresaServicio
+      ? new Date(cliente.fechaOrden)
+      : new Date(cliente.fechaInicio);
 
-    const fecha = this.empresaServicio ? new Date(cliente.fechaOrden) : new Date(cliente.fechaInicio);
     const fechaFormateada = fecha.toLocaleDateString('es-CO');
+
     const horaFormateada = fecha.toLocaleTimeString('es-CO', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true
     });
 
-    let mensaje: string = '';
-    let numero: string = '';
+    let numero = '';
+    let nombreCliente = '';
+    let servicios = '';
+    let abono = 0;
+    let telefonoBreB = '';
 
     if (this.empresaServicio) {
-      const telefonoBreB = '3137938061';
-      const abono = cliente.total / 2;
+      nombreCliente = cliente.cliente;
       numero = '57' + cliente.telefono;
+      servicios = cliente.nombre;
 
-      mensaje = `💅 ¡Hola ${cliente.cliente}!
-
-          Te recordamos que tienes un servicio programado en *KC NAILS COFFE BAR*:
-
-          📅 Fecha: ${fechaFormateada}
-          🕐 Hora: ${horaFormateada}
-          ✨ Servicio: ${cliente.nombre}
-
-          🔐 *Para confirmar tu cita*, debes realizar un abono de *$${abono.toLocaleString("es-CO")}*.
-
-          💳 Puedes realizar el pago de forma rápida y segura utilizando nuestra llave Bre-B:
-
-          📲 *Llave Bre-B:* ${telefonoBreB}
-
-          📩 Una vez realizado el pago, por favor envíanos el comprobante por este WhatsApp para confirmar tu cita.
-
-          ⚠️ *Importante:* Si no se realiza el abono dentro del tiempo establecido, la cita será liberada automáticamente y podrá ser asignada a otro cliente.
-
-          Si tienes alguna duda o necesitas ayuda con el proceso de pago, estamos aquí para ayudarte. 💬
-
-          ✨ ¡Esperamos verte pronto!
-
-          💖 Gracias por elegir *KC NAILS COFFE BAR*.`;
-
+      abono = Number(cliente.total || 0) / 2;
+      telefonoBreB = '3137938061';
     } else {
-      numero = '57' + cliente.telefonoCliente
+      nombreCliente = cliente.nombreCliente;
+      numero = '57' + cliente.telefonoCliente;
 
-      mensaje = `🌸 ¡Hola ${cliente.nombreCliente}!
+      servicios = cliente.servicios
+        ?.map((s: any) => s.nombre)
+        .join(', ') || '';
 
-        ¡Tenemos una cita reservada especialmente para ti en ${this.empresa.nombre}! 💖
-
-        📅 Fecha: ${fechaFormateada}
-        🕐 Hora: ${horaFormateada}
-        ✨ Servicio: ${cliente.servicios.map((s: any) => s.nombre).join(', ')}
-
-        Para asegurar y confirmar tu cita, debes realizar un abono de $30.000. 💳
-
-        📲 Pago por Nequi:
-        📱 Número: 3022566598
-
-        📩 Después de realizar el pago, envíanos el comprobante por este WhatsApp para dejar tu cita confirmada. ✅
-
-        ⚠️ Recuerda que, si no recibimos el abono dentro del tiempo establecido, la cita podrá ser liberada y asignada a otra persona.
-
-        ✨ ¡Será un placer atenderte!
-
-        💖 Gracias por confiar en ${this.empresa.nombre}.`;
-
+      abono = 30000;
+      telefonoBreB = '3022566598';
     }
+
+    let mensaje = this.mensajeRecordatorioWssp || '';
+
+    mensaje = mensaje
+      .replace(/\$\{nombreCliente\}/g, nombreCliente || '')
+      .replace(/\$\{empresaNombre\}/g, this.empresa?.nombre || '')
+      .replace(/\$\{fechaFormateada\}/g, fechaFormateada)
+      .replace(/\$\{horaFormateada\}/g, horaFormateada)
+      .replace(/\$\{servicios\}/g, servicios)
+      .replace(
+        /\$\{abono\.toLocaleString\(["']es-CO["']\)\}/g,
+        abono.toLocaleString('es-CO')
+      )
+      .replace(/\$\{telefonoBreB\}/g, telefonoBreB);
+
+    // Normalizar los saltos de línea recibidos del backend
+    mensaje = mensaje
+      .replace(/\\r\\n/g, '\n')
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+
+    console.log(mensaje);
 
 
     const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
+    const url = esMovil
+      ? `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`
+      : `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`;
+
     if (esMovil) {
-      window.location.href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+      window.location.href = url;
     } else {
-      window.open(
-        `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`,
-        '_blank'
-      );
+      window.open(url, '_blank');
     }
   }
 
@@ -1165,17 +1187,6 @@ export class DashboardRecurso {
     const nombreMostrar = this.empresaServicio
       ? cita.nombreCliente.split('-')[0].trim()
       : cita.nombreCliente;
-
-    // Métodos de pago
-    const metodosPago = [
-      'Efectivo',
-      'Tarjeta débito',
-      'Tarjeta crédito',
-      'Transferencia',
-      'Nequi',
-      'Daviplata'
-    ];
-
     let fidelidadHtml = '';
 
     if (cita.fidelidad && cita.fidelidad.trim() !== '') {
@@ -1308,7 +1319,7 @@ export class DashboardRecurso {
         overflow-x: auto;
       ">
 
-        ${metodosPago.map((metodo, index) => `
+        ${this.metodosPago.map((metodo, index) => `
           <label style="
             display: flex;
             align-items: center;
@@ -1685,6 +1696,7 @@ export class DashboardRecurso {
     const request = this.createJson(hora, bono, result);
 
     const mensaje = this.construirMensajeWhatsApp(request, result);
+    console.log(mensaje);
 
     const observable = this.guardarCita(request);
 
@@ -1699,34 +1711,39 @@ export class DashboardRecurso {
    */
   private construirMensajeWhatsApp(request: any, result: any): string {
     const fecha = new Date(request?.FechaIni);
-    const fechaFormateada = fecha.toLocaleDateString("es-CO", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "2-digit",
+
+    const fechaFormateada = fecha.toLocaleDateString('es-CO', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit',
     });
-    const horaFormateada = fecha.toLocaleTimeString("es-CO", {
-      hour: "2-digit",
-      minute: "2-digit",
+
+    const horaFormateada = fecha.toLocaleTimeString('es-CO', {
+      hour: '2-digit',
+      minute: '2-digit',
       hour12: false,
     });
+
     const servicio = this.obtenerServiciosTexto();
+
     const nombreCliente = this.pestanaActiva
       ? JSON.parse(localStorage.getItem('ordenSeleccionada') || '{}').nombreCLiente
       : result.nombre;
 
-    return `📅 ¡Hola ${nombreCliente}!
-        ¡Tu cita ha sido agendada exitosamente en *${this.empresa.nombre}*! 🎉
+    let mensaje = this.mensajeWsspEmpresa || '';
 
-        📅 *Fecha:* ${fechaFormateada}
-        🕐 *Hora:* ${horaFormateada}
-        💇 *Servicio:* ${servicio}
+    mensaje = mensaje
+      .replace(/\$\{nombreCliente\}/g, nombreCliente || '')
+      .replace(/\$\{empresaNombre\}/g, this.empresa.nombre || '')
+      .replace(/\$\{fechaFormateada\}/g, fechaFormateada)
+      .replace(/\$\{horaFormateada\}/g, horaFormateada)
+      .replace(/\$\{servicio\}/g, servicio || '');
 
-        ⏰ Te recomendamos llegar unos minutos antes para brindarte la mejor atención y aprovechar al máximo tu cita.
-        🔄 Si necesitas reprogramar tu cita, por favor comunícate con nosotros con anticipación para ayudarte a encontrar un nuevo horario.
-        ✨ ¡Será un gusto atenderte!
-
-        ¡Nos vemos pronto! 🙌
-        💙 *${this.empresa.nombre}*`;
+    return mensaje
+      .replace(/\\r\\n/g, '\n')
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
   }
 
   /**

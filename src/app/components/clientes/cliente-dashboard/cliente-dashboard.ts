@@ -25,6 +25,7 @@ import { ValidarVersion } from '../../../shared/validar-version/validar-version'
 import { environment } from '../../../../environments/environment';
 import { Modal } from '../../../shared/services/modal';
 import Swal from 'sweetalert2';
+import { Profesionales } from '../../profesionales/profesionales';
 
 
 @Component({
@@ -43,7 +44,8 @@ import Swal from 'sweetalert2';
     MatDividerModule,
     GoogleMapsModule,
     FormsModule,
-    ValidarVersion
+    ValidarVersion,
+    Profesionales
   ],
 
   templateUrl: './cliente-dashboard.html',
@@ -83,7 +85,6 @@ export class ClienteDashboard {
     mapTypeId: 'roadmap'
   };
   currentYear: number = new Date().getFullYear();
-  verProfesionales: boolean = false;
   version = environment.version;
   btnWssp: boolean = false;
   mensajeBtnWssp: string = '';
@@ -106,7 +107,6 @@ export class ClienteDashboard {
     });
 
     this.obtenerRangoParametrizado();
-    this.validarProfesionalesORecursos();
     this.obtenerEmpresas();
   }
 
@@ -124,12 +124,6 @@ export class ClienteDashboard {
         }
       },
     });
-  }
-
-  private validarProfesionalesORecursos(): void {
-    if (this.idEmpresa === 8 || this.idEmpresa === 12) {
-      this.verProfesionales = true;
-    }
   }
 
   public validarVersionApp(callback: () => void): void {
@@ -330,12 +324,7 @@ export class ClienteDashboard {
               empresa?.logo
                 ? 'assets/img/' + empresa.logo
                 : '';
-
-            this.seleccionRubro =
-              empresa?.servicio ?? false;
-
             this.telefonoEmp = empresa?.telefono;
-
 
             this.aplicarEstilosEmpresa(empresa.apariencia);
             this.obtenerSedes();
@@ -579,54 +568,20 @@ export class ClienteDashboard {
   public seleccionarSede(sede: any): void {
 
     this.validarVersionApp(() => {
-
-      // TODO ESTO SOLO SE EJECUTA SI LA VERSIÓN ES CORRECTA
-
       localStorage.setItem(
         'sedeSeleccionada',
         JSON.stringify(sede)
       );
 
-      if (this.idEmpresa === 8 || this.idEmpresa === 12) {
-
-        this.router.navigate(
-          ['/cliente/reservar'],
-          {
-            queryParams: {
-              emp: this.idEmpresa,
-              rcr: 0
-            }
+      this.router.navigate(
+        ['/cliente/reservar'],
+        {
+          queryParams: {
+            emp: this.idEmpresa,
+            rcr: 0
           }
-        );
-
-      } else {
-
-        this.sedeSeleccionada = sede.nombre;
-
-        this.sedeSeleccionadaObj = sede;
-
-        this.recursosList = this.recursos.filter(
-          (r: any) => r.sede === sede.id
-        );
-
-        this.mostrarSede = true;
-        this.btnRefresh = true;
-        this.mostrarMapaMobile = false;
-
-        if (
-          sede.latitud != null &&
-          sede.longitud != null
-        ) {
-          this.center = {
-            lat: Number(sede.latitud),
-            lng: Number(sede.longitud)
-          };
-
-          this.zoom = 17;
         }
-
-        this.cdr.detectChanges();
-      }
+      );
     });
   }
 
@@ -666,7 +621,7 @@ export class ClienteDashboard {
 
   abrirWhatsApp() {
     const numero = '57' + this.telefonoEmp;
-    const mensaje ='Hola, me gustaría recibir información sobre sus servicios y conocer cómo pueden ayudarme. Muchas gracias.';
+    const mensaje = 'Hola, me gustaría recibir información sobre sus servicios y conocer cómo pueden ayudarme. Muchas gracias.';
     const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     if (esMovil) {

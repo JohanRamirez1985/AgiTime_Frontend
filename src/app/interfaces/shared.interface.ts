@@ -98,7 +98,8 @@ export interface ClienteRegistro {
   telefono: string;
   fechaNacimiento: string; // ISO string, e.g. "1998-07-11T14:56:23.637Z"
   empresa: number;
-  FechaCreacion: string
+  FechaCreacion: string;
+  ultimaFechaAsistio?: string | null;
 }
 
 

@@ -29,9 +29,14 @@
             <ng-container *ngFor="let action of actions">
               <button mat-icon-button [color]="action.color || 'primary'" [matTooltip]="action.tooltip || action.label"
                 (click)="action.action(element)">
+                <mat-icon *ngIf="action.icon !== 'whatsapp'">
+                  {{ action.icon }}
+                </mat-icon>
 
-                <mat-icon>{{ action.icon }}</mat-icon>
-
+                <mat-icon
+                  *ngIf="action.icon === 'whatsapp'"
+                  svgIcon="whatsapp">
+                </mat-icon>
               </button>
             </ng-container>
           </td>

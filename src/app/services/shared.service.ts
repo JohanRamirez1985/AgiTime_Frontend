@@ -75,6 +75,18 @@ export class SharedService {
     });
   }
 
+  mensajesWhatsApp(emp: string) {
+    return this.http.get<any>(`${this.baseUrlUsuario}/mensajesWhatsApp`, {
+      params: { emp: emp.toString() },
+    });
+  }
+
+  metodosPago(emp: string) {
+    return this.http.get<any>(`${this.baseUrlUsuario}/metodosPago`, {
+      params: { emp: emp.toString() },
+    });
+  }
+
   parametrosGenerales() {
     return this.http.get<EmpresasResponse>(`${this.baseUrlUsuario}/parametrosGenerales`);
   }
