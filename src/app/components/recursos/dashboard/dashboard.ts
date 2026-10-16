@@ -856,6 +856,7 @@ export class DashboardRecurso {
         } else {
           this.seleccionarRecurso(this.day);
         }
+        this.cdr.detectChanges();
       },
     });
   }
@@ -863,47 +864,46 @@ export class DashboardRecurso {
   consultarHorariosOcupadosRecurso(fecha: Date): void {
     let request: any = {}
 
-    if (this.serviciosSeleccionados.length > 0) {
-      if (this.empresaServicio) {
-        request = {
-          empresa: this.idEmpresa,
-          FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
-          fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
-          profesional: [...new Set(
-            this.serviciosSeleccionados
-              .filter(s => s.recurso != null)
-              .map(s => s.recurso)
-          )].join(',')
-        };
-      } else {
-        request = {
-          empresa: this.idEmpresa,
-          FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
-          fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
-          recurso: this.user.id,
-        };
-      }
-
-      this.agendamientoServices
-        .consultarAgendamientosEmpleado(request)
-        .subscribe({
-          next: (rest) => {
-            if (rest.exito) {
-              for (let i = 0; i < this.horas.length; i++) {
-                let disponible = true;
-                disponible = rest.horasOcupadas.find(
-                  (h: any) => h === this.horas[i].hora,
-                );
-                if (disponible) {
-                  this.horas[i].disponible = false;
-                }
-              }
-              this.horas = this.horas.filter((h) => h.disponible);
-            }
-            this.verificarHoras();
-          },
-        });
+    if (this.empresaServicio) {
+      request = {
+        empresa: this.idEmpresa,
+        FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
+        fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
+        profesional: [...new Set(
+          this.serviciosSeleccionados
+            .filter(s => s.recurso != null)
+            .map(s => s.recurso)
+        )].join(',')
+      };
+    } else {
+      request = {
+        empresa: this.idEmpresa,
+        FechaIni: this.formatearFechaLocal(fecha, '00:00:00'),
+        fechaFin: this.formatearFechaLocal(fecha, '23:59:59'),
+        recurso: this.user.id,
+      };
     }
+
+    this.agendamientoServices
+      .consultarAgendamientosEmpleado(request)
+      .subscribe({
+        next: (rest) => {
+          if (rest.exito) {
+            for (let i = 0; i < this.horas.length; i++) {
+              let disponible = true;
+              disponible = rest.horasOcupadas.find(
+                (h: any) => h === this.horas[i].hora,
+              );
+              if (disponible) {
+                this.horas[i].disponible = false;
+              }
+            }
+            this.horas = this.horas.filter((h) => h.disponible);
+          }
+          this.verificarHoras();
+          this.cdr.detectChanges();
+        },
+      });
   }
 
   public seleccionarRecurso(fecha: Date): void {
