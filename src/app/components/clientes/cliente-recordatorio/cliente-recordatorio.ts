@@ -57,28 +57,30 @@ export class ClienteRecordatorio {
   dataSource = new MatTableDataSource<any>([]);
   loading = false;
   private intervalId: any;
+  mensajeWssp: string = '';
 
   columnas = [
     { key: 'nombre', label: 'Nombre' },
     { key: 'ultimaFechaAsistio', label: 'Fecha ultima visita' }
   ];
-  
-  idEmpresa: string | null = null;
+
+  idEmpresa: number = 0;
   user: any;
   acciones: any[] = [
-    { 
-      icon: 'whatsapp', 
-      label: 'Envio Mensaje', 
-      action: (element: any) => this.envioMensaje(element) 
+    {
+      icon: 'whatsapp',
+      label: 'Envio Mensaje',
+      action: (element: any) => this.envioMensaje(element)
     },
   ];
-  
+
   constructor(
     private clienteServie: ClienteService,
     private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    private sharedServices: SharedService
   ) {
-      this.matIconRegistry.addSvgIcon(
+    this.matIconRegistry.addSvgIcon(
       'whatsapp',
       this.domSanitizer.bypassSecurityTrustResourceUrl(
         'assets/img/whatsapp.svg'
@@ -93,73 +95,43 @@ export class ClienteRecordatorio {
     this.idEmpresa = id;
     this.checkResponsive();
     window.addEventListener('resize', () => this.checkResponsive());
+    this.obtenerMensajesWssp();
     this.consultarClientes();
     this.startBtnValidation();
   }
-  
+
+    private obtenerMensajesWssp(): void {
+    this.sharedServices.mensajesWhatsApp(this.idEmpresa.toString()).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          this.mensajeWssp = rest.datos.find((h: any) => h.tipo === 'WhatsappClienteRecordatorio').mensaje;
+        }
+      },
+    });
+  }
+
   checkResponsive(): void {
     this.isMobileView = window.innerWidth <= 768;
   }
 
   envioMensaje(recurso: any) {
-    /*Swal.fire({
-      title: `${recurso.nombre}`,
-      html: `
-        <input id="porcentaje" type="number" class="swal2-input" 
-              placeholder="Porcentaje" 
-              value="${recurso.porcentaje || ''}">
-      `,
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: 'Guardar',
-      cancelButtonText: 'Cancelar',
-      preConfirm: () => {
-        const porcentaje = (document.getElementById('porcentaje') as HTMLInputElement).value;
-        if (!porcentaje) {
-          Swal.showValidationMessage('Debes ingresar un porcentaje');
-        }
-        return { ...recurso, porcentaje };
-      }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.loading = true;
-        const actualizado = result.value.porcentaje;
-        const request = {
-          empresa: this.idEmpresa,
-          Id: this.user.id,
-          Porcentaje: actualizado
-        };
+    const mensaje = this.mensajeWssp || '';
+    const numero = '57' + recurso.telefono;
+    const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-        this.userServie.editarPorcentaje(request).subscribe({
-          next: (rest: any) => {
-            if (rest.exito) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Actualizado',
-                text: rest.mensaje || 'El porcentaje se actualizó correctamente',
-                timer: 2500,
-                showConfirmButton: false
-              });
-            } else {
-              Swal.fire({
-                icon: 'warning',
-                title: 'Atención',
-                text: rest.mensaje || 'No se pudo actualizar el porcentaje',
-              });
-            }
-            this.loading = false;
-          },
-          error: (err) => {
-            this.loading = false;
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Ocurrió un problema al actualizar el porcentaje',
-            });
-          }
-        });
-      }
-    });*/
+
+    if (esMovil) {
+      window.location.href =
+        `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+    } else {
+      window.open(
+        `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`,
+        '_blank'
+      );
+    }
+    this.dias = 15;
+    this.loading = true;
+    this.consultarClientes();
   }
 
   private startBtnValidation() {
@@ -175,12 +147,12 @@ export class ClienteRecordatorio {
   }
 
   validarDias(): void {
-  this.btnConsultar =
-    this.dias === null ||
-    !Number.isInteger(Number(this.dias)) ||
-    Number(this.dias) < 1;
-}
-  
+    this.btnConsultar =
+      this.dias === null ||
+      !Number.isInteger(Number(this.dias)) ||
+      Number(this.dias) < 1;
+  }
+
   public consultar(): void {
     this.consultarClientes();
   }
@@ -196,7 +168,7 @@ export class ClienteRecordatorio {
 
     this.loading = true;
 
-    this.clienteServie.obtenerClienteRecordatorio(idEmpresa,Number(this.dias)).subscribe({
+    this.clienteServie.obtenerClienteRecordatorio(idEmpresa, Number(this.dias)).subscribe({
       next: res => {
         this.clienteRecordatorio = [];
         this.clienteRecordatorioFiltrados = [];
@@ -205,25 +177,6 @@ export class ClienteRecordatorio {
           this.clienteRecordatorio = res.datos;
           this.clienteRecordatorioFiltrados = this.clienteRecordatorio;
           this.dataSource.data = res.datos;
-
-          /*this.dataSource.data = this.clienteRecordatorio.filter(u => {
-            const texto = this.filtro.toLowerCase();
-            const nombreCorreo = u.nombre.toLowerCase().includes(texto) || u.correo.toLowerCase().includes(texto);
-
-            const rolMatch = this.rolSeleccionado ? u.rol === this.rolSeleccionado : true;
-
-            const fecha = new Date(u.fechaCreacion);
-            const desde = this.fechaInicio ? new Date(this.fechaInicio) : null;
-            const hasta = this.fechaFin ? new Date(this.fechaFin) : null;
-
-            const fechaMatch =
-              (!desde || fecha >= desde) &&
-              (!hasta || fecha <= hasta);
-
-            return nombreCorreo && rolMatch && fechaMatch;
-          });*/
-
-          //this.dataSource.paginator = this.paginator;
         }
 
         this.loading = false;

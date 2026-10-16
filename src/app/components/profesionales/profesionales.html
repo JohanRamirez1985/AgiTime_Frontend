@@ -1,0 +1,76 @@
+<section class="profesionales-section">
+
+  <div class="profesionales-header">
+    <div>
+      <span class="section-eyebrow">
+        DISPONIBILIDAD
+      </span>
+
+      <h2>Profesionales disponibles</h2>
+
+      <p>
+        Selecciona el profesional con quien deseas
+        agendar tu cita.
+      </p>
+    </div>
+
+    <div class="professional-count">
+      <strong>{{ recursosList.length }}</strong>
+      <span>disponibles</span>
+    </div>
+  </div>
+
+  <ng-container *ngIf="recursosList && recursosList.length > 0; else noRecursos">
+
+    <div class="profesionales-grid">
+
+      <mat-card *ngFor="let usuario of recursosList" class="profesional-card" (click)="irAReservar(usuario)">
+
+        <div class="profesional-image">
+          <img [src]="usuario.foto || 'assets/img/sin_foto.jpg'" [alt]="'Foto de ' + usuario.nombre"
+            (error)="usuario.foto = 'assets/img/sin_foto.jpg'" />
+
+          <span class="online-indicator"></span>
+        </div>
+
+        <div class="profesional-info">
+          <span class="professional-label">
+            PROFESIONAL
+          </span>
+
+          <h3>{{ usuario.nombre }}</h3>
+        </div>
+
+        <div class="professional-arrow">
+          <mat-icon>arrow_forward</mat-icon>
+        </div>
+
+      </mat-card>
+    </div>
+  </ng-container>
+
+  <ng-template #noRecursos>
+    <div class="mensaje-vacio">
+
+      <div class="empty-icon">
+        <mat-icon>person_off</mat-icon>
+      </div>
+
+      <h3>No hay profesionales disponibles</h3>
+
+      <p>
+        Actualmente no encontramos profesionales
+        disponibles para esta sede.
+      </p>
+
+      <button mat-stroked-button (click)="cambiarSede()">
+
+        <mat-icon>swap_horiz</mat-icon>
+        Ver otras sedes
+
+      </button>
+
+    </div>
+  </ng-template>
+
+</section>

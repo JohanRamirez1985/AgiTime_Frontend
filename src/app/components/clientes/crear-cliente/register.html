@@ -96,16 +96,12 @@
 
         <mat-label>Correo electrónico</mat-label>
 
-        <input matInput type="email" name="user_email_{{ uniqueId }}" [(ngModel)]="email" required minlength="4"
+        <input matInput type="email" name="user_email_{{ uniqueId }}" [(ngModel)]="email" minlength="4"
           #emailInput="ngModel" autocomplete="off">
 
         <mat-icon matSuffix>email</mat-icon>
 
         <mat-error *ngIf="emailInput.invalid && emailInput.touched">
-
-          <span *ngIf="emailInput.errors?.['required']">
-            El correo es obligatorio.
-          </span>
 
           <span *ngIf="emailInput.errors?.['email']">
             Debe ser un correo válido.

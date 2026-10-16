@@ -25,6 +25,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ValidarVersion } from '../../../shared/validar-version/validar-version';
 import { environment } from '../../../../environments/environment';
+import { Profesionales } from '../../profesionales/profesionales';
 
 registerLocaleData(localeEs);
 
@@ -47,7 +48,8 @@ registerLocaleData(localeEs);
     MatDatepickerModule,
     MatNativeDateModule,
     MatTooltipModule,
-    ValidarVersion
+    ValidarVersion,
+    Profesionales
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'es' }],
   templateUrl: './cliente-agendar.html',
@@ -98,6 +100,16 @@ export class ClienteAgendar {
   gruposRecursos: any[] = [];
   mostrarModalRecursos = false;
   version = environment.version;
+  sedeSeleccionada: any = {};
+  idSedeSeleccoinada: number = 0;
+  mostrarRecursos: boolean = false;
+  recursosList: any[] = [];
+  mostrarInfoRecursos: boolean = false;
+  mensajeWsspEmpresa: string = '';
+  AgendarDespues: boolean = false;
+  TiempoAgendaDespues: number = 0;
+  MostrarAgendaCualquiera: boolean = false;
+  seleccionoCualquiera: boolean = false;
 
   constructor(
     private sharedServices: SharedService,
@@ -118,8 +130,19 @@ export class ClienteAgendar {
       this.idRecurso = +params['rcr'];
     });
     this.obtenerRangoParametrizado();
+    this.obtenerMensajesCliente();
     this.obtenerEmpresas();
     this.consultarInfoCliente();
+  }
+
+  private obtenerMensajesCliente(): void {
+    this.sharedServices.mensajesWhatsApp(this.idEmpresa.toString()).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          this.mensajeWsspEmpresa = rest.datos.find((h: any) => h.tipo === 'WhatsappCliente').mensaje;
+        }
+      },
+    });
   }
 
   private obtenerRangoParametrizado(): void {
@@ -136,9 +159,68 @@ export class ClienteAgendar {
           this.EnvioMensajeEmpresa =
             rest.datos.find((h: any) => h.tipo === 'EnvioMensajeEmpresa')
               ?.valor?.toLowerCase() === 'true';
+
+          this.AgendarDespues =
+            rest.datos.find((h: any) => h.tipo === 'AgendarDespues')
+              ?.valor?.toLowerCase() === 'true';
+
+          this.MostrarAgendaCualquiera =
+            rest.datos.find((h: any) => h.tipo === 'MostrarAgendaCualquiera')
+              ?.valor?.toLowerCase() === 'true';
+
+          const tiempoAgenda = rest.datos.find(
+            (h: any) =>
+              h.tipo === 'TiempoAgendaDespues' &&
+              h.estado === true
+          );
+
+          this.TiempoAgendaDespues = tiempoAgenda
+            ? Number(tiempoAgenda.valor)
+            : 0;
         }
       },
     });
+  }
+
+  public irAReservar(event: any) {
+    this.loading = true;
+    if (event.cualquierPf) {
+      const hora = {
+        disponible: true,
+        fecha: this.viewDate,
+        hora: ''
+      }
+      this.seleccionoCualquiera = true;
+      this.llamarModalRegistroCliente(hora);
+    } else {
+      this.mostrarRecursos = false;
+      this.mostrarServicios = false;
+      this.mostrarInfoRecursos = true;
+      this.recursoId = event.id;
+      this.idRecurso = this.recursoId;
+      this.seleccionoCualquiera = false;
+
+      const totalServicios = this.serviciosSeleccionados.reduce(
+        (total: number, s: any) => total + Number(s.valor || 0),
+        0
+      );
+
+      this.recursosSeleccionados = this.recursosSeleccionados
+        .filter((r: any) => r.id === this.recursoId)
+        .map((r: any) => ({
+          ...r,
+          detalles: this.serviciosSeleccionados.map((s: any) => s.nombre),
+          totalServicios
+        }));
+
+      this.obtenerHorarios(true);
+    }
+    this.cdr.detectChanges();
+  }
+
+  public cambiarSede() {
+    console.log();
+
   }
 
   private obtenerEmpresas() {
@@ -147,6 +229,8 @@ export class ClienteAgendar {
         if (rest.exito) {
           const empresa: any = rest.datos.find((em) => em.id === this.idEmpresa);
           const sedeSeleccionada: any = JSON.parse(localStorage.getItem('sedeSeleccionada') || '{}');
+          this.idSedeSeleccoinada = sedeSeleccionada.id;
+          this.sedeSeleccionada = sedeSeleccionada.nombre;
           this.empresaLogo = 'assets/img/' + empresa?.logo;
           this.empresaNombre = empresa?.nombre;
           this.empresaServicio = empresa.servicio;
@@ -242,25 +326,13 @@ export class ClienteAgendar {
             recurso = recurso.usuario.find(
               (r: any) => r.id === this.idRecurso
             );
-
-            this.fotoRecurso = recurso.foto;
-            this.nombreDelRecurso = recurso.nombre;
-            this.recursoId = recurso.id;
-            this.recursoSede = recurso.sede;
-
-            this.recursosSeleccionados.push({
-              id: 0,
-              nombre: this.nombreDelRecurso,
-              foto: this.fotoRecurso,
-              detalles: []
-            })
           }
 
-          if (this.EnvioMensajeEmpresa) {
-            this.telefonoRecurso = this.telefonoEmpresa;
-          } else {
-            this.telefonoRecurso = recurso.telefono;
-          }
+          // if (this.EnvioMensajeEmpresa) {
+          //   this.telefonoRecurso = this.telefonoEmpresa;
+          // } else {
+          //   this.telefonoRecurso = recurso.telefono;
+          // }
           this.obtenerServicios(this.idEmpresa);
           localStorage.setItem('recurso', JSON.stringify(recurso));
         }
@@ -288,7 +360,7 @@ export class ClienteAgendar {
           } else {
             this.serviciosFiltrados = rest.datos.filter(
               (s: any) =>
-                s.sede === this.recursoSede &&
+                s.sede === this.idSedeSeleccoinada &&
                 s.cliente === true &&
                 s.nombre !== 'Otro'
             );
@@ -402,8 +474,26 @@ export class ClienteAgendar {
       return tieneAnterior || tieneSiguiente;
     });
 
-    this.horasAM = horasValidas.filter((h) => h.hora.includes('AM'));
-    this.horasPM = horasValidas.filter((h) => h.hora.includes('PM'));
+    let horasFiltradas = [...horasValidas];
+
+    if (this.AgendarDespues) {
+
+      const minutosMinimos = Number(this.TiempoAgendaDespues) || 0;
+
+      // Hora actual + minutos mínimos de anticipación
+      const horaMinima = new Date();
+      horaMinima.setMinutes(horaMinima.getMinutes() + minutosMinimos);
+
+      horasFiltradas = horasValidas.filter((h: any) => {
+        const fechaHora = new Date(h.fecha);
+
+        return !isNaN(fechaHora.getTime()) && fechaHora.getTime() >= horaMinima.getTime();
+      });
+    }
+
+    // Separar las horas después de aplicar el filtro
+    this.horasAM = horasFiltradas.filter((h: any) => h.hora.includes('AM'));
+    this.horasPM = horasFiltradas.filter((h: any) => h.hora.includes('PM'));
     this.loading = false;
     this.mostrarServicios = false;
     this.mostrarDisponibilidad = true;
@@ -501,11 +591,12 @@ export class ClienteAgendar {
   reservarServicios(): void {
     this.validarVersionApp(() => {
       this.loading = true;
-      this.recursosSeleccionados[0].detalles =
-        this.serviciosSeleccionados.map(
-          (servicio: any) => servicio.nombre
-        );
-
+      if (this.recursosSeleccionados.length > 0) {
+        this.recursosSeleccionados[0].detalles =
+          this.serviciosSeleccionados.map(
+            (servicio: any) => servicio.nombre
+          );
+      }
       this.cdr.detectChanges();
       if (this.empresaRecursoMultiple) {
         this.obtenerHorarios(false);
@@ -534,7 +625,59 @@ export class ClienteAgendar {
 
         this.seleccionarRecursosModal(serviciosConRecursos);
       } else {
-        this.obtenerHorarios(true);
+        this.recursosList = this.recursosEmpresa
+          .filter((r: any) => r.sede === this.idSedeSeleccoinada)
+          .map((r: any) => ({
+            id: r.id,
+            nombre: r.nombre,
+            foto: r.foto,
+            telefono: r.telefono,
+            sede: this.sedeSeleccionada,
+            cualquierPf: false
+          }));
+
+        if (this.MostrarAgendaCualquiera) {
+          this.recursosList.unshift({
+            id: 0,
+            nombre: 'El primer profesional disponible',
+            foto: 'assets/img/Sin_foto.jpg',
+            telefono: '',
+            sede: this.sedeSeleccionada,
+            cualquierPf: true
+          });
+        }
+
+        this.recursosSeleccionados = this.recursosList;
+        this.loading = false;
+        this.mostrarServicios = false;
+        if (this.empresaServicio || this.empresaOrden) {
+          this.mostrarDisponibilidad = true;
+          this.mostrarInfoRecursos = true;
+          this.recursoId = this.recursosSeleccionados[0].id;
+          this.idRecurso = this.recursoId;
+          if (this.empresaOrden) {
+            this.recursosSeleccionados = this.recursosSeleccionados
+              .filter((r: any) => r.id === this.recursoId)
+              .map((r: any) => ({
+                ...r,
+                detalles: this.serviciosSeleccionados.map((s: any) => s.nombre)
+              }));
+          } else if (this.empresaServicio) {
+            this.recursosSeleccionados = this.recursosSeleccionados
+              .filter((r: any) => r.id === this.idEmpresa)
+              .map((r: any) => ({
+                ...r,
+                nombre: this.empresaNombre,
+                foto: this.empresaLogo,
+                detalles: this.serviciosSeleccionados.map((s: any) => s.nombre)
+              }));
+          }
+          this.obtenerHorarios(true);
+        } else {
+          this.mostrarRecursos = true;
+          this.mostrarDisponibilidad = false;
+        }
+        this.cdr.detectChanges();
       }
     })
   }
@@ -585,31 +728,36 @@ export class ClienteAgendar {
       }
     }
 
-
-    this.agendaService.consultarAgendamientos(request).subscribe({
-      next: (rest) => {
-        if (rest.exito) {
-          if (rest.diaCompletoBloqueado) {
-            this.horas.forEach((h) => {
-              h.disponible = false;
-            });
-          } else {
-            for (let i = 0; i < this.horas.length; i++) {
-              let disponible = true;
-              disponible = rest.horasOcupadas.find(
-                (h: any) => h === this.horas[i].hora
-              );
-              if (disponible) {
-                this.horas[i].disponible = false;
+    if (this.recursosSeleccionados.length > 0) {
+      this.agendaService.consultarAgendamientos(request).subscribe({
+        next: (rest) => {
+          if (rest.exito) {
+            if (rest.diaCompletoBloqueado) {
+              this.horas.forEach((h) => {
+                h.disponible = false;
+              });
+            } else {
+              for (let i = 0; i < this.horas.length; i++) {
+                let disponible = true;
+                disponible = rest.horasOcupadas.find(
+                  (h: any) => h === this.horas[i].hora
+                );
+                if (disponible) {
+                  this.horas[i].disponible = false;
+                }
               }
             }
-          }
 
-          this.horas = this.horas.filter((h) => h.disponible);
-        }
-        this.verificarHoras();
-      },
-    });
+            this.horas = this.horas.filter((h) => h.disponible);
+          }
+          this.verificarHoras();
+        },
+      });
+    } else {
+      this.loading = false;
+      this.cdr.detectChanges();
+    }
+
   }
 
   public nextPeriod(): void {
@@ -665,51 +813,7 @@ export class ClienteAgendar {
       horaDiponible = this.validarHoraDisponible(hora.hora);
 
       if (horaDiponible) {
-        const fechaFormateada = this.viewDate.toLocaleDateString('es-CO', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-
-        const valor = this.serviciosSeleccionados.map((s) => s.valor);
-        this.costo = valor.reduce((a, b) => a + b, 0);
-        const costoFormateado = new Intl.NumberFormat('es-CO', {
-          style: 'currency',
-          currency: 'COP',
-          minimumFractionDigits: 0,
-        }).format(this.costo);
-
-        const dialogRef = this.dialog.open(ReservaDialog, {
-          width: '400px',
-          data: {
-            fecha: fechaFormateada,
-            hora: hora.hora,
-            costo: costoFormateado,
-          },
-        });
-
-        const instance = dialogRef.componentInstance;
-
-        instance.celularIngresado.subscribe((celular: string) => {
-          const cliente = this.clientesEmpresa.find(
-            (c) => c.telefono === celular || c.celular === celular
-          );
-
-          if (cliente) {
-            instance.poblarDatos(cliente);
-          }
-        });
-
-        dialogRef.afterClosed().subscribe((result) => {
-          if (result) {
-            this.loading = true;
-            this.reservarCita(result, hora.hora);
-          } else {
-            this.loading = false;
-            this.cdr.detectChanges();
-          }
-        });
+        this.llamarModalRegistroCliente(hora);
       } else {
         const tiempoServicios = this.serviciosSeleccionados.reduce(
           (total, servicio) => total + servicio.tiempo,
@@ -727,6 +831,54 @@ export class ClienteAgendar {
         });
       }
     })
+  }
+
+  private llamarModalRegistroCliente(hora:any): void {
+    const fechaFormateada = this.viewDate.toLocaleDateString('es-CO', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    const valor = this.serviciosSeleccionados.map((s) => s.valor);
+    this.costo = valor.reduce((a, b) => a + b, 0);
+    const costoFormateado = new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+    }).format(this.costo);
+
+    const dialogRef = this.dialog.open(ReservaDialog, {
+      width: '400px',
+      data: {
+        fecha: fechaFormateada,
+        hora: hora.hora,
+        costo: costoFormateado,
+      },
+    });
+
+    const instance = dialogRef.componentInstance;
+
+    instance.celularIngresado.subscribe((celular: string) => {
+      const cliente = this.clientesEmpresa.find(
+        (c) => c.telefono === celular || c.celular === celular
+      );
+
+      if (cliente) {
+        instance.poblarDatos(cliente);
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loading = true;
+        this.reservarCita(result, hora.hora);
+      } else {
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   private reservarCita(
@@ -865,7 +1017,7 @@ export class ClienteAgendar {
       fechaNacimiento: string;
     }
   ) {
-    const fechaFinal = this.obtenerFechaIni(hora);
+    const fechaFinal = this.seleccionoCualquiera ? '' : this.obtenerFechaIni(hora);
     const serviciosSeleccionados = this.serviciosSeleccionados.map((s) => ({
       servicio: s.id,
     }));
@@ -1078,6 +1230,7 @@ export class ClienteAgendar {
             FechaNacimiento: datos.fechaNacimiento,
           },
           fechaCreacion: fechaLocal,
+          seleccionoCualquiera: this.seleccionoCualquiera
         };
       }
       return json;
@@ -1087,54 +1240,50 @@ export class ClienteAgendar {
   private mensajeWssp(request: any, datos: any, enviaMensaje: boolean): void {
 
     const fecha = new Date(request.FechaIni);
-
     const nombresServicios = this.serviciosSeleccionados
       .map((s: any) => s.nombre)
       .join(', ');
-
     const fechaFormateada = fecha.toLocaleDateString('es-CO');
-
     const horaFormateada = fecha.toLocaleTimeString('es-CO', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true
     });
+    const recurso: string = this.recursosSeleccionados
+      .map(r => r.nombre)
+      .join(', ');
 
-    let recurso: string = '';
+    let tel: string = '';
 
-    if (this.empresaServicio) {
-      recurso = this.empresaNombre
+    if (this.EnvioMensajeEmpresa) {
+      tel = this.telefonoEmpresa;
     } else {
-      if (this.empresaRecursoMultiple) {
-        recurso = this.recursosSeleccionados
-          .map(r => r.nombre)
-          .join(', ');
-      } else {
-        recurso = JSON.parse(localStorage.getItem('recurso') || '{}').nombre;
-      }
+      tel = this.recursosSeleccionados[0].telefono;
     }
 
-    const mensaje = `📅 ¡Hola ${this.empresaNombre}!
+    let mensaje = this.mensajeWsspEmpresa || '';
 
-          Te informo que acabo de agendar una cita en ${this.empresaNombre}.
+    mensaje = mensaje
+      .replace(/\$\{empresaNombre\}/g, this.empresaNombre)
+      .replace(/\$\{recurso\}/g, recurso)
+      .replace(/\$\{fechaFormateada\}/g, fechaFormateada)
+      .replace(/\$\{horaFormateada\}/g, horaFormateada)
+      .replace(/\$\{nombresServicios\}/g, nombresServicios)
+      .replace(/\$\{nombreCliente\}/g, datos.nombre)
+      .replace(
+        /\$\{enviaMensaje\s*\?\s*"⚠️ Observación: Validar horario\."\s*:\s*""\}/g,
+        enviaMensaje ? '⚠️ Observación: Validar horario.' : ''
+      );
 
-          👤 Profesional: ${recurso}
-          📅 Fecha: ${fechaFormateada}
-          🕐 Hora: ${horaFormateada}
-          ✨ Servicios: ${nombresServicios}
-          🙋 Cliente: ${datos.nombre}
-          ${enviaMensaje ? "⚠️ Observación: Validar horario." : ""}
-
-          ✅ La cita ha sido registrada correctamente.
-
-          ¡Nos vemos ese día! Muchas gracias por elegir ${this.empresaNombre}. 🙌`;
-
-    const numero = '57' + this.telefonoRecurso;
-
+    const numero = '57' + tel;
     const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
+    console.log(mensaje);
+
+
     if (esMovil) {
-      window.location.href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
+      window.location.href =
+        `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
     } else {
       window.open(
         `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`,
@@ -1379,6 +1528,7 @@ export class ClienteAgendar {
     });
 
     if (result.isConfirmed) {
+      this.mostrarInfoRecursos = true;
       this.ordenarCabecera(seleccionados);
       this.consultarHorariosOcupadosRecurso(this.viewDate)
     } else {

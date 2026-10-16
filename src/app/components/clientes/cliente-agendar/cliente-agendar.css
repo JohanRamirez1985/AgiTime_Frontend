@@ -370,7 +370,6 @@ button.hora-no-disponible {
   width: 64px;
   height: 64px;
   border-radius: 8px;
-  object-fit: cover;
   border: 1px solid #ddd;
 }
 
@@ -488,4 +487,28 @@ button.hora-no-disponible {
   border-top: none;
   padding: 12px 20px;
   text-align: center;
+}
+
+.total-servicios {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--app-background);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.total-servicios span {
+  font-size: 13px;
+  color: var(--app-text);
+}
+
+.total-servicios strong {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--app-text);
+  white-space: nowrap;
 }
