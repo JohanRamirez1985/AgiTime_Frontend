@@ -132,7 +132,7 @@ export class Toolbar implements OnInit {
     {
       codigo: 'crt',
       label: 'Recordatorio clientes',
-      icon: 'percent',
+      icon: 'chat',
       route: '/admin/clientesRecordatorio/informacioncliente'
     },
 
