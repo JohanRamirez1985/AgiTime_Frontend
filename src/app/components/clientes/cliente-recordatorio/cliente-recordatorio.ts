@@ -100,7 +100,7 @@ export class ClienteRecordatorio {
     this.startBtnValidation();
   }
 
-    private obtenerMensajesWssp(): void {
+  private obtenerMensajesWssp(): void {
     this.sharedServices.mensajesWhatsApp(this.idEmpresa.toString()).subscribe({
       next: (rest) => {
         if (rest.exito) {
@@ -115,11 +115,15 @@ export class ClienteRecordatorio {
   }
 
   envioMensaje(recurso: any) {
-    const mensaje = this.mensajeWssp || '';
+    let mensaje = this.mensajeWssp || '';
+    mensaje = mensaje
+      .replace('${dias}', String(this.dias))
+      .split('✂️')[0]
+      .replace(/\\r\\n/g, '\n')
+      .trim();
     const numero = '57' + recurso.telefono;
     const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-
+  
     if (esMovil) {
       window.location.href =
         `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
