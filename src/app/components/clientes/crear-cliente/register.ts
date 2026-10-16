@@ -108,9 +108,11 @@ export class Register {
 
     let mensaje = this.mensajeWsspEmpresa || '';
 
-    mensaje = (this.mensajeWsspEmpresa || '')
+    mensaje = mensaje
+      .replace(/\$\{nombreCliente\}/g, String(this.nombre))
       .replace(/\\n/g, '\n')
       .replace(/\\u200D/g, '\u200D')
+      .replace(/\\https:/g, 'https:')
       .replace(/^[ \t]+/gm, '')
       .trim();
 

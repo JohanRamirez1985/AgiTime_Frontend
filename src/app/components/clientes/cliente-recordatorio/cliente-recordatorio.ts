@@ -116,10 +116,14 @@ export class ClienteRecordatorio {
 
   envioMensaje(recurso: any) {
     let mensaje = this.mensajeWssp || '';
+
     mensaje = mensaje
+      .replace(/\$\{nombreCliente\}/g, String(recurso.nombre))
       .replace(/\$\{dias\}/g, String(this.dias))
       .replace(/\\r\\n/g, '\n')
+      .replace(/\\https:/g, 'https:')
       .trim();
+
     const numero = '57' + recurso.telefono;
     const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
