@@ -132,7 +132,6 @@ export class ClienteRecordatorio {
         '_blank'
       );
     }
-    this.dias = 15;
     this.loading = true;
     this.consultarClientes();
   }
