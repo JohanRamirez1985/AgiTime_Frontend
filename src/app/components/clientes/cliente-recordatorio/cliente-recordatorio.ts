@@ -19,6 +19,8 @@ import Swal from 'sweetalert2';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ClienteService } from '../../../services/cliente.service';
 import { Table } from '../../transversales/table/table';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-cliente-recordatorio',
@@ -65,16 +67,23 @@ export class ClienteRecordatorio {
   user: any;
   acciones: any[] = [
     { 
-      icon: 'edit', 
+      icon: 'whatsapp', 
       label: 'Envio Mensaje', 
       action: (element: any) => this.envioMensaje(element) 
     },
   ];
   
   constructor(
-    private clienteServie: ClienteService
+    private clienteServie: ClienteService,
+    private matIconRegistry: MatIconRegistry,
+    private domSanitizer: DomSanitizer
   ) {
-
+      this.matIconRegistry.addSvgIcon(
+      'whatsapp',
+      this.domSanitizer.bypassSecurityTrustResourceUrl(
+        'assets/img/whatsapp.svg'
+      )
+    );
   }
 
   ngOnInit() {
@@ -189,9 +198,13 @@ export class ClienteRecordatorio {
 
     this.clienteServie.obtenerClienteRecordatorio(idEmpresa,Number(this.dias)).subscribe({
       next: res => {
-        if (res.exito) {
+        this.clienteRecordatorio = [];
+        this.clienteRecordatorioFiltrados = [];
+        this.dataSource.data = [];
+        if (res.exito && res.datos) {
           this.clienteRecordatorio = res.datos;
           this.clienteRecordatorioFiltrados = this.clienteRecordatorio;
+          this.dataSource.data = res.datos;
 
           /*this.dataSource.data = this.clienteRecordatorio.filter(u => {
             const texto = this.filtro.toLowerCase();
@@ -210,12 +223,16 @@ export class ClienteRecordatorio {
             return nombreCorreo && rolMatch && fechaMatch;
           });*/
 
-          // this.dataSource.paginator = this.paginator;
+          //this.dataSource.paginator = this.paginator;
         }
 
         this.loading = false;
       },
       error: err => {
+        this.clienteRecordatorio = [];
+        this.clienteRecordatorioFiltrados = [];
+        this.dataSource.data = [];
+
         this.loading = false;
         console.error('Error al obtener cliente:', err);
       }
