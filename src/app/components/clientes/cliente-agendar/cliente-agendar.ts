@@ -1230,7 +1230,8 @@ export class ClienteAgendar {
             FechaNacimiento: datos.fechaNacimiento,
           },
           fechaCreacion: fechaLocal,
-          seleccionoCualquiera: this.seleccionoCualquiera
+          seleccionoCualquiera: this.seleccionoCualquiera,
+          sede: this.idSedeSeleccoinada
         };
       }
       return json;
