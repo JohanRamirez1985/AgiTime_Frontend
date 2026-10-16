@@ -117,13 +117,12 @@ export class ClienteRecordatorio {
   envioMensaje(recurso: any) {
     let mensaje = this.mensajeWssp || '';
     mensaje = mensaje
-      .replace('${dias}', String(this.dias))
-      .split('✂️')[0]
+      .replace(/\$\{dias\}/g, String(this.dias))
       .replace(/\\r\\n/g, '\n')
       .trim();
     const numero = '57' + recurso.telefono;
     const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  
+
     if (esMovil) {
       window.location.href =
         `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
