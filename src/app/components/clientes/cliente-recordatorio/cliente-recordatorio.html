@@ -22,6 +22,7 @@
     mat-flat-button
     color="primary"
     type="submit"
+    (click)="consultar()"
     [disabled]="btnConsultar || loading">
     <mat-icon>search</mat-icon>
     Consultar
@@ -29,7 +30,7 @@
 
 </div>
 
-<form class="filtros" (ngSubmit)="consultar()">
+<form class="filtros">
   <div class="filtros-grid">
     <mat-form-field appearance="outline">
       <mat-label>Buscar por nombre</mat-label>

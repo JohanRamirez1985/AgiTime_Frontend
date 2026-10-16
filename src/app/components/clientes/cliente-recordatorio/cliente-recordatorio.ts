@@ -173,7 +173,7 @@ export class ClienteRecordatorio {
 }
   
   public consultar(): void {
-
+    this.consultarClientes();
   }
 
   public consultarClientes(): void {
@@ -187,7 +187,7 @@ export class ClienteRecordatorio {
 
     this.loading = true;
 
-    this.clienteServie.obtenerClienteRecordatorio(idEmpresa).subscribe({
+    this.clienteServie.obtenerClienteRecordatorio(idEmpresa,Number(this.dias)).subscribe({
       next: res => {
         if (res.exito) {
           this.clienteRecordatorio = res.datos;
