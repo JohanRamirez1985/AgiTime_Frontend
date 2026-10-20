@@ -30,7 +30,7 @@
 
                 <div>
                     <span>Cliente</span>
-                    <strong>{{ data.cliente }}</strong>
+                    <strong>{{ data.cliente ? data.cliente : data.nombreCliente }}</strong>
                 </div>
             </div>
 
@@ -63,7 +63,7 @@
 
                 <div>
                     <span>Hora cita</span>
-                    <strong>{{ data.hora }}</strong>
+                    <strong>{{ data.hora ? data.hora : this.data.fechaInicio.split('T')[1] }}</strong>
                 </div>
             </div>
 

@@ -133,7 +133,14 @@ export class Toolbar implements OnInit {
       codigo: 'crt',
       label: 'Recordatorio clientes',
       icon: 'chat',
-      route: '/admin/clientesRecordatorio/informacioncliente'
+      route: '/admin/clientesRecordatorio/recordatorio'
+    },
+
+    {
+      codigo: 'fid',
+      label: 'Fidelidad clientes',
+      icon: 'card_giftcard',
+      route: '/admin/clientesFidelidad/Fidelidad'
     },
 
   ];

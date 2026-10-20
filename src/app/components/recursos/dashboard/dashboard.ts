@@ -2174,22 +2174,87 @@ export class DashboardRecurso {
         resultadoAlterno.push(element)
       });
 
-      json = {
-        FechaIni: fechaFinal,
-        empresa: this.idEmpresa,
-        UsuarioCreacion: 'Usuario',
-        fechaCreacion: fechaLocal,
-        clienteInfo: {
-          Nombre: result.nombre,
-          Telefono: result.celular,
-          Correo: result.correo,
-          FechaNacimiento: result.fechaNacimiento,
-        },
-        citas: resultadoAlterno,
-        validaHorario: this.cruzeHorario
-      }
-      return json;
+      if (this.empresaRecursoMultiple) {
 
+        const formatearFecha = (fecha: Date): string => {
+          const año = fecha.getFullYear();
+          const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+          const dia = String(fecha.getDate()).padStart(2, '0');
+          const hora = String(fecha.getHours()).padStart(2, '0');
+          const minutos = String(fecha.getMinutes()).padStart(2, '0');
+          const segundos = String(fecha.getSeconds()).padStart(2, '0');
+
+          return `${año}-${mes}-${dia}T${hora}:${minutos}:${segundos}`;
+        };
+        const agrupados = Object.values(
+          this.serviciosSeleccionados.reduce((acc: any, element: any) => {
+
+            if (!acc[element.recurso]) {
+              acc[element.recurso] = {
+                FechaIni: fechaFinal,
+                recurso: element.recurso,
+                validaciones: element.validaciones,
+                Hora: 0,
+                Valor: 0,
+                servicios: []
+              };
+            }
+
+            acc[element.recurso].Hora += element.tiempo;
+            acc[element.recurso].Valor += Number(element.valor);
+            acc[element.recurso].servicios.push({
+              servicio: element.id
+            });
+
+            return acc;
+
+          }, {})
+        ).sort((a: any, b: any) =>
+          Number(a.validaciones) - Number(b.validaciones)
+        );
+
+        let fechaInicio = new Date(fechaFinal);
+
+        agrupados.forEach((item: any) => {
+          item.FechaIni = formatearFecha(fechaInicio);
+          fechaInicio = new Date(
+            fechaInicio.getTime() + item.Hora * 60000
+          );
+        });
+
+        json = {
+          FechaIni: fechaFinal,
+          empresa: this.idEmpresa,
+          UsuarioCreacion: 'Cliente',
+          fechaCreacion: fechaLocal,
+          clienteInfo: {
+            Nombre: result.nombre,
+            Telefono: result.celular,
+            Correo: result.correo,
+            FechaNacimiento: result.fechaNacimiento,
+          },
+          citas: agrupados,
+          validaHorario: true
+        }
+        return json;
+      } else {
+
+        json = {
+          FechaIni: fechaFinal,
+          empresa: this.idEmpresa,
+          UsuarioCreacion: 'Usuario',
+          fechaCreacion: fechaLocal,
+          clienteInfo: {
+            Nombre: result.nombre,
+            Telefono: result.celular,
+            Correo: result.correo,
+            FechaNacimiento: result.fechaNacimiento,
+          },
+          citas: resultadoAlterno,
+          validaHorario: this.cruzeHorario
+        }
+        return json;
+      }
     } else {
       if (this.tipoOrden) {
         let servicios = this.serviciosSeleccionados.map((s) => ({

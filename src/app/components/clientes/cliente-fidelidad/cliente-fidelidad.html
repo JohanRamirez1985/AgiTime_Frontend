@@ -1,0 +1,36 @@
+<div class="productos-card">
+  <h2>Gestion de fidelidad de clientes</h2>
+  <!-- Formulario de filtros -->
+  <form class="filtros" (ngSubmit)="consultarClientes()">
+    <div class="filtros-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Buscar por nombre</mat-label>
+        <input matInput [(ngModel)]="filtro" name="filtro" placeholder="Nombre o correo" (ngModelChange)="filtrarCliente($event)" />
+      </mat-form-field>
+
+    </div>
+  </form>
+
+  <app-table 
+    *ngIf="!isMobileView"
+    [data]="clientesFiltrados" 
+    [columns]="columnas"
+    [actions]="acciones"
+    [loading]="loading">
+  </app-table>
+
+
+   <!-- Vista tipo tarjetas en móvil -->
+  <div *ngIf="isMobileView" class="productos-cards">
+    <mat-card *ngFor="let cli of clientesFiltrados" class="producto-card mat-elevation-z4">
+      <h3>{{ cli.nombre }}</h3>
+      <p><strong>Telefono:</strong> {{ cli.telefono }}</p>
+      <p><strong>Fidelidad:</strong> {{ cli.cantidad }}</p>
+      <div class="acciones-cell">
+        <button mat-icon-button color="accent" (click)="editarElemento(cli)">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+    </mat-card>
+  </div>
+</div>
