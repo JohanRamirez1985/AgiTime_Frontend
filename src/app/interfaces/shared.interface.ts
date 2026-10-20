@@ -100,6 +100,8 @@ export interface ClienteRegistro {
   empresa: number;
   FechaCreacion: string;
   ultimaFechaAsistio?: string | null;
+  cantidad?: number | null;
+  Id?: number;
 }
 
 

@@ -30,4 +30,17 @@ export class ClienteService {
       params: { emp: emp.toString(), dias: dias.toString() },
     });
   }
+
+  obtenerClienteFidelidad(emp: string) {
+    return this.http.get<any>(`${this.baseUrlUsuario}/clientesFidelidad`, {
+      params: { emp: emp.toString() },
+    });
+  }
+
+  editarFidelidad(request: ClienteRegistro) {
+    return this.http.post<ClienteRegistroResponse>(
+      `${this.baseUrlUsuario}/editarFidelidad`,
+      request
+    );
+  }
 }
