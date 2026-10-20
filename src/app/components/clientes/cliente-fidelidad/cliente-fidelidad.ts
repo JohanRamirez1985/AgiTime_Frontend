@@ -132,6 +132,7 @@ export class ClienteFidelidad {
                 timer: 2500,
                 showConfirmButton: false
               });
+              this.consultarClientes();
             } else {
               Swal.fire({
                 icon: 'warning',
