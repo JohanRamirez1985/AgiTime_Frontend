@@ -48,6 +48,8 @@ export class EdicionCitas {
   horaSeleccionada: string = '';
   fechaSeleccionada: Date = new Date();
   dialogRef = inject(MatDialogRef<EdicionCitas>);
+  empresaRecursoMultiple: boolean = false;
+  user: any = '';
 
   constructor(
     private sharedServices: SharedService,
@@ -56,10 +58,12 @@ export class EdicionCitas {
   ) { }
 
   ngOnInit() {
+    this.user = JSON.parse(localStorage.getItem('usuario') || '');
     this.fechaSeleccionada = new Date(this.data.fechaInicio);
-    this.horaSeleccionada = this.data.hora;
+    this.horaSeleccionada = this.data.hora ? this.data.hora : this.data.fechaInicio.split('T')[1];
     this.empresa = JSON.parse(localStorage.getItem('empresa') || '');
     this.idEmpresa = this.empresa.id;
+    this.empresaRecursoMultiple = this.empresa.recursoMultiple;
     this.obtenerServicios(this.idEmpresa);
     this.obtenerHorarios(this.empresa);
   }
@@ -227,7 +231,10 @@ export class EdicionCitas {
     this.sharedServices.obtenerServicios(emp).subscribe({
       next: (rest) => {
         if (rest.exito) {
-          this.serviciosDisponibles = rest.datos;
+          if(this.empresaRecursoMultiple)
+            this.serviciosDisponibles = rest.datos.filter((servicio: any) => servicio.recurso === this.user.id);
+          else
+            this.serviciosDisponibles = rest.datos;
           this.serviciosFiltrados = this.serviciosDisponibles;
           this.ordenarSeleccionados();
         }
@@ -236,9 +243,19 @@ export class EdicionCitas {
   }
 
   private ordenarSeleccionados() {
-    const serviciosSeleccionados = this.data.nombre
+    let serviciosSeleccionados: string[] = [];
+    if(this.empresaRecursoMultiple)
+    {
+      serviciosSeleccionados = this.data.servicios.map(
+        (s: any) => s.nombre
+      );
+    }
+    else
+    {
+      serviciosSeleccionados = this.data.nombre
       .split(',')
       .map((s: string) => s.trim());
+    }
 
     this.serviciosSeleccionados = this.serviciosDisponibles
       .filter((servicio: any) =>

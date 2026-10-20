@@ -116,14 +116,14 @@
                   <span>Cancelar</span>
                 </button>
 
-                <button *ngIf="cita.estado === 'Activo' && empresaServicio" mat-icon-button
+                <button *ngIf="cita.estado === 'Activo' && (empresaServicio || empresaRecursoMultiple)" mat-icon-button
                   [matMenuTriggerFor]="menuAcciones" class="btn-menu">
                   <mat-icon>more_vert</mat-icon>
                 </button>
 
                 <mat-menu #menuAcciones="matMenu">
 
-                  <button *ngIf="empresaServicio" mat-menu-item (click)="editarCita(cita)">
+                  <button *ngIf="empresaServicio || empresaRecursoMultiple" mat-menu-item (click)="editarCita(cita)">
                     <mat-icon>edit</mat-icon>
                     <span>Editar</span>
                   </button>
