@@ -159,12 +159,50 @@ export class EdicionCitas {
 
     if (this.empresaRecursoMultiple)
     {
+        const agrupados = Object.values(
+          this.serviciosSeleccionados.reduce((acc: any, element: any) => {
+
+            if (!acc[element.recurso]) {
+              acc[element.recurso] = {
+                FechaIni: this.formatearFecha(this.ordenarFechaCita()),
+                recurso: element.recurso,
+                validaciones: element.validaciones,
+                Hora: 0,
+                Valor: 0,
+                servicios: []
+              };
+            }
+
+            acc[element.recurso].Hora += element.tiempo;
+            acc[element.recurso].Valor += Number(element.valor);
+            acc[element.recurso].servicios.push({
+              servicio: element.id
+            });
+
+            return acc;
+
+          }, {})
+        ).sort((a: any, b: any) =>
+          Number(a.validaciones) - Number(b.validaciones)
+        );
+
+        let fechaInicio = new Date(this.formatearFecha(this.ordenarFechaCita()));
+
+        agrupados.forEach((item: any) => {
+          item.FechaIni = this.formatearFecha(this.ordenarFechaCita());
+          fechaInicio = new Date(
+            fechaInicio.getTime() + item.Hora * 60000
+          );
+        });
+
+
+
       request = {
         FechaIni: this.formatearFecha(this.ordenarFechaCita()),
         empresa: this.idEmpresa,
         UsuarioCreacion: 'Usuario',
         fechaCreacion: this.formatearFecha(new Date()),
-        citas: resultadoAlterno,
+        citas: agrupados,
         Id: this.data.id,
         clienteInfo: {
           Telefono: this.data.telefonoCliente,
