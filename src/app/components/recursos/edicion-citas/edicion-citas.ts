@@ -155,17 +155,36 @@ export class EdicionCitas {
       resultadoAlterno.push(element)
     });
 
-    const request = {
-      FechaIni: this.formatearFecha(this.ordenarFechaCita()),
-      empresa: this.idEmpresa,
-      UsuarioCreacion: 'Usuario',
-      fechaCreacion: this.formatearFecha(new Date()),
-      citas: resultadoAlterno,
-      Id: this.data.padre,
-      clienteInfo: {
-        Telefono: this.data.telefono,
-      },
-    };
+    let request = {};
+
+    if (this.empresaRecursoMultiple)
+    {
+      request = {
+        FechaIni: this.formatearFecha(this.ordenarFechaCita()),
+        empresa: this.idEmpresa,
+        UsuarioCreacion: 'Usuario',
+        fechaCreacion: this.formatearFecha(new Date()),
+        citas: resultadoAlterno,
+        Id: this.data.id,
+        clienteInfo: {
+          Telefono: this.data.telefonoCliente,
+        },
+      };
+    }
+    else
+    {
+      request = {
+        FechaIni: this.formatearFecha(this.ordenarFechaCita()),
+        empresa: this.idEmpresa,
+        UsuarioCreacion: 'Usuario',
+        fechaCreacion: this.formatearFecha(new Date()),
+        citas: resultadoAlterno,
+        Id: this.data.padre,
+        clienteInfo: {
+          Telefono: this.data.telefono,
+        },
+      };
+    }
 
     this.agendamientoService.modificarCita(request)
       .subscribe({
