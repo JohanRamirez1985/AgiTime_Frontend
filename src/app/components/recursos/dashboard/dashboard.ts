@@ -803,7 +803,7 @@ export class DashboardRecurso {
       next: (rest) => {
         if (rest.exito) {
           this.serviciosFiltrados = [...rest.datos];
-          if (this.empresaRecursoMultiple) {
+          if (this.empresaRecursoMultiple || this.empresa.id == 14) {
             this.serviciosFiltrados = this.serviciosFiltrados.filter(
               (s) => s.recurso === this.user.id
             );
