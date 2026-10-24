@@ -663,14 +663,25 @@ export class ClienteAgendar {
                 detalles: this.serviciosSeleccionados.map((s: any) => s.nombre)
               }));
           } else if (this.empresaServicio) {
-            this.recursosSeleccionados = this.recursosSeleccionados
-              .filter((r: any) => r.id === this.idEmpresa)
-              .map((r: any) => ({
-                ...r,
-                nombre: this.empresaNombre,
-                foto: this.empresaLogo,
-                detalles: this.serviciosSeleccionados.map((s: any) => s.nombre)
-              }));
+            if (this.idEmpresa == 8)
+            {
+              this.recursosSeleccionados = this.recursosSeleccionados
+                .filter((r: any) => r.id === this.idEmpresa)
+                .map((r: any) => ({
+                  ...r,
+                  nombre: this.empresaNombre,
+                  foto: this.empresaLogo,
+                  detalles: this.serviciosSeleccionados.map((s: any) => s.nombre)
+                }));
+            }
+            else
+            {
+              const recursoId = this.serviciosSeleccionados[0]?.recurso;
+
+              this.recursosSeleccionados = this.recursosSeleccionados.filter(
+                r => r.id === recursoId
+              );
+            }
           }
           this.obtenerHorarios(true);
         } else {
