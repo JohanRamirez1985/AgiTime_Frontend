@@ -209,7 +209,7 @@ export class Informes {
       request = await this.diario();
     }
 
-    if ((this.tipoReporte === 'semanal' || this.tipoReporte === 'info') && this.usuario.rol == 3 && this.idEmpresa === '2') {
+    if ((this.tipoReporte === 'semanal' || this.tipoReporte === 'info') && this.usuario.rol == 3) {
       request = await this.semanalEmpleado();
     } else {
       if (this.tipoReporte === 'semanal' || this.tipoReporte === 'info') {
