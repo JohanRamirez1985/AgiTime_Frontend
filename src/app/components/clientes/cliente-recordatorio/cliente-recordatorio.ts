@@ -61,9 +61,7 @@ export class ClienteRecordatorio {
   mensajeWssp: string = '';
 
   columnas = [
-    { key: 'nombre', label: 'Nombre' },
-    { key: 'ultimaFechaAsistio', label: 'Fecha ultima visita' },
-    { key: 'FechaCreacion', label: 'Fecha creado en la app' }
+    { key: 'nombre', label: 'Nombre' }
   ];
 
   idEmpresa: number = 0;
@@ -111,6 +109,15 @@ export class ClienteRecordatorio {
       },
     });
   }
+
+  obtenerColumnas() {
+  this.columnas = [
+    { key: 'nombre', label: 'Nombre' },
+    ...(this.tipo === 1
+      ? [{ key: 'ultimaFechaAsistio', label: 'Fecha última visita' }]
+      : [{ key: 'fechaCreacion', label: 'Fecha creado en la app' }])
+  ];
+}
 
   checkResponsive(): void {
     this.isMobileView = window.innerWidth <= 768;
@@ -173,7 +180,7 @@ export class ClienteRecordatorio {
       console.warn('No se encontró ID de empresa en el localStorage');
       return;
     }
-
+    this.obtenerColumnas();
     this.loading = true;
 
     this.clienteServie.obtenerClienteRecordatorio(idEmpresa, Number(this.dias), Number(this.tipo)).subscribe({
