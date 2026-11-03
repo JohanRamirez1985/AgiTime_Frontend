@@ -47,6 +47,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class ClienteRecordatorio {
   filtro = '';
   dias: number | null = 15;
+  tipo: number = 1;
   btnConsultar = false;
   rolSeleccionado = '';
   fechaInicio: Date | null = null;
@@ -61,7 +62,8 @@ export class ClienteRecordatorio {
 
   columnas = [
     { key: 'nombre', label: 'Nombre' },
-    { key: 'ultimaFechaAsistio', label: 'Fecha ultima visita' }
+    { key: 'ultimaFechaAsistio', label: 'Fecha ultima visita' },
+    { key: 'FechaCreacion', label: 'Fecha creado en la app' }
   ];
 
   idEmpresa: number = 0;
@@ -174,7 +176,7 @@ export class ClienteRecordatorio {
 
     this.loading = true;
 
-    this.clienteServie.obtenerClienteRecordatorio(idEmpresa, Number(this.dias)).subscribe({
+    this.clienteServie.obtenerClienteRecordatorio(idEmpresa, Number(this.dias), Number(this.tipo)).subscribe({
       next: res => {
         this.clienteRecordatorio = [];
         this.clienteRecordatorioFiltrados = [];

@@ -5,6 +5,14 @@
   <div class="filtros-container">
 
     <mat-form-field appearance="outline">
+      <mat-label>Tipo de recordatorio</mat-label>
+      <mat-select name="tipo" [(ngModel)]="tipo" required>
+        <mat-option [value]="1">Clientes que no han vuelto a asistir</mat-option>
+        <mat-option [value]="2">Clientes registrados sin citas</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
       <mat-label>Días sin asistir</mat-label>
       <input matInput type="number" name="dias" [(ngModel)]="dias" min="1" step="1" required placeholder="Ej. 15" />
     </mat-form-field>
@@ -38,9 +46,14 @@
 
       <h3>{{ cli.nombre }}</h3>
 
-      <p>
+      <p *ngIf="tipo === 1">
         <strong>Fecha última visita:</strong>
         {{ cli.ultimaFechaAsistio }}
+      </p>
+
+      <p *ngIf="tipo === 2">
+        <strong>Fecha de registro:</strong>
+        {{ cli.FechaCreacion }}
       </p>
 
       <div class="acciones-cell">
