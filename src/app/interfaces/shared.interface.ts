@@ -102,6 +102,7 @@ export interface ClienteRegistro {
   ultimaFechaAsistio?: string | null;
   cantidad?: number | null;
   Id?: number;
+  fechaCreacion?: string;
 }
 
 

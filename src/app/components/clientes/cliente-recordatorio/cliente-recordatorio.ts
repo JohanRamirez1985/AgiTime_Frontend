@@ -47,6 +47,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class ClienteRecordatorio {
   filtro = '';
   dias: number | null = 15;
+  tipo: number = 1;
   btnConsultar = false;
   rolSeleccionado = '';
   fechaInicio: Date | null = null;
@@ -60,8 +61,7 @@ export class ClienteRecordatorio {
   mensajeWssp: string = '';
 
   columnas = [
-    { key: 'nombre', label: 'Nombre' },
-    { key: 'ultimaFechaAsistio', label: 'Fecha ultima visita' }
+    { key: 'nombre', label: 'Nombre' }
   ];
 
   idEmpresa: number = 0;
@@ -109,6 +109,15 @@ export class ClienteRecordatorio {
       },
     });
   }
+
+  obtenerColumnas() {
+  this.columnas = [
+    { key: 'nombre', label: 'Nombre' },
+    ...(this.tipo === 1
+      ? [{ key: 'ultimaFechaAsistio', label: 'Fecha última visita' }]
+      : [{ key: 'fechaCreacion', label: 'Fecha creado en la app' }])
+  ];
+}
 
   checkResponsive(): void {
     this.isMobileView = window.innerWidth <= 768;
@@ -171,10 +180,10 @@ export class ClienteRecordatorio {
       console.warn('No se encontró ID de empresa en el localStorage');
       return;
     }
-
+    this.obtenerColumnas();
     this.loading = true;
 
-    this.clienteServie.obtenerClienteRecordatorio(idEmpresa, Number(this.dias)).subscribe({
+    this.clienteServie.obtenerClienteRecordatorio(idEmpresa, Number(this.dias), Number(this.tipo)).subscribe({
       next: res => {
         this.clienteRecordatorio = [];
         this.clienteRecordatorioFiltrados = [];
