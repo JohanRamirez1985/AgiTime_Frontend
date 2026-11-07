@@ -663,8 +663,7 @@ export class ClienteAgendar {
                 detalles: this.serviciosSeleccionados.map((s: any) => s.nombre)
               }));
           } else if (this.empresaServicio) {
-            if (this.idEmpresa == 8)
-            {
+            if (this.idEmpresa == 8) {
               this.recursosSeleccionados = this.recursosSeleccionados
                 .filter((r: any) => r.id === this.idEmpresa)
                 .map((r: any) => ({
@@ -674,8 +673,7 @@ export class ClienteAgendar {
                   detalles: this.serviciosSeleccionados.map((s: any) => s.nombre)
                 }));
             }
-            else
-            {
+            else {
               const recursoId = this.serviciosSeleccionados[0]?.recurso;
 
               this.recursosSeleccionados = this.recursosSeleccionados.filter(
@@ -844,7 +842,7 @@ export class ClienteAgendar {
     })
   }
 
-  private llamarModalRegistroCliente(hora:any): void {
+  private llamarModalRegistroCliente(hora: any): void {
     const fechaFormateada = this.viewDate.toLocaleDateString('es-CO', {
       weekday: 'long',
       year: 'numeric',
@@ -1351,18 +1349,11 @@ export class ClienteAgendar {
 
     let conflicto;
 
-    if (
-      this.horas.findIndex((h) => h.hora === hora) ===
-      this.horas.length - 2
-    ) {
-      conflicto =
-        !this.horas[this.horas.findIndex((h) => h.hora === hora) + 1]
-          .disponible;
-    } else {
-      conflicto = horasGeneradas.find(
-        (h) => !this.horas.some((x) => x.hora === h)
-      );
-    }
+    conflicto = horasGeneradas.some(horaGenerada => {
+      const horario = this.horas.find(h => h.hora === horaGenerada);
+
+      return !horario || !horario.disponible;
+    });
 
     if (conflicto) {
       return false;
