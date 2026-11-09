@@ -353,40 +353,47 @@ button.hora-no-disponible {
 
 /* ---------- Recursos ---------- */
 .card-recurso {
-  padding: 12px;
-  border-left: 5px solid #3f51b5;
+  padding: 14px;
+  border-left: 4px solid #3f51b5;
   border-radius: 12px;
   margin-bottom: 16px;
   background-color: #f5f7fa;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
 }
 
 .contenido-recurso {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
+  padding: 4px;
 }
 
 .imagen-recurso {
-  width: 64px;
-  height: 64px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
+  width: 85px;
+  height: 85px;
+  min-width: 85px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  display: block;
+  flex-shrink: 0;
+  background-color: #fff;
 }
 
 .info-recurso {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .recurso-nombre {
   display: flex;
-  align-items: flex-start;
-  /* Alinea el icono arriba */
-  gap: 6px;
+  align-items: center;
+  gap: 7px;
   font-size: 16px;
   font-weight: 600;
   color: #1f2937;
-  max-width: 200px;
 }
 
 .texto-recurso {
