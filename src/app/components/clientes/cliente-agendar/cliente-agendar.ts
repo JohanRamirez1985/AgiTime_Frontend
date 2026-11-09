@@ -1349,11 +1349,42 @@ export class ClienteAgendar {
 
     let conflicto;
 
-    conflicto = horasGeneradas.some(horaGenerada => {
-      const horario = this.horas.find(h => h.hora === horaGenerada);
+    if (this.idEmpresa === 12) {
+      let horas = [...this.horas];
 
-      return !horario || !horario.disponible;
-    });
+      horasGeneradas.forEach(horaGenerada => {
+
+        const [hora, periodo] = horaGenerada.split(' ');
+        const [h, m] = hora.split(':');
+
+        const hora24 = (parseInt(h) % 12) + (periodo === 'PM' ? 12 : 0);
+
+        // Solo horas posteriores a las 7:00 PM
+        if (hora24 * 60 + parseInt(m) > 19 * 60) {
+
+          if (!horas.some(h => h.hora === horaGenerada)) {
+            horas.push({
+              hora: horaGenerada,
+              disponible: true
+            });
+          }
+
+        }
+
+      });
+
+      conflicto = horasGeneradas.some(horaGenerada => {
+        const horario = horas.find(h => h.hora === horaGenerada);
+        return !horario || !horario.disponible;
+      });
+
+    } else {
+      conflicto = horasGeneradas.some(horaGenerada => {
+        const horario = this.horas.find(h => h.hora === horaGenerada);
+
+        return !horario || !horario.disponible;
+      });
+    }
 
     if (conflicto) {
       return false;
