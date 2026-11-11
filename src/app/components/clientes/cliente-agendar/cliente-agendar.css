@@ -463,6 +463,18 @@
   animation: aparecer 0.22s ease-out;
 }
 
+.boton-flotante-mejorado mat-icon {
+  width: 20px !important;
+  height: 20px !important;
+  font-size: 20px !important;
+  color: #1f2937 !important;
+  transition: transform 0.18s ease;
+}
+
+.boton-flotante-mejorado:hover mat-icon {
+  transform: translateX(3px);
+}
+
 .boton-flotante-mejorado:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 26px rgba(16, 24, 40, 0.18), 0 2px 4px rgba(16, 24, 40, 0.08) !important;
