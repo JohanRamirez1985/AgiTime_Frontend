@@ -2031,16 +2031,50 @@ export class DashboardRecurso {
       horasGeneradas.push(formatHora(nuevaHora));
     }
 
-    // Buscar la primera hora que no está disponible
-    const horaConflicto = horasGeneradas.find(
-      (h) => !this.horas.some((x) => x.hora === h)
-    );
+    if (this.idEmpresa === 12) {
+      let horas = [...this.horas];
+      horasGeneradas.forEach(horaGenerada => {
 
-    if (horaConflicto) {
-      return {
-        disponible: false,
-        horaConflicto: horaConflicto
-      };
+        const [hora, periodo] = horaGenerada.split(' ');
+        const [h, m] = hora.split(':');
+
+        const hora24 = (parseInt(h) % 12) + (periodo === 'PM' ? 12 : 0);
+
+        // Solo horas posteriores a las 7:00 PM
+        if (hora24 * 60 + parseInt(m) > 19 * 60) {
+
+          if (!horas.some(h => h.hora === horaGenerada)) {
+            horas.push({
+              hora: horaGenerada,
+              disponible: true
+            });
+          }
+
+        }
+
+      });
+      const horaConflicto = horasGeneradas.find(
+        (h) => !horas.some((x) => x.hora === h)
+      );
+
+      if (horaConflicto) {
+        return {
+          disponible: false,
+          horaConflicto: horaConflicto
+        };
+      }
+    } else {
+      // Buscar la primera hora que no está disponible
+      const horaConflicto = horasGeneradas.find(
+        (h) => !this.horas.some((x) => x.hora === h)
+      );
+
+      if (horaConflicto) {
+        return {
+          disponible: false,
+          horaConflicto: horaConflicto
+        };
+      }
     }
 
     return {
