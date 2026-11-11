@@ -441,7 +441,7 @@
 .boton-flotante-wrapper {
   position: fixed;
   right: 24px;
-  bottom: 24px;
+  bottom: 84px;
   z-index: 1000;
 }
 
@@ -483,23 +483,37 @@
 
 .fab-citas {
   position: fixed;
-  left: 24px;
+  right: 24px;
   bottom: 24px;
   z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   height: 46px !important;
-  padding: 0 18px !important;
+  padding: 0 22px 0 18px !important;
+  border: 0 !important;
   border-radius: 999px !important;
-  border: 1px solid var(--line-strong) !important;
-  background: var(--surface) !important;
-  color: var(--ink) !important;
+  background: #ffffff !important;
+  color: #1f2937 !important;
   font-family: inherit !important;
-  font-weight: 600 !important;
+  font-size: 14.5px !important;
+  font-weight: 500 !important;
   letter-spacing: 0 !important;
-  box-shadow: var(--shadow-md) !important;
+  box-shadow: 0 6px 20px rgba(16, 24, 40, 0.14), 0 1px 3px rgba(16, 24, 40, 0.08) !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.fab-citas:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(16, 24, 40, 0.18), 0 2px 4px rgba(16, 24, 40, 0.08) !important;
 }
 
 .fab-citas mat-icon {
-  color: var(--ink);
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  margin: 0 !important;
+  color: #1f2937 !important;
 }
 
 
@@ -836,13 +850,13 @@ button.hora-no-disponible {
   }
 
   .fab-citas {
-    left: 16px;
+    right: 16px;
     bottom: 16px;
   }
 
   .boton-flotante-wrapper {
     right: 16px;
-    bottom: 16px;
+    bottom: 74px;
   }
 }
 
@@ -860,5 +874,16 @@ button.hora-no-disponible {
   :host {
     --brand: oklch(from var(--app-header, #1f2937) min(l, 0.45) c h);
     --brand-contrast: #ffffff;
+  }
+}
+
+/* Si la empresa no muestra "Mis citas", "Reservar" baja a la esquina */
+.agendar-wrapper:not(:has(.fab-citas)) .boton-flotante-wrapper {
+  bottom: 24px;
+}
+
+@media (max-width: 500px) {
+  .agendar-wrapper:not(:has(.fab-citas)) .boton-flotante-wrapper {
+    bottom: 16px;
   }
 }
