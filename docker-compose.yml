@@ -1,0 +1,20 @@
+# Frontend de AgiTime (Angular servido con nginx).
+# Usa la red agitime-net que crea el repo AgiTime_Backend: levantar primero el back.
+# El gateway del back (puerto 80) enruta "/" a este contenedor (agitime-frontend).
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agitime-frontend
+    expose:
+      - "80"
+    volumes:
+      - /Data/agitime/frontend/assets/img:/usr/share/nginx/html/assets/img
+    networks:
+      - agitime-net
+    restart: always
+
+networks:
+  agitime-net:
+    external: true
