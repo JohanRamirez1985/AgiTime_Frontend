@@ -7,6 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: agitime-frontend
+    image: agitime/agitime-frontend:latest
     expose:
       - "80"
     volumes:
