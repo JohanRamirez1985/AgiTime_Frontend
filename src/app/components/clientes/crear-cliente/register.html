@@ -111,6 +111,21 @@
 
       </mat-form-field>
 
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Selecciona un recurso o usuario</mat-label>
+
+        <mat-select [(ngModel)]="idRecurso" name="idRecurso" required>
+          <mat-option *ngFor="let recurso of recursos" [value]="recurso.id">
+            {{ recurso.nombre }}
+          </mat-option>
+        </mat-select>
+
+        <mat-icon matSuffix>person_search</mat-icon>
+
+        <mat-hint>
+          Selecciona el profesional o usuario correspondiente.
+        </mat-hint>
+      </mat-form-field>
 
       <!-- Botones -->
       <div class="boton-container">

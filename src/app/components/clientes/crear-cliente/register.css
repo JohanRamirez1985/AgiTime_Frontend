@@ -300,3 +300,8 @@ mat-form-field {
   }
 
 }
+
+.full {
+  width: 49%;
+  grid-column: 1 / -1;
+}

@@ -103,6 +103,7 @@ export interface ClienteRegistro {
   cantidad?: number | null;
   Id?: number;
   fechaCreacion?: string;
+  UsuarioCreacion?: number | null;
 }
 
 

@@ -57,7 +57,7 @@
 
                 <span>
                   <mat-icon>access_time</mat-icon>
-                  {{ empresaServicio ? cita.hora : cita.fechaInicio | date : "shortTime" }}
+                  {{ empresaServicio ? cita.hora : (cita.fechaInicio | date : "h:mm a") }}
                 </span>
 
                 <span>

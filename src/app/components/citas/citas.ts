@@ -138,6 +138,17 @@ export class Citas {
     });
   }
 
+  formatearHora(hora: string): string {
+    if (!hora) return '';
+
+    const [horas, minutos] = hora.split(':').map(Number);
+
+    const periodo = horas >= 12 ? 'PM' : 'AM';
+    const hora12 = horas % 12 || 12;
+
+    return `${hora12}:${minutos.toString().padStart(2, '0')} ${periodo}`;
+  }
+
   private consultarCitas(empresa: any, fecha: Date): void {
     this.loading = true;
 
@@ -151,22 +162,28 @@ export class Citas {
       next: (rest) => {
         if (rest.exito) {
           this.citasHoy = rest.datos;
+
           const citasConTotales = this.citasHoy.map((cita) => {
-            let totalServicios
+            let totalServicios;
+
             if (this.empresaServicio) {
               totalServicios = cita.total;
             } else {
               totalServicios = cita.servicios.reduce(
                 (acum: any, servicio: any) => acum + servicio.valor,
-                0,
+                0
               );
             }
 
             return {
               ...cita,
+              hora: this.empresaServicio
+                ? this.formatearHora(cita.hora)
+                : cita.hora,
               totalServicios,
             };
           });
+
           this.citasHoy = citasConTotales;
         } else {
           this.citasHoy = [];

@@ -68,6 +68,17 @@ export class EdicionCitas {
     this.obtenerHorarios(this.empresa);
   }
 
+  formatearHora(hora: string): string {
+    if (!hora) return '';
+
+    const [horas, minutos] = hora.split(':').map(Number);
+
+    const periodo = horas >= 12 ? 'PM' : 'AM';
+    const hora12 = horas % 12 || 12;
+
+    return `${hora12}:${minutos.toString().padStart(2, '0')} ${periodo}`;
+  }
+
   public ordenarFechaCita(): Date {
     const fecha = new Date(this.fechaSeleccionada);
 
@@ -157,43 +168,42 @@ export class EdicionCitas {
 
     let request = {};
 
-    if (this.empresaRecursoMultiple)
-    {
-        const agrupados = Object.values(
-          this.serviciosSeleccionados.reduce((acc: any, element: any) => {
+    if (this.empresaRecursoMultiple) {
+      const agrupados = Object.values(
+        this.serviciosSeleccionados.reduce((acc: any, element: any) => {
 
-            if (!acc[element.recurso]) {
-              acc[element.recurso] = {
-                FechaIni: this.formatearFecha(this.ordenarFechaCita()),
-                recurso: element.recurso,
-                validaciones: element.validaciones,
-                Hora: 0,
-                Valor: 0,
-                servicios: []
-              };
-            }
+          if (!acc[element.recurso]) {
+            acc[element.recurso] = {
+              FechaIni: this.formatearFecha(this.ordenarFechaCita()),
+              recurso: element.recurso,
+              validaciones: element.validaciones,
+              Hora: 0,
+              Valor: 0,
+              servicios: []
+            };
+          }
 
-            acc[element.recurso].Hora += element.tiempo;
-            acc[element.recurso].Valor += Number(element.valor);
-            acc[element.recurso].servicios.push({
-              servicio: element.id
-            });
+          acc[element.recurso].Hora += element.tiempo;
+          acc[element.recurso].Valor += Number(element.valor);
+          acc[element.recurso].servicios.push({
+            servicio: element.id
+          });
 
-            return acc;
+          return acc;
 
-          }, {})
-        ).sort((a: any, b: any) =>
-          Number(a.validaciones) - Number(b.validaciones)
+        }, {})
+      ).sort((a: any, b: any) =>
+        Number(a.validaciones) - Number(b.validaciones)
+      );
+
+      let fechaInicio = new Date(this.formatearFecha(this.ordenarFechaCita()));
+
+      agrupados.forEach((item: any) => {
+        item.FechaIni = this.formatearFecha(this.ordenarFechaCita());
+        fechaInicio = new Date(
+          fechaInicio.getTime() + item.Hora * 60000
         );
-
-        let fechaInicio = new Date(this.formatearFecha(this.ordenarFechaCita()));
-
-        agrupados.forEach((item: any) => {
-          item.FechaIni = this.formatearFecha(this.ordenarFechaCita());
-          fechaInicio = new Date(
-            fechaInicio.getTime() + item.Hora * 60000
-          );
-        });
+      });
 
 
 
@@ -209,8 +219,7 @@ export class EdicionCitas {
         },
       };
     }
-    else
-    {
+    else {
       request = {
         FechaIni: this.formatearFecha(this.ordenarFechaCita()),
         empresa: this.idEmpresa,
@@ -288,8 +297,8 @@ export class EdicionCitas {
     this.sharedServices.obtenerServicios(emp).subscribe({
       next: (rest) => {
         if (rest.exito) {
-          if(this.empresaRecursoMultiple)
-            this.serviciosDisponibles = rest.datos.filter((servicio: any) => servicio.recurso === this.user.id);
+          if (this.empresaRecursoMultiple)
+            this.serviciosDisponibles = rest.datos.filter((servicio: any) => servicio.nombre_recurso === this.data.nombreRecurso && servicio.valor !== 0);
           else
             this.serviciosDisponibles = rest.datos;
           this.serviciosFiltrados = this.serviciosDisponibles;
@@ -301,17 +310,15 @@ export class EdicionCitas {
 
   private ordenarSeleccionados() {
     let serviciosSeleccionados: string[] = [];
-    if(this.empresaRecursoMultiple)
-    {
+    if (this.empresaRecursoMultiple) {
       serviciosSeleccionados = this.data.servicios.map(
         (s: any) => s.nombre
       );
     }
-    else
-    {
+    else {
       serviciosSeleccionados = this.data.nombre
-      .split(',')
-      .map((s: string) => s.trim());
+        .split(',')
+        .map((s: string) => s.trim());
     }
 
     this.serviciosSeleccionados = this.serviciosDisponibles
@@ -343,7 +350,7 @@ export class EdicionCitas {
   }
 
   public eliminarServicio(s: any) {
-    if(s.id === 52 || s.id === 51) {
+    if (s.id === 52 || s.id === 51) {
       s.valor = 0;
     }
     this.serviciosFiltrados.push(s);
