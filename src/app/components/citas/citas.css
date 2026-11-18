@@ -1,0 +1,178 @@
+.mis-citas-container {
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.encabezado-citas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.titulo-dashboard {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.fecha-actual {
+  color: #777;
+  font-size: 14px;
+  text-transform: capitalize;
+}
+
+.card-cita {
+  margin-bottom: 1rem;
+  border-left: 6px solid #3f51b5;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.info-cita {
+  display: flex;
+  flex-direction: column;
+}
+
+.acciones-cita {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.btn-accion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  min-width: 120px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+
+.btn-finalizar {
+  background-color: #1565c0;
+}
+
+.btn-menu {
+  width: 36px;
+  height: 36px;
+}
+
+.navegacion-botones {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Esto centra horizontalmente */
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  color: #555;
+}
+
+.input-calendario {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.contenido-citas {
+  margin-top: 10px;
+}
+
+.sin-citas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 45px 20px;
+  color: #777;
+  text-align: center;
+}
+
+.sin-citas mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #999;
+}
+
+.sin-citas strong {
+  font-size: 16px;
+  color: #444;
+}
+
+@media (max-width: 600px) {
+  .mis-citas-container {
+    padding: 12px;
+  }
+
+  .titulo-dashboard {
+    font-size: 19px;
+  }
+}
+
+.persona-cita {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 5px;
+}
+
+.tipo-persona {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 5px;
+    min-width: 85px;
+}
+
+.tipo-persona mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+}
+
+.tipo-persona.cliente {
+    color: #2457a7;
+    background: #e8f0fe;
+}
+
+.tipo-persona.recurso {
+    color: #16805d;
+    background: #e5f5ed;
+}
+
+.nombre-persona {
+    font-size: 14px;
+    color: #222;
+    font-weight: 500;
+}

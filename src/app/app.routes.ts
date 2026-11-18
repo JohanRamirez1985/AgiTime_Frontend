@@ -194,8 +194,12 @@ export const routes: Routes = [
         path: 'agenda-prf',
         loadComponent: () =>
           import('./components/recursos/agenda-profesionales/agenda-profesionales').then((m) => m.AgendaProfesionales),
+      },
+      {
+        path: 'citas',
+        loadComponent: () =>
+          import('./components/citas/citas').then((m) => m.Citas),
       }
-
     ],
   },
 
