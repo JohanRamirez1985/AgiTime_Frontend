@@ -46,6 +46,8 @@ export class Register {
   uniqueId = Math.floor(Math.random() * 100000);
   btnRegistrar: boolean = false;
   mensajeWsspEmpresa: string = '';
+  recursos: any[] = [];
+  idRecurso: number | null = null;
 
   constructor(private route: ActivatedRoute,
     private router: Router,
@@ -60,6 +62,20 @@ export class Register {
       this.idEmpresa = +params['em'];
     });
     this.obtenerMensajesCliente();
+    this.obtenerUsuarios();
+  }
+
+  private obtenerUsuarios() {
+    this.sharedServices.obtenerUsuarios(this.idEmpresa).subscribe({
+      next: (res) => {
+        if (res.exito) {
+          this.recursos = res.datos;
+        }
+      },
+      error: (err) => {
+   
+      },
+    })
   }
 
   private obtenerMensajesCliente(): void {
@@ -154,7 +170,8 @@ export class Register {
         : '',
       telefono: this.cellphone,
       empresa: Number(this.idEmpresa),
-      FechaCreacion: fechaLocal
+      FechaCreacion: fechaLocal,
+      UsuarioCreacion: this.idRecurso
     };
 
     return json;

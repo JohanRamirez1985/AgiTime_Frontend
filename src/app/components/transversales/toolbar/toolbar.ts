@@ -130,6 +130,13 @@ export class Toolbar implements OnInit {
     },
 
     {
+      codigo: 'cts',
+      label: 'Citas',
+      icon: 'event',
+      route: '/admin/citas'
+    },
+
+    {
       codigo: 'crt',
       label: 'Recordatorio clientes',
       icon: 'chat',

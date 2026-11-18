@@ -63,7 +63,9 @@
 
                 <div>
                     <span>Hora cita</span>
-                    <strong>{{ data.hora ? data.hora : this.data.fechaInicio.split('T')[1] }}</strong>
+                    <strong>
+                        {{ formatearHora(data.hora || data.fechaInicio.split('T')[1]) }}
+                    </strong>
                 </div>
             </div>
 

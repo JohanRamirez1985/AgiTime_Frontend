@@ -1,0 +1,153 @@
+<div class="mis-citas-container">
+
+    <!-- ENCABEZADO -->
+    <div class="encabezado-citas">
+        <div>
+            <h2 class="titulo-dashboard">Gestión de citas</h2>
+            <span class="fecha-actual">
+                {{ day | date : "fullDate" }}
+            </span>
+        </div>
+    </div>
+
+    <!-- NAVEGACIÓN DE FECHAS -->
+    <div class="navegacion-botones">
+
+        <button mat-icon-button class="boton-navegacion" (click)="previus()">
+            <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <input matInput [matDatepicker]="picker" [value]="day" class="input-calendario"
+            (dateChange)="onDateChange($event)">
+
+        <button mat-button (click)="picker.open()" class="btn-calendario">
+            <mat-icon>calendar_today</mat-icon>
+            Fecha
+        </button>
+
+        <mat-datepicker #picker [touchUi]="esMobile"></mat-datepicker>
+
+        <button mat-icon-button class="boton-navegacion" (click)="nextPeriod()">
+            <mat-icon>chevron_right</mat-icon>
+        </button>
+
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="contenido-citas">
+
+        <!-- CARGANDO -->
+        <div *ngIf="loading" class="loading-container">
+            <mat-spinner diameter="50"></mat-spinner>
+            <p class="loading-text">Cargando citas...</p>
+        </div>
+
+        <!-- LISTADO -->
+        <ng-container *ngIf="!loading">
+
+            <ng-container *ngIf="citasHoy.length > 0; else sinCitas">
+
+                <mat-card class="card-cita" *ngFor="let cita of citasHoy">
+
+                    <div class="card-content">
+
+                        <!-- INFORMACIÓN -->
+                        <div class="info-cita">
+
+                            <strong>{{ cita.servicio }}</strong>
+
+                            <div class="persona-cita">
+                                <span class="tipo-persona recurso">
+                                    <mat-icon>badge</mat-icon>
+                                    Profesional
+                                </span>
+                                <span class="nombre-persona">
+                                    {{ cita.nombreRecurso | titlecase }}
+                                </span>
+                            </div>
+
+                            <div class="persona-cita">
+                                <span class="tipo-persona cliente">
+                                    <mat-icon>person</mat-icon>
+                                    Cliente
+                                </span>
+                                <span class="nombre-persona">
+                                    {{ cita.nombreCliente | titlecase }}
+                                </span>
+                            </div>
+
+                            <span>
+                                <mat-icon>access_time</mat-icon>
+                                {{ empresaServicio ? cita.hora : (cita.fechaInicio | date : "h:mm a") }}
+                            </span>
+
+                            <span>
+                                <mat-icon>monetization_on</mat-icon>
+                                {{ cita.totalServicios | currency : "COP" : "symbol" : "1.0-0" }}
+                            </span>
+
+                            <span>
+                                <mat-icon>assignment</mat-icon>
+
+                                <ng-container *ngIf="empresaServicio; else normalServicios">
+                                    {{ cita.nombre }}
+                                </ng-container>
+
+                                <ng-template #normalServicios>
+                                    <ng-container *ngFor="let s of cita.servicios; let last = last">
+                                        {{ s.nombre }}<span *ngIf="!last">, </span>
+                                    </ng-container>
+                                </ng-template>
+                            </span>
+
+                            <span class="estado-badge" [ngClass]="getEstadoClase(cita.estado)">
+                                {{ cita.estado }}
+                            </span>
+
+                        </div>
+
+                        <!-- FIDELIDAD -->
+                        <div class="fidelidad-aviso" *ngIf="cita.fidelidad">
+
+                            <mat-icon>card_giftcard</mat-icon>
+
+                            <div class="fidelidad-contenido">
+                                <strong>Beneficio de fidelidad</strong>
+                                <span>{{ cita.fidelidad }}</span>
+                            </div>
+
+                        </div>
+
+                        <div class="acciones-cita">
+                            <button *ngIf="cita.estado === 'Activo'" class="btn-accion btn-finalizar"
+                                (click)="cancelarCita(cita)">
+                                <mat-icon>cancel</mat-icon>
+                                <span>Cancelar</span>
+                            </button>
+
+                            <button *ngIf="cita.estado === 'Activo'" class="btn-accion btn-finalizar"
+                                (click)="editarCita(cita)">
+                                <mat-icon>edit</mat-icon>
+                                <span>Editar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </mat-card>
+
+            </ng-container>
+
+            <!-- SIN CITAS -->
+            <ng-template #sinCitas>
+                <div class="sin-citas">
+                    <mat-icon>event_busy</mat-icon>
+                    <strong>No hay citas programadas</strong>
+                    <span>No se encontraron citas para la fecha seleccionada.</span>
+                </div>
+            </ng-template>
+
+        </ng-container>
+
+    </div>
+
+</div>

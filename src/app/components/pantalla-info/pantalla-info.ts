@@ -15,6 +15,7 @@ interface Cita {
   hora: string;
   cliente: string;
   servicio: string;
+  fidelidad: string;
   estado: 'PENDIENTE' | 'EN_CURSO' | 'FINALIZADA';
 }
 

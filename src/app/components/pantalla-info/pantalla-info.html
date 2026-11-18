@@ -11,9 +11,9 @@
         <div class="header-info">
 
             <a class="btn-login" [routerLink]="['/login']" [queryParams]="{
-    em: idEmpresa,
-    tipo: 'em'
-  }">
+                    em: idEmpresa,
+                    tipo: 'em'
+                }">
                 Iniciar sesión
             </a>
 
@@ -88,6 +88,17 @@
                             <div class="info">
                                 <span class="cliente">{{ c.cliente }}</span>
                                 <span class="servicio">{{ c.servicio }}</span>
+                            </div>
+
+                            <div class="fidelidad-aviso" *ngIf="c.fidelidad">
+
+                                <mat-icon>card_giftcard</mat-icon>
+
+                                <div class="fidelidad-contenido">
+                                    <strong>Beneficio de fidelidad</strong>
+                                    <span>{{ c.fidelidad }}</span>
+                                </div>
+
                             </div>
 
                             <span class="estado">

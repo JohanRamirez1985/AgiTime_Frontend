@@ -46,7 +46,6 @@ import { firstValueFrom } from 'rxjs';
     MatInputModule,
     MatOptionModule,
     MatSelectModule,
-    MatDatepickerModule,
     MatNativeDateModule,
     MatDatepickerModule,
     MatNativeDateModule,
