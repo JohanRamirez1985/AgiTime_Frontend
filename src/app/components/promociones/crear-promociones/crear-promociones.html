@@ -1,0 +1,265 @@
+<div class="crear-promocion-container">
+
+    <!-- ENCABEZADO -->
+    <div class="encabezado">
+
+        <div class="titulo-contenido">
+            <div class="icono-titulo">
+                <mat-icon>redeem</mat-icon>
+            </div>
+
+            <div>
+                <h2>Crear promoción</h2>
+                <p>Selecciona los servicios que harán parte de tu promoción.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p class="loading-text">Cargando disponibilidad...</p>
+    </div>
+
+    <div *ngIf="!loading">
+        <!-- SELECCIÓN DE SERVICIOS -->
+        <div class="seleccion-servicios">
+
+            <!-- SERVICIOS DISPONIBLES -->
+            <div class="panel-servicios">
+
+                <div class="panel-titulo">
+                    <div>
+                        <h3>Servicios disponibles</h3>
+                        <span>Agrega los servicios que deseas incluir.</span>
+                    </div>
+
+                    <span class="contador">
+                        {{ serviciosFiltrados.length }}
+                    </span>
+                </div>
+
+                <!-- BUSCADOR -->
+                <mat-form-field appearance="outline" class="buscador">
+                    <mat-label>Buscar servicio</mat-label>
+
+                    <input matInput [(ngModel)]="busquedaServicio" placeholder="Nombre del servicio">
+
+                    <mat-icon matSuffix>search</mat-icon>
+                </mat-form-field>
+
+                <!-- LISTADO -->
+                <div class="lista-servicios">
+
+                    <div class="servicio-item" *ngFor="let servicio of serviciosFiltrados">
+
+                        <div class="servicio-info">
+                            <strong>{{ servicio.nombre | titlecase }}</strong>
+
+                            <span>
+                                {{ servicio.valor | currency:'COP':'symbol':'1.0-0' }}
+                            </span>
+                        </div>
+
+                        <button mat-icon-button color="primary" matTooltip="Agregar servicio"
+                            (click)="agregarServicio(servicio)">
+
+                            <mat-icon>add_circle</mat-icon>
+
+                        </button>
+
+                    </div>
+
+                    <div class="sin-servicios" *ngIf="serviciosFiltrados.length === 0">
+
+                        <mat-icon>search_off</mat-icon>
+                        <span>No hay servicios disponibles.</span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- SERVICIOS SELECCIONADOS -->
+            <div class="panel-seleccionados">
+
+                <div class="panel-titulo">
+                    <div>
+                        <h3>Servicios de la promoción</h3>
+                        <span>Servicios que incluirá el combo.</span>
+                    </div>
+
+                    <span class="contador seleccionado">
+                        {{ cantidadServicios }}
+                    </span>
+                </div>
+
+                <!-- SERVICIOS AGREGADOS -->
+                <div class="lista-servicios seleccionados">
+
+                    <div class="servicio-item seleccionado-item" *ngFor="let servicio of serviciosSeleccionados">
+
+                        <div class="servicio-info">
+                            <strong>{{ servicio.nombre | titlecase }}</strong>
+
+                            <span>
+                                {{ servicio.valor | currency:'COP':'symbol':'1.0-0' }}
+                            </span>
+                        </div>
+
+                        <button mat-icon-button color="warn" matTooltip="Retirar servicio"
+                            (click)="quitarServicio(servicio)">
+
+                            <mat-icon>remove_circle</mat-icon>
+
+                        </button>
+
+                    </div>
+
+                    <!-- SIN SERVICIOS -->
+                    <div class="sin-seleccionados" *ngIf="serviciosSeleccionados.length === 0">
+
+                        <mat-icon>playlist_add</mat-icon>
+
+                        <strong>Aún no has agregado servicios</strong>
+
+                        <span>
+                            Selecciona los servicios del panel izquierdo.
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <!-- TOTAL ORIGINAL -->
+                <div class="total-servicios">
+
+                    <span>Valor total de los servicios</span>
+
+                    <strong>
+                        {{ totalServicios | currency:'COP':'symbol':'1.0-0' }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CONFIGURACIÓN DE PROMOCIÓN -->
+        <div class="configuracion-promocion">
+
+            <div class="configuracion-header">
+                <mat-icon>calendar_month</mat-icon>
+
+                <div>
+                    <h3>Configuración de la promoción</h3>
+                    <span>Define su vigencia y precio especial.</span>
+                </div>
+            </div>
+
+            <div class="configuracion-grid">
+
+                <!-- FECHA INICIAL -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Fecha inicial</mat-label>
+
+                    <input matInput [matDatepicker]="pickerInicio" [(ngModel)]="fechaInicio" [max]="fechaFin" readonly>
+
+                    <mat-datepicker-toggle matSuffix [for]="pickerInicio">
+                    </mat-datepicker-toggle>
+
+                    <mat-datepicker #pickerInicio></mat-datepicker>
+
+                </mat-form-field>
+
+                <!-- FECHA FINAL -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Fecha final</mat-label>
+
+                    <input matInput [matDatepicker]="pickerFin" [(ngModel)]="fechaFin" [min]="fechaInicio" readonly>
+
+                    <mat-datepicker-toggle matSuffix [for]="pickerFin">
+                    </mat-datepicker-toggle>
+
+                    <mat-datepicker #pickerFin></mat-datepicker>
+
+                </mat-form-field>
+
+                <!-- VALOR PROMOCIONAL -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Valor de la promoción</mat-label>
+
+                    <span matTextPrefix>$&nbsp;</span>
+
+                    <input matInput type="number" min="1" [(ngModel)]="valorPromocion" placeholder="Ej: 75000">
+
+                    <mat-icon matSuffix>payments</mat-icon>
+
+                    <mat-hint>Precio final que pagará el cliente.</mat-hint>
+
+                </mat-form-field>
+
+            </div>
+
+            <!-- RESUMEN DEL AHORRO -->
+            <div class="resumen-precio" *ngIf="serviciosSeleccionados.length > 0">
+
+                <div>
+                    <span>Valor original</span>
+
+                    <strong>
+                        {{ totalServicios | currency:'COP':'symbol':'1.0-0' }}
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Precio promocional</span>
+
+                    <strong class="precio-promocional">
+                        {{ (valorPromocion || 0) | currency:'COP':'symbol':'1.0-0' }}
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Ahorro para el cliente</span>
+
+                    <strong class="ahorro">
+                        {{ ahorroPromocion | currency:'COP':'symbol':'1.0-0' }}
+                    </strong>
+                </div>
+
+            </div>
+
+            <div class="error-precio"
+                *ngIf="valorPromocion !== null && valorPromocion > totalServicios && totalServicios > 0">
+
+                <mat-icon>warning</mat-icon>
+                El valor promocional supera el valor original de los servicios.
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- BOTONES -->
+    <div class="acciones-formulario">
+
+        <button mat-stroked-button type="button" (click)="volver()">
+            <mat-icon>arrow_back</mat-icon>
+            Volver
+        </button>
+
+        <button mat-stroked-button type="button" (click)="cancelar()">
+            <mat-icon>close</mat-icon>
+            Limpiar
+        </button>
+
+        <button mat-flat-button color="primary" type="button" [disabled]="!formularioValido || guardando"
+            (click)="crearPromocion()">
+            <mat-icon>save</mat-icon>
+            Crear promoción
+        </button>
+    </div>
+</div>

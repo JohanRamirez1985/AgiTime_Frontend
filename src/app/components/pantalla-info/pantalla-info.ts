@@ -136,6 +136,17 @@ export class PantallaInfo implements OnInit {
     this.consultarAgenda(this.viewDate);
   }
 
+  formatearHora(hora: string): string {
+    if (!hora) return '';
+
+    const [horas, minutos] = hora.split(':').map(Number);
+
+    const periodo = horas >= 12 ? 'PM' : 'AM';
+    const hora12 = horas % 12 || 12;
+
+    return `${hora12}:${minutos.toString().padStart(2, '0')} ${periodo}`;
+  }
+
   private consultarAgenda(fecha: any) {
 
     const request = {
@@ -163,6 +174,10 @@ export class PantallaInfo implements OnInit {
 
                       return (ha * 60 + ma) - (hb * 60 + mb);
                     })
+                    .map((cita: any) => ({
+                      ...cita,
+                      hora: this.formatearHora(cita.hora)
+                    }))
                 )
               }))
             }));

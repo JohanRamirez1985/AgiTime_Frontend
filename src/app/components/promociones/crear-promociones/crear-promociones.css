@@ -1,0 +1,343 @@
+
+.crear-promocion-container {
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ENCABEZADO */
+
+.encabezado {
+  margin-bottom: 25px;
+}
+
+.titulo-contenido {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.icono-titulo {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eaf0ff;
+  color: #365fba;
+  border-radius: 12px;
+}
+
+.icono-titulo mat-icon {
+  font-size: 27px;
+  width: 27px;
+  height: 27px;
+}
+
+.titulo-contenido h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.titulo-contenido p {
+  margin: 5px 0 0;
+  font-size: 13px;
+  color: #777;
+}
+
+/* SELECCIÓN DE SERVICIOS */
+
+.seleccion-servicios {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.panel-servicios,
+.panel-seleccionados {
+  background: white;
+  border: 1px solid #eaeaea;
+  border-radius: 13px;
+  padding: 18px;
+  min-width: 0;
+}
+
+.panel-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.panel-titulo h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 5px;
+}
+
+.panel-titulo span {
+  font-size: 12px;
+  color: #888;
+}
+
+.contador {
+  background: #eaf0ff;
+  color: #365fba !important;
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-weight: 700;
+}
+
+.contador.seleccionado {
+  background: #e5f5ed;
+  color: #16805d !important;
+}
+
+.buscador {
+  width: 100%;
+}
+
+/* LISTADO */
+
+.lista-servicios {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.servicio-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #ededed;
+  border-radius: 9px;
+  transition: background 0.2s;
+}
+
+.servicio-item:hover {
+  background: #f8faff;
+}
+
+.servicio-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.servicio-info strong {
+  font-size: 13px;
+  color: #333;
+}
+
+.servicio-info span {
+  font-size: 12px;
+  color: #777;
+}
+
+.seleccionado-item {
+  background: #f8fcf9;
+  border-color: #dceee3;
+}
+
+.sin-servicios,
+.sin-seleccionados {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  min-height: 180px;
+  color: #999;
+  font-size: 13px;
+}
+
+.sin-servicios mat-icon,
+.sin-seleccionados mat-icon {
+  font-size: 38px;
+  width: 38px;
+  height: 38px;
+}
+
+.sin-seleccionados strong {
+  color: #555;
+}
+
+/* TOTAL */
+
+.total-servicios {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #eee;
+  margin-top: 15px;
+  padding-top: 15px;
+  gap: 10px;
+}
+
+.total-servicios span {
+  font-size: 12px;
+  color: #777;
+}
+
+.total-servicios strong {
+  font-size: 16px;
+}
+
+/* CONFIGURACIÓN */
+
+.configuracion-promocion {
+  background: white;
+  border: 1px solid #eaeaea;
+  border-radius: 13px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.configuracion-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.configuracion-header > mat-icon {
+  color: #365fba;
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
+}
+
+.configuracion-header h3 {
+  margin: 0 0 5px;
+  font-size: 15px;
+}
+
+.configuracion-header span {
+  font-size: 12px;
+  color: #888;
+}
+
+.configuracion-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.configuracion-grid mat-form-field {
+  width: 100%;
+}
+
+/* RESUMEN PRECIO */
+
+.resumen-precio {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 15px;
+  background: #f8f9fc;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.resumen-precio > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.resumen-precio span {
+  font-size: 12px;
+  color: #777;
+}
+
+.resumen-precio strong {
+  font-size: 15px;
+}
+
+.precio-promocional {
+  color: #365fba;
+}
+
+.ahorro {
+  color: #16805d;
+}
+
+.error-precio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #c47b20;
+  font-size: 12px;
+  margin-top: 12px;
+}
+
+.error-precio mat-icon {
+  font-size: 19px;
+}
+
+/* ACCIONES */
+
+.acciones-formulario {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.acciones-formulario button {
+  min-width: 145px;
+  height: 43px;
+  border-radius: 9px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+
+  .crear-promocion-container {
+    padding: 12px;
+  }
+
+  .seleccion-servicios {
+    grid-template-columns: 1fr;
+  }
+
+  .configuracion-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .resumen-precio {
+    grid-template-columns: 1fr;
+  }
+
+  .acciones-formulario {
+    flex-direction: column-reverse;
+  }
+
+  .acciones-formulario button {
+    width: 100%;
+  }
+
+  .titulo-contenido h2 {
+    font-size: 19px;
+  }
+
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+  color: #555;
+}

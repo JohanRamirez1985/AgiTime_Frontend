@@ -1,0 +1,323 @@
+
+.promociones-container {
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ENCABEZADO */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.icon-header {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #eaf0ff;
+  color: #365fba;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-header mat-icon {
+  font-size: 27px;
+  width: 27px;
+  height: 27px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.page-header p {
+  margin: 5px 0 0;
+  color: #777;
+  font-size: 13px;
+}
+
+.btn-crear {
+  border-radius: 9px;
+  height: 43px;
+}
+
+/* RESUMEN */
+
+.resumen-promociones {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 22px;
+}
+
+.resumen-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  background: white;
+  border: 1px solid #ededed;
+  border-radius: 12px;
+  padding: 17px;
+}
+
+.resumen-card span {
+  display: block;
+  color: #777;
+  font-size: 12px;
+}
+
+.resumen-card strong {
+  display: block;
+  font-size: 23px;
+  margin-top: 5px;
+}
+
+.resumen-icon {
+  width: 43px;
+  height: 43px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resumen-icon.total {
+  background: #eaf0ff;
+  color: #365fba;
+}
+
+.resumen-icon.activas {
+  background: #e5f5ed;
+  color: #16805d;
+}
+
+.resumen-icon.inactivas {
+  background: #fff1e5;
+  color: #d17b27;
+}
+
+/* FILTROS */
+
+.filtros-container {
+  background: white;
+  border: 1px solid #ededed;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 22px;
+}
+
+.filtros-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.filtros-header > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filtros-header mat-icon {
+  color: #777;
+}
+
+.filtros-header strong {
+  font-size: 14px;
+}
+
+.filtros-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 15px;
+}
+
+.filtros-grid mat-form-field {
+  width: 100%;
+}
+
+/* TABLA */
+
+.tabla-container {
+  background: white;
+  border: 1px solid #ededed;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.tabla-header {
+  margin-bottom: 15px;
+}
+
+.tabla-header h3 {
+  font-size: 16px;
+  margin: 0 0 5px;
+}
+
+.tabla-header span {
+  font-size: 12px;
+  color: #888;
+}
+
+/* MÓVIL */
+
+.promociones-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.promocion-card {
+  border-radius: 11px;
+  padding: 13px;
+  box-shadow: none;
+  border: 1px solid #ededed;
+}
+
+.promocion-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.promocion-card-header strong {
+  display: block;
+  font-size: 14px;
+}
+
+.promocion-card-header div > span {
+  display: block;
+  color: #888;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.estado {
+  height: fit-content;
+  border-radius: 20px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.estado.activa {
+  background: #e5f5ed;
+  color: #16805d;
+}
+
+.estado.inactiva {
+  background: #fff1e5;
+  color: #d17b27;
+}
+
+.promocion-card p {
+  font-size: 13px;
+  color: #777;
+}
+
+.promocion-valor {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px 0;
+  font-size: 13px;
+}
+
+.promocion-valor strong {
+  color: #365fba;
+}
+
+.promocion-fechas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  color: #777;
+  font-size: 12px;
+}
+
+.promocion-fechas span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.promocion-fechas mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.promocion-acciones {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+}
+
+.sin-promociones {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 35px 10px;
+  gap: 10px;
+  color: #888;
+  text-align: center;
+}
+
+.sin-promociones mat-icon {
+  font-size: 42px;
+  width: 42px;
+  height: 42px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+
+  .promociones-container {
+    padding: 12px;
+  }
+
+  .resumen-promociones {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .filtros-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .btn-crear {
+    width: 100%;
+  }
+
+  .filtros-header {
+    align-items: flex-start;
+  }
+
+  .tabla-container {
+    padding: 12px;
+  }
+}

@@ -1,0 +1,174 @@
+
+<div class="promociones-container">
+
+  <!-- ENCABEZADO -->
+  <div class="page-header">
+
+    <div class="header-info">
+      <div class="icon-header">
+        <mat-icon>redeem</mat-icon>
+      </div>
+
+      <div>
+        <h2>Gestión de promociones</h2>
+        <p>Administra tus combos, descuentos y beneficios.</p>
+      </div>
+    </div>
+
+    <button mat-flat-button color="primary"
+      class="btn-crear"
+      (click)="crearPromocion()">
+
+      <mat-icon>add</mat-icon>
+      Crear promoción
+
+    </button>
+
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filtros-container">
+
+    <div class="filtros-header">
+      <div>
+        <mat-icon>filter_list</mat-icon>
+        <strong>Filtros de búsqueda</strong>
+      </div>
+
+      <button mat-button (click)="limpiarFiltros()">
+        <mat-icon>restart_alt</mat-icon>
+        Limpiar filtros
+      </button>
+    </div>
+
+    <div class="filtros-grid">
+
+      <mat-form-field appearance="outline">
+        <mat-label>Buscar promoción</mat-label>
+
+        <input matInput
+          [(ngModel)]="busqueda"
+          (ngModelChange)="aplicarFiltros()"
+          placeholder="Nombre o descripción">
+
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Estado</mat-label>
+
+        <mat-select [(ngModel)]="filtroEstado"
+          (selectionChange)="aplicarFiltros()">
+
+          <mat-option value="todos">Todos</mat-option>
+          <mat-option value="activos">Activos</mat-option>
+          <mat-option value="inactivos">Inactivos</mat-option>
+
+        </mat-select>
+      </mat-form-field>
+
+    </div>
+
+  </div>
+
+  <!-- TABLA -->
+  <div class="tabla-container">
+
+    <div class="tabla-header">
+      <div>
+        <h3>Promociones registradas</h3>
+        <span>
+          {{ promocionesFiltradas.length }} promociones encontradas
+        </span>
+      </div>
+    </div>
+
+    <app-table
+      *ngIf="!isMobileView"
+      [data]="promocionesFiltradas"
+      [columns]="columnas"
+      [actions]="acciones"
+      [loading]="loading">
+    </app-table>
+
+    <!-- VISTA MÓVIL -->
+    <div class="promociones-mobile"
+      *ngIf="isMobileView && !loading">
+
+      <mat-card class="promocion-card"
+        *ngFor="let promocion of promocionesFiltradas">
+
+        <div class="promocion-card-header">
+          <div>
+            <strong>{{ promocion.nombre }}</strong>
+          </div>
+
+          <span class="estado"
+            [class.activa]="promocion.estado"
+            [class.inactiva]="!promocion.estado">
+
+            {{ promocion.estado ? 'Activa' : 'Inactiva' }}
+
+          </span>
+        </div>
+
+        <p>{{ promocion.descripcion }}</p>
+
+        <div class="promocion-valor">
+          <span>Valor</span>
+
+        </div>
+
+        <div class="promocion-fechas">
+          <span>
+            <mat-icon>calendar_today</mat-icon>
+            {{ promocion.fechaInicio | date:'dd/MM/yyyy' }}
+          </span>
+
+          <span>
+            <mat-icon>event</mat-icon>
+            {{ promocion.fechaFin | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+
+        <div class="promocion-acciones">
+
+          <button mat-button color="primary"
+            (click)="verPromocion(promocion)">
+            <mat-icon>visibility</mat-icon>
+            Ver
+          </button>
+
+          <button mat-button
+            (click)="editarPromocion(promocion)">
+            <mat-icon>edit</mat-icon>
+            Editar
+          </button>
+
+          <button mat-button
+            (click)="cambiarEstado(promocion)">
+            <mat-icon>
+              {{ promocion.estado ? 'pause' : 'play_arrow' }}
+            </mat-icon>
+
+            {{ promocion.estado ? 'Desactivar' : 'Activar' }}
+          </button>
+
+        </div>
+
+      </mat-card>
+
+      <div class="sin-promociones"
+        *ngIf="promocionesFiltradas.length === 0">
+
+        <mat-icon>redeem</mat-icon>
+        <strong>No hay promociones</strong>
+        <span>No encontramos promociones con los filtros seleccionados.</span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
