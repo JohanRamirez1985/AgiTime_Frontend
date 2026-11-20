@@ -137,6 +137,13 @@ export class Toolbar implements OnInit {
     },
 
     {
+      codigo: 'cbs',
+      label: 'Combos',
+      icon: 'sell',
+      route: '/admin/combos'
+    },
+
+    {
       codigo: 'crt',
       label: 'Recordatorio clientes',
       icon: 'chat',

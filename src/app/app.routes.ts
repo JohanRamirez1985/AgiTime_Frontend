@@ -199,6 +199,21 @@ export const routes: Routes = [
         path: 'citas',
         loadComponent: () =>
           import('./components/citas/citas').then((m) => m.Citas),
+      },
+      {
+        path: 'combos',
+        loadComponent: () =>
+          import('./components/promociones/gestionar-promociones/gestionar-promociones').then((m) => m.GestionarPromociones),
+      },
+      {
+        path: 'crear-combos',
+        loadComponent: () =>
+          import('./components/promociones/crear-promociones/crear-promociones').then((m) => m.CrearPromociones),
+      },
+      {
+        path: 'editar-combos',
+        loadComponent: () =>
+          import('./components/promociones/editar-promociones/editar-promociones').then((m) => m.EditarPromociones),
       }
     ],
   },
