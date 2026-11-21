@@ -64,7 +64,7 @@
 
 /* Todo el contenido (excepto cabecera y botones fijos) va centrado */
 .agendar-wrapper > :not(.header-container):not(.fab-citas) {
-  width: 100%;
+  /* width: 100%; */
   max-width: var(--content-w);
   margin-left: auto;
   margin-right: auto;
@@ -902,4 +902,89 @@ button.hora-no-disponible {
   .agendar-wrapper:not(:has(.fab-citas)) .boton-flotante-wrapper {
     bottom: 16px;
   }
+}
+
+.btn-promociones-flotante {
+    position: fixed;
+    top: 60px;
+    right: 25px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 17px;
+    border: none;
+    border-radius: 50px;
+    color: white;
+    background: linear-gradient(135deg, #ff7a18, #ff3d68);
+    box-shadow: 0 5px 18px rgba(255, 80, 70, 0.30);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-promociones-flotante:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 22px rgba(255, 80, 70, 0.40);
+}
+
+.icono-promocion {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.20);
+    border-radius: 50%;
+}
+
+.icono-promocion mat-icon {
+    font-size: 21px;
+}
+
+.texto-promocion {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.texto-promocion small {
+    font-size: 10px;
+    font-weight: 400;
+    opacity: 0.9;
+    margin-top: 2px;
+}
+
+.flecha-promocion {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.btn-promociones-flotante:active {
+    transform: scale(0.96);
+}
+
+/* MÓVIL */
+@media (max-width: 600px) {
+    .btn-promociones-flotante {
+        top: 12px;
+        right: 12px;
+        padding: 8px 12px;
+        gap: 7px;
+    }
+
+    .icono-promocion {
+        width: 32px;
+        height: 32px;
+    }
+
+    .texto-promocion {
+        font-size: 12px;
+    }
+
+    .texto-promocion small {
+        font-size: 9px;
+    }
 }
