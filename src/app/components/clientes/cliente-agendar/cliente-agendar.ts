@@ -26,6 +26,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ValidarVersion } from '../../../shared/validar-version/validar-version';
 import { environment } from '../../../../environments/environment';
 import { Profesionales } from '../../profesionales/profesionales';
+import { PromocionesService } from '../../promociones/promociones.services';
 
 registerLocaleData(localeEs);
 
@@ -110,6 +111,11 @@ export class ClienteAgendar {
   TiempoAgendaDespues: number = 0;
   MostrarAgendaCualquiera: boolean = false;
   seleccionoCualquiera: boolean = false;
+  btnPromociones: boolean = false;
+  tituloBtnPromo: string = '';
+  subTituloBtnPromo: string = '';
+  promociones: any[] = [];
+  promocionSeleccionada: any = null;
 
   constructor(
     private sharedServices: SharedService,
@@ -119,7 +125,8 @@ export class ClienteAgendar {
     private route: ActivatedRoute,
     private dialog: MatDialog,
     private clienteService: ClienteService,
-    private modalService: Modal
+    private modalService: Modal,
+    private promoService: PromocionesService
   ) { }
 
   ngOnInit() {
@@ -129,10 +136,29 @@ export class ClienteAgendar {
     this.route.queryParams.subscribe((params) => {
       this.idRecurso = +params['rcr'];
     });
+    this.validarPromociones();
     this.obtenerRangoParametrizado();
     this.obtenerMensajesCliente();
     this.obtenerEmpresas();
     this.consultarInfoCliente();
+  }
+
+  private validarPromociones(): void {
+    this.promoService.gestionarPromociones(this.idEmpresa).subscribe({
+      next: (rest) => {
+        if (rest.exito) {
+          this.btnPromociones = rest.datos.some(
+            (item: any) => item.estado?.toLowerCase() === 'activo'
+          );
+          this.promociones = rest.datos;
+        } else {
+          this.btnPromociones = false;
+        }
+      },
+      error: (err) => {
+        this.btnPromociones = false;
+      }
+    })
   }
 
   private obtenerMensajesCliente(): void {
@@ -177,6 +203,13 @@ export class ClienteAgendar {
           this.TiempoAgendaDespues = tiempoAgenda
             ? Number(tiempoAgenda.valor)
             : 0;
+
+          const botonPromociones = rest.datos.find((h: any) => h.tipo === 'NombreBotonPromocion');
+
+          if (botonPromociones) {
+            this.tituloBtnPromo = botonPromociones.valor.split('/')[0].trim();
+            this.subTituloBtnPromo = botonPromociones.valor.split('/')[1].trim();
+          }
         }
       },
     });
@@ -589,6 +622,7 @@ export class ClienteAgendar {
   }
 
   reservarServicios(): void {
+    this.btnPromociones = false;
     this.validarVersionApp(() => {
       this.loading = true;
       if (this.recursosSeleccionados.length > 0) {
@@ -771,6 +805,22 @@ export class ClienteAgendar {
 
   public nextPeriod(): void {
     this.viewDate = new Date(this.viewDate);
+    if (this.promocionSeleccionada) {
+      const fechaFinal = new Date(this.viewDate);
+      fechaFinal.setDate(fechaFinal.getDate() + 1);
+
+      const fechaFinPromocion = new Date(this.promocionSeleccionada.fechaFin);
+
+      if (fechaFinal > fechaFinPromocion) {
+        Swal.fire({
+          title: 'Promoción no disponible',
+          text: 'La fecha seleccionada supera la vigencia de la promoción.',
+          icon: 'warning',
+          confirmButtonText: 'Entendido'
+        });
+        return;
+      }
+    }
     this.viewDate.setDate(this.viewDate.getDate() + 1);
     this.loading = true;
     this.obtenerHorarios(true);
@@ -810,10 +860,44 @@ export class ClienteAgendar {
     const fecha = event.value;
     if (!fecha) return;
 
-    this.viewDate = fecha;
-    this.loading = true;
-    this.obtenerHorarios(true);
-    this.cdr.detectChanges();
+    if (this.promocionSeleccionada) {
+      const fechaSeleccionada = new Date(fecha);
+      fechaSeleccionada.setHours(0, 0, 0, 0);
+
+      const fechaIniPromocion = new Date(this.promocionSeleccionada.fechaIni);
+      fechaIniPromocion.setHours(0, 0, 0, 0);
+
+      const fechaFinPromocion = new Date(this.promocionSeleccionada.fechaFin);
+      fechaFinPromocion.setHours(0, 0, 0, 0);
+
+      if (
+        fechaSeleccionada < fechaIniPromocion ||
+        fechaSeleccionada > fechaFinPromocion
+      ) {
+        Swal.fire({
+          title: 'Promoción no disponible',
+          text: 'La fecha seleccionada está fuera de la vigencia de la promoción.',
+          icon: 'warning',
+          confirmButtonText: 'Entendido'
+        });
+        return;
+      }
+    }
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    if (fecha < hoy) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Dia no habil',
+        text: 'No puedes consultar dias anteriores',
+      });
+    } else {
+      this.viewDate = fecha;
+      this.loading = true;
+      this.obtenerHorarios(true);
+      this.cdr.detectChanges();
+    }
   }
 
   public seleccionarHora(hora: any): void {
@@ -987,6 +1071,92 @@ export class ClienteAgendar {
         }
       }
     })
+  }
+
+  public irPromociones(): void {
+
+    if (!this.promociones || this.promociones.length === 0) {
+      Swal.fire('Promociones', 'No hay promociones disponibles.', 'info');
+      return;
+    }
+    this.serviciosSeleccionados = [];
+    this.promociones = this.promociones.filter(p => p.estado === 'Activo');
+
+    const opciones = this.promociones.map((promo: any, index: number) => `
+    <label style="
+      display: block;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      text-align: left;
+    ">
+      <input type="radio" name="promocion" value="${index}"
+        ${index === 0 ? 'checked' : ''}
+        style="margin-right: 8px;">
+
+      <span style="font-size: 22px; font-weight: bold; color: #16a34a;">
+        ${promo.valor.toLocaleString('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0
+    })}
+      </span>
+
+      <div style="font-size: 13px; color: #777; margin: 8px 0;">
+        Vigencia: ${new Date(promo.fechaIni).toLocaleDateString('es-CO')}
+        - ${new Date(promo.fechaFin).toLocaleDateString('es-CO')}
+      </div>
+
+      <div style="font-weight: 600; margin-bottom: 5px;">
+        Servicios incluidos:
+      </div>
+
+      <ul style="padding-left: 20px; margin: 0;">
+        ${promo.servicios.map((s: any) => `
+          <li>${s.nombre}</li>
+        `).join('')}
+      </ul>
+    </label>
+  `).join('');
+
+    Swal.fire({
+      title: '🎉 Elige tu promoción',
+      html: `
+      <div style="max-height: 400px; overflow-y: auto;">
+        ${opciones}
+      </div>
+    `,
+      confirmButtonText: 'Usar esta promoción',
+      confirmButtonColor: '#1976d2',
+      cancelButtonText: 'Cancelar',
+      showCancelButton: true,
+      width: '480px',
+      preConfirm: () => {
+        const seleccion = document.querySelector(
+          'input[name="promocion"]:checked'
+        ) as HTMLInputElement;
+
+        if (!seleccion) {
+          Swal.showValidationMessage('Selecciona una promoción');
+          return false;
+        }
+
+        return this.promociones[Number(seleccion.value)];
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const promocionSeleccionada = result.value;
+        this.promocionSeleccionada = promocionSeleccionada;
+        this.serviciosSeleccionados = this.servicios.filter(servicio =>
+          this.promocionSeleccionada.servicios.some(
+            (promo: any) => promo.id === servicio.id
+          )
+        );
+        this.reservarServicios();
+      }
+    });
   }
 
   obtenerFechaIni(hora: any) {
@@ -1165,6 +1335,14 @@ export class ClienteAgendar {
           );
         });
 
+        if (this.promocionSeleccionada && agrupados.length > 0) {
+          const primerAgrupado: any = agrupados.at(0);
+
+          if (primerAgrupado) {
+            primerAgrupado.Valor = this.promocionSeleccionada.valor;
+          }
+        }
+
         json = {
           FechaIni: fechaFinal,
           empresa: this.idEmpresa,
@@ -1177,7 +1355,8 @@ export class ClienteAgendar {
             FechaNacimiento: datos.fechaNacimiento,
           },
           citas: agrupados,
-          validaHorario: true
+          validaHorario: true,
+          promociones: !!this.promocionSeleccionada
         }
         return json;
       } else {

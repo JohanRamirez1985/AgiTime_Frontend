@@ -18,6 +18,20 @@
         <mat-icon>event</mat-icon>
         Agendar cita
       </h2>
+      <button *ngIf="btnPromociones" class="btn-promociones-flotante" type="button" (click)="irPromociones()">
+
+        <span class="icono-promocion">
+          <mat-icon>local_offer</mat-icon>
+        </span>
+
+        <span class="texto-promocion">
+          {{ tituloBtnPromo }}
+          <small>¡{{ subTituloBtnPromo }}!</small>
+        </span>
+
+        <mat-icon class="flecha-promocion">arrow_forward</mat-icon>
+
+      </button>
       <button *ngIf="empresaServicio" mat-stroked-button color="primary" class="fab-citas" (click)="misCitas()">
         <mat-icon>event</mat-icon>
         Mis citas
