@@ -1,4 +1,4 @@
-const version = '1.4.9'
+const version = '1.5.0'
 
 export const environment = {
   production: false,
