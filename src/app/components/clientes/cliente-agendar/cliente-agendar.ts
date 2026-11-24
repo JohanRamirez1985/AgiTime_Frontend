@@ -110,6 +110,7 @@ export class ClienteAgendar {
   AgendarDespues: boolean = false;
   TiempoAgendaDespues: number = 0;
   MostrarAgendaCualquiera: boolean = false;
+  nombreAgendaCualquiera: string = '';
   seleccionoCualquiera: boolean = false;
   btnPromociones: boolean = false;
   tituloBtnPromo: string = '';
@@ -193,6 +194,15 @@ export class ClienteAgendar {
           this.MostrarAgendaCualquiera =
             rest.datos.find((h: any) => h.tipo === 'MostrarAgendaCualquiera')
               ?.valor?.toLowerCase() === 'true';
+
+          const agenda = rest.datos.find(
+            (h: any) => h.tipo === 'NombreAgendaCualquiera'
+          );
+
+          this.nombreAgendaCualquiera = agenda?.valor
+            ?.split('-')
+            .map((texto: string) => texto.trim())
+            .join('\n') || '';
 
           const tiempoAgenda = rest.datos.find(
             (h: any) =>
@@ -673,7 +683,7 @@ export class ClienteAgendar {
         if (this.MostrarAgendaCualquiera) {
           this.recursosList.unshift({
             id: 0,
-            nombre: 'El primer profesional disponible',
+            nombre: this.nombreAgendaCualquiera,
             foto: 'assets/img/Sin_foto.jpg',
             telefono: '',
             sede: this.sedeSeleccionada,
