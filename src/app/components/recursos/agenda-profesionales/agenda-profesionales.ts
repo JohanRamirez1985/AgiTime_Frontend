@@ -165,11 +165,16 @@ export class AgendaProfesionales {
     }).format(costo);
 
     const dialogRef = this.dialog.open(ReservaDialog, {
-      width: '400px',
+      width: '460px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      autoFocus: false,
+      panelClass: 'reserva-dialog-panel',
       data: {
         fecha: fechaFormateada,
         hora: this.horarioSeleccionado?.hora,
         costo: costoFormateado,
+        idEmpresa: this.idEmpresa
       },
     });
 
@@ -189,6 +194,10 @@ export class AgendaProfesionales {
       if (result) {
         this.loading = true;
         this.cdr.detectChanges();
+        if (result.fechaNacimiento === '') {
+          const hoy = new Date();
+          result.fechaNacimiento = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}T05:00:00`;
+        }
         this.reservarCita(result, this.horarioSeleccionado?.hora);
       } else {
         this.serviciosSeleccionados = [];
@@ -622,9 +631,9 @@ export class AgendaProfesionales {
               disponible: true
             }));
           }
-          recurso.horarios =this.verificarHoras(recurso.horarios);      
+          recurso.horarios = this.verificarHoras(recurso.horarios);
         });
-        this.loading = false;     
+        this.loading = false;
         this.cdr.detectChanges();
       },
       error: (error) => {

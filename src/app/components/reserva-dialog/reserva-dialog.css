@@ -1,47 +1,259 @@
-/* Contenedor general */
-mat-dialog-content {
-  padding: 10px 20px;
+
+:host {
+  display: block;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  min-height: 0;
 }
 
-/* Título centrado */
-h2[mat-dialog-title] {
+/* Contenedor general del modal */
+.reserva-dialog-container {
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+
+  max-height: 90vh;
+  min-height: 0;
+}
+
+/* Encabezado */
+.dialog-header {
   text-align: center;
-  font-weight: bold;
-  font-size: 1.4rem;
-  margin-bottom: 10px;
+  padding: 24px 20px 12px;
+  flex-shrink: 0;
 }
 
-/* Texto de info (fecha, hora, costo) */
-mat-dialog-content p {
-  margin: 4px 0;
-  font-size: 14px;
+.header-icon {
+  width: 55px;
+  height: 55px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eeedff;
+  color: #5a50ef;
+  border-radius: 16px;
 }
 
-/* Inputs más compactos */
+.header-icon mat-icon {
+  font-size: 29px;
+  width: 29px;
+  height: 29px;
+}
+
+h2[mat-dialog-title] {
+  margin: 0;
+  padding: 0;
+  font-size: 21px;
+  font-weight: 700;
+  color: #25243a;
+}
+
+.dialog-header p {
+  color: #858598;
+  font-size: 13px;
+  margin: 7px 0 0;
+}
+
+/* Contenido: ÚNICA sección con scroll */
+mat-dialog-content {
+  padding: 12px 24px !important;
+
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Personalización del scroll */
+mat-dialog-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+mat-dialog-content::-webkit-scrollbar-thumb {
+  background: #b8b6c9;
+  border-radius: 10px;
+}
+
+mat-dialog-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Información de reserva */
+.reserva-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  background: #f7f7fc;
+  border: 1px solid #ededf5;
+  padding: 14px;
+  border-radius: 13px;
+  margin-bottom: 24px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.info-item mat-icon {
+  color: #6559ed;
+  font-size: 21px;
+  width: 21px;
+  height: 21px;
+}
+
+.info-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.info-item span {
+  font-size: 11px;
+  color: #858598;
+}
+
+.info-item strong {
+  font-size: 13px;
+  color: #303044;
+  font-weight: 650;
+}
+
+.info-item.costo {
+  grid-column: span 2;
+  padding-top: 10px;
+  border-top: 1px solid #e7e6f0;
+}
+
+.info-item.costo strong {
+  color: #5a50ef;
+  font-size: 17px;
+}
+
+/* Formulario */
+.form-section h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #303044;
+  margin: 0 0 4px;
+}
+
+.form-section > p {
+  font-size: 12px;
+  color: #9292a2;
+  margin: 0 0 15px;
+}
+
 mat-form-field.full-width {
   width: 100%;
-  margin-bottom: 8px; /* menos espacio entre campos */
+  margin-bottom: 5px;
+}
+
+mat-form-field mat-icon[matPrefix] {
+  color: #8988a1;
+  margin-right: 8px;
+}
+
+/* Acciones: siempre visibles */
+mat-dialog-actions {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px 24px 22px !important;
+  margin: 0 !important;
+
+  flex: 0 0 auto !important;
+  flex-shrink: 0 !important;
+
+  background: #ffffff;
+  position: relative;
+  z-index: 2;
 }
 
 /* Botones */
-mat-dialog-actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-
 mat-dialog-actions button {
-  min-width: 100px;
-  font-weight: bold;
-  border-radius: 6px;
+  min-height: 44px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 650;
 }
 
-button[mat-raised-button] {
-  background-color: #5a50ef; /* morado empresarial */
-  color: white;
+.btn-cancelar {
+  color: #666579;
+  background: #f1f1f5;
+  min-width: 105px;
 }
 
-button[mat-button] {
-  background-color: #555;
-  color: white;
+.btn-reservar {
+  flex: 1;
+  color: #ffffff !important;
+  background: #5a50ef !important;
+  box-shadow: 0 4px 12px rgba(90, 80, 239, 0.22);
+}
+
+.btn-reservar mat-icon {
+  font-size: 19px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.btn-reservar:disabled {
+  background: #c5c3d9 !important;
+  box-shadow: none;
+}
+
+/* Adaptación móvil */
+@media (max-width: 480px) {
+
+  .dialog-header {
+    padding: 18px 16px 10px;
+  }
+
+  .header-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  h2[mat-dialog-title] {
+    font-size: 19px;
+  }
+
+  mat-dialog-content {
+    padding: 10px 16px !important;
+  }
+
+  mat-dialog-actions {
+    padding: 10px 16px 18px !important;
+    gap: 8px;
+  }
+
+  .reserva-info {
+    padding: 12px;
+    gap: 12px 6px;
+    margin-bottom: 18px;
+  }
+
+  .info-item {
+    gap: 6px;
+  }
+
+  .info-item strong {
+    font-size: 12px;
+  }
+
+  mat-dialog-actions button {
+    font-size: 12px;
+  }
+
+  .btn-cancelar {
+    min-width: 90px;
+  }
 }
