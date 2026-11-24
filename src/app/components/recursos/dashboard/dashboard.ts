@@ -1132,7 +1132,7 @@ export class DashboardRecurso {
       servicios = cliente.nombre;
 
       abono = Number(cliente.total || 0) / 2;
-      telefonoBreB = '3137938061';
+      telefonoBreB = '3174764472';
     } else {
       nombreCliente = cliente.nombreCliente;
       numero = '57' + cliente.telefonoCliente;
