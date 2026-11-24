@@ -571,3 +571,11 @@ body {
   background: transparent !important;
   box-shadow: none !important;
 }
+
+.reserva-dialog-panel .mat-mdc-dialog-surface {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  max-height: 90vh !important;
+}

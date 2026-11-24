@@ -16,6 +16,7 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 
 @Component({
@@ -31,6 +32,7 @@ import { MatInputModule } from '@angular/material/input';
     MatButtonModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatIconModule
   ],
   templateUrl: './reserva-dialog.html',
   styleUrl: './reserva-dialog.css',
@@ -46,27 +48,36 @@ export class ReservaDialog {
     private dialogRef: MatDialogRef<ReservaDialog>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
+    const esEmpresa8 = Number(data.idEmpresa) === 8;
+
     this.form = this.fb.group({
-      celular: ['', [Validators.required, Validators.pattern(/^\d{7,}$/)]],
-      nombre: [
+      celular: ['', [
+        Validators.required,
+        Validators.pattern(/^\d{7,}$/)
+      ]],
+
+      nombre: ['', [
+        Validators.required,
+        Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/)
+      ]],
+
+      correo: ['', esEmpresa8 ? [] : [Validators.email]],
+
+      fechaNacimiento: [
         '',
-        [Validators.required, Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/)],
-      ],
-      correo: ['', [Validators.email]],
-      fechaNacimiento: ['', Validators.required],
+        esEmpresa8 ? [] : [Validators.required]
+      ]
     });
 
-    // 👂 Escuchar cambios en el celular
     this.form.get('celular')?.valueChanges.subscribe((valor: string) => {
       if (valor && valor.length === 10) {
-        this.celularIngresado.emit(valor); // 🔥 Avisar al padre
+        this.celularIngresado.emit(valor);
       } else {
-        // 👇 Limpiar datos si no está completo
         this.form.patchValue(
           {
             nombre: '',
             correo: '',
-            fechaNacimiento: '',
+            fechaNacimiento: ''
           },
           { emitEvent: false }
         );

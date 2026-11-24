@@ -943,11 +943,16 @@ export class ClienteAgendar {
     }).format(this.costo);
 
     const dialogRef = this.dialog.open(ReservaDialog, {
-      width: '400px',
+      width: '460px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      autoFocus: false,
+      panelClass: 'reserva-dialog-panel',
       data: {
         fecha: fechaFormateada,
         hora: hora.hora,
         costo: costoFormateado,
+        idEmpresa: this.idEmpresa
       },
     });
 
@@ -966,6 +971,10 @@ export class ClienteAgendar {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loading = true;
+        if (result.fechaNacimiento === '') {
+          const hoy = new Date();
+          result.fechaNacimiento = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}T05:00:00`;
+        }
         this.reservarCita(result, hora.hora);
       } else {
         this.loading = false;
@@ -1462,7 +1471,12 @@ export class ClienteAgendar {
       .replace(
         /\$\{enviaMensaje\s*\?\s*"⚠️ Observación: Validar horario\."\s*:\s*""\}/g,
         enviaMensaje ? '⚠️ Observación: Validar horario.' : ''
-      );
+      )
+      .replace(
+        /\$\{fidelidadMensaje\}/g,
+        request.fidelidadMensaje?.trim() || ''
+      )
+      .replace(/\n[ \t]*\n[ \t]*\n/g, '\n\n');
 
     const numero = '57' + tel;
     const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);

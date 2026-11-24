@@ -1,50 +1,104 @@
+
 <div class="reserva-dialog-container">
-  <h2 mat-dialog-title>Confirmar reserva</h2>
+
+  <div class="dialog-header">
+    <div class="header-icon">
+      <mat-icon>event_available</mat-icon>
+    </div>
+    <h2 mat-dialog-title>Confirmar reserva</h2>
+    <p>Completa tus datos para finalizar tu agendamiento.</p>
+  </div>
 
   <mat-dialog-content [formGroup]="form">
-    <p><strong>Fecha:</strong> {{ data.fecha }}</p>
-    <p><strong>Hora:</strong> {{ data.hora }}</p>
-    <p><strong>Costo:</strong> {{ data.costo }}</p>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Celular</mat-label>
-      <input matInput formControlName="celular" placeholder="Ej: 3001234567" />
-      <mat-error *ngIf="form.get('celular')?.invalid">
-        Ingresa un número de celular válido (mínimo 7 dígitos)
-      </mat-error>
-    </mat-form-field>
+    <div class="reserva-info">
+      <div class="info-item">
+        <mat-icon>calendar_month</mat-icon>
+        <div>
+          <span>Fecha de reserva</span>
+          <strong>{{ data.fecha }}</strong>
+        </div>
+      </div>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Nombres</mat-label>
-      <input matInput formControlName="nombre" placeholder="Ej: Juan Pérez" />
-      <mat-error *ngIf="form.get('nombre')?.invalid">
-        Ingresa un nombre válido (solo letras y espacios)
-      </mat-error>
-    </mat-form-field>
+      <div class="info-item">
+        <mat-icon>schedule</mat-icon>
+        <div>
+          <span>Hora</span>
+          <strong>{{ data.hora }}</strong>
+        </div>
+      </div>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Fecha de nacimiento</mat-label>
-      <input matInput [matDatepicker]="picker" formControlName="fechaNacimiento" />
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-      <mat-error *ngIf="form.get('fechaNacimiento')?.invalid">
-        Ingresa una fecha válida
-      </mat-error>
-    </mat-form-field>
+      <div class="info-item costo">
+        <mat-icon>payments</mat-icon>
+        <div>
+          <span>Valor del servicio</span>
+          <strong>{{ data.costo }}</strong>
+        </div>
+      </div>
+    </div>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Correo</mat-label>
-      <input matInput formControlName="correo" placeholder="ejemplo@correo.com" />
-      <mat-error *ngIf="form.get('correo')?.invalid">
-        Ingresa un correo electrónico válido
-      </mat-error>
-    </mat-form-field>
+    <div class="form-section">
+      <h3>Datos personales</h3>
+      <p>Necesitamos esta información para confirmar tu cita.</p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Celular</mat-label>
+        <mat-icon matPrefix>phone_iphone</mat-icon>
+        <input matInput formControlName="celular"
+          placeholder="Ej: 3001234567" />
+        <mat-error *ngIf="form.get('celular')?.invalid">
+          Ingresa un número de celular válido.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombres y apellidos</mat-label>
+        <mat-icon matPrefix>person_outline</mat-icon>
+        <input matInput formControlName="nombre"
+          placeholder="Ej: Juan Pérez" />
+        <mat-error *ngIf="form.get('nombre')?.invalid">
+          Ingresa un nombre válido.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="data.idEmpresa !== 8"
+        appearance="outline" class="full-width">
+        <mat-label>Fecha de nacimiento</mat-label>
+        <mat-icon matPrefix>cake</mat-icon>
+        <input matInput [matDatepicker]="picker"
+          formControlName="fechaNacimiento" />
+        <mat-datepicker-toggle matSuffix [for]="picker">
+        </mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="form.get('fechaNacimiento')?.invalid">
+          Ingresa una fecha válida.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="data.idEmpresa !== 8"
+        appearance="outline" class="full-width">
+        <mat-label>Correo electrónico</mat-label>
+        <mat-icon matPrefix>mail_outline</mat-icon>
+        <input matInput formControlName="correo"
+          placeholder="ejemplo@correo.com" />
+        <mat-error *ngIf="form.get('correo')?.invalid">
+          Ingresa un correo electrónico válido.
+        </mat-error>
+      </mat-form-field>
+    </div>
+
   </mat-dialog-content>
 
   <mat-dialog-actions>
-    <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="confirmar()">
-      Reservar
+    <button mat-button class="btn-cancelar" (click)="cerrar()">
+      Cancelar
     </button>
-    <button mat-button (click)="cerrar()">Cancelar</button>
+
+    <button mat-raised-button class="btn-reservar"
+      [disabled]="form.invalid" (click)="confirmar()">
+      <mat-icon>check_circle_outline</mat-icon>
+      Confirmar reserva
+    </button>
   </mat-dialog-actions>
+
 </div>

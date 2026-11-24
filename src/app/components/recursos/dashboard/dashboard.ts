@@ -1901,11 +1901,16 @@ export class DashboardRecurso {
     }).format(costo);
 
     const dialogRef = this.dialog.open(ReservaDialog, {
-      width: '400px',
+      width: '460px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      autoFocus: false,
+      panelClass: 'reserva-dialog-panel',
       data: {
         fecha: fechaFormateada,
         hora: hora.hora,
         costo: costoFormateado,
+        idEmpresa: this.idEmpresa
       },
     });
     // 👂 Accedemos a la instancia del modal para escuchar el evento
@@ -1924,6 +1929,10 @@ export class DashboardRecurso {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loading = true;
+        if (result.fechaNacimiento === '') {
+          const hoy = new Date();
+          result.fechaNacimiento = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}T05:00:00`;
+        }
         this.agendar(hora.hora, Bono, result);
       } else {
         this.loading = false;

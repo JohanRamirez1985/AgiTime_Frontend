@@ -73,7 +73,7 @@ export class Register {
         }
       },
       error: (err) => {
-   
+
       },
     })
   }
@@ -123,12 +123,16 @@ export class Register {
   private mensajeWssp(telefono: string): void {
 
     let mensaje = this.mensajeWsspEmpresa || '';
+    const barbero = this.recursos.find(
+      r => r.id === this.idRecurso
+    )?.nombre || '';
 
     mensaje = mensaje
       .replace(/\$\{nombreCliente\}/g, String(this.nombre))
+      .replace(/\$\{barbero\}/g, String(barbero || ''))
       .replace(/\\n/g, '\n')
       .replace(/\\u200D/g, '\u200D')
-      .replace(/\\https:/g, 'https:')
+      .replace(/\\https\:/g, 'https:')
       .replace(/^[ \t]+/gm, '')
       .trim();
 
