@@ -370,7 +370,8 @@ export class EdicionCitas {
         this.serviciosSeleccionados
           .filter(s => s.recurso != null)
           .map(s => s.recurso)
-      )].join(',')
+      )].join(','),
+      agendaAsistio: this.idEmpresa === 12 && this.user.id === 7
     }
     this.agendamientoService.consultarAgendamientosEmpleado(request)
       .subscribe({
