@@ -144,6 +144,13 @@ export class Toolbar implements OnInit {
     },
 
     {
+      codigo: 'bqs',
+      label: 'Bloqueos horarios',
+      icon: 'event_busy',
+      route: '/admin/bloqueos'
+    },
+
+    {
       codigo: 'crt',
       label: 'Recordatorio clientes',
       icon: 'chat',

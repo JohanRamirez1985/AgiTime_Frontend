@@ -138,6 +138,8 @@ export class DashboardRecurso {
   metodosPago: string[] = [];
   mensajeWsspEmpresa: string = '';
   mensajeRecordatorioWssp: string = '';
+  esSedePrincipal: boolean = false;
+  idSedeSeleccionada: number = 0;
 
   constructor(
     private router: Router,
@@ -1693,12 +1695,8 @@ export class DashboardRecurso {
 
   private agendar(hora: any, bono: boolean, result: any): void {
     const request = this.createJson(hora, bono, result);
-
     const mensaje = this.construirMensajeWhatsApp(request, result);
-    console.log(mensaje);
-
     const observable = this.guardarCita(request);
-
     observable.subscribe({
       next: (rest: any) => this.procesarRespuestaAgendamiento(rest, request, mensaje, result),
       error: (err: any) => this.manejarErrorAgendamiento(err),
@@ -1940,38 +1938,157 @@ export class DashboardRecurso {
     });
   }
 
+
+
+
   private solicitarUsoBono(hora: any): void {
+    const sedes = (this.empresa?.sedes || []).filter(
+      (sede: any) => sede.id !== this.user.sede
+    );
+
+    const opcionesSedes = sedes.map((sede: any) =>
+      `<option value="${sede.id}">${sede.nombre}</option>`
+    ).join('');
+
     Swal.fire({
       title: 'Cita',
       html: `
-      <div style="margin-top:15px;display:flex;justify-content:center;align-items:center;">
-        <label style="font-size:16px;cursor:pointer;display:flex;align-items:center;gap:8px;">
-          <input type="checkbox" id="usoBonoCheckbox">
-          ¿El servicio incluye bono?
-        </label>
+      <div style="margin-top:15px;">
+
+        <!-- USO DEL BONO -->
+        <div style="display:flex;justify-content:center;align-items:center;">
+          <label style="font-size:16px;cursor:pointer;display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" id="usoBonoCheckbox">
+            ¿El servicio incluye bono?
+          </label>
+        </div>
+
+        <hr style="margin:20px 0;border-color:#eee;">
+
+        <!-- PREGUNTA SEDE PRIMARIA -->
+        <div style="margin-top:15px;text-align:left;">
+
+          <label style="font-size:15px;font-weight:600;">
+            ¿La cita se realizó en su sede primaria?
+          </label>
+
+          <div style="display:flex;justify-content:center;gap:35px;margin-top:15px;">
+
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+              <input type="radio" name="sedePrincipal" value="si" checked>
+              Sí
+            </label>
+
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+              <input type="radio" name="sedePrincipal" value="no">
+              No
+            </label>
+
+          </div>
+
+          <!-- LISTADO DE SEDES -->
+          <div id="contenedorSedes" style="display:none;margin-top:20px;">
+
+            <label style="font-size:14px;font-weight:600;">
+              Selecciona la sede:
+            </label>
+
+            <select id="sedeSeleccionada" class="swal2-select"
+              style="width:100%;margin:10px 0;">
+              <option value="">Seleccionar sede</option>
+              ${opcionesSedes}
+            </select>
+
+          </div>
+
+        </div>
+
       </div>
     `,
+
       icon: 'success',
       showCloseButton: true,
       confirmButtonColor: '#3085d6',
-      preConfirm: () => ({
-        usoBono: (document.getElementById('usoBonoCheckbox') as HTMLInputElement).checked
-      })
+
+      didOpen: () => {
+        const radios = document.querySelectorAll<HTMLInputElement>(
+          'input[name="sedePrincipal"]'
+        );
+        const contenedorSedes = document.getElementById('contenedorSedes');
+        radios.forEach(radio => {
+          radio.addEventListener('change', () => {
+            contenedorSedes!.style.display =
+              radio.value === 'no' && radio.checked ? 'block' : 'none';
+          });
+
+        });
+      },
+
+      preConfirm: () => {
+
+        const usoBono = (
+          document.getElementById('usoBonoCheckbox') as HTMLInputElement
+        ).checked;
+
+        const esSedePrincipal = (
+          document.querySelector(
+            'input[name="sedePrincipal"]:checked'
+          ) as HTMLInputElement
+        ).value === 'si';
+
+        const sedeSeleccionada = (
+          document.getElementById('sedeSeleccionada') as HTMLSelectElement
+        ).value;
+
+        // Validar selección de sede
+        if (!esSedePrincipal && !sedeSeleccionada) {
+
+          Swal.showValidationMessage(
+            'Por favor selecciona la sede donde se realizó la cita.'
+          );
+
+          return false;
+        }
+
+        return {
+          usoBono,
+          esSedePrincipal,
+          idSede: esSedePrincipal ? 0 : Number(sedeSeleccionada)
+        };
+
+      }
+
     }).then((result) => {
+
+      // Cerrar modal
       if (result.dismiss === Swal.DismissReason.close) {
         this.loading = false;
         this.cdr.detectChanges();
         return;
       }
 
+      if (!result.isConfirmed) {
+        return;
+      }
+
       this.loading = true;
+      const usoBono = result.value?.usoBono ?? false;
+      const idSede = result.value?.idSede ?? 0;
+      const esSedePrincipal = result.value?.esSedePrincipal ?? true;
+
+      this.esSedePrincipal = esSedePrincipal;
+      this.idSedeSeleccionada = idSede;
+
       if (this.mostrarInfoCliente) {
-        this.solicitarCliente(hora, result.value?.usoBono ?? false);
+        this.solicitarCliente(hora, usoBono);
       } else {
-        this.agendar(hora.hora, result.value?.usoBono ?? false, '');
+        this.agendar(hora.hora, usoBono, '');
       }
     });
   }
+
+
+
 
   private agendarCita(hora: any): void {
     if (this.pestanaActiva) {
@@ -1986,7 +2103,7 @@ export class DashboardRecurso {
         this.solicitarCliente(hora, false);
       } else {
         this.loading = true;
-        this.agendar(hora.hora, false, '');
+        this.agendar(hora.hora, false, '',);
       }
     }
   }
@@ -2366,7 +2483,10 @@ export class DashboardRecurso {
             }
             : null,
           fechaCreacion: fechaLocal,
-          Bono: bono
+          Bono: bono,
+          ...(!this.esSedePrincipal && {
+            sede: this.idSedeSeleccionada
+          })
         };
       }
       return json;

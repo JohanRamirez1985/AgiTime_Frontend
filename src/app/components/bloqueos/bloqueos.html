@@ -1,0 +1,382 @@
+<div class="bloqueos-container">
+
+    <!-- ============================= -->
+    <!-- VISTA PRINCIPAL -->
+    <!-- ============================= -->
+
+    <div *ngIf="!mostrarBloqueo">
+
+        <!-- ENCABEZADO -->
+        <div class="bloqueos-header">
+
+            <div>
+                <h2>Bloqueos horarios</h2>
+                <p>
+                    Administra los horarios no disponibles de tus profesionales.
+                </p>
+            </div>
+
+            <button mat-flat-button color="primary" (click)="bloqueo()" [disabled]="!recursoSeleccionado">
+
+                <mat-icon>add</mat-icon>
+                Crear bloqueo
+
+            </button>
+
+        </div>
+
+        <!-- FILTRO PROFESIONAL -->
+        <mat-card class="filtro-card">
+
+            <mat-form-field appearance="outline">
+
+                <mat-label>Selecciona el profesional</mat-label>
+
+                <mat-select [(ngModel)]="recursoSeleccionado" (selectionChange)="cambiarRecurso($event.value)">
+
+                    <mat-option *ngFor="let recurso of recursos" [value]="recurso.id">
+
+                        {{ recurso.nombre | titlecase }}
+
+                    </mat-option>
+
+                </mat-select>
+
+            </mat-form-field>
+
+        </mat-card>
+
+        <!-- CARGANDO -->
+        <div *ngIf="loading" class="loading-container">
+
+            <mat-spinner diameter="40"></mat-spinner>
+
+            <p>Cargando bloqueos...</p>
+
+        </div>
+
+        <!-- CONTENIDO -->
+        <div *ngIf="!loading && recursoSeleccionado">
+
+            <!-- SIN BLOQUEOS -->
+            <div *ngIf="bloqueos.length === 0" class="empty-state">
+
+                <mat-icon>event_busy</mat-icon>
+
+                <h3>Sin bloqueos registrados</h3>
+
+                <p>
+                    Este profesional todavía no tiene bloqueos horarios.
+                </p>
+
+            </div>
+
+            <!-- LISTADO DE BLOQUEOS -->
+            <mat-card class="bloqueo-card" *ngFor="let bloqueo of bloqueos">
+
+                <div class="bloqueo-content">
+
+                    <!-- INFORMACIÓN -->
+                    <div class="bloqueo-info">
+
+                        <h3>{{ bloqueo.nombre }}</h3>
+
+                        <p>
+                            <strong>Día:</strong>
+
+                            {{
+                            bloqueo.tipoBloqueo === 1 ||
+                            bloqueo.tipoBloqueo === 3
+                            ? bloqueo.dia
+                            : (bloqueo.fechaInicio | date:'fullDate':'':'es')
+                            }}
+                        </p>
+
+                        <p>
+                            <strong>Hora:</strong>
+                            {{ formatearHora(bloqueo.horaInicio) }} -
+                            {{ formatearHora(bloqueo.horaFin) }}
+                        </p>
+
+                        <p>
+                            <strong>Profesional:</strong>
+                            {{ nombreRecursoSeleccionado | titlecase }}
+                        </p>
+
+                        <p>
+                            <strong>Estado:</strong>
+                            {{ bloqueo.estado | titlecase }}
+                        </p>
+
+                        <p *ngIf="bloqueo.motivo">
+                            <strong>Motivo:</strong>
+                            {{ bloqueo.motivo }}
+                        </p>
+
+                    </div>
+
+                    <!-- ACCIONES -->
+                    <div class="bloqueo-acciones">
+
+                        <button *ngIf="bloqueo.estado === 'Inactivo'" mat-raised-button color="primary"
+                            (click)="irABloqueo(bloqueo, true)">
+
+                            <mat-icon>check_circle</mat-icon>
+                            Activar
+
+                        </button>
+
+                        <button *ngIf="bloqueo.estado === 'Activo'" mat-raised-button color="primary"
+                            (click)="irABloqueo(bloqueo, false)">
+
+                            <mat-icon>block</mat-icon>
+                            Inactivar
+
+                        </button>
+
+                        <button mat-raised-button color="warn" (click)="eliminarBloqueo(bloqueo)">
+
+                            <mat-icon>delete</mat-icon>
+                            Eliminar
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </mat-card>
+
+        </div>
+
+        <!-- SIN PROFESIONAL SELECCIONADO -->
+        <div *ngIf="!loading && !recursoSeleccionado" class="empty-state">
+
+            <mat-icon>person_search</mat-icon>
+
+            <h3>Selecciona un profesional</h3>
+
+            <p>
+                Elige una persona para consultar o administrar sus bloqueos.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- FORMULARIO DE BLOQUEO -->
+    <!-- ============================= -->
+
+    <div *ngIf="mostrarBloqueo" class="bloqueo-formulario">
+
+        <!-- VOLVER -->
+        <button mat-button color="primary" (click)="back()">
+
+            <mat-icon>arrow_back</mat-icon>
+            Volver
+
+        </button>
+
+        <!-- ENCABEZADO -->
+        <div class="bloqueo-header">
+
+            <h2>Crear bloqueo horario</h2>
+
+            <p>
+                Profesional:
+                <strong>
+                    {{ nombreRecursoSeleccionado | titlecase }}
+                </strong>
+            </p>
+
+        </div>
+
+        <!-- CAMBIAR TIPO -->
+        <div class="cambiar-tipo" *ngIf="tipoBloqueo !== ''">
+
+            <span (click)="cambiarTipo()">
+                Cambiar tipo de bloqueo
+            </span>
+
+        </div>
+
+        <!-- CARGANDO -->
+        <div *ngIf="loading" class="loading-container">
+
+            <mat-spinner diameter="40"></mat-spinner>
+
+            <p>Cargando disponibilidad...</p>
+
+        </div>
+
+        <!-- FORMULARIO -->
+        <div *ngIf="!loading">
+
+            <!-- TIPO DE BLOQUEO -->
+            <div class="tipoBloqueos" *ngIf="mostrarTipoBloqueos">
+
+                <mat-form-field appearance="outline">
+
+                    <mat-label>Tipo de bloqueo</mat-label>
+
+                    <mat-select [(ngModel)]="tipoBloqueo" (selectionChange)="onTipoBloqueoChange($event.value)">
+
+                        <mat-option value="1">
+                            Bloqueo por día
+                        </mat-option>
+
+                        <mat-option value="2">
+                            Bloqueo puntual
+                        </mat-option>
+
+                        <mat-option value="3">
+                            Bloqueo descanso
+                        </mat-option>
+
+                        <mat-option value="4">
+                            Bloqueo vacaciones
+                        </mat-option>
+
+                    </mat-select>
+
+                </mat-form-field>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- BLOQUEO POR DÍA / DESCANSO -->
+            <!-- ============================= -->
+
+            <div class="dia-checkbox" *ngIf="['1', '3'].includes(tipoBloqueo)">
+
+                <div class="checkbox-item" *ngFor="let dia of dias">
+
+                    <label class="checkbox-label">
+                        {{ dia.nombre }}
+                    </label>
+
+                    <mat-checkbox [(ngModel)]="dia.checked">
+                    </mat-checkbox>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- BLOQUEO PUNTUAL -->
+            <!-- ============================= -->
+
+            <div class="date" *ngIf="tipoBloqueo === '2'">
+
+                <mat-form-field appearance="outline">
+
+                    <mat-label>Fecha</mat-label>
+
+                    <input matInput [matDatepicker]="picker" [(ngModel)]="fechaBloqueo">
+
+                    <mat-datepicker-toggle matSuffix [for]="picker">
+                    </mat-datepicker-toggle>
+
+                    <mat-datepicker #picker></mat-datepicker>
+
+                </mat-form-field>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- VACACIONES -->
+            <!-- ============================= -->
+
+            <div class="date" *ngIf="tipoBloqueo === '4'">
+
+                <mat-form-field appearance="outline">
+
+                    <mat-label>Fecha inicial</mat-label>
+
+                    <input matInput [matDatepicker]="pickerInicio" [(ngModel)]="fechaInicioVacaciones">
+
+                    <mat-datepicker-toggle matSuffix [for]="pickerInicio">
+                    </mat-datepicker-toggle>
+
+                    <mat-datepicker #pickerInicio></mat-datepicker>
+
+                </mat-form-field>
+
+
+                <mat-form-field appearance="outline">
+
+                    <mat-label>Fecha final</mat-label>
+
+                    <input matInput [matDatepicker]="pickerFin" [(ngModel)]="fechaFinVacaciones">
+
+                    <mat-datepicker-toggle matSuffix [for]="pickerFin">
+                    </mat-datepicker-toggle>
+
+                    <mat-datepicker #pickerFin></mat-datepicker>
+
+                </mat-form-field>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- HORARIOS Y MOTIVO -->
+            <!-- ============================= -->
+
+            <div class="horas" *ngIf="tipoBloqueo !== '4'">
+
+                <mat-form-field appearance="outline">
+
+                    <mat-label>Hora inicial</mat-label>
+
+                    <input matInput type="time" [(ngModel)]="horaInicio" [disabled]="estaDeshabilitado">
+
+                </mat-form-field>
+
+
+                <mat-form-field appearance="outline">
+
+                    <mat-label>Hora final</mat-label>
+
+                    <input matInput type="time" [(ngModel)]="horaFin" [disabled]="estaDeshabilitado">
+
+                </mat-form-field>
+
+
+                <mat-form-field appearance="outline">
+
+                    <mat-label>Motivo del bloqueo</mat-label>
+
+                    <input matInput type="text" [(ngModel)]="motivo" [disabled]="estaDeshabilitado"
+                        placeholder="Ej. Cita médica, diligencia...">
+
+                </mat-form-field>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- BOTÓN GUARDAR -->
+            <!-- ============================= -->
+
+            <div class="acciones">
+
+                <button mat-flat-button color="primary" (click)="inhabilitarHorarios()">
+
+                    <mat-icon>save</mat-icon>
+                    Crear bloqueo
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

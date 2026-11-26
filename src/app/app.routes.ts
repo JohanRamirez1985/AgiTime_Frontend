@@ -214,6 +214,11 @@ export const routes: Routes = [
         path: 'editar-combos',
         loadComponent: () =>
           import('./components/promociones/editar-promociones/editar-promociones').then((m) => m.EditarPromociones),
+      },
+      {
+        path: 'bloqueos',
+        loadComponent: () =>
+          import('./components/bloqueos/bloqueos').then((m) => m.Bloqueos),
       }
     ],
   },
