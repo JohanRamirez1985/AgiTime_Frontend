@@ -7,7 +7,7 @@
       <div class="acciones-header">
         <button mat-raised-button color="primary" (click)="imprimirInventario()">
           <mat-icon>print</mat-icon>
-            Imprimir
+          Imprimir
         </button>
 
         <button mat-raised-button color="primary" (click)="crearProducto()">
@@ -27,7 +27,7 @@
     </form>
     <!-- Contenedor de la tabla -->
     <app-table *ngIf="!isMobileView" [data]="dataSource.data" [columns]="columnas" [actions]="acciones"
-      [loading]="loading">
+      [loading]="loading" [pageSize]="10" [pageSizeOptions]="[5, 10, 20, 50]" [showPaginator]="true">
     </app-table>
 
     <!-- Vista tipo tarjetas en móvil -->

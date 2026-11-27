@@ -1,10 +1,11 @@
+
 .productos-card {
   padding: 24px;
   background-color: #fafafa;
   border-radius: 8px;
 }
 
-/* Encabezado con título y botón */
+/* Encabezado */
 .encabezado-card {
   display: flex;
   justify-content: space-between;
@@ -20,8 +21,127 @@
   color: #333;
 }
 
-/* Contenedor de la tabla */
+.subtitulo {
+  color: #777;
+  margin: 6px 0 0;
+  font-size: 13px;
+}
+
+/* Lector de códigos */
+.lector-container {
+  background: #fff;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  margin-bottom: 22px;
+}
+
+.lector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.lector-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: #333;
+  font-size: 17px;
+}
+
+.lector-header h3 mat-icon {
+  color: #1976d2;
+}
+
+.lector-header p {
+  margin: 5px 0 0;
+  color: #777;
+  font-size: 13px;
+}
+
+.lector-input {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lector-input mat-form-field {
+  flex: 1;
+}
+
+.lector-input button {
+  height: 50px;
+  min-width: 120px;
+  margin-bottom: 20px;
+}
+
+/* Cámara */
+.camara-container {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f5f7fa;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.camara-instruccion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.camara-instruccion mat-icon {
+  color: #1976d2;
+}
+
+zxing-scanner {
+  display: block;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+:host ::ng-deep zxing-scanner video {
+  width: 100%;
+  max-height: 350px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Filtros */
+.filtros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.filtros-grid mat-form-field {
+  width: 100%;
+}
+
+/* Botones */
+.aling-boton {
+  text-align: right;
+}
+
+.aling-boton button {
+  margin-top: 10px;
+  margin-left: 8px;
+}
+
+/* Tabla */
 .tabla-container {
+  position: relative;
   overflow-x: auto;
   background: white;
   border-radius: 8px;
@@ -46,7 +166,7 @@ mat-cell {
   text-align: left;
 }
 
-/* Estilo para las acciones */
+/* Acciones */
 .acciones-cell {
   display: flex;
   gap: 8px;
@@ -64,43 +184,7 @@ button.mat-icon-button:hover {
   border-radius: 50%;
 }
 
-/* Vista en tarjetas para móviles */
-.productos-cards {
-  display: grid;
-  gap: 16px;
-  margin-top: 16px;
-}
-
-.producto-card {
-  padding: 16px;
-  border-radius: 8px;
-}
-
-.producto-card h3 {
-  margin-top: 0;
-}
-
-mat-card {
-  border: 1px solid #e0e0e0;
-}
-
-mat-card p {
-  margin: 4px 0;
-}
-
-/* Botón flotante para móvil (opcional) */
-@media (max-width: 768px) {
-  .encabezado-card {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  button[mat-raised-button] {
-    width: 100%;
-  }
-}
-
-/* Quitar líneas de la tabla de Angular Material */
+/* Quitar líneas de tabla */
 .mat-mdc-table .mdc-data-table__row {
   border-bottom: none !important;
 }
@@ -109,33 +193,12 @@ mat-card p {
   border-bottom: none !important;
 }
 
-/* Opcional: fondo alternado sin líneas */
+/* Filas alternadas */
 .mat-mdc-row:nth-child(even) {
   background-color: #fafafa;
 }
 
-.mensaje-error {
-  display: flex;
-  flex-direction: column;
-  /* Para que icono y texto queden uno encima del otro */
-  justify-content: center;
-  /* Centra verticalmente */
-  align-items: center;
-  /* Centra horizontalmente */
-  height: 100%;
-  /* Ocupa toda la altura disponible */
-  text-align: center;
-  padding: 20px;
-  margin-top: 170px;
-}
-
-.mensaje-error p {
-  font-size: 18px;
-  font-weight: 500;
-  color: #b71c1c;
-  /* rojo corporativo */
-}
-
+/* Spinner */
 .spinner-overlay {
   position: absolute;
   top: 0;
@@ -149,38 +212,113 @@ mat-card p {
   z-index: 10;
 }
 
+/* Centrar encabezados */
 .centrado {
   text-align: center;
 }
 
-.filtros-grid {
+/* Sin productos */
+.mensaje-error {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 220px;
+  text-align: center;
+  padding: 20px;
+  margin-top: 30px;
+}
+
+.mensaje-error mat-icon {
+  font-size: 45px;
+  width: 45px;
+  height: 45px;
+  color: #999;
+}
+
+.mensaje-error p {
+  font-size: 18px;
+  font-weight: 500;
+  color: #777;
+}
+
+/* Tarjetas móvil */
+.productos-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 16px;
+  margin-top: 16px;
 }
 
-.filtros-grid mat-form-field {
-  width: 100%;
+.producto-card {
+  padding: 16px;
+  border-radius: 8px;
 }
 
-.aling-boton {
-  text-align: right;
+.producto-card h3 {
+  margin-top: 0;
+  color: #333;
 }
 
-.aling-boton button {
-  margin-top: 10px;
+mat-card {
+  border: 1px solid #e0e0e0;
 }
 
-/* Solo en móviles */
+mat-card p {
+  margin: 8px 0;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-  .aling-boton button {
-    display: block;
-    margin-left: auto;
-    /* Mantiene los botones alineados a la derecha */
+
+  .productos-card {
+    padding: 14px;
   }
 
-  .aling-boton button+button {
-    margin-top: 20px;
-    /* Espacio entre Agregar producto y Ver productos */
+  .encabezado-card {
+    flex-direction: column;
+    align-items: stretch;
   }
+
+  .encabezado-card button {
+    width: 100%;
+  }
+
+  .lector-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .lector-header button {
+    width: 100%;
+  }
+
+  .lector-input {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .lector-input mat-form-field {
+    width: 100%;
+  }
+
+  .lector-input button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .aling-boton {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .aling-boton button {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .camara-container {
+    padding: 10px;
+  }
+
 }

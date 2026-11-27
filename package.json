@@ -34,6 +34,8 @@
     "@angular/router": "^20.0.0",
     "@angular/ssr": "^20.0.4",
     "@fortawesome/fontawesome-free": "^7.2.0",
+    "@zxing/library": "^0.21.3",
+    "@zxing/ngx-scanner": "^20.0.0",
     "angular-calendar": "^0.31.1",
     "apexcharts": "^5.11.0",
     "date-fns": "^4.1.0",
