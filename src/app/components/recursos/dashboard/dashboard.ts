@@ -1810,10 +1810,17 @@ export class DashboardRecurso {
 
     const numero = `57${result.celular}`;
 
-    window.open(
-      `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`,
-      "_blank"
-    );
+    const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    const url = esMovil
+      ? `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`
+      : `https://web.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensaje)}`;
+
+    if (esMovil) {
+      window.location.href = url;
+    } else {
+      window.open(url, '_blank');
+    }
   }
 
   /**
