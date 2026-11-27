@@ -579,3 +579,91 @@ body {
   flex-direction: column !important;
   max-height: 90vh !important;
 }
+
+.modal-agregar-producto {
+  border-radius: 18px !important;
+  padding: 30px !important;
+  max-width: 420px !important;
+}
+
+.modal-agregar-producto .swal2-title {
+  font-size: 23px;
+  font-weight: 700;
+  color: #1e293b;
+  text-align: center;
+}
+
+.modal-producto {
+  width: 100%;
+  max-width: 300px;
+  margin: 15px auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.campo-modal {
+  width: 100%;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.campo-modal label {
+  width: 100%;
+  margin-bottom: 8px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.campo-modal .obligatorio {
+  color: #dc2626;
+}
+
+.campo-modal .opcional {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.campo-modal .swal2-input {
+  width: 100% !important;
+  max-width: 280px;
+  height: 45px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  box-shadow: none;
+  font-size: 15px;
+  text-align: center;
+}
+
+.campo-modal .swal2-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.campo-modal small {
+  margin-top: 7px;
+  color: #94a3b8;
+  font-size: 11px;
+  text-align: center;
+}
+
+.modal-agregar-producto .swal2-actions {
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-modal-agregar,
+.btn-modal-cancelar {
+  border-radius: 9px !important;
+  padding: 12px 20px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}

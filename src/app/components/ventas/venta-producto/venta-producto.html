@@ -1,4 +1,3 @@
-
 <div class="productos-card">
 
   <!-- Encabezado -->
@@ -8,8 +7,7 @@
       <p class="subtitulo">Administra y registra tus ventas de inventario.</p>
     </div>
 
-    <button mat-raised-button color="primary"
-      routerLink="/admin/ventas/gestionar">
+    <button mat-raised-button color="primary" routerLink="/admin/ventas/gestionar">
       <mat-icon>receipt_long</mat-icon>
       Gestionar ventas
     </button>
@@ -27,8 +25,7 @@
         <p>Escanea el código de barras o ingrésalo manualmente.</p>
       </div>
 
-      <button mat-stroked-button color="primary"
-        (click)="alternarCamara()">
+      <button mat-stroked-button color="primary" (click)="alternarCamara()">
         <mat-icon>
           {{ camaraActiva ? 'videocam_off' : 'videocam' }}
         </mat-icon>
@@ -39,19 +36,12 @@
     <div class="lector-input">
       <mat-form-field appearance="outline">
         <mat-label>Código de barras</mat-label>
-        <input
-          matInput
-          #inputBarras
-          [(ngModel)]="codigoBarras"
-          (keyup.enter)="buscarPorCodigoBarras()"
-          placeholder="Escanee el código del producto"
-          autocomplete="off"
-        />
+        <input matInput #inputBarras [(ngModel)]="codigoBarras" (keyup.enter)="buscarPorCodigoBarras()"
+          placeholder="Escanee el código del producto" autocomplete="off" />
         <mat-icon matSuffix>barcode</mat-icon>
       </mat-form-field>
 
-      <button mat-raised-button color="primary"
-        [disabled]="!codigoBarras.trim() || procesandoCodigo"
+      <button mat-raised-button color="primary" [disabled]="!codigoBarras.trim() || procesandoCodigo"
         (click)="buscarPorCodigoBarras()">
         <mat-icon>search</mat-icon>
         Buscar
@@ -66,10 +56,16 @@
         Ubica el código de barras dentro del recuadro.
       </div>
 
-      <zxing-scanner
-        [enable]="camaraActiva"
-        [formats]="formatosPermitidos"
-        (scanSuccess)="onCodeResult($event)"
+      <label>Selecciona la cámara:</label>
+
+      <select [(ngModel)]="camaraSeleccionada" [compareWith]="compararCamaras">
+        <option *ngFor="let camara of camarasDisponibles" [ngValue]="camara">
+          {{ camara.label || 'Cámara disponible' }}
+        </option>
+      </select>
+
+      <zxing-scanner [(device)]="camaraSeleccionada" [formats]="formatosPermitidos" [enable]="camaraActiva"
+        (scanSuccess)="onCodeResult($event)" (camerasFound)="onCamerasFound($event)"
         (camerasNotFound)="onCamerasNotFound()">
       </zxing-scanner>
 
@@ -78,31 +74,22 @@
   </div>
 
   <!-- Filtros -->
-  <div class="filtros-grid">
+  <div *ngIf="!activarCodigoBarras" class="filtros-grid">
 
     <mat-form-field appearance="fill">
       <mat-label>Número de factura</mat-label>
-      <input matInput
-        placeholder="Ingrese número de factura"
-        [(ngModel)]="numeroFactura" />
+      <input matInput placeholder="Ingrese número de factura" [(ngModel)]="numeroFactura" />
     </mat-form-field>
 
     <mat-form-field appearance="fill">
       <mat-label>Buscar producto</mat-label>
 
-      <input
-        type="text"
-        matInput
-        [matAutocomplete]="auto"
-        [(ngModel)]="productoNombre"
-        (ngModelChange)="filtrarProductos()"
-        placeholder="Escriba el nombre del producto" />
+      <input type="text" matInput [matAutocomplete]="auto" [(ngModel)]="productoNombre"
+        (ngModelChange)="filtrarProductos()" placeholder="Escriba el nombre del producto" />
 
-      <mat-autocomplete #auto="matAutocomplete"
-        (optionSelected)="seleccionarProducto($event.option.value)">
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="seleccionarProducto($event.option.value)">
 
-        <mat-option *ngFor="let producto of productosFiltrados"
-          [value]="producto.nombre">
+        <mat-option *ngFor="let producto of productosFiltrados" [value]="producto.nombre">
           {{ producto.nombre }}
         </mat-option>
 
@@ -111,10 +98,7 @@
 
     <mat-form-field appearance="fill">
       <mat-label>Cantidad</mat-label>
-      <input matInput type="number"
-        [(ngModel)]="cantidadProducto"
-        min="1"
-        placeholder="Cantidad" />
+      <input matInput type="number" [(ngModel)]="cantidadProducto" min="1" placeholder="Cantidad" />
     </mat-form-field>
 
   </div>
@@ -122,14 +106,12 @@
   <!-- Botones -->
   <div class="aling-boton">
 
-    <button mat-raised-button color="primary"
-      (click)="agregarProducto()">
+    <button *ngIf="!activarCodigoBarras" mat-raised-button color="primary" (click)="agregarProducto()">
       <mat-icon>add_shopping_cart</mat-icon>
       Agregar producto
     </button>
 
-    <button mat-raised-button color="primary"
-      (click)="verProductos()">
+    <button mat-raised-button color="primary" (click)="verProductos()">
       <mat-icon>inventory_2</mat-icon>
       Ver productos
     </button>
@@ -137,8 +119,7 @@
   </div>
 
   <!-- Sin productos -->
-  <div *ngIf="productosVenta.data.length === 0"
-    class="mensaje-error">
+  <div *ngIf="productosVenta.data.length === 0" class="mensaje-error">
 
     <mat-icon>shopping_cart</mat-icon>
     <p>No hay productos en la venta.</p>
@@ -146,15 +127,13 @@
   </div>
 
   <!-- Tabla escritorio -->
-  <div class="tabla-container"
-    *ngIf="!esMovil && productosVenta.data.length > 0">
+  <div class="tabla-container" *ngIf="!esMovil && productosVenta.data.length > 0">
 
     <div class="spinner-overlay" *ngIf="loading">
       <mat-spinner diameter="50"></mat-spinner>
     </div>
 
-    <table mat-table [dataSource]="productosVenta"
-      class="mat-mdc-table mat-elevation-z1">
+    <table mat-table [dataSource]="productosVenta" class="mat-mdc-table mat-elevation-z1">
 
       <!-- Nombre -->
       <ng-container matColumnDef="nombre">
@@ -210,11 +189,9 @@
           Acciones
         </th>
 
-        <td mat-cell *matCellDef="let producto"
-          class="acciones-cell">
+        <td mat-cell *matCellDef="let producto" class="acciones-cell">
 
-          <button mat-icon-button color="warn"
-            (click)="eliminarProducto(producto)">
+          <button mat-icon-button color="warn" (click)="eliminarProducto(producto)">
             <mat-icon>delete</mat-icon>
           </button>
 
@@ -223,19 +200,16 @@
 
       <tr mat-header-row *matHeaderRowDef="columnasTabla"></tr>
 
-      <tr mat-row
-        *matRowDef="let row; columns: columnasTabla">
+      <tr mat-row *matRowDef="let row; columns: columnasTabla">
       </tr>
 
     </table>
   </div>
 
   <!-- Tarjetas móvil -->
-  <div class="productos-cards"
-    *ngIf="esMovil && productosVenta.data.length > 0">
+  <div class="productos-cards" *ngIf="esMovil && productosVenta.data.length > 0">
 
-    <mat-card *ngFor="let producto of productosVenta.data"
-      class="producto-card">
+    <mat-card *ngFor="let producto of productosVenta.data" class="producto-card">
 
       <h3>{{ producto.nombre }}</h3>
 
@@ -265,8 +239,7 @@
       </p>
 
       <div class="acciones-cell">
-        <button mat-icon-button color="warn"
-          (click)="eliminarProducto(producto)">
+        <button mat-icon-button color="warn" (click)="eliminarProducto(producto)">
           <mat-icon>delete</mat-icon>
         </button>
       </div>
@@ -275,12 +248,9 @@
   </div>
 
   <!-- Guardar -->
-  <div class="aling-boton"
-    *ngIf="productosVenta.data.length > 0">
+  <div class="aling-boton" *ngIf="productosVenta.data.length > 0">
 
-    <button mat-raised-button color="primary"
-      [disabled]="loading"
-      (click)="guardarVenta()">
+    <button mat-raised-button color="primary" [disabled]="loading" (click)="guardarVenta()">
       <mat-icon>save</mat-icon>
       Guardar venta
     </button>

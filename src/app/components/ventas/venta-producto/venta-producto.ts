@@ -95,6 +95,14 @@ export class VentaProducto implements OnInit {
   ];
   productosVenta = new MatTableDataSource<any>([]);
   esMovil: boolean = false;
+  restriccionesCamara: MediaTrackConstraints = {
+    facingMode: { ideal: 'environment' },
+    width: { min: 640, ideal: 1920 },
+    height: { min: 480, ideal: 1080 },
+    aspectRatio: { ideal: 16 / 9 }
+  };
+  camarasDisponibles: MediaDeviceInfo[] = [];
+  camaraSeleccionada!: MediaDeviceInfo;
 
 
   constructor(
@@ -127,6 +135,23 @@ export class VentaProducto implements OnInit {
 
     this.obtenerRangoParametrizado();
     this.consultarProductos();
+  }
+
+
+  onCamerasFound(camaras: MediaDeviceInfo[]): void {
+    this.camarasDisponibles = camaras;
+
+    console.log('Cámaras disponibles:', camaras);
+
+    // Seleccionamos inicialmente la primera cámara.
+    this.camaraSeleccionada = camaras[0];
+  }
+
+  compararCamaras(
+    a: MediaDeviceInfo,
+    b: MediaDeviceInfo
+  ): boolean {
+    return a?.deviceId === b?.deviceId;
   }
 
   private obtenerRangoParametrizado(): void {
@@ -221,31 +246,160 @@ export class VentaProducto implements OnInit {
   }
 
   async buscarPorCodigoBarras(): Promise<void> {
+
     const codigo = this.codigoBarras.trim();
+
     if (!codigo || this.procesandoCodigo) {
       return;
     }
 
     this.procesandoCodigo = true;
+
     try {
+
       const producto = this.productosDisponibles.find((p: any) => {
-        return String(p.codigoBarras ?? '').trim() === codigo;
+        return String(p.codigo ?? '').trim() === codigo;
       });
 
       if (!producto) {
+
         await Swal.fire({
           icon: 'warning',
           title: 'Producto no encontrado',
-          text: `No existe un producto registrado con el código ${codigo}.`
+          text: `No existe un producto registrado con el código ${codigo}.`,
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#3085d6'
         });
 
         return;
-
       }
 
+      // Seleccionar producto encontrado
       this.productoSeleccionado = producto;
       this.productoNombre = producto.nombre;
-      this.cantidadProducto = 1;
+
+      // Modal para solicitar cantidad y factura
+      const resultado = await Swal.fire({
+
+        title: 'Agregar producto',
+
+        html: `
+        <div class="modal-producto">
+
+          <div class="producto-encontrado">
+            <div class="producto-info">
+              <span class="producto-label">Producto encontrado</span>
+              <strong>${this.escapeHtml(producto.nombre)}</strong>
+              <small>Código: ${this.escapeHtml(codigo)}</small>
+            </div>
+          </div>
+
+          <div class="campo-modal">
+            <label for="cantidadProducto">
+              Cantidad <span class="obligatorio">*</span>
+            </label>
+
+            <input
+              id="cantidadProducto"
+              type="number"
+              class="swal2-input"
+              placeholder="Ingrese la cantidad"
+              min="1"
+              step="1"
+              value="1"
+            />
+
+            <small>Indica cuántas unidades deseas agregar.</small>
+          </div>
+
+          <div class="campo-modal">
+            <label for="numeroFactura">
+              Número de factura
+              <span class="opcional">(Opcional)</span>
+            </label>
+
+            <input
+              id="numeroFactura"
+              type="text"
+              class="swal2-input"
+              placeholder="Ingrese el número de factura"
+              value="${this.escapeHtml(this.numeroFactura || '')}"
+              maxlength="50"
+            />
+
+            <small>Puedes dejar este campo vacío.</small>
+          </div>
+
+        </div>
+      `,
+
+        showCancelButton: true,
+        confirmButtonText: 'Agregar producto',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#2563eb',
+        cancelButtonColor: '#64748b',
+
+        buttonsStyling: true,
+        reverseButtons: true,
+        focusConfirm: false,
+        allowOutsideClick: false,
+
+        customClass: {
+          popup: 'modal-agregar-producto',
+          confirmButton: 'btn-modal-agregar',
+          cancelButton: 'btn-modal-cancelar'
+        },
+
+        didOpen: () => {
+          const input = document.getElementById('cantidadProducto');
+
+          input?.focus();
+        },
+
+        preConfirm: () => {
+
+          const cantidadInput = document.getElementById(
+            'cantidadProducto'
+          ) as HTMLInputElement;
+
+          const facturaInput = document.getElementById(
+            'numeroFactura'
+          ) as HTMLInputElement;
+
+          const cantidad = Number(cantidadInput.value);
+          const factura = facturaInput.value.trim();
+
+          if (!cantidadInput.value || !Number.isInteger(cantidad) || cantidad <= 0) {
+
+            Swal.showValidationMessage(
+              'Debes ingresar una cantidad entera mayor que cero.'
+            );
+
+            cantidadInput.focus();
+
+            return false;
+          }
+
+          return {
+            cantidad,
+            factura
+          };
+
+        }
+
+      });
+
+      // Si cancela, no agrega el producto
+      if (!resultado.isConfirmed || !resultado.value) {
+        return;
+      }
+
+      // Capturar los valores ingresados
+      this.cantidadProducto = resultado.value.cantidad;
+
+      this.numeroFactura = resultado.value.factura;
+
+      // Agregar producto con la cantidad y factura capturadas
       await this.agregarProducto();
 
     } finally {
@@ -253,8 +407,23 @@ export class VentaProducto implements OnInit {
       this.codigoBarras = '';
       this.procesandoCodigo = false;
       this.cdr.detectChanges();
+
     }
 
+  }
+
+  private escapeHtml(valor: any): string {
+    return String(valor ?? '').replace(/[&<>"']/g, (caracter) => {
+      const entidades: any = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      };
+
+      return entidades[caracter];
+    });
   }
 
   filtrarProductos(): void {
@@ -553,4 +722,6 @@ export class VentaProducto implements OnInit {
     this.productosVenta.data = [];
     this.cdr.detectChanges();
   }
+
+
 }
