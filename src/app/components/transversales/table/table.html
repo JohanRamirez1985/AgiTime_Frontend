@@ -1,9 +1,12 @@
+
 <div class="tabla-container">
 
   <!-- Loading -->
   <div *ngIf="loading" class="loading-container">
     <mat-spinner diameter="50"></mat-spinner>
-    <p class="loading-text">Cargando información...</p>
+    <p class="loading-text">
+      Cargando información...
+    </p>
   </div>
 
   <!-- Contenido -->
@@ -12,23 +15,45 @@
     <!-- Si existen datos -->
     <ng-container *ngIf="dataSource.data.length > 0; else sinDatos">
 
-      <table mat-table [dataSource]="dataSource" class="custom-table">
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        class="custom-table">
 
-        <!-- Columnas -->
-        <ng-container *ngFor="let col of columns" [matColumnDef]="col.key">
-          <th mat-header-cell *matHeaderCellDef>{{ col.label }}</th>
+        <!-- Columnas dinámicas -->
+        <ng-container
+          *ngFor="let col of columns"
+          [matColumnDef]="col.key">
+
+          <th mat-header-cell *matHeaderCellDef>
+            {{ col.label }}
+          </th>
+
           <td mat-cell *matCellDef="let element">
             {{ element[col.key] }}
           </td>
+
         </ng-container>
 
         <!-- Acciones -->
-        <ng-container matColumnDef="acciones">
-          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <ng-container
+          *ngIf="actions?.length"
+          matColumnDef="acciones">
+
+          <th mat-header-cell *matHeaderCellDef>
+            Acciones
+          </th>
+
           <td mat-cell *matCellDef="let element">
+
             <ng-container *ngFor="let action of actions">
-              <button mat-icon-button [color]="action.color || 'primary'" [matTooltip]="action.tooltip || action.label"
+
+              <button
+                mat-icon-button
+                [color]="action.color || 'primary'"
+                [matTooltip]="action.tooltip || action.label"
                 (click)="action.action(element)">
+
                 <mat-icon *ngIf="action.icon !== 'whatsapp'">
                   {{ action.icon }}
                 </mat-icon>
@@ -37,19 +62,34 @@
                   *ngIf="action.icon === 'whatsapp'"
                   svgIcon="whatsapp">
                 </mat-icon>
+
               </button>
+
             </ng-container>
+
           </td>
+
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <!-- Encabezado -->
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns">
+        </tr>
 
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <!-- Filas -->
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns;">
+        </tr>
 
       </table>
 
       <!-- Paginador -->
-      <mat-paginator *ngIf="showPaginator" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+      <mat-paginator
+        *ngIf="showPaginator"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions"
         showFirstLastButtons>
       </mat-paginator>
 
@@ -57,15 +97,21 @@
 
     <!-- Sin datos -->
     <ng-template #sinDatos>
+
       <div class="empty-state">
+
         <mat-icon>inbox</mat-icon>
 
-        <h3>No hay información para mostrar</h3>
+        <h3>
+          No hay información para mostrar
+        </h3>
 
         <p>
           No se encontraron registros con los filtros seleccionados.
         </p>
+
       </div>
+
     </ng-template>
 
   </div>

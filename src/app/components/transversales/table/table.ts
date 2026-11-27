@@ -1,4 +1,13 @@
-import { Component, Input, ViewChild, OnChanges, AfterViewInit } from '@angular/core';
+
+import {
+  Component,
+  Input,
+  ViewChild,
+  OnChanges,
+  AfterViewInit,
+  SimpleChanges
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -17,7 +26,7 @@ export interface Action {
   icon: string;
   color?: string;
   tooltip?: string;
-  action: (element: any) => void; 
+  action: (element: any) => void;
 }
 
 @Component({
@@ -42,31 +51,49 @@ export class Table implements OnChanges, AfterViewInit {
   @Input() actions: Action[] = [];
   @Input() loading: boolean = false;
 
-  @Input() pageSize = 10;
-  @Input() pageSizeOptions = [5, 10, 20, 50];
-  @Input() showPaginator = true;
+  @Input() pageSize: number = 10;
+  @Input() pageSizeOptions: number[] = [5, 10, 20, 50];
+  @Input() showPaginator: boolean = true;
 
-  dataSource = new MatTableDataSource<any>();
+  dataSource = new MatTableDataSource<any>([]);
+
   displayedColumns: string[] = [];
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  private paginatorInstance!: MatPaginator;
 
-  ngOnChanges() {
+  @ViewChild(MatPaginator)
+  set matPaginator(paginator: MatPaginator) {
+    if (paginator) {
+      this.paginatorInstance = paginator;
+      this.dataSource.paginator = paginator;
+    }
+  }
 
+  ngOnChanges(changes: SimpleChanges): void {
+
+    // Actualizar información
     this.dataSource.data = this.data ?? [];
 
-    this.displayedColumns = this.columns.map(c => c.key);
+    // Actualizar columnas
+    this.displayedColumns = (this.columns ?? []).map(
+      column => column.key
+    );
 
+    // Agregar columna de acciones
     if (this.actions?.length) {
       this.displayedColumns.push('acciones');
     }
 
-    if (this.paginator) {
-      this.dataSource.paginator = this.paginator;
+    // Actualizar paginador si ya existe
+    if (this.paginatorInstance) {
+      this.dataSource.paginator = this.paginatorInstance;
     }
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
+  ngAfterViewInit(): void {
+    if (this.paginatorInstance) {
+      this.dataSource.paginator = this.paginatorInstance;
+    }
   }
+
 }
