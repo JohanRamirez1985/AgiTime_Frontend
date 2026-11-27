@@ -1,11 +1,22 @@
+
+/* ==========================================
+   CONTENEDOR PRINCIPAL
+========================================== */
+
 .productos-card {
+  position: relative;
   background: #fff;
   border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   max-width: 600px;
   margin: 0 auto;
+  overflow: hidden;
 }
+
+/* ==========================================
+   ENCABEZADO
+========================================== */
 
 .encabezado-card {
   display: flex;
@@ -16,8 +27,20 @@
 
 .encabezado-card h2 {
   margin: 0;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 22px;
+  color: #333;
 }
+
+.encabezado-card p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: #777;
+}
+
+/* ==========================================
+   FORMULARIO
+========================================== */
 
 .form-container {
   display: flex;
@@ -29,6 +52,160 @@
   width: 100%;
 }
 
+mat-form-field {
+  background-color: #fafafa;
+  border-radius: 4px;
+}
+
+/* ==========================================
+   CAMPO DE CÓDIGO
+========================================== */
+
+.codigo-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.codigo-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.btn-camara {
+  height: 56px;
+  min-width: 125px;
+  white-space: nowrap;
+  border-radius: 8px;
+}
+
+.btn-camara mat-icon {
+  margin-right: 5px;
+}
+
+/* ==========================================
+   LECTOR DE CÁMARA
+========================================== */
+
+.lector-container {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 10px;
+  background: #f7f8fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+.lector-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.lector-header mat-icon {
+  color: #1976d2;
+}
+
+.lector-instruccion {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  margin: 12px 0;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   SELECTOR DE CÁMARA
+========================================== */
+
+.selector-camara {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.selector-camara label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+}
+
+.selector-camara select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 7px;
+  font-size: 14px;
+  outline: none;
+}
+
+.selector-camara select:focus {
+  border-color: #1976d2;
+}
+
+/* ==========================================
+   VIDEO DEL ESCÁNER
+========================================== */
+
+.scanner-wrapper {
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #222;
+}
+
+/* Elemento del escáner */
+zxing-scanner {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Video de la cámara */
+zxing-scanner video {
+  display: block;
+  width: 100%;
+  height: 350px;
+  object-fit: contain;
+  background: #222;
+}
+
+/* ==========================================
+   INFORMACIÓN DEL LECTOR
+========================================== */
+
+.lector-pie {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 12px;
+  color: #777;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.lector-pie mat-icon {
+  font-size: 17px;
+  width: 17px;
+  height: 17px;
+  color: #1976d2;
+}
+
+/* ==========================================
+   BOTONES
+========================================== */
+
 .acciones-header {
   display: flex;
   justify-content: flex-end;
@@ -36,14 +213,17 @@
   margin-top: 20px;
 }
 
-mat-form-field {
-  background-color: #fafafa;
-  border-radius: 4px;
+.acciones-header button {
+  min-width: 110px;
 }
 
 button mat-icon {
   margin-right: 4px;
 }
+
+/* ==========================================
+   SPINNER
+========================================== */
 
 .spinner-overlay {
   position: absolute;
@@ -56,4 +236,57 @@ button mat-icon {
   justify-content: center;
   align-items: center;
   z-index: 10;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 600px) {
+
+  .productos-card {
+    padding: 14px;
+  }
+
+  .codigo-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .codigo-input {
+    width: 100%;
+  }
+
+  .btn-camara {
+    width: 100%;
+  }
+
+  .scanner-wrapper {
+    max-width: 100%;
+  }
+
+  zxing-scanner video {
+    height: 300px;
+  }
+
+  .acciones-header {
+    flex-direction: column;
+  }
+
+  .acciones-header button {
+    width: 100%;
+  }
+
+}
+
+@media (max-width: 380px) {
+
+  .productos-card {
+    padding: 10px;
+  }
+
+  zxing-scanner video {
+    height: 260px;
+  }
+
 }

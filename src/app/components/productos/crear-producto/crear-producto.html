@@ -1,76 +1,174 @@
 <div class="productos-card">
+
   <!-- Encabezado -->
   <div class="encabezado-card">
-    <h2>Crear Producto</h2>
+    <div>
+      <h2>Crear Producto</h2>
+      <p>Registra un producto en tu inventario.</p>
+    </div>
   </div>
+
+  <!-- Cargando -->
   <div class="spinner-overlay" *ngIf="loading">
     <mat-spinner diameter="50"></mat-spinner>
   </div>
+
   <!-- Formulario -->
   <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()" class="form-container">
+
     <!-- Nombre -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Nombre</mat-label>
       <input matInput placeholder="Ingrese el nombre" formControlName="Nombre" required />
+
       <mat-error *ngIf="productoForm.get('Nombre')?.hasError('required')">
         El nombre es obligatorio
       </mat-error>
     </mat-form-field>
 
-    <!-- Código -->
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Código</mat-label>
-      <input matInput placeholder="Ingrese el código" formControlName="Codigo" />
-    </mat-form-field>
+    <!-- Código de barras -->
+    <div class="codigo-container">
 
-    <!-- Precio -->
+      <mat-form-field appearance="fill" class="codigo-input">
+        <mat-label>Código de barras</mat-label>
+
+        <input matInput #campoCodigo placeholder="Escanee o escriba el código" formControlName="Codigo"
+          autocomplete="off" (keydown.enter)="capturarCodigoPistola($event)" />
+
+        <mat-hint *ngIf="activarCodigoBarras">
+          Puede utilizar una pistola USB o la cámara del celular.
+        </mat-hint>
+      </mat-form-field>
+
+      <button *ngIf="activarCodigoBarras" mat-raised-button color="primary" type="button" class="btn-camara" (click)="alternarCamara()"
+        [disabled]="loading">
+        <mat-icon>
+          {{ camaraActiva ? 'videocam_off' : 'photo_camera' }}
+        </mat-icon>
+
+        {{ camaraActiva ? 'Cerrar cámara' : 'Escanear' }}
+      </button>
+
+    </div>
+
+    <!-- Lector de cámara -->
+    <div class="lector-container" *ngIf="camaraActiva">
+
+      <div class="lector-header">
+        <mat-icon>qr_code_scanner</mat-icon>
+        <span>Escáner de código de barras</span>
+      </div>
+
+      <p class="lector-instruccion">
+        Ubica el código de barras dentro del recuadro.
+      </p>
+
+      <!-- Selector de cámaras -->
+      <div class="selector-camara" *ngIf="camarasDisponibles.length > 1">
+        <label for="seleccionCamara">Selecciona la cámara:</label>
+
+        <select id="seleccionCamara" [value]="camaraSeleccionada?.deviceId || ''" (change)="cambiarCamara($event)">
+          <option *ngFor="let camara of camarasDisponibles" [value]="camara.deviceId">
+            {{ camara.label || 'Cámara disponible' }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Escáner ZXing -->
+      <div class="scanner-wrapper">
+
+        <zxing-scanner [device]="camaraSeleccionada" [formats]="formatosPermitidos" [enable]="camaraActiva"
+          (scanSuccess)="onCodeResult($event)" (camerasFound)="onCamerasFound($event)"
+          (camerasNotFound)="onCamerasNotFound()"></zxing-scanner>
+
+      </div>
+
+      <div class="lector-pie">
+        <mat-icon>info_outline</mat-icon>
+        <span>
+          Mantén el código enfocado y evita reflejos sobre la etiqueta.
+        </span>
+      </div>
+
+    </div>
+
+    <!-- Precio venta -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Precio Venta</mat-label>
-      <input matInput type="number" placeholder="Ingrese el precio de venta" formControlName="PrecioVenta" required />
+
+      <input matInput type="number" placeholder="Ingrese el precio de venta" formControlName="PrecioVenta" min="0"
+        required />
+
       <mat-error *ngIf="productoForm.get('PrecioVenta')?.hasError('required')">
         El precio de venta es obligatorio
       </mat-error>
-    </mat-form-field>
 
-    <!-- Precio costo-->
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Precio Costo</mat-label>
-      <input matInput type="number" placeholder="Ingrese el precio costo" formControlName="PrecioCosto" required />
-      <mat-error *ngIf="productoForm.get('PrecioCosto')?.hasError('required')">
-        El precio costo es obligatorio
+      <mat-error *ngIf="productoForm.get('PrecioVenta')?.hasError('min')">
+        El precio no puede ser negativo
       </mat-error>
     </mat-form-field>
 
+    <!-- Precio costo -->
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Precio Costo</mat-label>
+
+      <input matInput type="number" placeholder="Ingrese el precio costo" formControlName="PrecioCosto" min="0"
+        required />
+
+      <mat-error *ngIf="productoForm.get('PrecioCosto')?.hasError('required')">
+        El precio costo es obligatorio
+      </mat-error>
+
+      <mat-error *ngIf="productoForm.get('PrecioCosto')?.hasError('min')">
+        El precio no puede ser negativo
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Comisión -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Comisión</mat-label>
 
-      <input matInput type="number" placeholder="Ingrese el porcentaje de comisión" formControlName="Porcentaje"
+      <input matInput type="number" placeholder="Ingrese el porcentaje de comisión" formControlName="Porcentaje" min="0"
         required />
 
       <mat-error *ngIf="productoForm.get('Porcentaje')?.hasError('required')">
         El porcentaje de comisión es obligatorio.
+      </mat-error>
+
+      <mat-error *ngIf="productoForm.get('Porcentaje')?.hasError('min')">
+        La comisión no puede ser negativa.
       </mat-error>
     </mat-form-field>
 
     <!-- Cantidad -->
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Cantidad</mat-label>
-      <input matInput type="number" placeholder="Ingrese la cantidad" formControlName="Cantidad" required />
+
+      <input matInput type="number" placeholder="Ingrese la cantidad" formControlName="Cantidad" min="0" required />
+
       <mat-error *ngIf="productoForm.get('Cantidad')?.hasError('required')">
-        El cantidad es obligatorio
+        La cantidad es obligatoria
+      </mat-error>
+
+      <mat-error *ngIf="productoForm.get('Cantidad')?.hasError('min')">
+        La cantidad no puede ser negativa
       </mat-error>
     </mat-form-field>
 
     <!-- Botones -->
     <div class="acciones-header">
-      <button mat-raised-button color="primary" type="submit" [disabled]="productoForm.invalid">
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="productoForm.invalid || loading">
         <mat-icon>save</mat-icon>
         Guardar
       </button>
-      <button mat-button color="warn" type="button" (click)="cancelar()">
+
+      <button mat-button color="warn" type="button" (click)="cancelar()" [disabled]="loading">
         <mat-icon>cancel</mat-icon>
         Cancelar
       </button>
+
     </div>
+
   </form>
 </div>
